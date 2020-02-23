@@ -197,5 +197,115 @@ namespace chapter10 {
 
 }
 
+namespace chapter11 {
+
+	extern struct nodeBT {
+		int val;
+		int count;
+		nodeBT* parent;
+		nodeBT* left;
+		nodeBT* right;
+	};
+
+	extern struct llNode {
+		int value;
+		llNode* next;
+	};
+
+
+	llNode* LLNode(int value);
+	nodeBT* BTNode(int value);
+	int minF(int a = 0);
+	int maxF(int a = 0);
+	int countF(nodeBT* node);
+
+
+	class LinkedList;
+
+	class BST {
+	
+	private:
+		nodeBT* root;
+	
+	public:
+
+		// constructor 
+		BST() : root{ nullptr }
+		{};
+
+		// destructor
+		~BST() {
+			//nodeValues(9); // 9 -delete tree nodes via PostOrder Search
+		};
+		
+		//methods
+		BST add(int value);
+		bool contains(int val, nodeBT* node = nullptr);
+		int min(nodeBT* node = nullptr, int (*callback)(int) = minF);
+		int max(nodeBT* node = nullptr, int (*callback)(int) = maxF);
+		int size(nodeBT* node = nullptr, int (*callback)(nodeBT*) = countF);
+		bool isEmpty();
+		int Height(nodeBT* node = nullptr, int depth = 0);
+		int minHeight(nodeBT* node = nullptr, int depth = 0);
+		bool isBalanced(nodeBT* node = nullptr, int depth = 0);
+		BST ArrayToBST(std::vector<int> arr);
+		int CommonAncestor(const int &a, const int &b);
+		std::vector<int> & bst2Arr(std::vector<int> &&arr = {});
+		std::vector<int>& bst2ArrPre(std::vector<int>&& arr = {});
+		std::vector<int>& bst2ArrPost(std::vector<int>&& arr = {});
+		void bst2List(int mode = 0);
+		void bst2ListPre(int mode = 0);
+		void bst2ListPost(int mode = 0);
+		template < class T>
+		void nodeValues(int mode = 0, T* = nullptr, nodeBT* node = nullptr); // 0 PreOrder 1-inOrder 2-PostOrder
+		void preOrderNoRecurion(nodeBT* node = nullptr);
+		int ValBefore(int value, nodeBT* node = nullptr);
+		int ValAfter(int value, nodeBT* node = nullptr);
+		nodeBT* NodeBefore(nodeBT* findNode, nodeBT* node);
+		nodeBT* NodeAfter(nodeBT* findNode, nodeBT* node);
+		int closestValue(const int &value, nodeBT* node = nullptr);
+		bool TreePathContainsSum(const int& sum,  int currSum = 0 ,nodeBT* node = nullptr);
+		void TreePathContainsSum(const int& sum, std::vector<std::vector<int>>& bucket, std::vector<int> arr = {}, nodeBT* node = nullptr);
+		bool Remove(int val, nodeBT* node = nullptr);
+		void RemoveAll(nodeBT *node = nullptr);
+		bool IsValid(nodeBT* node = nullptr );
+		void TraverseBSTReverseOrder(nodeBT* node = nullptr);
+		void RootLeafNumber(nodeBT* node = nullptr, std::string &&currStr = "");
+		std::vector<int> LeftSideBinary(std::vector<int> collection = {});
+	};
+
+	class LinkedList {
+	private:
+		llNode* head = nullptr;
+
+	public:
+		friend void BST::bst2List(int mode);
+		friend void BST::bst2ListPre(int mode);
+		friend void BST::bst2ListPost(int mode);
+
+		LinkedList &insert(int value) {
+			llNode *runner = head;
+
+			if (!head) {
+				head = LLNode(value);
+			} else {
+				while (runner->next) { runner = runner->next;}
+				runner->next = LLNode(value);
+			}
+			return *this;
+		}
+
+		void print() {
+			llNode *runner = head;
+			while (runner) {
+				std::cout << "NODE LIST VALUE " << runner->value << " " << '\n';  
+				runner = runner->next;
+			}
+		}
+
+	};
+
+}
+
 #endif 
 	
