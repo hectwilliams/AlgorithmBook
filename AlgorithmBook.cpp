@@ -9,19 +9,21 @@
 #include <cstdlib>
 #include <numeric> // accumulate
 #include <stdio.h> 
+#include <stdlib.h>
 #include <sstream>
 #include <tuple>
 #include <deque>
+#include <exception>
 bool isPrime(const int& num) {
-	for (int i = 2; i <= std::floor(std::sqrt(num)); i++) 
+	for (int i = 2; i <= std::floor(std::sqrt(num)); i++)
 		if (num % i == 0) return false;
 	return true;
 }
 
 namespace chapter9
-{	
+{
 
-	void rgcf_helper_findPrimeSubsets(const int &target, std::set<int>& array) {
+	void rgcf_helper_findPrimeSubsets(const int& target, std::set<int>& array) {
 
 		for (auto i = 2; i <= std::floor(std::sqrt(target)); i++) {
 			if (isPrime(i) && (target % i == 0)) {	// valid prime factor & divides
@@ -39,13 +41,13 @@ namespace chapter9
 	// GCF
 
 	int rgcf(int num1, int num2) {
-		std::set<int> primeFactors1{ num1 }, primeFactors2{num2};
-		std::set<int>::const_iterator it; 
+		std::set<int> primeFactors1{ num1 }, primeFactors2{ num2 };
+		std::set<int>::const_iterator it;
 		chapter9::rgcf_helper_findPrimeSubsets(num1, primeFactors1);
 		chapter9::rgcf_helper_findPrimeSubsets(num2, primeFactors2);
-		int result = 1; 
+		int result = 1;
 
-		for (auto element: primeFactors1) {
+		for (auto element : primeFactors1) {
 			it = primeFactors2.find(element);	// common prime factor found
 			if (it != primeFactors2.end())
 				result *= element;
@@ -54,14 +56,14 @@ namespace chapter9
 		return result;
 	}
 
-	int floodFill_helper_pixel( int x, int y, int canvas2D[5][5]) {
+	int floodFill_helper_pixel(int x, int y, int canvas2D[5][5]) {
 		return canvas2D[y][x];
 	}
-	bool floodFill_helper_inRange(const int& val, const int &limit) {
+	bool floodFill_helper_inRange(const int& val, const int& limit) {
 		return  val >= 0 && val < limit;
 	}
 	int floodFill_helper_getIndex(const int xy[2], const int& move, const int& limit) {
-		return limit * xy[1]  + xy[0] - move;
+		return limit * xy[1] + xy[0] - move;
 	}
 	void floodFill_helper_printCanvas(const int canvas[5][5]) {
 		for (auto r = 0; r < 5; r++) {
@@ -71,14 +73,14 @@ namespace chapter9
 			std::cout << '\n';
 		}
 	}
-		// Flood Fill Canvas
+	// Flood Fill Canvas
 	void floodFill(int canvas2D[5][5], int startxy[2], const int& newColor, int target) {
-		int limit = 5; 
-		int  moveBy[4] = { 1,- 1, 5, -5 };
+		int limit = 5;
+		int  moveBy[4] = { 1,-1, 5, -5 };
 		int x = 0;
 		int y = 0;
 		int tempXY[2];
-		int index; 
+		int index;
 
 		if (target == -1)
 			target = canvas2D[startxy[1]][startxy[1]];
@@ -86,16 +88,16 @@ namespace chapter9
 		for (int i = 0; i < 4; i++) {
 
 			index = floodFill_helper_getIndex(startxy, moveBy[i], limit);
-			y = (int) std::floor(index / limit);
+			y = (int)std::floor(index / limit);
 			x = index % limit;
 
 			if (floodFill_helper_inRange(y, limit) && floodFill_helper_inRange(x, limit)) {
-				
+
 				if (canvas2D[y][x] == target) {
 
 					// update pixel 
 					canvas2D[y][x] = newColor;
-					
+
 					// recursive call 
 					tempXY[0] = x;
 					tempXY[1] = y;
@@ -109,7 +111,7 @@ namespace chapter9
 
 	// recursive Fib
 
-	int rFib(int num, int a , int b , int counter ) {
+	int rFib(int num, int a, int b, int counter) {
 		if (counter >= 2) {
 			std::swap(a, b);
 			b += a;
@@ -125,14 +127,14 @@ namespace chapter9
 	// recursive binary search 
 
 	bool rBinarySearch(std::vector<int> array, int target) {
-		int mid = std::floor(array.size()/2);
+		int mid = std::floor(array.size() / 2);
 		auto left = std::vector<int>(array.begin(), array.begin() + mid);
-		auto right = std::vector<int>(array.begin() + mid + 1, array.begin() + array.size() );
-		
-	
+		auto right = std::vector<int>(array.begin() + mid + 1, array.begin() + array.size());
+
+
 		if (array[mid] == target)
 			return true;
-		
+
 		if (mid == 0)
 			return false;
 
@@ -140,24 +142,24 @@ namespace chapter9
 			return rBinarySearch(left, target);
 		else
 			return rBinarySearch(right, target);
-		
+
 	}
-	
+
 	// Tarai (i.e. japanese to pass around)
 	int tarai(const int& x, const int& y, const int& z) {
-		
+
 		std::cout << x << "-" << y << "-" << z << "-" << '\n';
-		
+
 		if (x <= y)
 			return y;
 		else
-			tarai(tarai(x-1, y, z), tarai(y-1, z, x), tarai(z - 1, x ,y));
+			tarai(tarai(x - 1, y, z), tarai(y - 1, z, x), tarai(z - 1, x, y));
 	}
 
 
 	void inOrderSubsets_helper_branch(std::string header, std::string str) {
 		std::cout << header << " |";
-		for (int i = 0; i < str.length() && !str.empty() ; i++) {
+		for (int i = 0; i < str.length() && !str.empty(); i++) {
 			inOrderSubsets_helper_branch(header + str.at(i), str.substr(i + 1, std::string::npos));
 		}
 	}
@@ -167,32 +169,32 @@ namespace chapter9
 		std::string bufferString;
 		for (int i = 0; i < str.length(); i += 1) {
 			bufferString = str.substr(i, std::string::npos);
-			inOrderSubsets_helper_branch(bufferString.substr(0, 1 ) , bufferString.substr(1, std::string::npos));
+			inOrderSubsets_helper_branch(bufferString.substr(0, 1), bufferString.substr(1, std::string::npos));
 		}
 	}
 
 
 
 	std::vector<int> removeBags(std::vector<int> grapeBags, int start, int end) {
-		grapeBags.erase( grapeBags.begin() + start, grapeBags.begin() + end);
+		grapeBags.erase(grapeBags.begin() + start, grapeBags.begin() + end);
 		return grapeBags;
 	}
 
-	int GotAnyGrapes(std::vector<int> grapeBags, int & memo, int && max) {
+	int GotAnyGrapes(std::vector<int> grapeBags, int& memo, int&& max) {
 		int value;
 		std::vector<int> buffer;
 
 		if (max == 0 || max > memo)
 			memo = max;
 
-		for (int i = 0; i < grapeBags.size() && grapeBags.size() ; i++) {
+		for (int i = 0; i < grapeBags.size() && grapeBags.size(); i++) {
 
-			if (i == grapeBags.size() - 1) 
+			if (i == grapeBags.size() - 1)
 				buffer = removeBags(grapeBags, 0, grapeBags.size());
-			else if (i == 0) 
+			else if (i == 0)
 				buffer = removeBags(grapeBags, 0, 2);
-			else 
-				buffer = removeBags(grapeBags , i - 1, i + 2);
+			else
+				buffer = removeBags(grapeBags, i - 1, i + 2);
 
 			GotAnyGrapes(buffer, memo, max + grapeBags[i]);
 
@@ -203,21 +205,21 @@ namespace chapter9
 	}
 
 	// Collatz 
-	
+
 	int Collatz_apalooza(int num, int occurence, int count) {
 		std::cout << num << '\n';
 
 		if (num == 1) {
 			++count;
 
-			if (count == occurence) 
+			if (count == occurence)
 				return count;
 		}
 
-		return Collatz_apalooza ( (num % 2 == 0) ? num / 2: 3 * num + 1, occurence, count );
+		return Collatz_apalooza((num % 2 == 0) ? num / 2 : 3 * num + 1, occurence, count);
 	}
 
-	void TelephoneWords(std::string telephoneNumber, std::string &&buffer, std::map <int, std::string> mapper ) {
+	void TelephoneWords(std::string telephoneNumber, std::string&& buffer, std::map <int, std::string> mapper) {
 		char code;
 		std::map<int, std::string>::iterator it;
 
@@ -230,19 +232,19 @@ namespace chapter9
 			telephoneNumber = telephoneNumber.substr(1, std::string::npos);
 
 		code = telephoneNumber[0];
-			
+
 		code = static_cast<int>(code) - 48;
 		it = mapper.find(code);  // key in map
-				
+
 		if (it != mapper.end()) {
 			for (auto c : it->second) { // loop possible characters in key-value
-				TelephoneWords( telephoneNumber.substr(1, std::string::npos) , buffer + c, mapper);
+				TelephoneWords(telephoneNumber.substr(1, std::string::npos), buffer + c, mapper);
 			}
 		}
 
 	}
 
-	std::string RisingSquares(int num, int count ) {
+	std::string RisingSquares(int num, int count) {
 		std::string left, right, result;
 
 		if (count > num)
@@ -250,11 +252,11 @@ namespace chapter9
 
 		if (count <= num)
 			left += std::to_string(count * count) + " ";
-		
+
 		if (count + 1 <= num)
-			right += std::to_string( (count + 1) * (count + 1)) + " ";
-		
-		result =  left  +  RisingSquares(5, count + 2)  + right;
+			right += std::to_string((count + 1) * (count + 1)) + " ";
+
+		result = left + RisingSquares(5, count + 2) + right;
 		for (auto c : result) {
 			std::cout << result << '\n';
 		}
@@ -268,14 +270,15 @@ namespace chapter9
 		}
 
 		for (int i = 0; i < str.size(); i++) {
-			
+
 			if (str[i] == '?') {
-				
+
 				for (auto newchar : { '1', '0' }) {
 					BinaryStringExpansion(str.substr(i + 1, std::string::npos), buffer + newchar);
 				}
 
-			} else {
+			}
+			else {
 
 				buffer += str[i];
 
@@ -285,7 +288,7 @@ namespace chapter9
 	}
 
 
-	void StringAnagrams(std::string && str, std::string buffer) {
+	void StringAnagrams(std::string&& str, std::string buffer) {
 		if (str.empty())
 			std::cout << buffer << '\n';
 		for (int i = 0; i < str.size(); i++) {
@@ -295,10 +298,10 @@ namespace chapter9
 
 	void climbingStairs(int footsteps, std::vector<std::vector<int>>& data, std::vector<int> buffer) {
 		int currSum = std::accumulate(buffer.begin(), buffer.end(), 0);
-		
+
 		if (currSum == footsteps) {
 			data.push_back(buffer);
-			return ;
+			return;
 		}
 
 		if (currSum > footsteps)
@@ -310,18 +313,18 @@ namespace chapter9
 			buffer.pop_back();
 
 		}
-		
-		
+
+
 		return;
 	}
 
 
-	void SumOfSquares(int num, std::vector<std::vector<int>> &combinations, std::vector<int> buffer, double && count) {
-		
+	void SumOfSquares(int num, std::vector<std::vector<int>>& combinations, std::vector<int> buffer, double&& count) {
+
 		int sum = std::accumulate(buffer.begin(), buffer.end(), 0);
 
 		if (sum > num)
-			return; 
+			return;
 
 		if (sum == num) {
 			combinations.push_back(buffer);
@@ -346,56 +349,58 @@ namespace chapter9
 
 			if (c == '(')
 				data += '(';
-			
+
 			if (c == ')') {
 				if (data.length()) {
 					if (data[length - 1] == '(')
 						data.pop_back();
-				} else {
+				}
+				else {
 					return false;
 				}
 			}
 		}
-		
 
-		return data.length() == 0 && str.length() ;
+
+		return data.length() == 0 && str.length();
 
 	}
 
-	void AllValidNPairsOfParens(int num, std::vector<std::string> &array, std::string buffer) {
-		
-		if (AllValidNPairsOfParens_helper_isBalanced(buffer)  &&  buffer.length() == 2 * num) {
+	void AllValidNPairsOfParens(int num, std::vector<std::string>& array, std::string buffer) {
+
+		if (AllValidNPairsOfParens_helper_isBalanced(buffer) && buffer.length() == 2 * num) {
 			std::cout << "balanced" << buffer << " " << '\n';
 			array.push_back(buffer);
 			return;
 		}
-		 
+
 		if (buffer.length() > 2 * num)
 			return;
-		 
-		for (auto& paren: {'(', ')'}) {
+
+		for (auto& paren : { '(', ')' }) {
 			buffer.push_back(paren);
 			AllValidNPairsOfParens(num, array, buffer);
 			buffer.pop_back();
-		}	
+		}
 	}
 
 
 
-	bool TowersofHanoi_helper_moveTopStackValue(int diskCount, int pIndex, int stackValue, std::vector<std::vector<int>> &poles) {
+	bool TowersofHanoi_helper_moveTopStackValue(int diskCount, int pIndex, int stackValue, std::vector<std::vector<int>>& poles) {
 		bool ready = false;
-		int index; 
+		int index;
 
-		for (int i = 1; i <=2; i++) {
+		for (int i = 1; i <= 2; i++) {
 
-			index = (pIndex + i) % 3;  
+			index = (pIndex + i) % 3;
 			std::vector<int>& pole = poles[index];
 
 
 			if (pole.empty()) {
 				ready = true;
 
-			} else if (pole.front() > stackValue)
+			}
+			else if (pole.front() > stackValue)
 				ready = true;
 
 			if (ready == true) {
@@ -422,17 +427,17 @@ namespace chapter9
 		}
 		return (count == length);
 	}
-	    
-	void TowersofHanoi(int numOfDisks, std::vector<std::vector<int>> poles, int value, int &&depth) {
+
+	void TowersofHanoi(int numOfDisks, std::vector<std::vector<int>> poles, int value, int&& depth) {
 		TowersofHanoi_helper_printValues(poles);
 
 		if (TowersofHanoi_helper_monotonic(numOfDisks, poles[2])) {
-			TowersofHanoi_helper_printValues(poles); 
+			TowersofHanoi_helper_printValues(poles);
 			std::cout << " DEPTH " << depth << '\n';
 			return;
 		}
 
-		for (int pindex = 0; pindex < poles.size(); pindex++ ) {  //pindex - Pole index 
+		for (int pindex = 0; pindex < poles.size(); pindex++) {  //pindex - Pole index 
 			if (!poles[pindex].empty()) {
 				if (poles[pindex].front() == value) {
 
@@ -444,26 +449,26 @@ namespace chapter9
 
 			}
 		}
-		return TowersofHanoi(numOfDisks, poles, (value + 1) % numOfDisks, depth + 1 );
+		return TowersofHanoi(numOfDisks, poles, (value + 1) % numOfDisks, depth + 1);
 
 	}
 
-	void  IPAddresses( std::string digits, std::vector<int> buffer) {
-		std::string result = ""; 
+	void  IPAddresses(std::string digits, std::vector<int> buffer) {
+		std::string result = "";
 		int count = 0;
 		int sum = std::accumulate(buffer.begin(), buffer.end(), 0);
-		
+
 		if (sum == digits.size()) {
-			
+
 			for (int num : buffer) {
 				result += digits.substr(0, num) + ".";
 				digits = digits.substr(num, std::string::npos);
 				++count;
 			}
-			
+
 			result = result.substr(0, result.length() - 1);
 			std::cout << result << '\n';
-			return ;
+			return;
 		}
 
 
@@ -479,17 +484,17 @@ namespace chapter9
 
 		if (data.empty())
 			data = std::to_string(num);
-		
+
 		code = static_cast<int>(data[index]);
 
 		if (code >= 48 && code < 58) {
 			if (code % 2 == 0)
-				data.erase(data.begin() + index-- );
+				data.erase(data.begin() + index--);
 		}
 
 		if (index < data.length())
 			return UnevenDigits(num, data, index + 1);
-		else 
+		else
 			std::cout << data << "\n";
 	}
 
@@ -505,23 +510,23 @@ namespace chapter9
 		return 0;
 	}
 
-	int GenerateAllPossibleCoinChange_helper_coinSum(std::map<std::string, int> mapCents, int && sum = 0) {
+	int GenerateAllPossibleCoinChange_helper_coinSum(std::map<std::string, int> mapCents, int&& sum = 0) {
 		for (auto obj : mapCents)
 			sum += obj.second * GenerateAllPossibleCoinChange_coinType(obj.first);
 		return sum;
 	}
 
-	void GenerateAllPossibleCoinChange(int cents, std::vector< std::map<std::string, int> >& results, std::map<std::string, int> mapCents ) {
+	void GenerateAllPossibleCoinChange(int cents, std::vector< std::map<std::string, int> >& results, std::map<std::string, int> mapCents) {
 		int sum = GenerateAllPossibleCoinChange_helper_coinSum(mapCents);
 
-		if ( sum == cents) {
+		if (sum == cents) {
 			results.push_back(mapCents);
 			return;
 		}
 
 		if (sum < cents) {
 
-			for (auto &obj : mapCents) {
+			for (auto& obj : mapCents) {
 				obj.second++;
 				GenerateAllPossibleCoinChange(cents, results, mapCents);
 				--obj.second;
@@ -533,13 +538,13 @@ namespace chapter9
 
 
 
-	bool operator == ( array2_t a,  array2_t b) {
+	bool operator == (array2_t a, array2_t b) {
 		return (a[0] == b[0]) && (a[1] == b[1]);
 	}
 
 	std::ostream& operator <<(std::ostream& out, const array2_t& arr) {
 		out << " (" << arr[0] << ", " << arr[1] << ") ";
-		return out; 
+		return out;
 	}
 
 	bool Chess::isChessMoveSafe(array2_t moveTo, array2_t queen) {  // move placement does not conflict with queen
@@ -547,13 +552,13 @@ namespace chapter9
 			return false;
 
 		bool pathConflict = (queen[1] == moveTo[1])
-			|| (queen[0] == moveTo[0]) 
+			|| (queen[0] == moveTo[0])
 			|| ((queen[0] - queen[1]) == (moveTo[0] - moveTo[1])) // left diag
-			|| ( (queen[0] + queen[1]) == (moveTo[0] + moveTo[1]));  // right diag
+			|| ((queen[0] + queen[1]) == (moveTo[0] + moveTo[1]));  // right diag
 
 		return pathConflict == false;
 	}
-	 
+
 	bool Chess::isChessMoveSafe(array2_t moveTo, std::vector<array2_t> queens) {
 		bool pathsOK = true;
 
@@ -563,143 +568,143 @@ namespace chapter9
 		for (auto queen : queens) {
 			pathsOK &= isChessMoveSafe(moveTo, queen);
 		}
-		return pathsOK ;
+		return pathsOK;
 	}
 
-	 std::vector<array2_t> Chess::allSafeChessSquares(array2_t queen, std::vector<array2_t> list) {
-		array2_t runner; 
-		
+	std::vector<array2_t> Chess::allSafeChessSquares(array2_t queen, std::vector<array2_t> list) {
+		array2_t runner;
+
 		if (list.size() == 0)
 			list = this->getFreeBlocks();
-		
+
 		for (int i = 0; i < list.size(); i++) {	// open board region
 			runner = list[i];
-			if (!Chess::isChessMoveSafe(runner, queen) ) { 
+			if (!Chess::isChessMoveSafe(runner, queen)) {
 				list.erase(list.begin() + i);
 				--i;
 			}
 		}
 		return list;
-	 }
-	 
-	 std::vector<array2_t> Chess::allSafeChessSquares (std::vector<array2_t> queens) {
-		 std::vector<array2_t> list;
+	}
 
-		 if (queens.size() == 0)
-			 return this->getFreeBlocks();
+	std::vector<array2_t> Chess::allSafeChessSquares(std::vector<array2_t> queens) {
+		std::vector<array2_t> list;
 
-		 for (auto queen : queens) {
-			 list = allSafeChessSquares(queen, list);
-		 }
-		 return list; 
-	 }
+		if (queens.size() == 0)
+			return this->getFreeBlocks();
 
-	  std::vector<array2_t> Chess::allSafeChessSquares (const int rLen, const int cLen) {
+		for (auto queen : queens) {
+			list = allSafeChessSquares(queen, list);
+		}
+		return list;
+	}
+
+	std::vector<array2_t> Chess::allSafeChessSquares(const int rLen, const int cLen) {
 		return this->getFreeBlocks();
-	 }
+	}
 
 
-	 void Queens_helper_printQueens (std::vector<array2_t> queens) {
+	void Queens_helper_printQueens(std::vector<array2_t> queens) {
 		for (auto q : queens)
 			std::cout << "| " << q;
 		std::cout << "|\t\n";
 
-		return ;
-	 }
-	 
-	 bool Queens_helper_find (std::vector<array2_t> list, array2_t element) {
-		 bool result = true; 
-		 for (auto val: list)
-			result &=  (element == val);
-		 return false;
-	 }
+		return;
+	}
 
-	 std::vector<array2_t> andGateList(std::vector<array2_t> a, std::vector<array2_t> b) {
-		 std::vector<array2_t> result; 
-		 std::map<array2_t, int> mapper;
+	bool Queens_helper_find(std::vector<array2_t> list, array2_t element) {
+		bool result = true;
+		for (auto val : list)
+			result &= (element == val);
+		return false;
+	}
 
-		 for (auto ele_a : a) {
-			 for (auto ele_b : b) {
-				 if (ele_a == ele_b)
-					 result.push_back(ele_a);
-			 }
-		 }
-		 return result; 
-	 }
+	std::vector<array2_t> andGateList(std::vector<array2_t> a, std::vector<array2_t> b) {
+		std::vector<array2_t> result;
+		std::map<array2_t, int> mapper;
 
-	 bool findPosition(const array2_t &pos, const std::vector<array2_t> &collection) {
-		 for (auto& ele : collection) {
-			 if (ele == pos) return true;
-		 }
-		 return false;
-	 }
+		for (auto ele_a : a) {
+			for (auto ele_b : b) {
+				if (ele_a == ele_b)
+					result.push_back(ele_a);
+			}
+		}
+		return result;
+	}
 
-	 std::vector<array2_t> Chess::possiblePaths (std::vector<array2_t> list,  int NQueens, std::vector<array2_t> queens, std::vector<array2_t> skip ) {
-		 array2_t move;
-		 
-		 if (queens.size() == NQueens) {
+	bool findPosition(const array2_t& pos, const std::vector<array2_t>& collection) {
+		for (auto& ele : collection) {
+			if (ele == pos) return true;
+		}
+		return false;
+	}
+
+	std::vector<array2_t> Chess::possiblePaths(std::vector<array2_t> list, int NQueens, std::vector<array2_t> queens, std::vector<array2_t> skip) {
+		array2_t move;
+
+		if (queens.size() == NQueens) {
 			std::cout << " QUEENS ";  Queens_helper_printQueens(queens);
 			clearBoard();
 			boardFill(queens);
-			std::cout << *this << '\n'; 
+			std::cout << *this << '\n';
 			return list;
-		 }
+		}
 
-		 for (int i = 0; i < list.size(); i++) {
-			 move = list[i];
-			 skip.push_back(move); //  add recent move to buffer( if valid move)
-			 
-			 if (findPosition(move, skip))  continue;
-			
-			 if (isChessMoveSafe(move, queens)) {
+		for (int i = 0; i < list.size(); i++) {
+			move = list[i];
+			skip.push_back(move); //  add recent move to buffer( if valid move)
+
+			if (findPosition(move, skip))  continue;
+
+			if (isChessMoveSafe(move, queens)) {
 
 				queens.push_back(move);
-				possiblePaths( andGateList(list,  allSafeChessSquares(queens)) , NQueens,  queens, skip);
+				possiblePaths(andGateList(list, allSafeChessSquares(queens)), NQueens, queens, skip);
 				queens.pop_back();
-			 }
-		 }
+			}
+		}
 
-		 return list; 
-	 }
+		return list;
+	}
 
-	 void Chess::Queens(std::vector<array2_t> list, std::vector<array2_t> queens, int n) {		
-		 initBoard();
-		 std::vector<array2_t> skip;
-		 possiblePaths( allSafeChessSquares(queens) , n, queens, skip);
-	 }
+	void Chess::Queens(std::vector<array2_t> list, std::vector<array2_t> queens, int n) {
+		initBoard();
+		std::vector<array2_t> skip;
+		possiblePaths(allSafeChessSquares(queens), n, queens, skip);
+	}
 
-	 void Chess::NQueens(const int n, const int rLen, const int cLen) {
-		 changeXY(rLen, cLen);
-		 std::vector<array2_t> queens;
-		 std::vector<array2_t> list = allSafeChessSquares(rLen, cLen);
-		 Queens(list, queens, n);
+	void Chess::NQueens(const int n, const int rLen, const int cLen) {
+		changeXY(rLen, cLen);
+		std::vector<array2_t> queens;
+		std::vector<array2_t> list = allSafeChessSquares(rLen, cLen);
+		Queens(list, queens, n);
 
-	 }
+	}
 }
 
 
-  
+
 namespace chapter10 {
 
-	 std::ostream& operator << (std::ostream &out, const std::vector<std::string> &strArray) {
-		for (auto str: strArray) {
+	std::ostream& operator << (std::ostream& out, const std::vector<std::string>& strArray) {
+		for (auto str : strArray) {
 			out << str << " ";
 		}
 		return out;
 	}
 
-	 static void StringToWordArray_helper_handlePunctuation(std::string &s) {
+	static void StringToWordArray_helper_handlePunctuation(std::string& s) {
 		std::string plist = ",'-.!?";
 		bool charPmark, pmarkChar;
 
-		for (int i = 0; i < s.length() ; i++) {
-			pmarkChar = plist.find(s[i]) != std::string::npos && std::isalpha(s[i + 1]); 
-			charPmark = plist.find(s[i + 1]) != std::string::npos && std::isalpha(s[i]); 
+		for (int i = 0; i < s.length(); i++) {
+			pmarkChar = plist.find(s[i]) != std::string::npos && std::isalpha(s[i + 1]);
+			charPmark = plist.find(s[i + 1]) != std::string::npos && std::isalpha(s[i]);
 
 			if (plist.find(s[i]) != std::string::npos && plist.find(s[i + 1]) != std::string::npos)
-				continue; 
+				continue;
 
-			if ( pmarkChar || charPmark) {
+			if (pmarkChar || charPmark) {
 				s.insert(s.begin() + i + 1, ' ');
 				i++;
 			}
@@ -710,13 +715,13 @@ namespace chapter10 {
 	}
 
 
-	std::vector<std::string> StringToWordArray(std::string s, bool handlePunctuation ) {
+	std::vector<std::string> StringToWordArray(std::string s, bool handlePunctuation) {
 		std::stringstream streamData;
 		std::string stringBuffer;
 		std::vector<std::string> result;
-		
 
-		if (handlePunctuation ) {
+
+		if (handlePunctuation) {
 			StringToWordArray_helper_handlePunctuation(s);
 		}
 
@@ -725,7 +730,7 @@ namespace chapter10 {
 		while (std::getline(streamData, stringBuffer, ' ')) {
 			result.push_back(stringBuffer);
 		}
-		return result; 
+		return result;
 	}
 
 	std::string LongestWord(const std::string& s) {
@@ -736,7 +741,7 @@ namespace chapter10 {
 		return longestWord;
 	}
 
-	static void ReverseWordOrder_findNextWord(int& idx, const int &step, const std::vector<std::string> &collection) {
+	static void ReverseWordOrder_findNextWord(int& idx, const int& step, const std::vector<std::string>& collection) {
 		const int prev_idx = idx;
 		while ((idx >= 0 && idx < collection.size())) {
 			if (!isalpha(collection[idx][0]) || prev_idx == idx) {
@@ -744,7 +749,7 @@ namespace chapter10 {
 				continue;
 			}
 			break;
-		} 
+		}
 	}
 
 	std::string computeMessage(const std::vector<std::string>& array) {
@@ -765,14 +770,14 @@ namespace chapter10 {
 		std::vector<std::string> array = StringToWordArray(s, true);
 		std::vector< std::tuple< int, std::string >> downArray;
 		std::string str_buffer;
-		int int_buffer; 
+		int int_buffer;
 		int posDown = array.size() - 1;
 
 		do {
 			if (std::isalpha(array[posDown][0]))
 				downArray.push_back(std::make_tuple(posDown, array[posDown]));
 			ReverseWordOrder_findNextWord(posDown, -1, array);
-		} while ( posDown >= 0);
+		} while (posDown >= 0);
 
 		for (auto& ele : array) {
 
@@ -781,8 +786,9 @@ namespace chapter10 {
 
 				if (std::isupper(ele[0])) {
 					str_buffer[0] = std::toupper(str_buffer[0]);
-				} else {
-					for (auto &c : str_buffer) {
+				}
+				else {
+					for (auto& c : str_buffer) {
 						c = std::tolower(c);
 					}
 				}
@@ -797,7 +803,7 @@ namespace chapter10 {
 	}
 
 
-	static void lowerCaseString(std::string &str) {
+	static void lowerCaseString(std::string& str) {
 		for (auto& c : str)
 			c = std::tolower(c);
 	}
@@ -813,7 +819,7 @@ namespace chapter10 {
 				continue;
 			if (bucket.find(ele) == bucket.end())
 				bucket.insert(std::make_pair(ele, 0));
-			++bucket.find(ele)->second; 
+			++bucket.find(ele)->second;
 		}
 
 		for (auto pair : bucket) {
@@ -840,14 +846,14 @@ namespace chapter10 {
 		return str;
 	}
 
-	bool isRotation( std::string  s1,  std::string s2) {
+	bool isRotation(std::string  s1, std::string s2) {
 		int length = s1.length() - 1;
 		std::string c;
 		for (int i = 0; i < length; i++) {
 			c = s1.back();
 			s1.insert(0, c);
 			s1.pop_back();
-			
+
 			if (s1 == s2)
 				return true;
 		}
@@ -855,18 +861,18 @@ namespace chapter10 {
 	}
 
 
-	std::string Censor( std::string s,  std::vector<std::string> list) {
+	std::string Censor(std::string s, std::vector<std::string> list) {
 		const std::string censorWord = "xxxx";
 		int index = 0;
 
 		while (!list.empty()) {
 			index = s.find(list.front());
-			s = s.substr(0, index) + censorWord + s.substr(index + list.front().length() );
+			s = s.substr(0, index) + censorWord + s.substr(index + list.front().length());
 			list.erase(list.begin());
 		}
 		return s;
 	}
-	
+
 	static void  BadCharacters_helpter_removeChar(std::string& string, const char c) {
 		int index = 0;
 
@@ -874,15 +880,16 @@ namespace chapter10 {
 			if (string[index] == c) {
 				string = string.substr(0, index) + string.substr(index + 1);
 				--index;
-			} else {
-			index++;
+			}
+			else {
+				index++;
 
 			}
 		}
 	}
 
-	std::string BadCharacters( std::string s, const char  c[]) {
-		auto *ptr = c;
+	std::string BadCharacters(std::string s, const char  c[]) {
+		auto* ptr = c;
 		std::cout << s << '\n';
 
 		while (*ptr != '\0') {
@@ -914,8 +921,8 @@ namespace chapter10 {
 		return false;
 	}
 
-	
-	std::string Dedupe( const std::string s) {
+
+	std::string Dedupe(const std::string s) {
 		std::map<char, int> map;
 		std::map<char, int>::iterator it;
 		std::string result;
@@ -925,7 +932,8 @@ namespace chapter10 {
 			if (it == map.end()) {
 
 				map.insert(std::make_pair(s[k], i));
-			} else {
+			}
+			else {
 				it->second = i;
 			}
 			i++;
@@ -933,7 +941,7 @@ namespace chapter10 {
 
 		for (int k = 0; k < s.length(); k++) {
 			it = map.find(s[k]);
-			if (it!=map.end() && it->second == k ) {
+			if (it != map.end() && it->second == k) {
 				result += s[k];
 			}
 		}
@@ -952,54 +960,55 @@ namespace chapter10 {
 		for (auto c : s) {
 			it = map.find(c);
 			std::tie(stuple, ituple) = buffer;
-			
+
 			if (it == map.end()) {
 				map.insert(std::make_pair(c, 1));
 				buffer = std::make_tuple(c, i);
-			} else { 
-				if (stuple == c )
+			}
+			else {
+				if (stuple == c)
 					buffer = std::make_tuple('\0', -1);
 				it->second++;
 			}
 			i++;
 		}
-		
+
 		std::tie(stuple, ituple) = buffer;
 		return ituple;
 	}
 
-	std::string NumToString( int number) {
-		std::string result; 
+	std::string NumToString(int number) {
+		std::string result;
 		while (number >= 1) {
-			result = char( (number % 10) + 48) + result;
+			result = char((number % 10) + 48) + result;
 			number = number / 10;
 		}
 		std::cout << result << '\n';
-			return result;;
+		return result;;
 	}
 
 	std::string  NumToString(double fraction) {
 		std::string f;
 		std::string whole = NumToString((int)fraction);
-		fraction =   fraction - (static_cast<int>(fraction));
+		fraction = fraction - (static_cast<int>(fraction));
 		int digit;
 
-		while (fraction  > 0.0) {
+		while (fraction > 0.0) {
 			fraction = (fraction * 10);
 			digit = std::round(fraction);
-			f +=  static_cast<char>(48 + digit);
+			f += static_cast<char>(48 + digit);
 			fraction -= digit;
 		}
 
 		return whole + '.' + f;
 	}
 
-	static std::vector<std::string> NumToText_helper_digitToText( char curr , const int &index, int &depth) {
+	static std::vector<std::string> NumToText_helper_digitToText(char curr, const int& index, int& depth) {
 		static std::vector<std::string> buffer;
 		static int prev = -1;
-		int tmp  = static_cast<int>(curr) - 48;
+		int tmp = static_cast<int>(curr) - 48;
 		std::map<int, std::array<std::string, 2>>::iterator it;
-		
+
 		if (illions.find(depth) != illions.end()) {
 			buffer.insert(buffer.begin(), illions.find(depth)->second);
 		}
@@ -1007,11 +1016,11 @@ namespace chapter10 {
 
 		if (index == 0 && tmp != 0) {
 			prev = tmp;
-			buffer.insert( buffer.begin() , NumToTextMap.find(tmp)->second[0] );
-		} 
-		
+			buffer.insert(buffer.begin(), NumToTextMap.find(tmp)->second[0]);
+		}
+
 		if (index == 1) {
-			if (tmp == 1 && prev != 0 ) 
+			if (tmp == 1 && prev != 0)
 				buffer[buffer.size() - 1] = NumToTextMap.find(prev)->second[1];
 			if (tmp > 1)
 				buffer.insert(buffer.begin(), NumToTextMap.find(tmp)->second[2]);
@@ -1022,14 +1031,14 @@ namespace chapter10 {
 			buffer.insert(buffer.begin(), NumToTextMap.find(tmp)->second[0] + " hundred");
 		}
 
-		
+
 
 		return buffer;
 	}
 
 
 	std::string NumToText(int number, int index3, std::string s, int depth, std::vector<std::string> result) {
-		std::string buffer; 
+		std::string buffer;
 
 		if (index3 == -1) {
 			s = NumToString(number);
@@ -1043,26 +1052,26 @@ namespace chapter10 {
 		}
 
 		result = NumToText_helper_digitToText(s.back(), index3, depth);
-		return NumToText(number, (index3 + 1) % 3, s.substr(0, s.length() - 1) , depth + 1, result);
-	
+		return NumToText(number, (index3 + 1) % 3, s.substr(0, s.length() - 1), depth + 1, result);
+
 	}
 
-	bool isPermutation( std::string s1,  std::string s2, const char index ) {
+	bool isPermutation(std::string s1, std::string s2, const char index) {
 		int index_s2;
 
 		if (!s2.length())
-			return true; 
+			return true;
 
 		index_s2 = s2.find(s1[index]);
 		if (index_s2 != std::string::npos)
 			return isPermutation(s1, s2.substr(0, index_s2) + s2.substr(index_s2 + 1), index + 1);
 		else
 			return false;
-	}	
+	}
 
 	bool IsPangram(std::string s, std::map<char, int> histo, int count) {
-		int code; 
-		char c ;
+		int code;
+		char c;
 
 		if (s.empty()) {
 			if (count == 26)
@@ -1074,28 +1083,28 @@ namespace chapter10 {
 		c = std::tolower(s.front());
 		code = static_cast<int>(c);
 
-		if ( (histo.find(c) == histo.end()) && (code >= 97 && code <= 122) ) {
-			histo.insert(std::make_pair(c, 1) ) ;
+		if ((histo.find(c) == histo.end()) && (code >= 97 && code <= 122)) {
+			histo.insert(std::make_pair(c, 1));
 			count++;
 		}
 
 		return IsPangram(s.substr(1), histo, count);
 	}
 
-	int factorial(int number ) {
+	int factorial(int number) {
 		if (number <= 0)
 			return 1;
 		return number * factorial(number - 1);
 	}
 
-	void AllPermutations(std::string s, std::vector<std::string> &collection, std::string buffer, int max) {
+	void AllPermutations(std::string s, std::vector<std::string>& collection, std::string buffer, int max) {
 
 		if (buffer.empty())
 			max = s.length();
 		else if (buffer.length() == max) {
 			std::cout << s << " " << buffer << max << "\n";
 			collection.push_back(buffer);
-			return ;
+			return;
 		}
 
 		for (int i = 0; i < s.length(); i++) {
@@ -1104,21 +1113,22 @@ namespace chapter10 {
 	}
 
 
-	bool PerfectPangram(std::string s, int count, std::map <char,int> mapper) {
+	bool PerfectPangram(std::string s, int count, std::map <char, int> mapper) {
 		int code;
 		char c;
 
 		if (s.empty())
 			return true;
-		
+
 		c = std::tolower(s.front());
 		code = static_cast<int>(c);
 
-		if ( (code >=97 && code <= 122) ) {
+		if ((code >= 97 && code <= 122)) {
 			if (mapper.find(c) == mapper.end()) {
 				mapper.insert(std::make_pair(c, 1));
 				count++;
-			} else {
+			}
+			else {
 				return false;
 			}
 		}
@@ -1126,15 +1136,15 @@ namespace chapter10 {
 		return PerfectPangram(s.substr(1), count + 1, mapper);
 	}
 
-	static int bestSingleBuySell_helper_addprices(int& low, int& high, std::vector<std::array<int, 2>> &array) {
-		array.push_back({low, high});
+	static int bestSingleBuySell_helper_addprices(int& low, int& high, std::vector<std::array<int, 2>>& array) {
+		array.push_back({ low, high });
 		return -1;
 	}
-	
-	static int maxProfit_SinglePurchase(std::vector<std::array<int, 2>> &collection) {
+
+	static int maxProfit_SinglePurchase(std::vector<std::array<int, 2>>& collection) {
 		int profit, max = 0;
 		for (auto ele : collection) {
-			profit = ele[1] - ele[0];	
+			profit = ele[1] - ele[0];
 			if (profit > max)
 				max = profit;
 		}
@@ -1142,16 +1152,16 @@ namespace chapter10 {
 
 	}
 
-	static int maxProfit_ManyPurchase(std::vector<std::array<int, 2>> &collection) {
+	static int maxProfit_ManyPurchase(std::vector<std::array<int, 2>>& collection) {
 		int profit, max = 0;
 		for (auto ele : collection) {
 			profit = ele[1] - ele[0];
-				max += profit;
+			max += profit;
 		}
-		return max; 
+		return max;
 	}
 
-	static void maxProfit_Purchase_TwoTransactions_helper(std::vector<std::array<int, 2>> collection, int &profit, int& max, int depth = 0, int transaction = 2) {
+	static void maxProfit_Purchase_TwoTransactions_helper(std::vector<std::array<int, 2>> collection, int& profit, int& max, int depth = 0, int transaction = 2) {
 		int buy = 0, sell = 0;
 
 		if (depth == 2) {
@@ -1161,31 +1171,31 @@ namespace chapter10 {
 			return;
 		}
 
-		if (collection.empty()) 
+		if (collection.empty())
 			return;
-		
+
 		buy = collection[0][0];
-		for (int i = 0; i < collection.size(); i++) {	
+		for (int i = 0; i < collection.size(); i++) {
 			sell = collection[i][1];
-			profit += sell-buy; 
-			if (collection.size() > 1  )
-				maxProfit_Purchase_TwoTransactions_helper(std::vector<std::array<int, 2>>(collection.begin() + i + 1, collection.begin() + collection.size()) , profit, max, depth + 1, transaction);
+			profit += sell - buy;
+			if (collection.size() > 1)
+				maxProfit_Purchase_TwoTransactions_helper(std::vector<std::array<int, 2>>(collection.begin() + i + 1, collection.begin() + collection.size()), profit, max, depth + 1, transaction);
 		}
 	}
 
-	static int maxProfit_Purchase_TwoTransactions(std::vector<std::array<int, 2>> &collection) {
+	static int maxProfit_Purchase_TwoTransactions(std::vector<std::array<int, 2>>& collection) {
 		int max = 0;
 		int profit = 0;
 		maxProfit_Purchase_TwoTransactions_helper(collection, profit, max);
-		return max; 
+		return max;
 	}
 
 	static int functionSelect(const int& mode, std::vector<std::array<int, 2>> array) {
-		int (*funcptr) (std::vector<std::array<int, 2>> &) = nullptr;
+		int (*funcptr) (std::vector<std::array<int, 2>>&) = nullptr;
 
 		switch (mode) {
 		case 0:
-			funcptr = maxProfit_SinglePurchase; 
+			funcptr = maxProfit_SinglePurchase;
 			break;
 		case 1:
 			funcptr = maxProfit_ManyPurchase;
@@ -1197,10 +1207,10 @@ namespace chapter10 {
 		return funcptr(array);
 	}
 
-	int bestSingleBuySell(const std::vector<int> arr, int mode, std::vector<std::array<int, 2>> array, int low, int high ) {
+	int bestSingleBuySell(const std::vector<int> arr, int mode, std::vector<std::array<int, 2>> array, int low, int high) {
 		int currValue;
-		
-		if (arr.empty())  {
+
+		if (arr.empty()) {
 			if (high != -1 && low != -1)
 				bestSingleBuySell_helper_addprices(low, high, array);
 			return functionSelect(mode, array);
@@ -1218,13 +1228,13 @@ namespace chapter10 {
 			low = currValue;
 		else if (currValue < low)
 			low = currValue;
-		else if ( (low != -1 && currValue > low ))
+		else if ((low != -1 && currValue > low))
 			high = currValue;
 
-		return bestSingleBuySell( std::vector<int>(arr.begin() + 1, arr.begin() + arr.size()) , mode , array, low, high);
+		return bestSingleBuySell(std::vector<int>(arr.begin() + 1, arr.begin() + arr.size()), mode, array, low, high);
 	}
 
-	bool StringsLooselyInterleaved( std::string s0,  std::string s1, const std::string s2 ) {
+	bool StringsLooselyInterleaved(std::string s0, std::string s1, const std::string s2) {
 		int index = -1;
 
 		if (s2.empty()) {
@@ -1240,10 +1250,10 @@ namespace chapter10 {
 			index = s1.find(s1[0]);
 			s1 = s1.substr(1);
 		}
-		
+
 		if (index != -1) {
 
-			return StringsLooselyInterleaved(s0,s1, s2.substr(0, index) + s2.substr(index + 1));
+			return StringsLooselyInterleaved(s0, s1, s2.substr(0, index) + s2.substr(index + 1));
 		}
 
 		return false;
@@ -1260,15 +1270,15 @@ namespace chapter10 {
 			return;
 		}
 
-			c = str2[index];
-	
+		c = str2[index];
+
 		for (int i = 0; i <= str1.length(); i++) {
-			
+
 			if (i < str1.length())
 				buffer = str1.substr(0, i) + c + str1.substr(i);
 			else
 				buffer = str1 + c;
-			
+
 			list.push_back(buffer);
 
 		}
@@ -1287,7 +1297,8 @@ namespace chapter10 {
 			if (a == b) {
 				s.pop_back();
 				s.erase(s.begin());
-			} else {
+			}
+			else {
 				return false;
 			}
 
@@ -1299,25 +1310,25 @@ namespace chapter10 {
 	int RemoveOneMakePalindrome(std::string s, int index) {
 		std::string tmp;
 
-		if (index == s.size()) 
+		if (index == s.size())
 			return -1;
 		tmp = s.substr(0, index) + s.substr(index + 1);
-		
+
 		if (isPalindrome(tmp))
 			return index;
-		
+
 		return RemoveOneMakePalindrome(s, index + 1);
 	}
 
 	char MakeStringPalindrome(std::string s, int index) {
 		char c;
 
-		if (index >= s.length()) 
+		if (index >= s.length())
 			return '!';
 
 		if (index == 0 && isPalindrome(s))
 			return '*';
-		
+
 		for (int i = 97; i <= 122; i++) {
 			c = static_cast<char>(i);
 			s.insert(index, std::string(1, c));
@@ -1329,16 +1340,17 @@ namespace chapter10 {
 		return MakeStringPalindrome(s, index + 1);
 	}
 
-	std::string StringEncode(std::string s, int index, int count, char curr, std::string result ) {
+	std::string StringEncode(std::string s, int index, int count, char curr, std::string result) {
 		char currentChar = s[index];
 
 		if (currentChar != curr) {
-			if (index != 0) 
+			if (index != 0)
 				result += curr + std::to_string(count);
 			if (index >= s.size())
 				return result;
 			count = 1;
-		} else {
+		}
+		else {
 			count++;
 		}
 		return StringEncode(s, index + 1, count, currentChar, result);
@@ -1353,7 +1365,7 @@ namespace chapter10 {
 
 		if (std::isdigit(c)) {
 			c = s[index - 1];
-			for (int i = 0; i < repeatCount ; i++)
+			for (int i = 0; i < repeatCount; i++)
 				result += c;
 		}
 		return StringDecode(s, result, index + 1);
@@ -1446,7 +1458,7 @@ namespace chapter11 {
 		linkedList->insert(node->val);
 	}
 
-	
+
 	template < class T>
 	void BST::nodeValues(int mode, T* buffer, nodeBT* node) {
 
@@ -1481,7 +1493,7 @@ namespace chapter11 {
 				appendStructure(buffer, node);
 		}
 
-	
+
 	}
 
 	bool BST::contains(int val, nodeBT* node) {
@@ -1651,11 +1663,11 @@ namespace chapter11 {
 		linkedList.print();
 	}
 
-	void BST:: bst2ListPre(int mode) {
+	void BST::bst2ListPre(int mode) {
 		bst2List(1);
 
 	}
-	void BST:: bst2ListPost(int mode) {
+	void BST::bst2ListPost(int mode) {
 		bst2List(2);
 
 	}
@@ -1668,12 +1680,12 @@ namespace chapter11 {
 	}
 
 	int BST::minHeight(nodeBT* node, int depth) {
-		int result; 
+		int result;
 
 		if (!node) {
 			node = root;
 		}
-		
+
 		if (!node->right && !node->left) // leaf node 
 			result = minHeight_helper_min(depth);
 
@@ -1687,21 +1699,23 @@ namespace chapter11 {
 
 	void BST::preOrderNoRecurion(nodeBT* node) {
 		std::vector<nodeBT*> stack;
-		nodeBT *runner = root;
+		nodeBT* runner = root;
 
-		while (runner ) {
+		while (runner) {
 
 			std::cout << runner->val << '\n';
-			
+
 			if (runner->right)
 				stack.insert(stack.begin(), runner->right);
 
 			if (runner->left) {
 				runner = runner->left;
-			} else if (!stack.empty()) {
+			}
+			else if (!stack.empty()) {
 				runner = stack.front();
 				stack.erase(stack.begin());
-			} else {
+			}
+			else {
 				runner = nullptr;
 			}
 		}
@@ -1753,21 +1767,21 @@ namespace chapter11 {
 			resultNodeValue = ValAfter(value, node->right);
 
 		return resultNodeValue;
-		
+
 	}
 
 	nodeBT* BST::NodeBefore(nodeBT* findNode, nodeBT* node) {
 		nodeBT* resultNode = nullptr;
 		if (!node)
-			node = root; 
+			node = root;
 
-		
+
 		if (node == findNode)
 			resultNode = node->parent;
 
 		if (node->left)
 			resultNode = NodeBefore(findNode, node->left);
-		
+
 		if (node->right && !resultNode)
 			resultNode = NodeBefore(findNode, node->right);
 
@@ -1792,47 +1806,47 @@ namespace chapter11 {
 	}
 
 
-	static int closestValue_helper_min(const int &d0,  const int &d1) {
+	static int closestValue_helper_min(const int& d0, const int& d1) {
 		static int d = d1;
 		if (std::abs(d0 - d1) < std::abs(d0 - d))
 			d = d1;
 		return d;
 	}
 
-	int BST::closestValue(const int &value, nodeBT* node) {
+	int BST::closestValue(const int& value, nodeBT* node) {
 		int min;
 
 		if (!node)
 			node = root;
-		
+
 		min = closestValue_helper_min(value, node->val);
 
 		if (node->left)
-			min = closestValue(value ,node->left);
-		
+			min = closestValue(value, node->left);
+
 		if (node->right)
 			min = closestValue(value, node->right);
-		
+
 		return min;
 	}
 
 
-	bool BST::TreePathContainsSum(const int& sum,  int currSum, nodeBT* node) {
+	bool BST::TreePathContainsSum(const int& sum, int currSum, nodeBT* node) {
 		int boolstate = false;
 
 		if (!node)
-			node = root; 
-		
+			node = root;
+
 		if (!node)
 			return boolstate;
 
 		currSum += node->val;
 
-		if (currSum > sum) 
+		if (currSum > sum)
 			return boolstate;
 
 		if (sum == currSum && (!node->left || !node->right))
-			boolstate =  currSum == sum;
+			boolstate = currSum == sum;
 
 		if (node->left && !boolstate)
 			boolstate = TreePathContainsSum(sum, currSum, node->left);
@@ -1842,21 +1856,21 @@ namespace chapter11 {
 		return boolstate;
 	}
 
-	int& TreePathContainsSum_helper(const std::vector<int> list, int &&count  = 0) {
+	int& TreePathContainsSum_helper(const std::vector<int> list, int&& count = 0) {
 		for (auto num : list) { count += num; }
 		return count;
 	}
 
-	void BST::TreePathContainsSum(const int& sum, std::vector<std::vector<int>> &bucket,std::vector<int>  arr, nodeBT* node ) {
+	void BST::TreePathContainsSum(const int& sum, std::vector<std::vector<int>>& bucket, std::vector<int>  arr, nodeBT* node) {
 		int currSum = TreePathContainsSum_helper(arr);
 		bool stateBool = (currSum == sum);
-		
+
 		if (!node)
 			node = root;
 
 		if (!node || currSum > sum)
 			return;
-		
+
 		if (stateBool) {
 			bucket.push_back(arr);
 			return;
@@ -1870,13 +1884,13 @@ namespace chapter11 {
 			TreePathContainsSum(sum, bucket, arr, node->right);
 	}
 
-	static void Remove_helper_leftRotate(nodeBT *node) {
+	static void Remove_helper_leftRotate(nodeBT* node) {
 		nodeBT* gp = node->parent;
 		nodeBT* lc = node->left;
 		nodeBT* rc = node->right;
 		nodeBT* tmp = node;
 		nodeBT* gc = nullptr;
-		nodeBT* runner ;
+		nodeBT* runner;
 
 		gp->right = rc;
 
@@ -1890,23 +1904,24 @@ namespace chapter11 {
 			while (runner->right)
 				runner = runner->right;
 			runner->right = gc;
-		} else if (gc) {
+		}
+		else if (gc) {
 			lc->left = gc;
 		}
-		
+
 		delete tmp;
 	}
 
-	static void Remove_helper_rightRotate(nodeBT *node) {
+	static void Remove_helper_rightRotate(nodeBT* node) {
 		nodeBT* gp = node->parent;
 		nodeBT* lc = node->left;
 		nodeBT* rc = node->right;
 		nodeBT* tmp = node;
 		nodeBT* gc = nullptr;
-		nodeBT* runner ;
+		nodeBT* runner;
 
 		gp->left = lc;
-		
+
 		if (lc) {
 			gc = lc->right;
 			lc->right = rc;
@@ -1917,7 +1932,8 @@ namespace chapter11 {
 			while (runner->left)
 				runner = runner->left;
 			runner->left = gc;
-		} else if (gc) {
+		}
+		else if (gc) {
 			lc->right = gc;
 		}
 		delete tmp;
@@ -1929,27 +1945,30 @@ namespace chapter11 {
 		destination->val = source->val;
 	}
 
-	static void Remove_helper(nodeBT *node) {
-		
+	static void Remove_helper(nodeBT* node) {
+
 		/* root node removal */
 		if (!node->parent && node->left) {
 			writeNode(node->left, node);
 			Remove_helper_rightRotate(node->left);
 			node->parent = nullptr;
-		} else if (!node->parent && node->right) {
+		}
+		else if (!node->parent && node->right) {
 			writeNode(node->right, node);
 			Remove_helper_leftRotate(node->right);
 			node->parent = nullptr;
-		} else if (node->parent->left == node) {
-			Remove_helper_rightRotate(node); 
-		} else if (node->parent->right == node) {
+		}
+		else if (node->parent->left == node) {
+			Remove_helper_rightRotate(node);
+		}
+		else if (node->parent->right == node) {
 			Remove_helper_leftRotate(node);
 		}
 	}
 
-	bool BST::Remove(int val, nodeBT *node) {  
+	bool BST::Remove(int val, nodeBT* node) {
 		if (!node)
-			node = root; 
+			node = root;
 
 		if (node->val == val) {
 			Remove_helper(node);
@@ -1957,15 +1976,15 @@ namespace chapter11 {
 		}
 
 		if (node->left && val < node->val)
-			 return Remove(val, node->left);
-		
+			return Remove(val, node->left);
+
 		if (node->right && val > node->val)
-			 return Remove(val, node->right);
-		
+			return Remove(val, node->right);
+
 		return false;
 	}
 
-	void BST::RemoveAll(nodeBT *node) {
+	void BST::RemoveAll(nodeBT* node) {
 		if (!node)
 			node = root;
 		if (node->left)
@@ -1976,10 +1995,10 @@ namespace chapter11 {
 		if (root == node)
 			root = nullptr;
 		delete node;
-		
+
 	}
 
-	static bool IsValid_helper_OrderPersist(const int &value) {
+	static bool IsValid_helper_OrderPersist(const int& value) {
 		static int acc = value;
 
 		if (value >= acc)
@@ -1988,11 +2007,11 @@ namespace chapter11 {
 
 	}
 	bool BST::IsValid(nodeBT* node) {
-		bool state; 
+		bool state;
 
 		if (!node)
-			node = root; 
-		
+			node = root;
+
 		if (node->left)
 			state = IsValid(node->left);
 
@@ -2014,27 +2033,27 @@ namespace chapter11 {
 	}
 
 
-	void BST::RootLeafNumber(nodeBT* node, std::string && currStr) {
+	void BST::RootLeafNumber(nodeBT* node, std::string&& currStr) {
 
 		if (!node)
 			node = root;
 
-		currStr +=  " -> "  + std::to_string(node->val); 
+		currStr += " -> " + std::to_string(node->val);
 
 		if (!node->left && !node->right) {
 			std::cout << currStr << '\n';
 		}
 
 		if (node->left)
-			RootLeafNumber(node->left, currStr + "" );
-		
+			RootLeafNumber(node->left, currStr + "");
+
 
 		if (node->right)
-			RootLeafNumber(node->right, currStr + "" );
+			RootLeafNumber(node->right, currStr + "");
 
-	}	
+	}
 
-	std::vector<int> BST::LeftSideBinary (std::vector<int> collection) {
+	std::vector<int> BST::LeftSideBinary(std::vector<int> collection) {
 		nodeBT* runner = root;
 		std::vector<nodeBT*> list;
 		bool fallenFromPeak = false;
@@ -2046,11 +2065,13 @@ namespace chapter11 {
 			if (runner->left) {
 				runner = runner->left;
 				fallenFromPeak = true;
-			} else if (!list.empty()) {
+			}
+			else if (!list.empty()) {
 				fallenFromPeak = false;
 				runner = list[list.size() - 1];
 				list.pop_back();
-			} else
+			}
+			else
 				runner = nullptr;
 		}
 		return collection;
@@ -2058,3 +2079,598 @@ namespace chapter11 {
 
 
 }
+
+namespace chapter12 {
+	template <typename T> void swapper( T &a, T& b) {
+		b = std::exchange(a, b);
+	}
+
+	std::vector<int>& BubbleSort(std::vector<int> &array) {
+		for (int start = 0; start < array.size() - 1 ; start++) {
+			for (int i = start + 1; i < array.size(); i++) {
+				if ( array[i] < array[start]) {
+					swapper(array[i], array[start]);
+				}
+			}
+		}
+		return array;
+	}
+
+	std::vector<int>& SelectionSort(std::vector<int>& array) {
+		int minIndex;
+
+		for (int i = 0; i < array.size(); i++) {
+			minIndex = i;
+			for (int p = minIndex; p < array.size(); p++) {
+				if (array[p] < array[minIndex])
+					minIndex = p;
+			}
+
+			if (minIndex != i) // indices data swap
+				swapper(array[minIndex], array[i]);
+		}
+		return array;
+	}
+
+	template <typename T>
+	T* nodealloc(T& value) {
+		return Node<T> {value, nullptr};
+	}
+
+	static void  printLinkedList(Node<int> *node) {
+		Node<int>* runner = node;
+		while (runner) {
+			printf("\tnode value: %d \n", runner->val);
+			runner = runner->next;
+		}
+	}
+
+	template <typename T>
+	static void printArray(std::vector<T> array) {
+		for (auto number : array)
+			printf("\t [%12d]\n ", number);
+		printf("\n\n");
+	}
+
+	static void LinkedListSwapNode(Node<int>* a_prev, Node<int> *a, Node<int>* b_prev, Node<int>* b) {
+		auto buffer = b->next;
+		
+		if (a_prev)
+			a_prev->next = b;
+
+		if (b_prev == a) {
+			b->next = a;
+		}  else {
+			b->next = a->next;
+			b_prev->next = a;
+		}
+
+		a->next = buffer; 
+	}
+
+	Node<int>*  LinkedList::BubbleSort() {
+		Node<int> *runner_prev = nullptr, * runner = head;
+		Node<int>  *start_prev = nullptr, *start = head;
+		
+		while (start->next) {
+			runner = start->next;
+			runner_prev = start;
+			while (runner) {
+				if (runner->val < start->val) {
+					if (start == head) {
+						head = runner;
+					}
+					LinkedListSwapNode(start_prev, start, runner_prev, runner);
+					swapper(start, runner);
+				}
+				runner_prev = runner;
+				runner = runner->next;
+			}
+
+			start_prev = start;
+			start = start->next;
+		}
+		printLinkedList(head);
+		return head;
+	}
+
+
+	Node<int> *LinkedList::SelectionSort() {
+		Node<int> *minNode, *minNode_prev = nullptr;
+		Node<int>* runner_prev = nullptr, *runner = head;
+		Node<int>* start_prev = nullptr, *start = head;
+		std::vector<Node<int>*> test{ head, head }; 
+
+		while (start->next) {
+			runner = start->next;
+			runner_prev = start;
+			minNode = runner;
+
+			while (runner) {
+				if (runner->val < minNode->val) {
+					head = (start == head) ? runner : head;
+					minNode = runner;
+					minNode_prev = runner_prev;
+				}
+				runner_prev = runner;
+				runner = runner->next;
+			}
+
+			if (minNode != start->next) {
+				LinkedListSwapNode(start_prev, start, minNode_prev, minNode);
+				swapper(start, minNode);
+			}
+
+			start_prev = start;
+			start = start->next;
+		}
+		printLinkedList(head);
+		return head;
+	}
+
+
+	bool isSwappableCallback(NameObject a, NameObject b) {
+		
+		if ( b.lastName.compare(a.lastName) == 0 && b.firstName.compare(a.firstName) < 0)
+			return true;
+	
+		if (b.lastName.compare(a.lastName) < 0)
+			return true;
+		
+		return false;
+	}
+
+	std::vector<NameObject>& MultiKeySort(std::vector<NameObject>& array, bool (*isSwappable)(NameObject, NameObject)) {
+		for (int i = 0; i < array.size() - 1; i++) {  //bubble it !
+			for (int k = i + 1; k < array.size(); k++) {
+				if (isSwappable(array[i], array[k])) {
+					swapper(array[i], array[k]);
+				}
+			}
+		}
+		return array;
+	}
+
+	std::vector<int>& InsertionSort(std::vector<int>& array) {
+		int Idx;
+		for (int p = 1; p < array.size(); p++) {
+			for (int i = 0; i < p; i++) {
+				if ( array[i] > array[p] ) {  // insertion (sub-array rotate )
+					for (int k = p; k > (p - (p-i)); k-- ) {
+						swapper(array[k-1], array[k]);
+					}
+					break;
+				}
+			}
+		}
+		return array;
+	}
+	
+	static void insertB_FRONT_A(Node<int> *b, Node<int> *b_prev, Node<int> *a, Node<int> *a_prev) {
+		Node<int> *buffer = b->next;
+		b->next = a;
+		if (a_prev)
+			a_prev->next = b;
+		if (b_prev == a)
+			a->next = buffer;
+		else
+			b_prev->next = buffer;
+	}
+
+	Node<int> *LinkedList::InsertionSort() {
+		Node<int> *runner = head->next, *runner_prev = head;
+		Node<int> *curr = head, *curr_prev = head;
+		while (runner) {
+			curr = head; 
+			curr_prev = nullptr;
+			while (curr != runner) {
+				if (curr->val > runner->val) {
+					head = (curr == head) ? runner : head;
+					insertB_FRONT_A(runner, runner_prev, curr, curr_prev);
+					runner = runner_prev;
+					break;
+				}
+				curr_prev = curr;
+				curr = curr->next;
+			}
+			runner_prev = runner; 
+			runner = runner->next;
+		}
+		printLinkedList(head);
+		return head;
+	}
+
+	 std::vector<int> CombineArrs( const std::vector<int> &a, const std::vector<int> &b) {
+		int value, aIndex = 0, bIndex = 0;
+		std::vector<int> result;
+
+		while (aIndex < a.size() || bIndex < b.size() ) {
+
+			if (aIndex >= a.size()) {
+				value = b[bIndex];
+				bIndex++;
+			} else if (bIndex >= b.size()) {
+				value = a[aIndex];
+				aIndex++;
+			} else if (b[bIndex] < a[aIndex]) {
+				value = b[bIndex];
+				bIndex++;
+			} else {
+				value = a[aIndex];
+				aIndex++;
+			}
+
+			result.push_back(value);
+
+		}
+
+		return result;
+	}
+
+	Node<int>* MaxNode(Node<int>* a, Node<int>* b) {
+		if (!a)
+			return b;
+		else if (!b)
+			return a;
+		else if (a->val > b->val)
+			return b;
+		else
+			return a;
+	}
+
+	Node<int>* CombineList(Node<int>* a, Node<int>* b) {  // a and b are sored linked List
+		Node<int>* result = nullptr, *buffer = nullptr,* head = nullptr;
+
+		while (a || b) {
+
+			buffer = MaxNode(a, b);
+			
+			if (a == buffer)
+				a = a->next;
+
+			if (b == buffer)
+				b = b->next;
+
+			if (!result) {
+				head = buffer;
+				head->next = nullptr;
+				result = head;
+			} else {
+				result->next = buffer;
+				result = result->next;
+			}
+			result->next = nullptr;
+
+		}
+
+		return head;
+	}
+
+	Node<int>* MergeSort(Node<int>* list) {
+		Node<int> *result = nullptr, *runner = list, *buffer = nullptr;
+		while (runner) {
+			buffer = runner;
+			runner = runner->next;
+			buffer->next = nullptr; 
+			result = CombineList(result, buffer);
+		}
+		printLinkedList(result);
+		return result;
+	}
+
+	int Partition(std::vector<int> &array, const int &mode, const int & start, const int &end) {
+		int pIndex = (mode == 0) ? start : (mode == 1) ? (std::floor( end-start / 2)) : end;  // select mode [0-zero, 1-mid, 2 last] pivot
+		int j = start - 1;
+		int currPIndex;
+		int pivot = array[pIndex];
+
+		try {
+			for (int r = start; r  <=  ((end == -1) ? (array.size() - 1): end) ; r++) {					
+				if (array[r] < pivot) {
+					j++;
+					pIndex = (j == pIndex) ? r : pIndex;
+					swapper(array[r], array[j]);
+				}
+			}
+			currPIndex = j + 1;
+			if (array[currPIndex] != array[pIndex]) {
+				swapper(array[currPIndex], array[pIndex]);
+				pIndex = currPIndex;
+			}
+
+		} catch (std::exception &exception) {
+			printf("error msg:  \t%s", exception.what());
+		}
+
+		
+		return pIndex;
+	}
+
+	Node<int>* Partition(Node<int>* node) {
+		Node<int> *runner_prev = nullptr, *runner = node;
+		Node<int> *ptr = node, *ptr_prev = nullptr, *head = node;
+		Node<int> *piv = node, *piv_prev = node;
+	
+		while (runner) {
+
+			if (runner->val < piv->val) {
+
+				if (ptr == head) 
+					head = runner;
+
+				if (piv == ptr) {
+					piv = ptr;
+					piv_prev = runner_prev;
+				}
+				LinkedListSwapNode(ptr_prev, ptr, runner_prev, runner);
+
+				ptr = runner->next;
+				ptr_prev = runner;
+							
+			}
+
+			runner_prev = runner;
+			runner = runner->next;
+
+		}
+
+		if (ptr != piv) {  // partition node must be in middle
+			LinkedListSwapNode(ptr_prev, ptr, piv_prev, piv);
+		}
+		
+		printLinkedList(head);
+		return head;
+	}
+
+	void QuickSort(std::vector<int> &array, int start,  int end) {
+		int p = 0;
+
+		if (start == -1 && end == -1) {
+			start = 0;
+			end = array.size() - 1;
+		}
+
+		if ( (end - start) > 0) {
+			p = Partition(array, 0, start, end);
+			QuickSort(array, 0, p - 1 );
+			QuickSort(array, p + 1, end);
+		}
+
+	}
+
+	std::vector<int> MergeSort(std::vector<int> collection) {
+		int mid = std::floor(collection.size() / 2);
+		std::vector<int> buffer;
+		std::vector<int> left, right; 
+
+		if (collection.size() == 2) {
+			if (collection[0] > collection[1])
+				swapper(collection[0], collection[1]);
+			return collection;
+		}
+
+		left = std::vector<int>(collection.begin(), collection.begin() + mid );
+		left = MergeSort(left);
+
+		right = std::vector<int>(collection.begin() + mid, collection.begin() + collection.size());
+		right = MergeSort(right);
+
+		collection = CombineArrs(left, right);
+		return collection;
+	}
+
+	int Partition3(std::vector<int>& array, int pivotIndex, int start , int end) {
+		std::map<int, std::vector<int>> pMap;
+		std::map<int, std::vector<int>>::iterator it ;
+		end = (end == -1) ? array.size() - 1 : end;
+		int j = start - 1, pivot, currIndex = pivotIndex;
+		
+		try {
+			
+			if ( !(pivotIndex >= 0 && pivotIndex < array.size() - 1) )
+				throw;
+			pivot = array[pivotIndex];
+
+			for (int i = start; i <= end; i++) {
+				
+				if (pivot == array[i]) {
+					it = pMap.find(array[i]);
+					if (it == pMap.end()) {
+						pMap.insert(std::make_pair(array[i], std::vector<int>{i} ));
+					} else if (std::find(it->second.begin(), it->second.end(), i) == it->second.end()) { // index not found in prop value list
+						pMap.find(array[i])->second.push_back(i);
+					}
+				}
+				
+				if (array[i] < pivot) {
+					++j;
+					pivotIndex = (j == pivotIndex) ? i : pivotIndex;
+					
+					it = pMap.find(array[j]);  // found pivot twin/clone!
+					
+					if (it != pMap.end()) {  
+						printf("moved data %d  index %d\n", array[i], i);
+
+						if (std::find(it->second.begin(), it->second.end(), j) != it->second.end()) {  // swap value is indeed a twin 
+							for (int n = 0; n < it->second.size();  n++) {
+								if (it->second[n] == j) {  // update  index  of twin index;
+									it->second[n] = i;
+								}
+								break;
+							}
+						}
+					}
+
+					swapper(array[i], array[j]);
+				}
+			}
+			printArray(array);  // :) 
+			if (j + 1 != pivotIndex) {
+				swapper(array[j + 1], array[pivotIndex]); // pivot value should split numbers
+				pivotIndex = j + 1;
+			}
+			
+			it = pMap.find(array[currIndex]);
+			if (it != pMap.end()  ) {
+				if (it->second.size() > 1) {
+
+
+					while (it->second.size() ) {
+						if (it->second.front() != pivotIndex) {  
+							swapper(array[++currIndex], array[it->second.front()]);  // swap twin/clone immediately after pivot
+						}
+						it->second.erase(it->second.begin());
+					}
+				}
+			}
+
+		} catch (std::exception & exception) {
+			printf("error msg: %s", exception.what());
+		}
+		return pivotIndex;
+	}
+
+
+	void QuickSort3(std::vector<int>& array,  int start,  int end) {
+		int p = 0;
+
+		if (start == -1 && end == -1) {
+			start = 0;
+			end = array.size() - 1;
+		}
+
+		if ( (end -  start) > 0 ) {
+			p = Partition3(array, start, start, end);
+			QuickSort3(array, 0, p - 1);
+			QuickSort3(array, p + 1, end);
+		}
+
+		printArray(array);
+	}
+
+
+	
+
+	template <class T>
+	bool heapifyCaller (std::vector<T>& arr, int l, int r) {
+		return false;
+	}
+	template <>
+	bool heapifyCaller(std::vector<int>& arr, int leaf_pos, int curr_pos) {
+		return arr[leaf_pos] > arr[curr_pos];
+	}
+	template <>
+	bool heapifyCaller(std::vector<KarateStudent>& arr, int leaf_pos, int curr_pos) {
+		std::vector<KarateStudent>::iterator it;
+
+		if (BeltMap.find(arr[leaf_pos].Belt) == BeltMap.end() || BeltMap.find(arr[curr_pos].Belt) == BeltMap.end()) {
+			return false;
+		}
+
+		if (BeltMap.find(arr[leaf_pos].Belt)->second > BeltMap.find(arr[curr_pos].Belt)->second) {
+			return true;
+		}
+
+		if (BeltMap.find(arr[leaf_pos].Belt)->second == BeltMap.find(arr[curr_pos].Belt)->second && BeltMap.find(arr[leaf_pos].Belt)->first.compare(BeltMap.find(arr[curr_pos].Belt)->first) > 0  ) {
+
+			return true;
+		}
+	}
+
+	template <class T>								
+	static void Heapify(std::vector<T>& array, const int pos, const int n , bool (*cb)(std::vector<T>&, int, int) = heapifyCaller) {
+		int currPos = pos, left, right;
+		left = (2 * pos) + 1;
+		right = left + 1;
+
+		if (pos < 0)
+			return;
+
+		if (left < n) {
+			if (heapifyCaller(array, left, currPos) /*(array[left] > array[currPos]) */ )  {
+				currPos = left;
+			}
+		}
+
+		if (right < n) {
+			if (heapifyCaller(array, right, currPos)  /*array[right] > array[currPos]*/ ) {
+				currPos = right;
+			}
+		}
+
+		if (currPos != pos)
+			swapper( array[pos], array[currPos] );
+
+		Heapify(array, pos - 1, n);
+	
+	}
+
+	template <class T>
+	void PancakeSort(std::vector<T>& array ) {
+		int nodePos = std::floor(array.size() / 2) - 1;
+		int k = 0;
+		for (int i = array.size(); --i ;) {
+			Heapify(array, nodePos, array.size() - k++ );
+			swapper(array[i], array[0]);
+		}
+		printArray(array);
+	}
+
+	static int RadixSort_helper_find_bucket_index( unsigned long int data, const int &pos) {
+		unsigned long int val = data / ( (pos == 0) ? 1 : std::pow( 10, pos) );
+		val = val % 10;
+		return val;
+	}
+
+	void RadixSort( std::vector <unsigned long int> &array) {
+		std::array< std::vector<unsigned long int> , 10> collection;
+		int p;
+		int index;
+
+		for (int i = 0; i < 10; i++) {
+			for (auto ele : array) {
+				p = RadixSort_helper_find_bucket_index(ele, i);
+				collection[p].push_back(ele);
+			}
+
+			index = 0;
+			for (auto& arr: collection) {
+				if (!arr.empty()) {
+					for (auto ele : arr) {
+						array[index++] = ele;
+					}
+				}
+				arr.clear();
+			}
+		}
+		printArray(array);
+
+	}
+
+	
+
+	void BeltSort(std::vector<KarateStudent>& array) {
+		PancakeSort<KarateStudent>(array);
+
+		for (auto obj : array)
+			printf("name %s  \t belt %s\n" , obj.Name.c_str(), obj.Belt.c_str());
+	}
+
+	void WiggleSort(std::vector<int> &array) {
+		int mid = (int)std::floor(array.size() / 2);
+		QuickSort(array);
+		int median = array[mid];
+		int low = 1, high = array.size() - 1;
+		
+		while (low < array.size()) {
+			if (array[mid] > array[low])
+				swapper(array[mid++], array[low]);
+			low += 2;
+		}
+
+		printArray(array);      
+	}
+
+}
+
+ 

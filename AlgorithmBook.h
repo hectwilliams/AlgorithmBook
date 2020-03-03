@@ -25,14 +25,14 @@ namespace chapter9
 	void climbingStairs(int footsteps, std::vector<std::vector<int>>& data, std::vector<int> buffer = {});
 	void SumOfSquares(int num, std::vector<std::vector<int>>& combinations, std::vector<int> buffer = {}, double&& count = 1.0);
 	void AllValidNPairsOfParens(int num, std::vector<std::string>& array, std::string buffer = "");
-	void TowersofHanoi(int numOfDisks = -1, std::vector<std::vector<int>> poles = { {0,1,2}, {}, {}}, int value = 0, int &&depth = 0 );
+	void TowersofHanoi(int numOfDisks = -1, std::vector<std::vector<int>> poles = { {0,1,2}, {}, {} }, int value = 0, int&& depth = 0);
 	void IPAddresses(std::string digits, std::vector<int> buffer = {});
-	void UnevenDigits(const int &num, std::string data = "", int index = 0);
-	void GenerateAllPossibleCoinChange(int cents, std::vector< std::map<std::string, int>> &results, std::map<std::string, int> mapCents = { {"dimes", 0}, {"nickels", 0}, {"pennies", 0}, {"quarters", 0}});
+	void UnevenDigits(const int& num, std::string data = "", int index = 0);
+	void GenerateAllPossibleCoinChange(int cents, std::vector< std::map<std::string, int>>& results, std::map<std::string, int> mapCents = { {"dimes", 0}, {"nickels", 0}, {"pennies", 0}, {"quarters", 0} });
 
 
 	using array2_t = std::array<int, 2>;
-	
+
 
 	class Chess {
 
@@ -41,7 +41,7 @@ namespace chapter9
 		int** board;
 		int rowMax = 8;
 		int colMax = 8;
-		std::vector<array2_t> *freeblocks;
+		std::vector<array2_t>* freeblocks;
 
 		void changeXY(int r, int c) {
 			colMax = c;
@@ -81,7 +81,7 @@ namespace chapter9
 		}
 
 		void insert(const array2_t& pos, const int& value) {
-			this->board[pos[0]][pos[1]] = value; 
+			this->board[pos[0]][pos[1]] = value;
 		}
 
 		int& read(const array2_t& pos) {
@@ -107,8 +107,8 @@ namespace chapter9
 			delete freeblocks;
 		}
 
-		friend std::ostream& operator << (std::ostream& out, const Chess &chess) {
-			out << '\n'<< '[' << "\t\n\t";
+		friend std::ostream& operator << (std::ostream& out, const Chess& chess) {
+			out << '\n' << '[' << "\t\n\t";
 			for (int r{ 0 }; r < chess.rowMax; r++) {
 				for (int c{ 0 }; c < chess.colMax; c++) {
 					std::cout << '|' << chess.board[r][c];
@@ -119,11 +119,11 @@ namespace chapter9
 			return out;
 		}
 
-		std::vector<array2_t> getFreeBlocks( ) { 
-			std::vector<array2_t> result; 
+		std::vector<array2_t> getFreeBlocks() {
+			std::vector<array2_t> result;
 			for (int r = 0; r < rowMax; r++) {
 				for (int c = 0; c < colMax; c++) {
-					result.push_back({r, c});
+					result.push_back({ r, c });
 				}
 			}
 			return result;
@@ -146,18 +146,18 @@ namespace chapter9
 namespace chapter10 {
 
 	std::vector<std::string> StringToWordArray(std::string s, bool handlePunctuation = false);
-	static void StringToWordArray_helper_handlePunctuation(std::string &s);
-	std::string LongestWord(const std::string &s);
+	static void StringToWordArray_helper_handlePunctuation(std::string& s);
+	std::string LongestWord(const std::string& s);
 	std::string ReverseWordOrder(std::string s);
 	std::string UniqueWords(const std::string& message, bool ignorePunctuation = false);
-	std::string RotateString( std::string str, const int &count);
-	bool isRotation( std::string s1,  std::string s2);
-	std::string Censor( std::string s,  std::vector<std::string> list);
-	std::string BadCharacters( std::string s, const char c[] );
+	std::string RotateString(std::string str, const int& count);
+	bool isRotation(std::string s1, std::string s2);
+	std::string Censor(std::string s, std::vector<std::string> list);
+	std::string BadCharacters(std::string s, const char c[]);
 	bool GeneticMarker(std::vector<std::string> collection, std::string marker);
-	std::string Dedupe( const std::string s);
+	std::string Dedupe(const std::string s);
 	int IndexFirstUniqueLetter(const std::string s);
-	std::string NumToString( int number);
+	std::string NumToString(int number);
 	std::string NumToString(double fraction);
 
 	const std::map<int, std::string> illions = {
@@ -183,11 +183,11 @@ namespace chapter10 {
 	};
 
 	std::string NumToText(int number, int index3 = -1, std::string s = "", int depth = 0, std::vector<std::string>  result = {});
-	bool isPermutation( std::string s1,  std::string s2, const char index = 0);
+	bool isPermutation(std::string s1, std::string s2, const char index = 0);
 	bool IsPangram(std::string s, std::map<char, int> histo = {}, int count = 0);
-	void AllPermutations(std::string s, std::vector<std::string> &collection , std::string buffer = "", int max = 0);
-	bool PerfectPangram(std::string s, int count = 0, std::map<char,int> map = {});
-	int bestSingleBuySell(const std::vector<int> arr, int mode = 0 , std::vector<std::array<int, 2>> array = {}, int low = -1, int high = -1);
+	void AllPermutations(std::string s, std::vector<std::string>& collection, std::string buffer = "", int max = 0);
+	bool PerfectPangram(std::string s, int count = 0, std::map<char, int> map = {});
+	int bestSingleBuySell(const std::vector<int> arr, int mode = 0, std::vector<std::array<int, 2>> array = {}, int low = -1, int high = -1);
 	bool StringsLooselyInterleaved(std::string s0, std::string s1, const std::string s2);
 	void allStringsLooselyInterleaved(std::string str1, std::string str2, int index = 0, std::vector<std::string> list = {});
 	int RemoveOneMakePalindrome(std::string s, int index = 0);
@@ -223,10 +223,10 @@ namespace chapter11 {
 	class LinkedList;
 
 	class BST {
-	
+
 	private:
 		nodeBT* root;
-	
+
 	public:
 
 		// constructor 
@@ -237,7 +237,7 @@ namespace chapter11 {
 		~BST() {
 			//nodeValues(9); // 9 -delete tree nodes via PostOrder Search
 		};
-		
+
 		//methods
 		BST add(int value);
 		bool contains(int val, nodeBT* node = nullptr);
@@ -249,8 +249,8 @@ namespace chapter11 {
 		int minHeight(nodeBT* node = nullptr, int depth = 0);
 		bool isBalanced(nodeBT* node = nullptr, int depth = 0);
 		BST ArrayToBST(std::vector<int> arr);
-		int CommonAncestor(const int &a, const int &b);
-		std::vector<int> & bst2Arr(std::vector<int> &&arr = {});
+		int CommonAncestor(const int& a, const int& b);
+		std::vector<int>& bst2Arr(std::vector<int>&& arr = {});
 		std::vector<int>& bst2ArrPre(std::vector<int>&& arr = {});
 		std::vector<int>& bst2ArrPost(std::vector<int>&& arr = {});
 		void bst2List(int mode = 0);
@@ -263,14 +263,14 @@ namespace chapter11 {
 		int ValAfter(int value, nodeBT* node = nullptr);
 		nodeBT* NodeBefore(nodeBT* findNode, nodeBT* node);
 		nodeBT* NodeAfter(nodeBT* findNode, nodeBT* node);
-		int closestValue(const int &value, nodeBT* node = nullptr);
-		bool TreePathContainsSum(const int& sum,  int currSum = 0 ,nodeBT* node = nullptr);
+		int closestValue(const int& value, nodeBT* node = nullptr);
+		bool TreePathContainsSum(const int& sum, int currSum = 0, nodeBT* node = nullptr);
 		void TreePathContainsSum(const int& sum, std::vector<std::vector<int>>& bucket, std::vector<int> arr = {}, nodeBT* node = nullptr);
 		bool Remove(int val, nodeBT* node = nullptr);
-		void RemoveAll(nodeBT *node = nullptr);
-		bool IsValid(nodeBT* node = nullptr );
+		void RemoveAll(nodeBT* node = nullptr);
+		bool IsValid(nodeBT* node = nullptr);
 		void TraverseBSTReverseOrder(nodeBT* node = nullptr);
-		void RootLeafNumber(nodeBT* node = nullptr, std::string &&currStr = "");
+		void RootLeafNumber(nodeBT* node = nullptr, std::string&& currStr = "");
 		std::vector<int> LeftSideBinary(std::vector<int> collection = {});
 	};
 
@@ -283,22 +283,23 @@ namespace chapter11 {
 		friend void BST::bst2ListPre(int mode);
 		friend void BST::bst2ListPost(int mode);
 
-		LinkedList &insert(int value) {
-			llNode *runner = head;
+		LinkedList& insert(int value) {
+			llNode* runner = head;
 
 			if (!head) {
 				head = LLNode(value);
-			} else {
-				while (runner->next) { runner = runner->next;}
+			}
+			else {
+				while (runner->next) { runner = runner->next; }
 				runner->next = LLNode(value);
 			}
 			return *this;
 		}
 
 		void print() {
-			llNode *runner = head;
+			llNode* runner = head;
 			while (runner) {
-				std::cout << "NODE LIST VALUE " << runner->value << " " << '\n';  
+				std::cout << "NODE LIST VALUE " << runner->value << " " << '\n';
 				runner = runner->next;
 			}
 		}
@@ -307,5 +308,69 @@ namespace chapter11 {
 
 }
 
-#endif 
+namespace chapter12 {
+	template <typename T> 
+	 struct Node {
+		T val;
+		Node* next;
+	};
+
+	template <typename T>
+	T* nodealloc(T& value);
+
+	class LinkedList {
+	private:
+		Node<int>* head;
+	public:
+		LinkedList(Node<int> *node) : head{node} {}
+		Node<int>* BubbleSort();
+		Node<int>* SelectionSort();
+		Node<int>* InsertionSort();
+	};
+
+	std::vector<int> &BubbleSort ( std::vector<int> &array);
+	std::vector<int> &SelectionSort (std::vector<int>& array);
+
+	struct NameObject {
+		std::string firstName;
+		std::string lastName;
+	};
+
+	struct KarateStudent {
+		std::string Name;
+		std::string Belt;
+	};
+
+	bool isSwappableCallback(NameObject a, NameObject b);
+	std::vector<NameObject> & MultiKeySort(std::vector<NameObject>& array, bool (*isSwappable)(NameObject, NameObject) = isSwappableCallback);
+	std::vector<int>& InsertionSort(std::vector<int>& array);
+	std::vector<int> CombineArrs(const std::vector<int> &a, const std::vector<int> &b);
+	Node<int>* CombineList(Node<int>* a, Node<int>* b);
+	Node<int>* MergeSort(Node<int>* list);
+	int Partition(std::vector<int> &array, const int& mode = 0, const int &start = 0, const int &end = -1 );
+	Node<int>* Partition(Node<int>* node);
+	void QuickSort(std::vector<int> &array,  int start = -1,  int end = -1);
+	std::vector<int> MergeSort(std::vector<int> collection);
+	int Partition3(std::vector<int>& array, int  pivotIndex = 0, int start = 0, int end = -1);
+	void QuickSort3(std::vector<int>& array,  int start = -1,  int end = -1);
 	
+	template <class T>
+	void PancakeSort(std::vector<T>& array);
+
+	void RadixSort(std::vector<unsigned long int> &array);
+	void BeltSort(std::vector<KarateStudent>& array);
+
+	const std::map< std::string, int> BeltMap = {
+	{"none", 0},
+	{ "yellow", 1 },
+	{ "red", 2 },
+	{ "black", 3 },
+	{ "double-black", 4 },
+	{ "triple-black", 5 },
+	{ "triple-black-blue", 6 }
+	};
+
+	void WiggleSort(std::vector<int> &array);
+}
+#endif 
+
