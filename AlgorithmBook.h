@@ -227,12 +227,36 @@ namespace chapter11 {
 
 	private:
 		nodeBT* root;
+		int treeNodeCount;
+		int uniqueCount;
 
 	public:
 
 		// constructor 
-		BST() : root{ nullptr }
+		BST() : root{ nullptr }, treeNodeCount{ 0 }, uniqueCount{0}
 		{};
+
+		// Move constructor (yes!)
+		BST( BST&& curr_bst_obj)  {
+			root = curr_bst_obj.root;
+			curr_bst_obj.root = nullptr;
+		}
+
+		// Move Assignment (!yes)
+		BST& operator = (BST&& curr_bst_obj) {
+			if (&curr_bst_obj == this)
+				return *this;
+			this->RemoveAll(); // remove current tree 
+			root = curr_bst_obj.root; // xfer root pointer to current tree pointer 
+			curr_bst_obj.root = nullptr;
+			return *this;
+		}
+
+		//  Copy constructor (disable)
+		BST (const BST& bst) = delete;
+
+		//Copy Assignment (disable) 
+		BST& operator=(const BST& bst) = delete;
 
 		// destructor
 		~BST() {
@@ -240,7 +264,9 @@ namespace chapter11 {
 		};
 
 		//methods
-		BST add(int value);
+		 BST  &add(int value);
+		 BST &add(nodeBT* node);
+
 		bool contains(int val, nodeBT* node = nullptr);
 		int min(nodeBT* node = nullptr, int (*callback)(int) = minF);
 		int max(nodeBT* node = nullptr, int (*callback)(int) = maxF);
@@ -249,7 +275,7 @@ namespace chapter11 {
 		int Height(nodeBT* node = nullptr, int depth = 0);
 		int minHeight(nodeBT* node = nullptr, int depth = 0);
 		bool isBalanced(nodeBT* node = nullptr, int depth = 0);
-		BST ArrayToBST(std::vector<int> arr);
+		BST &ArrayToBST(std::vector<int> arr);
 		int CommonAncestor(const int& a, const int& b);
 		std::vector<int>& bst2Arr(std::vector<int>&& arr = {});
 		std::vector<int>& bst2ArrPre(std::vector<int>&& arr = {});
@@ -257,7 +283,7 @@ namespace chapter11 {
 		void bst2List(int mode = 0);
 		void bst2ListPre(int mode = 0);
 		void bst2ListPost(int mode = 0);
-		template < class T>
+		template <class T>
 		void nodeValues(int mode = 0, T* = nullptr, nodeBT* node = nullptr); // 0 PreOrder 1-inOrder 2-PostOrder
 		void preOrderNoRecurion(nodeBT* node = nullptr);
 		int ValBefore(int value, nodeBT* node = nullptr);
@@ -273,6 +299,24 @@ namespace chapter11 {
 		void TraverseBSTReverseOrder(nodeBT* node = nullptr);
 		void RootLeafNumber(nodeBT* node = nullptr, std::string&& currStr = "");
 		std::vector<int> LeftSideBinary(std::vector<int> collection = {});
+		nodeBT* getRoot();
+
+
+		// PART II
+		bool IsFull(chapter11::nodeBT* btNode);
+		bool IsComplete(nodeBT* btNode);
+		bool Repair(nodeBT* btNode);
+		int SmallestDifference(BST& bst);
+		BST PartitionAroundValue(int value, nodeBT* node = nullptr);
+		BST PartitionEvenly();
+		nodeBT * removeLeaf(nodeBT* leaf);
+		void Reverse(BST &bst);
+
+		std::tuple<int, bool> KthBiggest_Unique(int k);
+		std::tuple<int, bool> KthBiggest(int k);
+		std::vector<int> ValueForLayer(int n);
+		std::vector<std::shared_ptr<std::vector<int>>> LayerArrays();
+
 	};
 
 	class LinkedList {
@@ -1079,6 +1123,13 @@ namespace chapter14 {
 		 }
 
 	};
+}
+
+namespace chapter15 {
+	/* 
+	refer to chapter 11 -> SECTION: PART II 
+	
+	*/
 }
 #endif 
 

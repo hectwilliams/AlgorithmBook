@@ -1418,15 +1418,20 @@ namespace chapter11 {
 		return counter;
 	}
 
-	BST BST::add(int value) {
+	nodeBT * BST::getRoot() {
+		return root;
+	}
+
+	BST& BST::add(int value) {
 		nodeBT* node = BTNode(value);
 		nodeBT* runner = root;
 		nodeBT* runner_prev = nullptr;
 
+		treeNodeCount++;
+	
 		if (root == nullptr) {
 			root = node;
-		}
-		else {
+		} else {
 			while (runner) {
 				runner_prev = runner;
 				if (runner->val == value)
@@ -1435,31 +1440,71 @@ namespace chapter11 {
 					runner = (value >= runner->val) ? runner->right : runner->left;
 			}
 
-			if (value < runner_prev->val)
+			if (value < runner_prev->val) {
 				runner_prev->left = node;
-			else if (value > runner_prev->val)
+				uniqueCount++;
+			} else if (value > runner_prev->val) {
 				runner_prev->right = node;
-			else
+				uniqueCount++;
+			} else {
 				runner_prev->count++;
+			}
+
 			node->parent = runner_prev;
 		}
-
 		return *this;
 	}
 
+
+	BST& BST::add(nodeBT* node) {
+		nodeBT* runner = root;
+		nodeBT* runner_prev = nullptr;
+
+		if (node) 
+			treeNodeCount+= node->count;
+
+		if (root == nullptr) {
+			root = node;
+		} else {
+			while (runner) {
+				runner_prev = runner;
+				if (runner->val == node->val)
+					runner = nullptr;
+				else
+					runner = (node->val >= runner->val) ? runner->right : runner->left;
+			}
+
+			if (node->val < runner_prev->val) {
+				runner_prev->left = node;
+				uniqueCount++;
+			} else if (node->val > runner_prev->val) {
+				runner_prev->right = node;
+				uniqueCount++;
+			} else {
+				runner_prev->count++;
+			}
+
+			node->parent = runner_prev;
+		}
+		return *this;
+	}
 	template <class T> // default 
 	static void appendStructure(T* buffer, nodeBT* node) { return; };
 
-	template <> // specializetion vector
+	template <> // specilization  template
 	static void appendStructure(std::vector<int>* buffer, nodeBT* node) {
 		buffer->push_back(node->val);
 	}
 
-	template <> // specialization LList 
+	template <>
+	static void appendStructure(std::vector<nodeBT *>* buffer, nodeBT* node) {
+		buffer->push_back(node);
+	}
+
+	template <> 
 	static void appendStructure(LinkedList* linkedList, nodeBT* node) {
 		linkedList->insert(node->val);
 	}
-
 
 	template < class T>
 	void BST::nodeValues(int mode, T* buffer, nodeBT* node) {
@@ -1598,7 +1643,7 @@ namespace chapter11 {
 		return (std::abs(left - right) < 2) && rightBal && leftBal;
 	}
 
-	BST BST::ArrayToBST(std::vector<int> arr) {
+	BST &BST::ArrayToBST(std::vector<int> arr) {
 		int tmp, mid;
 		while (!arr.empty()) {
 			mid = static_cast<int>(arr.size() / 2);
@@ -1973,7 +2018,13 @@ namespace chapter11 {
 			node = root;
 
 		if (node->val == val) {
-			Remove_helper(node);
+			treeNodeCount--;
+			node->count--;
+
+			if (node->count == 0) {
+				Remove_helper(node);
+				uniqueCount--;
+			}
 			return true;
 		}
 
@@ -1989,39 +2040,44 @@ namespace chapter11 {
 	void BST::RemoveAll(nodeBT* node) {
 		if (!node)
 			node = root;
+		
+		if (!node)
+			return; 
 		if (node->left)
 			RemoveAll(node->left);
 		if (node->right)
 			RemoveAll(node->right);
 
-		if (root == node)
+		if (root == node) {
 			root = nullptr;
+			treeNodeCount = 0;
+		}
+
 		delete node;
 
 	}
 
-	static bool IsValid_helper_OrderPersist(const int& value) {
-		static int acc = value;
-
-		if (value >= acc)
-			acc = value;
-		return value == acc;
-
-	}
-	bool BST::IsValid(nodeBT* node) {
-		bool state;
-
-		if (!node)
-			node = root;
+	void isValid_helper(nodeBT *node, int & avg, int & countElements, int &cnt) {
+		int newAvg;
 
 		if (node->left)
-			state = IsValid(node->left);
+			isValid_helper(node->left, avg, countElements, cnt);
+	
+		newAvg = ((node->val + avg) / ++countElements) > avg;
+		cnt += +(newAvg > avg);
+		avg = newAvg;
+		
+		if (node->right)
+			isValid_helper(node->right, avg, countElements, cnt);
+	}
 
-		state = IsValid_helper_OrderPersist(node->val);
 
-		if (node->right && state)
-			state = IsValid(node->right);
-		return state;
+	bool BST::IsValid(nodeBT* node) {
+		int avg = 0;
+		int count = 0; 
+		int cnt = 0; 
+		isValid_helper(node, avg, count, cnt);
+		return cnt == count;
 	}
 
 	void BST::TraverseBSTReverseOrder(nodeBT* node) {
@@ -2079,7 +2135,433 @@ namespace chapter11 {
 		return collection;
 	}
 
+		// PART II
 
+	bool BST::IsFull(chapter11::nodeBT* btNode) {
+		bool right = true, left = right;
+		bool parentState = (btNode->left && btNode->right) || (!btNode->left && !btNode->right);
+
+		if (btNode->left)
+			left = IsFull(btNode->left);
+
+		if (btNode->right)
+			right = IsFull(btNode->right);
+
+		return right && left && parentState;
+	}
+
+	static void BST_IsComplete_helper_depthCount(chapter11::nodeBT* btNode, std::vector<int>& arr, int depth = 0) {
+		if (btNode->left)
+			BST_IsComplete_helper_depthCount(btNode->left, arr, depth + 1);
+
+		if (arr.empty())	// left most value
+			arr.push_back(depth);
+		else if (btNode->right)
+			BST_IsComplete_helper_depthCount(btNode->right, arr, depth + 1);
+
+		if ((arr.back() < depth) && !btNode->right && !btNode->left)
+			arr.push_back(depth);
+	}
+
+	bool  BST::IsComplete(chapter11::nodeBT* btNode) {
+		std::vector<int> arr;
+		BST_IsComplete_helper_depthCount(btNode, arr);
+		return arr.size() == 1;
+	}
+
+
+	bool BST::Repair(nodeBT* node) {
+		std::vector<nodeBT*> *nodeArray;
+		nodeBT* bufferNode = nullptr; 
+
+		if (IsValid(node)) {
+			printf("hello");
+			return false;
+		} else {
+			nodeArray = new std::vector<nodeBT*>;
+			nodeValues(1, nodeArray);
+
+			for (int i = 0; i < nodeArray->size(); i++) {
+
+				bufferNode = nodeArray->at(i);
+				bufferNode->left = nullptr;
+				bufferNode->right = nullptr;
+
+				if (i == 0) {
+					bufferNode->parent = nullptr;
+					root = bufferNode;
+				}
+				else {
+					add(bufferNode);
+				}
+			}
+
+			delete nodeArray;
+			return true;
+		}
+	}
+
+
+	int BST::SmallestDifference(BST& bst) {
+		std::vector<nodeBT*> *Q = new std::vector<nodeBT*>;
+		nodeBT* node; 
+		int minDiff, diff = INT32_MAX;
+		
+		Q->push_back(bst.root);
+
+		while (Q->size()) {
+			node = Q->back();
+			Q->pop_back();
+
+			if (node->right)
+				Q->insert(Q->begin(), node->right);
+
+			if (node->left)
+				Q->insert(Q->begin(), node->left);
+
+			if (node->right) {
+				minDiff = std::abs(node->right->val - node->val);
+				if (minDiff < diff) {
+					diff = minDiff;
+				}
+			}
+
+			if (node->left) {
+				minDiff = std::abs(node->left->val - node->val);
+				if (minDiff < diff) {
+					diff = minDiff;
+				}
+			}
+
+		}
+		delete Q;
+		return diff;
+
+	}
+	
+
+	BST  BST::PartitionAroundValue(int value, nodeBT* node) {
+		BST bst;
+		
+		if (node == nullptr)
+			node = root; 
+		
+		if ( (node->val == value)  || (!node->right && !node->left)) {  // node match or leaf node 
+			bst.root = node;
+			if (root == node) 
+				root = nullptr;
+				
+		} else if (node->parent) {  // between parent and child 
+			if ((node->parent->val > value && value > node->val)  || (node->parent->val < value && node->val > value ))
+				bst.root = node; 
+		}
+
+		if (bst.root) {
+			if (node->parent) {
+				if (node->parent->left == node)
+					node->parent->left = nullptr;
+
+				if (node->parent->right == node)
+					node->parent->right = nullptr;
+			}
+			return (bst);
+		}
+
+		if (node->left) {
+			if (value > node->val) 
+				return PartitionAroundValue(value, node->left);
+		}
+
+		if (node->right) {
+			if (value < node->val)
+				return PartitionAroundValue(value, node->right);
+		}
+
+		return bst;
+	}
+
+	static void PartitionEvenly_Helper(BST &bst_dest, BST & bst_src, const int &max, nodeBT* node, int &cnt ) {
+		nodeBT * buffer;
+
+		if (!node || cnt == max)
+			return;
+		
+		if (node->left)
+			PartitionEvenly_Helper(bst_dest, bst_src,max,  node->left, ++cnt);
+
+		if (node->right)
+			PartitionEvenly_Helper(bst_dest, bst_src,  max, node->right, ++cnt);
+
+		buffer = bst_src.removeLeaf(node);
+		
+		if (buffer)
+			bst_dest.add(buffer);
+
+	}
+
+	BST BST::PartitionEvenly() {
+		BST bst;
+		int count = 0, maxCount = uniqueCount / 2;
+
+		if (treeNodeCount <= 1) { 	//root only exist 
+			bst.root = root;
+			root = nullptr;
+		} else {
+			PartitionEvenly_Helper(bst, *this , maxCount, root, count);
+		}
+
+		return bst;
+	}
+
+	nodeBT * BST::removeLeaf(nodeBT* leaf) {
+		nodeBT* buffer = nullptr;
+
+		if ( leaf  == nullptr || (leaf->right || leaf->left) == true) // not leaf node! 
+			return nullptr;
+
+		if (!leaf->parent) { // root node!
+			return  leaf;
+			root = nullptr;
+		}
+
+		if (leaf->parent) {
+			buffer = leaf; 
+
+			if (leaf->parent->right == leaf)
+				leaf->parent->right = nullptr;
+
+			if (leaf->parent->left == leaf)
+				leaf->parent->left = nullptr;
+
+			return buffer;
+		}
+
+		treeNodeCount -= buffer->count ;
+	}
+
+
+	static void Reverse_helper_loadArray(nodeBT* root, int num, std::vector<std::tuple <nodeBT*, nodeBT*, std::string>> &nodeArray) {
+		nodeBT* node;
+		nodeBT* parent = nullptr;
+		std::vector < nodeBT*> arr;
+
+		if (num == 1) {
+			arr.push_back(root->right);
+			nodeArray.push_back(std::make_tuple(root->right, root, "right"));
+
+			while (!arr.empty()) {
+				node = arr.front();
+				arr.erase(arr.begin());
+
+
+				if (node->right) {
+					arr.push_back(node->right);
+					nodeArray.push_back(std::make_tuple(node->right, node, "right"));
+				}
+
+				if (node->left) {
+					arr.push_back(node->left);
+					nodeArray.push_back(std::make_tuple(node->left, node, "left"));
+				}
+
+			//
+				printf("val \t %d\n", node->val);
+			}
+		}
+
+		if (num == 0) {
+			arr.push_back(root->left);
+			nodeArray.push_back(std::make_tuple(root->left, root, "left"));
+
+			while (!arr.empty()) {
+				node = arr.front();
+				arr.erase(arr.begin());
+
+				if (node->left) {
+					arr.push_back(node->left);
+					nodeArray.push_back(std::make_tuple(node->left, node, "left"));
+				}
+
+				if (node->right) {
+					arr.push_back(node->right);
+					nodeArray.push_back(std::make_tuple(node->right, node, "right"));
+				}
+				printf("val \t %d\n", node->val);
+
+			}
+		}
+
+	}
+
+	void BST::Reverse(BST& bst) {
+		std::vector<std::tuple <nodeBT*, nodeBT *, std::string>> rightArray, leftArray;
+		nodeBT* node, * parent, * curr_parent = root;
+		std::string dir;
+
+		if (!bst.root)
+			return; 
+
+		Reverse_helper_loadArray(bst.root, 1, rightArray);
+		Reverse_helper_loadArray(bst.root, 0, leftArray);
+
+		curr_parent->left = nullptr;
+		curr_parent->right = nullptr;
+
+		for (auto arr : { leftArray, rightArray  }) {
+			curr_parent = root;
+
+			for (auto curr_tuple : arr) {
+				std::tie(node, parent, dir) = curr_tuple;
+				node->parent = nullptr;
+				node->left = nullptr;
+				node->right = nullptr;
+				
+				curr_parent = parent;
+
+				if (dir == "left")					
+					curr_parent->right = node;
+				if (dir == "right") 
+					curr_parent->left = node;
+			}
+		}
+
+
+
+	}
+
+
+	static void KthBiggest_Unique_helper(int k, int& counter, bool& found_k_value, int& val, nodeBT* node) {
+		if (!node)
+			return;
+
+		if (node->right)
+			KthBiggest_Unique_helper(k, counter, found_k_value, val, node->right);
+
+		if (node && (counter <= k))
+			counter++;
+
+		if (counter == k)
+			val = node->val;
+
+		std::cout << counter <<  " " << " " << node->val << '\n';
+		if (node->left)
+			KthBiggest_Unique_helper(k, counter, found_k_value, val, node->left);
+
+	}
+
+	std::tuple<int, bool> BST::KthBiggest_Unique(int k) {
+		int val = 0, counter = 0;
+		bool found_k_value = false;
+
+		if (k > uniqueCount)
+			return std::make_tuple(0, false);
+
+		KthBiggest_Unique_helper(k, counter, found_k_value, val, root);
+		return std::make_pair(val, found_k_value);
+	}
+
+	static void KthBiggest_helper(int k, int& counter, bool& found_k_value, int& val, nodeBT* node) {
+		int curr_node_count = 0;
+		
+		if (!node)
+			return;
+
+		if (node->right)
+			KthBiggest_helper(k, counter, found_k_value, val, node->right);
+
+		while ((curr_node_count < node->count) && node && (counter <= k)) {
+			curr_node_count++;
+			counter++;
+
+			if (counter == k)
+				val = node->val;
+		}
+
+		if (node->left)
+			KthBiggest_helper(k, counter, found_k_value, val, node->left);
+
+	}
+
+	std::tuple<int, bool> BST::KthBiggest(int k) {
+		int val = 0, counter = 0;
+		bool found_k_value = false;
+		 
+		if (k > treeNodeCount)
+			return std::make_tuple(0, false);
+
+		KthBiggest_helper(k, counter, found_k_value, val, root);
+		return std::make_pair(val, found_k_value);
+	}
+
+	std::vector<int> BST::ValueForLayer(int n) {
+		std::vector<nodeBT*> Q;
+		std::vector<int> result; 
+		nodeBT *node;
+		int counter = 0;
+		int rowStart = std::pow(2, n);
+		int nextRowStart = std::pow(2, n + 1);
+
+		if (root) {
+			Q.push_back(root);
+		}
+
+		while (!Q.empty()) {
+			
+			node = Q.front();
+			
+			if (node)
+				counter++;
+
+			Q.erase(Q.begin());
+
+			if (node->left)
+				Q.push_back(node->left);
+
+			if (node->right)
+				Q.push_back(node->right);
+
+			if ((counter >= rowStart) && (counter < nextRowStart))
+				result.push_back(node->val);
+		}
+
+		return result;
+	}
+
+	std::vector<std::shared_ptr<std::vector<int>>> BST::LayerArrays() {
+		std::vector<nodeBT*> Q;
+		std::vector<std::shared_ptr<std::vector<int>>> result;
+		nodeBT* node;
+		int counter = 0, row = -1, calcRow = 0;
+
+		if (root) 
+			Q.push_back(root);
+		
+		while (!Q.empty()) {
+			node = Q.front();
+
+			if (node) {
+				counter++;
+				calcRow = std::log2(counter);
+				
+				if (calcRow != row) {
+					row = calcRow;
+					result.push_back(std::make_shared<std::vector<int>>());
+				}
+			}
+
+			Q.erase(Q.begin());
+
+			if (node->left)
+				Q.push_back(node->left);
+
+			if (node->right)
+				Q.push_back(node->right);
+
+			result[row]->push_back(node->val);
+		}
+
+		return result;
+	}
 }
 
 namespace chapter12 {
@@ -3046,4 +3528,9 @@ namespace chapter13 {
 
 namespace chapter14 {
 	//refer to AlgorithmBook.h file
+}
+
+namespace chapter15 {
+	//refer to AlgorithmBook.h file
+
 }
