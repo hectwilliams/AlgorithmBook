@@ -3532,5 +3532,4 @@ namespace chapter14 {
 
 namespace chapter15 {
 	//refer to AlgorithmBook.h file
-
 }
