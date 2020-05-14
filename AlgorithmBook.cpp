@@ -2238,29 +2238,46 @@ namespace chapter6
 	}
 	
 	template <typename T>
-	bool SLQueue<T>::is_palindrome(const SLQueue<T>* curr_queue)
+	bool SLQueue<T>::is_palindrome(SLQueue<T> &curr_queue)
 	{
 		SLStack<T> stack;
-		std::tuple <T, bool> tuple; 
+		std::tuple <T, bool> x_stack, x_queue; 
+		unsigned counter = 0;
 
-		if (curr_queue == NULL)
-			curr_queue = this;
-
-		for (SLNode <T> *ptr = curr_queue->head; ptr; ptr = ptr->next) {
-			stack.push(ptr->val);
+		// find size 
+		while (!curr_queue.is_empty()) {
+			counter++;
+			stack.push(std::get<0>(curr_queue.dequeue()));
 		}
 
-		for (SLNode <T>* ptr = curr_queue->head; ptr; ptr = ptr->next) {
-			tuple = stack.pop();
-			if (std::get<1>(tuple) == NULL) {
-				return false; 
-			} else {
-				if (std::get<0>(tuple) != ptr->val) {
-					return false;
-				}
+		// throw back into queue
+		while (!stack.is_empty()) {
+			curr_queue.enqueue(std::get<0>(stack.pop()));
+		}
+
+		// copy values in queue to stack
+		for (int i = counter; i-- ;) {
+			stack.push(curr_queue.front()->val);
+			curr_queue.enqueue(std::get<0>(curr_queue.dequeue()));
+		}
+
+		//	compare values
+		while ( !stack.is_empty() ) {
+			x_stack = stack.pop();
+			x_queue = curr_queue.dequeue();
+
+			if (!std::get<1>(x_queue) || (std::get<0>(x_stack) != std::get<0>(x_queue))) {
+				return false;
 			}
+
+			if (std::get<0>(x_stack) == std::get<0>(x_queue)) {
+				curr_queue.enqueue(std::get<0>(x_stack));
+			}
+
 		}
+
 		return true;
+	
 	}
 
 	template <typename T>
