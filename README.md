@@ -9,7 +9,7 @@
 5. Linked List (***C++***)
 6. Queues Amd Stacks (***C++***)
 7. Arrays, Part II (***C***)
-8. ~Linked List, Part II~ (***C***)
+8. Linked List, Part II (***C***)
 9. Recursion (***C++***)
 10. Strings, Part II (***C++***)
 11. Trees (***C++***)
