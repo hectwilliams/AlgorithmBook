@@ -3,7 +3,7 @@
 ## Chapters
 
 1. Fundamentals (***C++***, ***Python***)
-2. Fundamentals II (***C++***)
+2. Fundamentals II (***C++***, ***Python***)
 3. Arrays (***C++***)
 4. Strings And Associative Arrays (***C++***)
 5. Linked List (***C++***)
