@@ -4,7 +4,7 @@
 
 1. Fundamentals (***C++***, ***Python***)
 2. Fundamentals II (***C++***, ***Python***)
-3. Arrays (***C++***)
+3. Arrays (***C++***, ***Python***)
 4. Strings And Associative Arrays (***C++***)
 5. Linked List (***C++***)
 6. Queues Amd Stacks (***C++***)
