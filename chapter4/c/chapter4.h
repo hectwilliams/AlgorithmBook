@@ -5,7 +5,11 @@ typedef struct Books {
   char author[50];  
   char name[50];
   int number;
-}Books;
+} Books;
+
+char *remove_blanks(const char *data);
+char *get_digits(const char *data);
+
 
 #endif 
 
