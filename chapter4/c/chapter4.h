@@ -7,8 +7,10 @@ typedef struct Books {
   int number;
 } Books;
 
-char *remove_blanks(const char *data);
-char *get_digits(const char *data);
+char *remove_blanks( char *data);
+char *get_digits( char *data);
+char *acronyms ( char * data);
+char *remove_shorter_strings( char *data, size_t length);
 
 
 #endif 
