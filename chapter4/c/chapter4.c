@@ -315,7 +315,16 @@ void longest_palindrome( char * str, char * output) {
   } 
 }
 
+boolean is_word_alphabetical(char * str)
+{
+  for (char *ptr = str + 1; *ptr != '\0'; ptr++) {
+    if ( *(ptr - 1) > (*ptr) )
+      return False;    
+  }
+  return True;
+}
+
 int main(void) {
   char output[] = "";
-  longest_palindrome("racecar", output);
+  printf(" sorted %d", is_word_alphabetical("dabcd"));
 }
