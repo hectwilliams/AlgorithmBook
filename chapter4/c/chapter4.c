@@ -214,10 +214,108 @@ void  integer_to_roman_numerals(unsigned int number, char * output)
 
 }
 
+boolean paren_valid (char * str) {
+  unsigned long counter = 0;
+  int bit = -1;
 
+  for (char *ptr = str; *ptr != '\0'; ptr++) {
+
+    if (*ptr == '(') {
+     counter++; 	  	
+	} 
+
+	if (*ptr == ')') {
+	  if (counter == 0) {
+	    return False; 
+	  } else {
+	    --counter;	  
+	  }
+	}
+  }  
+
+  return (True ? counter == 0: False);
+}
+
+boolean braces_valid(char * str) {
+  unsigned int counters[3] = {0, 0, 0};  // open, curly, square	
+  int code;
+
+  for (char *ptr = str; *ptr != '\0'; ptr++) {
+    code = *ptr;
+
+    counters[0] += +(code == 40);  // open 
+    counters[1] += +(code == 123); // curly 
+    counters[2] += +(code == 91);  // square 
+	
+	  if (code == 41) {
+	    if (counters[0] == 0)
+	      return False;
+	    else 
+	      counters[0]--;
+	  }
+	  
+	  if (code == 125) {
+	    if (counters[1] == 0)
+	      return False;
+	    else 
+	      counters[1]--;
+	  }
+	  
+	  if (code == 93) {
+	    if (counters[2] == 0)
+	      return False;
+	    else 
+	      counters[2]--;
+	  }
+
+  }
+
+  for (int i = 0; i < 3; i++) {
+    if (counters[i] > 0) 
+	    return False;	  
+  }
+
+  return True; 
+}
+
+boolean is_palindrome(char *str) 
+{
+  unsigned int count = 0;
+
+  for (char *ptr = str; *ptr != '\0'; ptr++) 
+    count++;      
+
+  for (int i = 0; i <= count; i++) {
+    if (str[count - i - 1] != str[i])
+      return False; 
+  }
+
+  return True; 
+}
+
+void longest_palindrome( char * str, char * output) {
+  char *ptr = str; 
+  int len_palindrome = 0;
+  char test_string[100];
+  int bytes = 0;
+
+  while (*ptr != '\0') {
+    for (char *end_char = ptr; *end_char != '\0'; end_char++) {
+      bytes++;
+      if ((bytes > len_palindrome) && (*ptr == *end_char)) {  
+        memcpy(test_string, ptr, bytes);
+        if (is_palindrome(test_string)) {
+          len_palindrome = bytes;
+          strcpy(output, test_string);
+        }
+      }
+    }
+    bytes = 0;
+    ptr++;
+  } 
+}
 
 int main(void) {
-  char data[100] = ""; 
-  integer_to_roman_numerals(2, data);
-  puts(data);
+  char output[] = "";
+  longest_palindrome("racecar", output);
 }
