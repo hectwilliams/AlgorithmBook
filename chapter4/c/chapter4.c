@@ -128,7 +128,6 @@ void remove_even_length_strings(char ** collection, const size_t size)
 	  if (curr_length % 2 == 1)
 	    *(collection + i) = "";
   }
-
 }
 
 /* Integer to Roman Numerals */
