@@ -318,13 +318,30 @@ void longest_palindrome( char * str, char * output) {
 boolean is_word_alphabetical(char * str)
 {
   for (char *ptr = str + 1; *ptr != '\0'; ptr++) {
-    if ( *(ptr - 1) > (*ptr) )
+    if ( *(ptr - 1) > (*ptr))
       return False;    
   }
   return True;
 }
 
+void d_get_jiggy(char *name, char *output)
+{
+  char lastChar = *name;
+  
+  strcpy(output, name + 1);
+  strcat(output, " to the ");
+  
+  if (lastChar >= 97 && lastChar <= 122) 
+    lastChar -= 32;
+
+  if (*output >= 97 && *output <= 122) 
+    *output -= 32;
+
+  strncat(output, &lastChar , 1);
+}
+
 int main(void) {
-  char output[] = "";
-  printf(" sorted %d", is_word_alphabetical("dabcd"));
+  char output[20];
+  d_get_jiggy("dabcd", output);
+  puts(output);
 }
