@@ -20,7 +20,19 @@ boolean paren_valid (char * str);
 boolean is_palindrome(char *str);
 
 void longest_palindrome( char * str, char * output);
+boolean is_word_alphabetical(char * str);
+void d_get_jiggy(char *name, char *output);
+void common_suffix(char * collection[], const size_t size, char * output);
+void book_index (int pages[], const size_t size, char * output);
+void coin_change_with_object (unsigned int number, char *output);
 
+typedef struct max_min_avg_t {
+  int min;
+  int max;
+  float avg;
+} max_min_avg_t;
+
+void max_min_avg (int list[], size_t size);
 
 #endif 
 

@@ -5,7 +5,7 @@ def remove_blanks(str):
       str = str[0 : index] + str[index + 1: :]
     else:
       index += 1
-  return str;
+  return str
 
 def get_digits(str):
   code = None
@@ -45,7 +45,7 @@ def count_non_spaces (str):
   return result
 
 def remove_shorter_string(str, length):
-  words = str.split();
+  words = str.split()
   result = ''
   for word in words:
     if len(word)  >=  length:

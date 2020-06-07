@@ -340,8 +340,134 @@ void d_get_jiggy(char *name, char *output)
   strncat(output, &lastChar , 1);
 }
 
+void common_suffix(char * collection[], const size_t size, char * output) {
+  char *word; 
+  unsigned int lengths[size];
+  int counter = 0;
+  char c; 
+  int pos = 0;
+  int curr_index = 0;
+
+  for (int i = 0; i < size; i++) {
+    counter = 0;
+    for (char *ptr = *(collection + i); *ptr != '\0'; ptr++) 
+      counter++;    
+    lengths[i] = counter;
+  }
+  
+
+  while (output)  {
+    c = '\0';
+    for (int i = 0; i < size; i++) {
+      word = collection[i];
+      
+      if (lengths[i] == 0)
+        return;
+      
+      curr_index = lengths[i] - 1 - pos;
+      
+      if (c == '\0')
+        c = word[curr_index];
+      
+      if (c != word[curr_index])
+        return;
+    }
+
+    memset(output + pos++, c, 1);
+    memset(output + pos, '\0',1);  // stop flag for string
+  }
+  
+}
+
+void book_index (int pages[], const size_t size, char * output)
+{
+  boolean rdy = True;
+  int count = 0;
+  char str_start[10];
+  char str_end[10];
+  char buffer[10];
+  int index = 0;
+
+  while (index < size) {
+    
+    if (count++ == 0) {
+      sprintf(str_start, "%d", pages[index]);
+    } 
+
+    if ( (pages[index] + 1 != pages[index + 1]) || (index == size - 1) ) {
+      sprintf(str_end, "%d", pages[index]);
+      count = 0; 
+
+      if (strcmp(str_end, str_start) == 0) {
+        strcat(output, str_end);
+      } else {
+        sprintf(buffer, "%s-%s", str_start, str_end);
+        strcat(output, buffer);  
+      }
+
+      if (index < size - 1) {
+        strcat(output, ", ");  
+      }
+    }
+
+    index++;
+    
+  }
+
+}
+
+void coin_change_with_object (unsigned int number, char *output) {
+  enum coins {penny = 1, nickel = 5, dime = 10, quarter = 25};
+
+  while (number > 0) {
+    if (number >= quarter) {
+      number -= quarter;
+      strcat(output, "25\n");
+    } else if (number >= dime) {
+      number -= dime;
+      strcat(output, "10\n");
+    } else if (number >= nickel) {
+      number -= nickel;
+      strcat(output, "5\n");
+    } else if (number >= penny) {
+      number -= penny;
+      strcat(output, "1\n");
+    }
+  }
+
+}
+
+void max_min_avg (int list[], size_t size) {
+  int count = 0;
+  int val; 
+  max_min_avg_t obj;
+
+  for (int i = 0; i < size; i++) {
+    val = list[i];
+    
+    if (i == 0) {
+      obj.min = val;
+      obj.max = val;
+    } 
+
+    if (val < obj.min)
+      obj.min = val;
+
+    if (val > obj.max)
+      obj.max = val; 
+
+    obj.avg += val;
+  }  
+
+  obj.avg /= size;
+
+}
+
+
+
 int main(void) {
-  char output[20];
-  d_get_jiggy("dabcd", output);
-  puts(output);
+  char buffer[50] = "";
+  int list[] = {1, 2};
+  max_min_avg( list, 2);
+  puts(buffer);
 }
