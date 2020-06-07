@@ -13,7 +13,7 @@
   for (char *ptr = data; *ptr != '\0'; ptr++) {
     if (*ptr != 32) {
       memset( (result + i++), *ptr, 1 );
-	}
+    }
   }
   return result;
 };
@@ -26,9 +26,9 @@ char * get_digits( char * data)
 
   for (char *ptr = data; *ptr != '\0'; ptr++) {
     code = *ptr;
-	if (code >= 48 && code <= 57) {
+	  if (code >= 48 && code <= 57) {
       memset( (result + i++), code, 1 );
-	}
+	  }
   }
   return result;
 };
@@ -43,14 +43,15 @@ char * acronyms ( char * data)
   for (char *ptr = data; *ptr != '\0'; ptr++) {
     code = *ptr;
 
-	if (code == 32) {
-	  pluck = 1;
-	} else if (pluck) {
+    if (code == 32) {
+      pluck = 1;
+	  } else if (pluck) {
       if (code >= 97 && code <= 122)
         code = code;
-	  pluck = 0;
+      pluck = 0;
       memset( (result + i++), code, 1 );
-	}
+	  }
+
   }
 
   return result;
@@ -77,19 +78,19 @@ char * remove_shorter_strings( char *data, size_t length)
   for (char *ptr = data; *ptr != '\0'; ptr++, i++, end = i) {
     code = *ptr;
     if (code == 32) {
-	  if (length < end - start ) {
-	    for (char *r = data + start; r < data + end; r++) {
-	      result[pos++] = *r; 
-	    }
-		result[pos++] = ' ';
+      if (length < end - start ) {
+        for (char *r = data + start; r < data + end; r++) {
+          result[pos++] = *r; 
+        }
+        result[pos++] = ' ';
+      }
+	    start = i + 1;
 	  }
-	  start = i + 1;
-	}
   }
   
   if (length < end - start) {
     for (char *r = data + start; r < data + end; r++) {
-	  result[pos++] = *r; 
+      result[pos++] = *r; 
     }
   }
 
@@ -106,10 +107,11 @@ char * string_reverse(char *data)
   }
   
   for (int i = 0; i < length; i++) {
-	memset(result + i, *(data + length - 1 - i), 1);
+    memset(result + i, *(data + length - 1 - i), 1);
   }
 
   return result;
+
 }
 
 void remove_even_length_strings(char ** collection, const size_t size)
@@ -121,11 +123,10 @@ void remove_even_length_strings(char ** collection, const size_t size)
     curr_length = 0;	  
     
     for (char *ptr = *(collection + i); *ptr != '\0'; ptr++) 
-	  curr_length++;
+      curr_length++;
 	
-	if (curr_length % 2 == 1)
-	  *(collection + i) = "";
-
+	  if (curr_length % 2 == 1)
+	    *(collection + i) = "";
   }
 
 }
@@ -141,19 +142,20 @@ int integer_to_roman_double_trouble (unsigned int* number, unsigned int threshol
   for (int i = 0; i < 7; i++) {
     roman_value = roman_list[i];
     
-	if (roman_value >= threshold)
-	  break;
+    if (roman_value >= threshold)
+      break;
 
     if ((threshold - roman_value)  <= *number) {
       strcat(string, roman_chars[i]);  	  
-	  strcat(string, character);
-	  *number = *number - (threshold - roman_value);
-	  return 1;	  
+      strcat(string, character);
+      *number = *number - (threshold - roman_value);
+      return 1;	  
     }
 
   }
 
   return 0;
+
 }
 
 void  integer_to_roman_numerals(unsigned int number, char * output)
@@ -162,77 +164,75 @@ void  integer_to_roman_numerals(unsigned int number, char * output)
   enum romans {I = 1, V = 5, X = 10, L = 50, C = 100, D = 500, M = 1000};
 
   while (number > 0) {
-
     if (number >= M) {
-	  strcat(output, "M");
+      strcat(output, "M");
       number -= M;
-    }
+    } 
     
-	else if(number >= D) {
-	  if (integer_to_roman_double_trouble(&number, M, output, "M") == 0) {
-	    strcat(output, "D");
-	    number -= D;
-	  }
-	}
+    else if(number >= D) {
+      if (integer_to_roman_double_trouble(&number, M, output, "M") == 0) {
+	      strcat(output, "D");
+        number -= D;
+      }
+    }
 
-	else if(number >= C) {
-	  if (integer_to_roman_double_trouble(&number, D, output, "D") == 0) {
-	    strcat(output, "C");
-	    number -= C;
-	  }
-	}
+    else if(number >= C) {
+      if (integer_to_roman_double_trouble(&number, D, output, "D") == 0) {
+	      strcat(output, "C");
+	      number -= C;
+      }
+    }
 
-	else if(number >= L) {
-	  if (integer_to_roman_double_trouble(&number, C, output, "C") == 0) {
-	    strcat(output, "L");
-	    number -= L;
-	  }
-	}
+    else if(number >= L) {
+      if (integer_to_roman_double_trouble(&number, C, output, "C") == 0) {
+        strcat(output, "L");
+        number -= L;
+      }
+    }
 
-	else if(number >= X) {
-	  if (integer_to_roman_double_trouble(&number, L, output, "L") == 0 ) {
-	    number -= X;
+    else if(number >= X) {
+      if (integer_to_roman_double_trouble(&number, L, output, "L") == 0 ) {
+	      number -= X;
         strcat(output, "X");
-	  } 
-	}
+      } 
+    }
 	
-	else if(number >= V) {
+    else if(number >= V) {
       if (integer_to_roman_double_trouble(&number, X, output, "X") == 0) {
-	    number -= V;
+        number -= V;
         strcat(output, "V");
-	  }
-	}
+      }
+    }
 
-	else if(number >= I) {
+    else if(number >= I) {      
       if (integer_to_roman_double_trouble(&number, V, output, "V") == 0) {
-	    number -= I;
+        number -= I;
         strcat(output, "I");
-	  }
-	}
+      }
+    }
 
   }
 
 }
 
-boolean paren_valid (char * str) {
+boolean paren_valid (char * str) 
+{
   unsigned long counter = 0;
   int bit = -1;
 
   for (char *ptr = str; *ptr != '\0'; ptr++) {
-
     if (*ptr == '(') {
-     counter++; 	  	
-	} 
+      counter++; 	  	
+    } 
 
-	if (*ptr == ')') {
-	  if (counter == 0) {
-	    return False; 
-	  } else {
-	    --counter;	  
-	  }
-	}
+    if (*ptr == ')') {
+      if (counter == 0) {
+        return False; 
+      } else {
+        --counter;	  
+      }
+    }
   }  
-
   return (True ? counter == 0: False);
 }
 
@@ -247,39 +247,41 @@ boolean braces_valid(char * str) {
     counters[1] += +(code == 123); // curly 
     counters[2] += +(code == 91);  // square 
 	
-	  if (code == 41) {
-	    if (counters[0] == 0)
-	      return False;
-	    else 
-	      counters[0]--;
-	  }
-	  
-	  if (code == 125) {
-	    if (counters[1] == 0)
-	      return False;
-	    else 
-	      counters[1]--;
-	  }
-	  
-	  if (code == 93) {
-	    if (counters[2] == 0)
-	      return False;
-	    else 
-	      counters[2]--;
-	  }
+    if (code == 41) {
+      if (counters[0] == 0)
+        return False;
+      else 
+        counters[0]--;
+    }
+
+    if (code == 125) {
+      if (counters[1] == 0)
+        return False;
+      else 
+        counters[1]--;
+    }
+
+    if (code == 93) {
+      if (counters[2] == 0)
+        return False;
+      else 
+      counters[2]--;
+    }
 
   }
 
   for (int i = 0; i < 3; i++) {
     if (counters[i] > 0) 
-	    return False;	  
+      return False;	  
   }
 
-  return True; 
+  return True;
+
 }
 
 boolean is_palindrome(char *str) 
 {
+
   unsigned int count = 0;
 
   for (char *ptr = str; *ptr != '\0'; ptr++) 
@@ -462,6 +464,12 @@ void max_min_avg (int list[], size_t size) {
   obj.avg /= size;
 
 }
+
+
+
+
+
+
 
 
 
