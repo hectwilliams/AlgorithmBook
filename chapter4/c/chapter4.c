@@ -275,7 +275,6 @@ boolean braces_valid(char * str) {
   }
 
   return True;
-
 }
 
 boolean is_palindrome(char *str) 
