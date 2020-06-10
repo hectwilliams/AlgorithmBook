@@ -7,7 +7,7 @@
 3. Arrays (***C++***, ***Python***)
 4. Strings And Associative Arrays (***C++***)
 5. Linked List (***C++***, ***C***)
-6. Queues Amd Stacks (***C++***)
+6. Queues And Stacks (***C++***)
 7. Arrays, Part II (***C***)
 8. Linked List, Part II (***C***)
 9. Recursion (***C++***)
