@@ -7,9 +7,6 @@
 #include <string_view>
 #include <tuple>
 #include <memory>
-//#include <thread>
-#include <mutex>
-#include <future>
 
 #ifndef CHAPTER7_H
 #define CHAPTER7_H
