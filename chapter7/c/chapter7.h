@@ -1,16 +1,10 @@
-#include <vector>
-#include <string>
-#include <map>
-#include <set>
-#include <deque>
-#include <array>
-#include <string_view>
-#include <tuple>
-#include <memory>
 
 #ifndef CHAPTER7_H
 #define CHAPTER7_H
-
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h> 
+#include <errno.h>
 
 namespace chapter7 {
 	unsigned average(int unsorted_numbers[], const size_t& size);

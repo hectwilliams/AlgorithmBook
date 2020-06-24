@@ -1,7 +1,4 @@
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h> 
-#include <errno.h>
+
 #include "chapter7.h"
 
 namespace chapter7 {
