@@ -2,90 +2,78 @@
 #ifndef CHAPTER8_H
 #define CHAPTER8_H
 
-namespace chapter8
-{
-	typedef struct SLNode_t {
-		int value;
-		SLNode_t* next;
-		SLNode_t* child;
-	};
+typedef enum boolean {False, True} boolean;
 
-	typedef struct SList_t {
-		SLNode_t* head;
-		SLNode_t* back;
-		void (*push_back)(struct SList_t* list, int value);
-		void (*print)( SList_t* list);
-		void (*push_front)( SList_t* list, int value);
-		bool (*contains)( SList_t* list, int value);
-		int (*pop_back)( SList_t* list);
-		int (*pop_front)( SList_t* list);
-		bool (*remove)(SList_t* list, int value);
-		void (*reverse)(SList_t* list);
-		bool (*is_palindrome)(SList_t* list);
-		int (*kth_last_node)(SList_t* list, unsigned n);
-		void (*shift_right)(SList_t* list, unsigned shiftBy);
-		void (*shift_left)(SList_t* list, unsigned shiftBy);
-		int (*sum_numerals)(SList_t *a, SList_t *b);
-		void (*flatten_children)(SList_t* list);
-		void (*unflatten_children)(SList_t* list);
-		SLNode_t*(*setup_loop)(unsigned node_count, unsigned num);
-		SLNode_t* (*allocate_slnode)(int value);
-		bool (*has_loop)(SList_t* list);
-		SLNode_t* (*loop_start)(SList_t* list);
-		void (*break_loop)(SList_t* list);
-		int (*number_of_nodes)(SList_t* list);
-		void (*swap_pairs) (SList_t* list);
-	};
+typedef struct return_data {
+	boolean valid;
+	int value;
+} return_data;
 
-	/* allocate new list*/
-	SList_t* slist();
-	/* allocate new node*/
-	SLNode_t* slnode(int value);
-	/* append value to end*/
-	void slist_push_back( SList_t* list, int value);
-	/* append value to front*/
-	void slist_push_front( SList_t* list, int value);
-	/* print list */
-	void slist_print( SList_t* list);
-	/*pop front */
-	int slist_pop_front( SList_t* list);
-	/*pop back*/
-	int slist_pop_back( SList_t* list);
-	/*contains value*/
-	bool slist_contains(SList_t *list, int value);
-	/*remove node */
-	bool slist_remove(SList_t* list, int value);
-	/*reverse list*/
-	void slist_reverse(SList_t* list);
-	/* palindrome*/
-	bool slist_palindrome(SList_t* list);
-	/*K-th last node*/
-	int kth_last_node(SList_t* list, unsigned n);
-	/*shift right*/
-	void shift_right(SList_t* list, unsigned shiftBy);
-	/*shift left*/
-	void shift_left(SList_t* list, unsigned shiftBy);
-	/* sum  numerals */
-	int sum_numerals(SList_t *list_a, SList_t *list_b);
-	/* flatten children */
-	void flatten_children(SList_t* list);
-	/* unflatten children */
-	void unflatten_children(SList_t* list);
-	/*setup loop*/
-	SLNode_t* setup_loop(unsigned node_count, unsigned num);
-	/* has loop*/
-	bool has_loop(SList_t* list);
-	/* loop start*/
-	SLNode_t* loop_start (SList_t* list);
-	/* break loop*/
-	void break_loop (SList_t* list);
-	/* number of nodes */
-	int number_of_nodes(SList_t* list);
-	/* swap pairs*/
-	void swap_pairs (SList_t* list);
- /* basic configuration*/
-	void basic_config_setup(SList_t *list);
+typedef struct SLNode_t {
+	int value;
+	struct SLNode_t* next;
+	struct SLNode_t* child;
+} SLNode_t;
 
-}
+typedef struct SList_t {
+	struct SLNode_t* head;
+	struct SLNode_t* tail;
+} SList_t;
 
+struct addr_data {
+	void **base;
+	int count;
+}addr_cpy;
+
+SLNode_t *sl_node(int value);
+SList_t *slist_malloc(void); /* allocate new node */
+void slist_destruct_list(void);
+
+void slist_enqueue (void *data, int value);
+return_data slist_dequeue (void *data);
+void  slist_display(void *data); 
+SList_t *slist_sum_numerals (SList_t *a, SList_t *b);
+void slist_flatten_children(SList_t *list);
+void slist_unflatten_children(SList_t *list);
+struct SList_t *slist_setup_loop(unsigned int count, unsigned int repeat_n);
+boolean slist_has_loop(SLNode_t *node);
+SLNode_t*  slist_loop_start (SLNode_t *node);
+void slist_break_loop(SLNode_t *node);
+unsigned int slist_number_of_nodes (SLNode_t *node );
+void slist_swap_pairs(SList_t *list);
+SList_t *slist_sl_list(); /* allocate linked list */
+
+
+typedef struct DLNode_t {
+	int value;
+	struct DLNode_t* next;
+	struct DLNode_t* prev;
+} DLNode_t;
+
+typedef struct DList_t {
+	struct DLNode_t *head;
+	struct DLNode_t *tail; 
+} DList_t;
+
+DList_t *dlist_malloc(void) ;
+void dlist_destruct(void) ;
+
+void dlist_push(DList_t *list, int value);
+return_data dlist_pop(DList_t *list);
+void dlist_display(struct  DList_t *list);
+return_data dlist_front(struct DList_t *list);
+return_data dlist_back(struct DList_t *list);
+boolean dlist_contains(struct DList_t *list, int value);
+unsigned int dlist_size(struct DList_t *list);
+void dlist_prepend_value(struct DList_t *list, int new_value, int existing_value);
+void dlist_append_value(struct DList_t *list, int new_value, int existing_value);
+return_data dlist_kth_to_last_value(struct DList_t *list, unsigned int k);
+void dlist_delete_middle_node(DLNode_t *dnode);
+boolean dlist_is_valid(struct DList_t *list);
+void dlist_partition(struct DList_t *list, int value);
+boolean dlist_palindrome(struct DList_t *list);
+void dlist_reverse(struct DList_t *list);
+DLNode_t * dlist_loop_start(struct DList_t *list);
+void dlist_break_loop(struct DList_t *list);
+void dlist_repair(struct DList_t *list);
 #endif

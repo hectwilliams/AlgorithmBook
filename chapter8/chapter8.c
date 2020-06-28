@@ -1,460 +1,682 @@
+#include <stdlib.h>
 #include <stdio.h>
-#include <errno.h>
 #include <math.h>
+#include "chapter8.h"
+#include <errno.h>
+#include <string.h>
+
 extern int errno;
 
+int main(int argv, char **argc) {  	//entry 
+	DList_t * dlist = dlist_malloc();
+		dlist_push( dlist, 0);
 
-namespace chapter8
+	dlist_push( dlist, 2);
+	dlist_push( dlist, 0);
+	dlist_push( dlist, 1);
+		dlist_push( dlist, 4);
+	dlist_push( dlist, 6);
+
+	dlist_partition(dlist, 1);
+	dlist_reverse(dlist);
+
+	dlist_display(dlist);
+	// destruct_list();
+}
+
+SLNode_t *sl_node(int value)
+{
+	SLNode_t *node = (SLNode_t*) malloc(sizeof(SLNode_t));
+	node->child = node->next = NULL;
+	node->value = value;
+	return node; 
+}
+
+SList_t *slist_malloc(void) 
+{
+	// TODO : BUFFER LISTS 
+	SList_t *newList;
+	newList = (SList_t*) malloc( sizeof(SList_t) );
+	newList->head = NULL;
+	newList->tail = NULL;
+	return newList;
+}
+
+/* destruct linked list */
+void slist_destruct_list(void) 
+{
+	// TODO : REMOVE BUFFERED LISTS  
+}
+
+void slist_enqueue (void *data, int value)
+{
+	SList_t *list = (SList_t *) data;
+	SLNode_t *runner = list->head;
+	SLNode_t *node = sl_node(value);
+
+	if (runner == NULL) {
+		list->head = list->tail= node; 
+	} else {
+		list->tail->next = node;
+		list->tail = node; 
+	}
+}
+
+
+return_data slist_dequeue (void *data)
+{
+	SList_t *list = (SList_t *) data;
+	return_data result = {.valid = False}; 
+	SLNode_t *node = list->head;
+
+	if (!node)
+		return result; 
+	
+	result.valid = True;
+	result.value = list->head->value;
+	
+	if (node == list->tail) 
+		list->tail = NULL;
+	
+	list->head = list->head->next;
+	free(node);
+	return result;
+}
+
+void  slist_display(void *data)
+{
+	SList_t *list = (SList_t *) data;
+	SLNode_t *runner = list->head;
+	while (runner) {
+		printf("data:%d \n", runner->value);
+		runner = runner->next;
+	}
+}
+
+
+
+SList_t * slist_sum_numerals ( SList_t *a,  SList_t *b)
+{
+	unsigned sum_a = 0, sum_b = 0 , sum;
+	float counter = 0;
+	float factor;
+	
+	SList_t *curr_list = slist_malloc(); 
+	SLNode_t *runner_a = (a)->head , *runner_b = (b)->head;
+	
+	while (runner_a || runner_b ) {
+		factor = pow(10, counter++);
+		if (runner_a) {
+			sum_a += factor * runner_a->value;
+			runner_a = runner_a->next;
+		}
+		if (runner_b) {
+			sum_b += factor * runner_b->value;
+			runner_b = runner_b->next;
+		}
+	}
+
+	sum =  sum_a + sum_b;
+	for ( int i = 0; i < counter; i++) {
+		/*first node is least significant*/ 
+		slist_enqueue(curr_list, sum % 10 );
+		sum/=10;
+	}
+	/*first node is most significant 
+		curr_list->methods->enqueue(curr_list, ((int) (sum / pow(10, counter - i - 1))  )%10 ); 
+	*/
+	return curr_list;
+}
+
+void slist_flatten_children(SList_t *list) {
+
+	int size;
+	int offset;
+	SLNode_t *runner = list->head, *runner_prev, *curr_head;
+	SLNode_t** dynamic_array;   /* array of [SLNode_t*] */
+
+	if (list->head == NULL)
+		return;
+
+	size = 1;
+	offset = size - 1; 
+ 	runner = list->head;
+	dynamic_array = malloc(sizeof(SLNode_t*) * size);
+	*(dynamic_array + offset) = list->head; 
+
+	while (size) {
+		curr_head = *(dynamic_array);  
+		runner = curr_head; 
+		while (runner) {
+			if (runner->child != NULL) {
+				++size;
+				offset = size - 1;
+				dynamic_array = realloc(dynamic_array, sizeof(SLNode_t*) * size ); /* expansion  */
+				*(dynamic_array + offset) = runner->child; /* assign child to array */
+			}
+			runner_prev = runner;
+			runner = runner->next;
+		}
+
+		if (curr_head != list->head) {  
+			list->tail->next = curr_head; /* link parent tail to child's head  */
+			list->tail = runner_prev;  /* update parent tail to child's tail */
+		}
+
+		if (size-- > 0 )  
+			memmove(dynamic_array, dynamic_array + 1, sizeof(SLNode_t*) *size); /* remove first element */
+		dynamic_array = realloc(dynamic_array, sizeof(SLNode_t*) * size ); /* reduction  */
+	}
+
+}
+
+void slist_unflatten_children(SList_t *list) {
+	int size;
+	int offset;
+	SLNode_t *runner, *runner_prev;
+	SLNode_t** runner_table;
+	SLNode_t** children_array;
+
+	if (list->head == NULL)
+		return;
+	
+	size = 1;
+	runner_table = malloc(sizeof(SLNode_t*) * size);
+	children_array = malloc(sizeof(SLNode_t*) * size);
+	offset = size - 1;
+	*(runner_table + offset) = list->head; /* set first table element */
+	runner = *(runner_table + offset); /* move table pointer  */ 
+		
+	while (*runner_table != *children_array && *runner_table) {
+		runner = *(runner_table + offset); /*move table pointer*/
+		if (runner->child != NULL) {
+			*(runner_table + offset) = runner->next; /* update runner at offset */
+			offset = ++size - 1; 
+			runner_table = realloc(runner_table, sizeof(SLNode_t*) * size ); /*table  expansion  */
+			children_array = realloc(children_array, sizeof(SLNode_t*) * size ); /* array expansion  */
+			*(runner_table + offset) = runner->child; /* set runner in table */
+			*(children_array + offset) = runner->child; 
+			runner = (*runner_table + offset); /* move runner pointer down  */ 
+		} else {
+			runner_prev = runner;
+			*(runner_table + offset) = runner->next; /* update table runner entry */
+		}
+		while ( *(runner_table + offset)  == NULL) { /* find most recent valid runner  */
+			offset--;
+		}
+	}
+
+	runner = *runner_table; 
+	list->tail = runner_prev; /* update tail for parent list */
+
+	while (runner) {
+		if (runner == *children_array) { /* child node found in parent list */
+			size--;
+			runner_prev->next = NULL; /* break  connection to child  */
+			if (size > 0) 
+				memmove(children_array, children_array + 1, sizeof(SLNode_t*)* size);
+		}
+		runner_prev = runner;
+		runner = runner->next;
+	}
+ }
+
+struct SList_t *slist_setup_loop(unsigned int count, unsigned int repeat_n)
+{
+	SList_t * list = slist_malloc();
+	SLNode_t *repeat_node;
+	
+	for (int i = 1 ; i <= count; i++) {
+		slist_enqueue(list, i);
+		if (repeat_n == i ) {
+			repeat_node = list->tail;
+		}
+	}
+	list->tail->next = repeat_node;
+	return list;   
+}
+
+boolean slist_has_loop (SLNode_t *node)
+{
+	SLNode_t *head, *runner;
+
+	if (node == NULL)
+		return False;
+
+	runner = node->next;
+	head = node;
+	
+	while (runner) {
+		if (head == runner){
+			return True;
+		}
+		runner = runner->next;
+	}
+	return False; 
+}
+
+SLNode_t*  slist_loop_start (SLNode_t *node)
+{
+	SLNode_t *a, *b, *prev;
+
+	if (!node)
+		return node;
+
+	if (node->next) 
+		return node; 
+	
+	a = node;
+	b = node->next;
+
+	while (a) {
+		if (b->next == a) {
+			return prev;
+		}
+		prev = b;
+		a = a->next;
+		b = b->next;
+	}
+	return NULL;
+}
+
+void slist_break_loop(SLNode_t *node) {
+	SLNode_t *loop_node = slist_loop_start(node);
+	if (loop_node)
+		loop_node->next = NULL; 
+}
+
+unsigned int slist_number_of_nodes (SLNode_t *node)
+{
+	unsigned int count = 0;
+	
+	slist_break_loop(node);
+	while (node) {
+		count++;
+		node = node->next;
+	}
+	return count;
+}
+
+void slist_swap_pairs(SList_t *list) 
+{
+	SLNode_t *runner, *runner_prev = NULL, *runner_next, *buffer;
+
+	if (list->head == NULL) 
+		return; 
+	runner = list->head;
+	while (runner) {
+		if (runner_prev) {
+			if (list->head == runner_prev) /* update pointer */
+				list->head = runner;
+		
+		/* [runner_prev] -->  [ runner] --> [runner_next] */			                   
+			runner_next = runner->next;    
+			runner_prev->next = runner_next;
+			runner->next = runner_prev;
+		/* move runner forward and initialize prev ptr */			
+			runner_prev = NULL;
+			runner = runner_next;
+		} else {
+			runner_prev = runner;
+			runner = runner->next;
+		}
+	} 
+}
+
+
+
+
+DList_t *dlist_malloc(void) 
+{
+	// TODO LOGIC TO STORE LINKEDLIST IN BUFFER 
+	DList_t *new_DList;
+	new_DList = (DList_t*) malloc( sizeof(DList_t) );
+	new_DList->head = NULL;
+	new_DList->tail = NULL;
+	return new_DList;
+}
+
+/* destruct linked list */
+void dlist_destruct(void) 
+{
+	// TODO 
+}
+
+
+
+DLNode_t *dl_node(int value) {
+	DLNode_t * node = (DLNode_t *) malloc(sizeof(DLNode_t));
+	node->next = node->prev = NULL;
+	node->value = value;
+}
+
+void dlist_push(DList_t *list, int value)
+{
+	DLNode_t *node = dl_node(value);
+
+	if (list->head == NULL) {
+		list->head = list->tail =  node;
+	} else {
+		list->head->prev = node;
+		node->next = list->head;
+		list->head = node;
+	}
+}
+
+return_data dlist_pop(DList_t *list)
+{
+	return_data result = {.valid = False}; 
+	DLNode_t *del_node;
+
+	if (list->head == NULL) 
+		return result;
+	
+	result.valid = True;
+	result.value = list->head->value;
+
+	del_node = list->head;
+	list->head = list->head->next;
+	
+	if (list->head)
+		list->head->prev = NULL;
+	
+	free(del_node);
+}
+
+void dlist_display(struct  DList_t *list)
+{
+	DLNode_t *node = list->head;
+	while (node) {
+		printf("node: %d\n" , node->value);
+		node = node->next;
+	}
+}
+
+return_data dlist_front(struct DList_t *list)
+{
+	return_data data = {.valid = False};
+	if (list->head == NULL)
+		return data;
+	data.value = list->head->value;
+	data.valid = True;
+	return data;
+}
+
+return_data dlist_back(struct DList_t *list)
+{
+	return_data data = {.valid = False};
+	if (list->tail == NULL)
+		return data;
+	data.value = list->tail->value;
+	data.valid = True;
+	return data;
+}
+
+boolean dlist_contains(struct DList_t *list, int value) 
+{
+	DLNode_t *dnode = list->head;
+	
+	if (dnode == NULL) 
+		return False;
+	
+	while (dnode) {
+		if (dnode->value == value)
+			return True;
+		dnode = dnode->next;
+	}
+
+	return False; 
+}
+
+
+unsigned int dlist_size(struct DList_t *list) 
+{
+	unsigned int count = 0;
+	DLNode_t *dnode = list->head;
+	
+	if (dnode == NULL) 
+		return count;
+
+	while (dnode) {
+		count += 1;
+		dnode = dnode->next;
+	}
+	return count;
+}
+
+void dlist_prepend_value(struct DList_t *list, int new_value, int existing_value)
+{
+	DLNode_t *runner = list->head;
+	DLNode_t *node;
+	
+	if (list->head == NULL)
+		return;
+	
+	if (list->head->value = existing_value) {
+		node == dl_node(new_value);
+		list->head->prev = node;
+		node->next = list->head;
+		list->head = node;
+		node->prev = NULL;
+	} else {
+		while (runner->next) {
+			if (runner->next->value == existing_value) {
+				node == dl_node(new_value);
+				runner->next->prev = node;
+				node->next = runner->next;
+				runner->next = node;
+				node->prev = runner;
+				runner = node; /* set runner to prepended node */ 
+			}
+			runner = runner->next;
+		}
+	}
+}
+
+void dlist_append_value(struct DList_t *list, int new_value, int existing_value)
+{
+	DLNode_t *runner = list->head;
+	DLNode_t *node;
+
+	if (list->head == NULL)
+		return;
+	
+	if (list->head->value == existing_value) {
+		node = dl_node(new_value);
+		node->next = list->head->next;
+		if (list->head->next != NULL) { 
+			 list->head->next->prev = node;
+		}
+		list->head->next = node;	
+	} else {
+		while(runner->next) {
+			if (runner->next->value == existing_value) {
+				node = dl_node(new_value);
+				node->next = runner->next->next;
+				if (runner->next->next) {
+					runner->next->next->prev = node; 
+				}
+				runner->next->next = node; 
+				node->prev = runner->next;
+			}
+		}
+	}
+}
+
+return_data dlist_kth_to_last_value(struct DList_t *list, unsigned int k) {
+	DLNode_t *runner = list->tail;
+	return_data data = {.valid = False};
+
+	if (runner == NULL)
+		return data;
+
+	while (k-- > 0 && runner != NULL) 
+		runner = runner->prev; 
+
+	if (runner) {
+		data.valid = True;
+		data.value = runner->value;
+	}
+
+	return data;
+}
+
+void dlist_delete_middle_node(DLNode_t *dnode)
+{
+	DLNode_t *tmp_dnode;
+	if (dnode->prev && dnode->next) {
+		tmp_dnode = dnode;
+		dnode->prev->next = dnode->next;
+		dnode->next->prev = dnode->prev;
+		free(tmp_dnode);
+	}
+}
+
+boolean dlist_is_valid(struct DList_t *list)
+{
+	unsigned int count_forward, count_back;
+	DLNode_t *runner_forward, *runner_back;
+
+	if (list->head == NULL) 
+		return False;
+
+	count_back = 0;
+	count_forward = 0;
+	runner_forward = list->head;
+	runner_back = list->tail;
+
+	while (runner_back || runner_forward) {
+		count_forward += +(runner_forward == list->head);
+		count_back += +(runner_back == list->tail);
+
+		if (count_back == 2 || count_forward == 2) 
+			return False; 
+		
+		if (runner_forward) 
+			runner_forward = runner_forward->next;
+		
+		if (runner_back) 
+			runner_back = runner_back->prev;
+	}
+
+	return True;
+}
+
+void dlist_partition(struct DList_t *list, int value)
 {
 
-	SLNode_t* slnode(int value) {
-		 SLNode_t* new_node = (SLNode_t*)malloc( sizeof(SLNode_t));
-		(*new_node).value = value;
-		(*new_node).next = NULL;
-		return new_node;  
-	}
+	DLNode_t *dnode = list->head;
+	DLNode_t *tmp;
 
-	SList_t* slist()
-	{
-		SList_t* new_list = (SList_t*)malloc(sizeof(SList_t));
-		new_list->head = NULL;
-		new_list->back = NULL;
-		new_list->push_back = slist_push_back;
-		new_list->push_front = slist_push_front;
-		new_list->print = slist_print;
-		new_list->contains = slist_contains;
-		new_list->pop_front = slist_pop_front;
-		new_list->pop_back = slist_pop_front;
-		new_list->remove = slist_remove;
-		new_list->reverse = slist_reverse;
-		new_list->is_palindrome = slist_palindrome;
-		new_list->kth_last_node = kth_last_node;
-		new_list->shift_left = shift_left;
-		new_list->shift_right= shift_right;
-		new_list->sum_numerals = sum_numerals;
-		new_list->flatten_children = flatten_children;
-		new_list->unflatten_children = unflatten_children;
-		new_list->setup_loop = setup_loop;
-		new_list->allocate_slnode = slnode;
-		new_list->has_loop = has_loop;
-		new_list->loop_start = loop_start;
-		new_list->break_loop = break_loop;
-		new_list->number_of_nodes = number_of_nodes;
-		new_list->swap_pairs = swap_pairs;
-		return new_list;
-	}
+	if (dnode->next == NULL && dnode->prev == NULL) /* single dnode return */
+		return;
 
-	void slist_push_back(struct SList_t* list, int value)
-	{
-		SLNode_t* node = list->allocate_slnode(value);
-		if (list->head == NULL) {
-			list->head = node;
-			list->back = list->head;
-		} else {
-			list->back->next = node;
-			list->back = node;
+	while (dnode) {
+
+		if (dnode->value < value) { 
+			tmp = dnode;
+
+			if (dnode->next) 
+				dnode->next->prev = dnode->prev;
+			dnode->prev->next = dnode->next;
+
+			if (dnode == list->tail)
+				list->tail = list->tail->prev;  /* update tail  */
+			
+			dnode = dnode->prev; /* update walker( i.e. runner i.e. dnode )*/
+
+			/* move dnode to head of list  */
+			tmp->next = list->head; 
+			list->head->prev =  tmp;
+			tmp->prev = NULL;
+			list->head = tmp;
 		}
+
+		dnode = dnode->next;
+	}
+}
+
+boolean dlist_palindrome(struct DList_t *list)
+{
+	DLNode_t *runner_forward, *runner_back;
+
+	if (list->head == NULL) 
+		return False; 
+
+	runner_forward = list->head;
+	runner_back = list->tail;
+
+	while (runner_forward && runner_back) {
+		if (runner_forward->value != runner_back->value) 
+			return False;
+		runner_forward = runner_forward->next;
+		runner_back = runner_back->next;
 	}
 
-	void slist_push_front(struct SList_t* list, int value)
-	{
-		SLNode_t* node;
-		if (!list->head)
-			return slist_push_back(list, value);
-		node = slnode(value);
-		node->next = list->head;
-		list->head = node; 
-	}
-	int slist_pop_front(struct SList_t* list)
-	{
-		int returnVal = -1;
-		if (!list->head) {
-			perror("head is null, returning -1");
-			fprintf(stderr, NULL);
-			return returnVal;
-		}
-		returnVal = list->head->value;
-		list->back = (list->head == list->back) ? NULL : list->back;
-		list->head = list->head->next;
-		return returnVal;
-	}
+	return True;
+}
 
-	int slist_pop_back(struct SList_t* list)
-	{
-		int returnVal = -1;
-		if (!list->back) {
-			perror("tail is null, returning -1");
-			fprintf(stderr, NULL);
-			return returnVal;
-		}
-		returnVal = list->back->value;
-		list->head = (list->head == list->back) ? NULL : list->head;
-		list->back = list->back->next;
-	}
+void dlist_reverse(struct DList_t *list)
+{
+	DLNode_t *runner;
+	DLNode_t *dnode;
+	DLNode_t *oldHead = list->head;
 
-	bool slist_contains(SList_t *list, int value)
-	{
-		for (SLNode_t* runner = list->head; runner; runner = runner->next) {
-			if (runner->value == value)
-				return true;
-		}
-		return false;
-	}
-
-	void slist_print(struct SList_t* list)
-	{
-		for (SLNode_t* ptr = list->head; ptr; ptr = ptr->next) {
-			printf("[%d]", ptr->value);
-		}
-	}
+	if (oldHead == NULL) 
+		return ; 
 	
-	bool slist_remove(SList_t* list, int value)
-	{
-		SLNode_t* runner = NULL, *plucked_node = NULL;
+	runner = list->tail;
 
-		if (!list->head)
-			return false;
+	while (runner->prev != NULL && oldHead != list->tail) {
+		dnode = runner->prev;
+		runner->prev = dnode->prev;		
 
-		if (list->head->value == value) {   
-			plucked_node = list->head;
-			list->head = list->head->next;
-		} else {
-			runner = list->head;
-			while (runner->next) {
-				if (runner->next->value == value) {
-					plucked_node = runner->next;
-					runner->next = runner->next->next;
-				}
-			}
-		}
-		free(plucked_node);
-		return true;
+		if (dnode->prev) 
+			dnode->prev->next = dnode->next;
+
+		if (dnode == oldHead) 
+			list->head = runner;
+
+		list->tail->next = dnode; /* update tail */
+		dnode->prev = list->tail;
+		list->tail = dnode;
+		dnode->next = NULL;
 	}
+}
 
-	void slist_reverse(SList_t* list)
-	{
-		SLNode_t* plucked_node = NULL;
+DLNode_t* dlist_loop_start(struct DList_t *list)
+{
+	DLNode_t *runner_a = list->head, *runner_b; //b leads 
+	DLNode_t * prev; 
 
-		if (list->head == list->back)
-			return; 
-
-		while (list->head != list->back) {
-			plucked_node = list->head;
-			list->head = list->head->next;
-			plucked_node->next = list->back->next;
-			list->back->next = plucked_node;
-		}
-	}
-
-	bool slist_palindrome(SList_t* list)
-	{
-		SLNode_t* h , *t, *runner;
-
-		if (list->head == NULL)
-			return false;
-
-		t = list->back;
-		h = list->head;
-		runner = h;
-
-		while (runner->next) {
-			
-			if (t->value != h->value)
-				return false;
-			
-			if (h->next == t || t == h)
-				break;
-
-			if (runner->next == t) {
-				t = runner;
-				h = h->next;
-				runner = h;
-			}
-
-			runner = runner->next;
-		
-		}
-		return true;
-	}
-
-	int kth_last_node(SList_t* list, unsigned n)
-	{
-		/* buffer of size n*/
-		int* buffer;
-		int resultVal = 0, i = 0;
-		SLNode_t* runner;
-
-		if (n <= 0) {
-			perror("n must be greater than 0, returning -1");
-			fprintf(stderr, NULL);
-			return -1;
-		} else {
-			buffer = (int*) malloc(n* sizeof(int));
-			runner = list->head;
-			while (runner) {
-				printf("[%d]", runner->value);
-				buffer[i++ % n] = runner->value;
-				runner = runner->next;
-			}
-			resultVal = buffer[n - 1];
-		}
-		free(buffer);
-		return resultVal;
-		
-	}
-
-	void shift_left (SList_t* list, unsigned shiftBy)
-	{
-		for (int i = 0; i < shiftBy; i++) {
-			list->back->next = list->head;
-			list->head = list->head->next;
-			list->back = list->back->next;
-			list->back->next = NULL;
-		}
-	}
-
-	void shift_right (SList_t* list, unsigned shiftBy)
-	{
-		SLNode_t *prev_tail;
-		
-		for (int i = 0; i < shiftBy; i++) {
-			prev_tail = list->back;
-			while (prev_tail != list->head) {
-				list->back->next = list->head;
-				list->head = list->head->next;
-				list->back = list->back->next;
-				list->back->next = NULL;
-			}
-		}
-
-	}
-
-	int sum_numerals(SList_t* list_a, SList_t* list_b)
-	{
-	
-		SLNode_t* runners[2] = {list_a->head, list_b->head};
-		bool boolean = false;
-		unsigned e = 0;
-		unsigned val = 0;
-		int sum_a = 0, sum_b = 0;
-
-		for (; runners[0] || runners[1]; boolean = !boolean) {
-			e += +(boolean == 0);
-			val = std::pow(10, e - 1);
-
-			if (!!runners[+boolean]) {
-				if (!boolean) {
-					sum_a += runners[0]->value * val;
-				}
-				else {
-					sum_b += runners[1]->value * val;
-				}
-				runners[+boolean] = runners[+boolean]->next;
-			}
-		}
-		return sum_a + sum_b;
-	}
-
-	void flatten_children(SList_t* list)
-	{
-		SLNode_t** child_list = (SLNode_t**) malloc(1* (sizeof(SLNode_t*)));
-		SLNode_t* runner = list->head;
-
-		int size = 0;
-		int index = 0;
-
-		/* append children to child list*/
-		while (runner) {
-			if (!!runner->child) {
-				size++;
-				realloc(child_list, size);
-				child_list[size - 1] = runner->child; 
-			}
-			
-			if (!(runner->next) && (index < size)) {
-				runner = child_list[index++];
-			} else {
-				runner = runner->next;
-			}
-		}
-
-		/*  flatten buffered list  */
-		runner = list->head;
-		index = 0;
-		while (runner) {
-			if (!(runner->next)) {
-				if ((index < size))
-					runner->next = child_list[index++];
-				else
-					list->back = runner;
-			}
-			runner = runner->next;
-		}
-
-		free(child_list);
-	}
-
-	void unflatten_children(SList_t* list)
-	{
-		SLNode_t* runner = list->head;
-		SLNode_t* child;
-		SLNode_t* new_back = NULL;
-		SLNode_t** child_list = (SLNode_t**)malloc(1 * (sizeof(SLNode_t*)));
-		int size = 0;
-		int index = 0;
-
-		while (runner->next) {
-			if (runner->next->child) {
-				size++;
-				realloc(child_list, size);
-				child_list[size - 1] = runner->next->child;
-			}
-			
-			if (runner->next == child_list[index]) {
-				if (index == 0)
-					list->back = runner;
-				child = runner->next;
-				runner->next = NULL;
-				runner = child;
-				index++;
-			}
-
-			free(child_list);
-
-		}
-	}
-
-	void basic_config_setup(SList_t* list)
-	{
-		/* basic configuration*/
-		list->push_back = slist_push_back;
-		list->push_front = slist_push_front;
-		list->allocate_slnode = slnode;
-	}
-
-	SLNode_t* setup_loop(unsigned node_count, unsigned num)
-	{
-		static SList_t loopy_list;;
-		SLNode_t *tmp = NULL;
-		
-		basic_config_setup(&loopy_list);
-
-		if (num == 0)
-			return loopy_list.head;
-
-		for (int i = 1; i <= node_count; i++) {
-			loopy_list.push_back(&loopy_list, i);
-			if (i == num) {
-				tmp = loopy_list.back;
-			}
-		}
-
-		loopy_list.back->next = tmp;
-		return loopy_list.head;
-	}
-
-	bool has_loop(SList_t *list)
-	{
-		SLNode_t* front, *back;
-		
-		if (!list->head) 
-			return false;
-		
-		front = list->head->next;
-		back = list->head;
-		
-		while (!!front && !!back) {
-			
-			if ( front->next == back) { /*adjacent*/
-				return true;
-			}
-
-			if (front->next) {
-				if (front->next->next == back) { /* feeback */
-					return true;
-				}
-			}
-
-			back = back->next;
-			front = front->next;
-		}
-		return false;
-	}
-
-	SLNode_t* loop_start(SList_t* list)
-	{
-		SLNode_t* front, * back;
-
-		if (!list->head)
-			return NULL;
-
-		front = list->head->next;
-		back = list->head;
-
-		while (!!front && !!back) {
-			if ( front->next == back) {
-				return front;
-			}
-			if (front->next) {
-				if (front->next->next == back) {
-					return front->next;
-				}
-			}
-			back = back->next;
-			front = front->next;
-		}
+	if (runner_a == NULL) 
 		return NULL;
-	}
 
-	void break_loop(SList_t* list)
-	{
-		SLNode_t * node = loop_start(list);
-		if (!!node) {
-			node->next = NULL;
-		}
-	}
-
-	int number_of_nodes (SList_t* list)
-	{
-		int counter = 0;
-		SLNode_t* node = list->head;
-		
-		break_loop(list);
-		while (node) {
-			counter++;
-			node = node->next;
-		}
-		return counter;
-	}
-
-	void swap_pairs(SList_t* list)
-	{
-		SLNode_t* runner;
-		SLNode_t* node, * stop;
-
-		if (list->head == NULL)
-			return;
+	runner_b = runner_a->next;
 	
-		stop = list->head->next;
-		runner = list->head;
+	while (runner_a && runner_b) {
 
-		while (runner->next) {
-			node = list->head;
-			list->head = list->head->next;
-			node->next = list->head->next;
-			list->head->next = node;
-			shift_left(list, 2);
-			runner = list->head;
-
-			if (runner->next == stop) {
-				shift_left(list, 1);
-				break;
-			}
-			if (runner == stop) {
-				break;
-			}
+		if (runner_b->next == runner_a ) {
+			return prev;
 		}
-		
-	}
 
+		prev = runner_b;
+		runner_a = runner_a->next;
+		runner_b = runner_b->next;
+ 	}
+	return NULL;
+}
+
+void dlist_break_loop(struct DList_t *list)
+{
+	DLNode_t* node = dlist_loop_start(list);
+	node->next = NULL;
+	list->tail = node; 
+}
+
+void dlist_repair(struct DList_t *list)
+{
+	while (dlist_is_valid(list) == False) {
+		dlist_break_loop(list);
+	}
 }
