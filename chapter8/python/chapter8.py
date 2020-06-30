@@ -89,7 +89,6 @@ class SList:
     runner = runner.next
 
   def reverse(self):
-    runner = None 
     tmp_node  = SLNode(0)
     tmp_node_next = None 
  
@@ -107,17 +106,87 @@ class SList:
     
     del tmp_node
   
+  def isPalindrome(self):
+    runner = None 
+    start = self.head 
+    end = None 
+
+    if start == None:
+      return False
+
+    while 1 :
+      runner = start 
+      while runner.next != end:
+        runner = runner.next
+      end = runner;  
+      if start.val != end.val:
+        return False
+      if end.next == start or start != end:
+        break
+      start = start.next
+    return True
   
+  def kthLastNode(self, k):
+    runner = None 
+    count = None 
+    start = self.head
+
+    while start:
+      runner = start
+      count = 0  
+      
+      while runner:
+        count += 1
+        runner = runner.next
+      
+      if count == k:
+        return start.val
+      
+      start = start.next
+    return None 
+  
+  def shiftRight(self, n):
+    runner = None
+    runner_prev = None  
+    
+    if n < 0:
+      return shiftLeft(n * -1)
+      
+    for i in range(0, n):
+      runner = self.head 
+      while runner.next:
+        runner_prev = runner
+        runner = runner.next
+      runner.next = self.head
+      self.head = runner
+      runner_prev.next = None 
+
+  def shiftLeft (self, n):
+    newTail = None 
+    runner = None 
+
+    if (self.head):
+      for i in range(0, n):
+        newTail = self.head
+        self.head = self.head.next
+        runner  = self.head
+        while runner.next:
+          runner = runner.next
+        runner.next = newTail
+        newTail.next = None 
+
   def display(self):
     runner = self.head 
     while runner:
       print(runner.val, end='')
       runner = runner.next 
     print()
+
 llist = SList()
 llist.pushBack(2)
 llist.pushFront(4)
 llist.pushFront(6)
-llist.display()
-llist.reverse()
+
+
+llist.shiftLeft(1)
 llist.display()
