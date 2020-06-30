@@ -5,19 +5,16 @@ class SLNode:
     self.next = None 
 
 class SList:
-  def __init__(self, value):
+  def __init__(self):
     self.head = None 
   
   @property
   def tail(self):
     runner = self.head
-    
     if (runner == None):
       return runner
-
     while runner.next:
       runner = runner.next
-    
     return runner
 
   def pushFront(self, value):
@@ -81,7 +78,7 @@ class SList:
       if (runner.val == value):
         rslt |= True
         del_node = runner 
-        if ( runner = self.head):
+        if ( runner == self.head):
           self.head = self.head.next
           runner = self.head
         else:
@@ -90,3 +87,37 @@ class SList:
         del del_node
     runner_prev = runner
     runner = runner.next
+
+  def reverse(self):
+    runner = None 
+    tmp_node  = SLNode(0)
+    tmp_node_next = None 
+ 
+    if (self.head == None):
+      return None 
+    
+    while self.head:
+      tmp_node.next = self.head 
+      self.head = self.head.next
+      tmp_node.next.next = tmp_node_next
+      tmp_node_next = tmp_node.next
+    
+    if (tmp_node.next):
+      self.head = tmp_node.next
+    
+    del tmp_node
+  
+  
+  def display(self):
+    runner = self.head 
+    while runner:
+      print(runner.val, end='')
+      runner = runner.next 
+    print()
+llist = SList()
+llist.pushBack(2)
+llist.pushFront(4)
+llist.pushFront(6)
+llist.display()
+llist.reverse()
+llist.display()
