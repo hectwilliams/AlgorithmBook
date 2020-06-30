@@ -9,17 +9,14 @@ extern int errno;
 
 int main(int argv, char **argc) {  	//entry 
 	DList_t * dlist = dlist_malloc();
-		dlist_push( dlist, 0);
-
+	dlist_push( dlist, 0);
 	dlist_push( dlist, 2);
 	dlist_push( dlist, 0);
 	dlist_push( dlist, 1);
-		dlist_push( dlist, 4);
+	dlist_push( dlist, 4);
 	dlist_push( dlist, 6);
-
 	dlist_partition(dlist, 1);
 	dlist_reverse(dlist);
-
 	dlist_display(dlist);
 	// destruct_list();
 }
