@@ -2,7 +2,6 @@
 #include <vector>
 #include <queue>
 #include <map>
-
 #include "chapter8.h"
 
 template <class T>
@@ -99,11 +98,11 @@ ret_obj<T> SList_t<T>::popBack()
   return data;
 }
 
-
 template <class T>
 bool SList_t<T>::removeValue(const T &value)
 {
   SLNode_t<T> *runner = head, *runner_prev = NULL, *tmp_node;
+  bool rslt = false; 
 
   while (runner) {
     if (runner->value == value) {
@@ -121,47 +120,38 @@ bool SList_t<T>::removeValue(const T &value)
         tail = runner_prev;
       }
       free(tmp_node);
+      rslt = true;
     } else {
       runner_prev = runner;
       runner = runner->next;
     }
   }
+  return rslt;
 }
 
 template<typename T>
 void SList_t<T>::reverse (SList_t<T> *list)
 {
   
-  SLNode_t<T> *runner, *insertion_after_node = NULL, *oldHead, *curr_tail; 
+  SLNode_t<T> *tmp_node = sl_node<T>(0), *tmp_node_next = NULL;
 
   if (list == NULL) 
     list = this;
   
-  oldHead = list->head;
-  
   if (list->head == NULL) 
     return;
   
-  while (list->tail != oldHead) {
-    runner = list->head;
-    
-    while (runner->next != list->tail) 
-      runner = runner->next;
-  
-    curr_tail = runner->next;
- 
-    if (insertion_after_node == NULL) { /* new head */
-      curr_tail->next = list->head; 
-      list->head = curr_tail;
-    } else {
-      curr_tail->next = insertion_after_node->next;
-      insertion_after_node->next = curr_tail;
-    }
-
-    insertion_after_node = curr_tail; /* update insertion after pointer */
-    list->tail = runner;  /* update tail*/
-    list->tail->next = NULL; /* nullify tail's next node */
+  while (list->head) {
+    tmp_node->next = list->head;
+    list->head = list->head->next;
+    tmp_node->next->next = tmp_node_next;
+    tmp_node_next = tmp_node->next;
   }
+
+  if (tmp_node->next) 
+    list->head = tmp_node->next;
+  
+  free(tmp_node);
 }
 
 template <typename T>
