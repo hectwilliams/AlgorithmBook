@@ -519,7 +519,317 @@ void SList_t<T>::unflattenChildren()
   }
 }
 
+template <class T>
+DList_t <T> *dl_list()
+{
+ return  new DList_t<T>();
+}
 
+template <class T>
+DLNode_t <T> *dl_node(const T &value)
+{
+  return  new DLNode_t<T>(value);
+}
+
+template <class T>
+void DList_t<T>::push(const T &value)
+{
+  DLNode_t<T> node = dl_node(value);
+  if (this->head == NULL) {
+    this->head = this->tail = node;
+  } else {
+    node->next = this->head;
+    this->head->prev = node;
+    this->head = node;
+  }
+}
+
+template <class T>
+ret_obj<T> DList_t<T>::pop(void)
+{
+  ret_obj<T> data{false};
+  DLNode_t<T> *runner = this->head;
+  
+  if (this->head != NULL) {
+    data.valid = true;
+    data.value = this->head->value;
+    this->head = this->head->next;
+    if (this->head) {
+      delete(this->head->prev)
+      this->head->prev = NULL
+    }
+  }
+  return data;  
+}
+
+template <class T>
+ret_obj<T> DList_t<T>::front(void)
+{
+  ret_obj<T> data{false};
+  if (this->head) {
+    data.valid = true;
+    data.value = this->head->value;
+  }
+  return data; 
+}
+
+template <class T>
+ret_obj<T> DList_t<T>:: back(void)
+{
+  ret_obj<T> data{false};
+  if (this->tail) {
+    data.valid = true;
+    data.value = this->tail->value;
+  }
+  return data; 
+}
+
+template <class T>
+bool DList_t<T>::contains (const T &value)
+{
+  bool hasValue = false;
+  DLNode_t<T> *end = this->tail, *start = this->head;
+  
+  while (end || start) {
+    hasValue |= (end->value == value)  || (start->value == value);
+
+    if (end)
+      end = end->next;
+
+    if (start)
+      start = start->next;
+    
+    if (end == start || end->next == start)
+      break;
+  }
+  return hasValue;
+}
+
+
+template <class T>
+unsigned int DList_t<T>::size (void)
+{
+  DLNode_t<T> *end = this->tail, *start = this->head;
+  unsigned int count = 0;
+  
+  while (end || start) {
+    
+    if (end == start) 
+      count += 1;
+    else 
+      count += 2;
+    
+    if (end)
+      end = end->next;
+
+    if (start)
+      start = start->next;
+
+    if (end == start || end->next == start)
+      break;
+  }
+}
+
+template <class T>
+  void DList_t<T>::prepend_value(const T &value, const T &existingValue)
+  {
+    DLNode_t<T> *runner = this->head;
+    DLNode_t<T> *newNode;
+
+    while (runner) {
+      if (runner->value == existingValue) {
+        if (this->head == runner) {
+          this->push(value);
+        } else {
+          newNode = dl_node(value);
+          runner->prev->next  = newNode;
+          newNode->prev = runner->prev;
+          newNode->next = runner;
+          runner->prev = newNode;
+        }
+      }
+      runner = runner->next; 
+    }
+  }
+
+template <class T>
+void DList_t<T>::append_value(const T &value, const T &existingValue)
+{
+  DLNode_t<T> *runner = this->head;
+  DLNode_t<T> *newNode;
+
+  while (runner) {
+    if (runner->value == existingValue) {
+      newNode = dl_node(value);
+      newNode->next = runner->next;
+      if (runner->next) {
+        runner->prev = newNode;
+      }
+      newNode->prev = runner;
+      runner->next = newNode;
+    }
+    runner = runner->next; 
+  }
+}
+
+template <class T>
+ret_obj<T> DList_t<T>::kth_to_last_value(const unsigned &k)
+{
+  DLNode_t<T> *runner = this->tail;
+  ret_obj<T> data {false};
+
+  for (int i = 0; (i < k - 1) && runner ; i++) 
+    runner = runner->prev;
+  
+  if (runner) {
+    data.valid = true;
+    data.value = runner->value;
+  } 
+}
+
+template <class T>
+void DList_t<T>::delete_middle_node(DLNode_t<T> ** ptr_addr)
+{
+  DLNode_t<T> *node =  *ptr_addr;
+  node->prev->next = node->next;
+  node->next->prev = node->prev;
+  free(node);
+}
+
+template <class T>
+bool DList_t<T>::is_valid(void) 
+{
+  DLNode_t<T> *front = this->head, *back;
+
+  if (front == NULL) 
+    return false;
+  
+  back = front;
+  front = back->next;
+	
+  while ( front) {
+		
+		if (front->prev != back) 
+			return false;
+		
+		if (back)
+			back = back->next;
+
+		if (front)
+			front = front->next;
+	}
+  return true; 
+  
+}
+
+template <class T>
+void DList_t<T>::partition (T value )
+{
+  DLNode_t<T> *node, *runner = this->head;
+  while (runner) {
+    if (runner->value < value) {
+      node = runner;
+      if (runner->prev) 
+        runner->prev->next = runner.next
+      if (runner->next)
+        runner->next->prev = runner=>prev
+      /* move node to front */
+      node->next = this->head;
+      this->head->prev = node;
+      this->head = node ;
+    }
+    runner = runner->next;
+  } 
+}
+
+template<class T>
+bool DList_t<T>::is_palindrome(void)
+{
+  DLNode_t<T> *end = this->tail, *front = this->tail;
+  
+  while (end  || front) {
+    if (end->value != front->value) 
+      return false; 
+    
+    if (end)
+      end = end->prev;
+    
+    if (front) 
+      front = front->next;
+    
+    if (end == front || end->next == front)
+      break;
+  } 
+  return true;
+}
+
+template <class T>
+void DList_t<T>::reverse(void)
+{
+  DLNode_t<T> *runner_back, *runner ;
+  
+  /* break tail-prev link*/
+  if (this->tail) {
+    runner_back = this->tail->prev;
+    this->tail->prev = NULL 
+    self.head = this->tail; 
+    self.tail = this->head; 
+    runner = self.head;
+  }
+
+  while (runner_back) {  
+    this->tail = runner_back;
+    runner->next = runner_back;
+    runner_back = runner_back->prev;
+    runner = runner->next;
+    runner->next = NULL;
+  }
+
+}
+
+template <class T>
+DLNode_t<T> *DList_t<T>::loop_start ()
+{
+  DLNode_t<T> *back, *front;
+
+  if (this->head == NULL)
+    return NULL;
+  
+  back = this->head;
+  front = back->next;
+
+  while (front) {
+    
+    if (front->prev != back)
+      break;
+    
+    if (front)
+      front = front->next;
+    
+    if (back) 
+      back = back->next;
+  }
+
+  return back;
+}
+
+template <typename T>
+void DList_t<T>::break_loop(void) 
+{
+  DLNode_t<T> *feedback = this->loop_start();
+  if (feedback) {
+    feedback->next = NULL;
+    this->tail = feedback; 
+  }
+}
+
+template <class T>
+ void DList_t<T>::repair(void) 
+{
+  while (!this->is_valid) 
+    this->break_loop();
+  
+}
 
 int main() {
   SList_t<int> *list_a = sl_list<int>();

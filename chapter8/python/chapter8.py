@@ -411,6 +411,7 @@ class DLNode:
     self.val = value
     self.prev = None 
     self.next = None 
+
 class DList:
   def __init__(self):
     self.head = None
@@ -424,17 +425,15 @@ class DList:
       self.head.prev = node 
       node.next = self.head 
       self.head = node 
+
   def pop (self):
-    node = None 
     data = None 
-    
-    if self.head == None :
-      return result 
-    
-    node = self.head 
-    self.head = self.head.next 
-    data = node.val
-    del node 
+    if self.head:
+      data = self.head.val
+      self.head = self.head.next 
+      if self.head:
+        del self.head.prev
+        self.head.prev = None 
     return data 
 
   def front (self):
@@ -452,38 +451,196 @@ class DList:
   def contains(self, value):
     runner_front = self.head
     runner_back = self.tail
+    hasValue = false 
     
     while runner_front or runner_back:
+      hasValue |= runner_front.val == value or runner_back.val == value
 
       if runner_back:
-        if runner_back.val == value:
-          return True
         runner_back = runner_back.prev
       
       if runner_front:
-        if runner_front.val == value:
-          return True
         runner_front = runner_front.next
     
-    return False 
+    return hasValue 
 
   def size(self, value):
     runner_front = self.head
     runner_back = self.tail
-
-    while (runner_back.next != runner_front or runner_back != runner_front):
-      count+= 1
+    count = 0
+    
+    while (runner_back or runner_front):
+      if runner_back == runner_front: 
+        count += 1
+      else:
+        count += 2
+      
       if runner_back:
         runner_back = runner_back.prev
+      
       if runner_front:
         runner_front = runner_front.next
-      count += +(runner_back == runner_front)
+    return count 
+  
+  def prependValue(self, newValue, existingValue):
+    runner = self.head
+    node = None
+    newNode = None  
+    while runner:
+      if runner.val == existingValue:
+        if self.head == runner:
+          self.push(newValue)
+        else:
+          newNode = DLNode(newValue)
+          runner.prev.next = newNode
+          newNode.prev = runner.prev
+          newNode.next = runner
+          runner.prev = newNode
+      runner = runner.next
+  
+  def appendValue(self, newValue, existingValue):
+    runner = self.head 
+    node = None 
+    newNode = None 
+    while runner:
+      if runner.val == existingValue:
+        newNode = DLNode(newValue)
+        newNode.next = runner.next
+        if runner.next:
+          runner.next.prev = newNode
+        newNode.prev = runner
+        runner.next = newNode
+      runner = runner.next 
+  
+  def kthLastNode (self, k):
+    runner = self.tail
+    data = None 
+    
+    for i in range(0, k):
+      if runner:
+        runner = runner.prev
+      else:
+        return None 
+    if runner:
+      data = runner.val
+    return data
+  
+  def deleteMiddleNode (self, node):
+    node.prev.next = node.next 
+    node.next.prev = node.prev 
+    del node 
 
-llist = SList()
-llist.pushBack(2)
-llist.pushFront(4)
-llist.pushFront(6)
+  def isValid(self) :
+    slow = None 
+    fast = None 
 
+    if self.head:
+      slow = self.head
+      fast = slow.next 
+    else:
+      return false
 
-llist.shiftLeft(1)
-llist.display()
+    while fast:
+
+      if fast.prev != slow:
+        return False 
+      
+      if slow:
+        slow = slow.next 
+      
+      if fast:
+        fast = fast.next 
+    
+    return True 
+
+  def partition(self, val):
+    node = None 
+    runner = self.head 
+    
+    while runner:
+      if (runner.val < val):
+        node = runner
+        if runner.prev:
+          runner.prev.next = runner.next 
+        if runner.next:
+          runner.next.prev = runner.prev 
+        #move node to front 
+        node.next = self.head 
+        self.head.prev = node 
+        self.head = node 
+      runner =  runner.next
+    
+  def isPalindrome(self):
+    end = self.tail
+    front = self.head 
+
+    while end or front:
+      if (end.val != front.val):
+        return False 
+      if end:
+        end = end.prev
+      if front:
+        front = front.next
+
+      if (end== front or end.next == front):
+        break
+    return True
+  
+  def reverse (self):
+    back = self.tail
+    runner = None 
+    if self.tail:
+      back = self.tail.prev 
+      self.tail.prev = NULL
+      self.head = self.tail 
+      self.tail = self.head
+      runner = self.head 
+    while back:
+      self.tail = back
+      runner.next = back 
+      back = back.next 
+      runner = runner.next 
+      runner.next = None 
+
+  def loopStart(self):
+    back = None  
+    front = None 
+
+    if self.head == None:
+      return None 
+      
+    back = self.head
+    front = self.head.next
+
+    while front:
+      
+      if front.prev != back:
+        break
+
+      if back:
+        back = back.next
+
+      if front:
+        front = front.next 
+    return back
+
+  def breakLoop (self):
+    feedback = self.loopStart()
+    if feedback:
+      feedback.next = None 
+  
+  def repair(self):
+    while not self.isValid:
+      self.breakLoop()
+
+  def display(self):
+    runner = self.head 
+    while  runner:
+      print ("[" , runner.val,"]", end='')
+      runner = runner.next
+
+dlist = DList()
+dlist.push(22)
+dlist.push(23)
+dlist.appendValue(51, 22)
+dlist.display()

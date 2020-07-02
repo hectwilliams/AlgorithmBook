@@ -234,7 +234,7 @@ void shift_right (SList_t *list, int n)
 		runner->next = NULL;
 
 		runner = newHead;
-		
+
 	  /* connect new head's tail to old head*/
 		while (runner->next) 
 			runner = runner->next;
@@ -707,32 +707,29 @@ void dlist_delete_middle_node(DLNode_t *dnode)
 
 boolean dlist_is_valid(struct DList_t *list)
 {
-	unsigned int count_forward, count_back;
-	DLNode_t *runner_forward, *runner_back;
+	DLNode_t *back, *front;
 
-	if (list->head == NULL) 
+	if (list->head) {
+		back = list->head;
+		front = back->next;	
+	} else {
 		return False;
+	}
 
-	count_back = 0;
-	count_forward = 0;
-	runner_forward = list->head;
-	runner_back = list->tail;
-
-	while (runner_back || runner_forward) {
-		count_forward += +(runner_forward == list->head);
-		count_back += +(runner_back == list->tail);
-
-		if (count_back == 2 || count_forward == 2) 
-			return False; 
+	while (front) {
 		
-		if (runner_forward) 
-			runner_forward = runner_forward->next;
+		if (front->prev != back) 
+			return False;
 		
-		if (runner_back) 
-			runner_back = runner_back->prev;
+		if (back)
+			back = back->next;
+
+		if (front)
+			front = front->next;
 	}
 
 	return True;
+
 }
 
 void dlist_partition(struct DList_t *list, int value)
@@ -819,25 +816,26 @@ void dlist_reverse(struct DList_t *list)
 
 DLNode_t* dlist_loop_start(struct DList_t *list)
 {
-	DLNode_t *runner_a = list->head, *runner_b; //b leads 
-	DLNode_t * prev; 
+	DLNode_t *back , *front;
 
-	if (runner_a == NULL) 
+	if (list == NULL)
+		return NULL;
+	
+	if (list->head == NULL)
 		return NULL;
 
-	runner_b = runner_a->next;
-	
-	while (runner_a && runner_b) {
+	back = list->head;
+	front = back->next;
 
-		if (runner_b->next == runner_a ) {
-			return prev;
-		}
-
-		prev = runner_b;
-		runner_a = runner_a->next;
-		runner_b = runner_b->next;
- 	}
-	return NULL;
+	while (front) {
+		if (front->prev != back)
+			break;
+		if (back)
+			back = back->next;
+		if (front)
+			front = front->next;
+	}
+	return back; 
 }
 
 void dlist_break_loop(struct DList_t *list)

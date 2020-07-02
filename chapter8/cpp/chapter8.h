@@ -56,4 +56,47 @@ public:
 template <class T>
 SList_t <T> *sl_list();
 
+template <class T>
+class DLNode_t 
+{
+  public:
+  /*structure methods */
+    DLNode_t <T> *next, *prev;
+    DLNode_t <T> *child;
+    T value;
+  /*constructor*/
+    DLNode_t <T> ( const T &val): value{val}, next{NULL}, prev{NULL} {}
+};
+
+
+template <class T>
+class DList_t {
+  DLNode_t<T> *head, *tail;
+  public:
+  DList_t<T> (): head{NULL}, tail{NULL} {}
+  void push(const T &value);
+  ret_obj<T> pop(void);
+  ret_obj<T> front(void);
+  ret_obj<T> back(void);
+  bool contains (const T &value);
+  unsigned int size (void);
+
+  void prepend_value(const T &value, const T &existingValue);
+  void append_value(const T &value, const T &existingValue);
+  ret_obj<T> kth_to_last_value(const unsigned &k);
+  void delete_middle_node(DLNode_t<T> ** ptr_addr);
+  bool is_valid(void);
+  void partition (T value );
+  bool is_palindrome(void);
+  void reverse(void);
+  DLNode_t<T> *loop_start(void);
+  void break_loop(void);
+  void repair(void) 
+};
+
+template <class T>
+DList_t <T> *dl_list();
+template <class T>
+DLNode_t <T> *dl_node(const T &value);
+
 #endif 
