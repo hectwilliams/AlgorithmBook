@@ -639,8 +639,3 @@ class DList:
       print ("[" , runner.val,"]", end='')
       runner = runner.next
 
-dlist = DList()
-dlist.push(22)
-dlist.push(23)
-dlist.appendValue(51, 22)
-dlist.display()
