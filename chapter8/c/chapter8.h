@@ -41,6 +41,12 @@ SLNode_t*  slist_loop_start (SLNode_t *node);
 void slist_break_loop(SLNode_t *node);
 unsigned int slist_number_of_nodes (SLNode_t *node );
 void slist_swap_pairs(SList_t *list);
+SLNode_t *reverse (SList_t *list);
+boolean is_palindrome (SList_t *list);
+return_data kthLastNode(SList_t *list, unsigned int k);
+void shift_right (SList_t *list, int n);
+void shift_left (SList_t *list, int n);
+
 SList_t *slist_sl_list(); /* allocate linked list */
 
 

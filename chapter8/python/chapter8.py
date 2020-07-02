@@ -1,8 +1,12 @@
 
+import math
+import queue 
+
 class SLNode:
   def __init__(self, value):
     self.val = value
     self.next = None 
+    self.child = None 
 
 class SList:
   def __init__(self):
@@ -127,53 +131,271 @@ class SList:
     return True
   
   def kthLastNode(self, k):
-    runner = None 
-    count = None 
-    start = self.head
+    count = 0 
+    runner = self.head
 
-    while start:
-      runner = start
-      count = 0  
-      
-      while runner:
-        count += 1
+    #count 
+    while runner:
+      runner = runner.next
+      count += 1
+    
+    # count - k
+    count -= k 
+    if count > 0:
+      runner = self.head
+      while count > 0:
         runner = runner.next
-      
-      if count == k:
-        return start.val
-      
-      start = start.next
-    return None 
+        count -= 1
+    return runner           
   
   def shiftRight(self, n):
-    runner = None
-    runner_prev = None  
+    runner = self.head
+    newHead = None 
+    node = None 
+    count = 0
+
+    if n == 0 or runner== None:
+      return None 
     
-    if n < 0:
-      return shiftLeft(n * -1)
-      
-    for i in range(0, n):
-      runner = self.head 
+    while runner:
+      runnner = runner.next
+      count += 1
+    
+    if n > 0:
+      runner = self.head
+      for i in range(0, abs(count - n) ):
+        runner = runner.next
+
+      #break list 
+      newHead = runner.next
+      runner.next = None 
+
+      #connect trailing nodes to front 
+      runner = newHead
       while runner.next:
-        runner_prev = runner
         runner = runner.next
       runner.next = self.head
-      self.head = runner
-      runner_prev.next = None 
+      self.head = newHead
 
+    else:
+      return self.shiftLeft(n)
+  
   def shiftLeft (self, n):
-    newTail = None 
-    runner = None 
+    runner = self.head
+    newHead = None 
+    count = 0 
 
-    if (self.head):
-      for i in range(0, n):
-        newTail = self.head
-        self.head = self.head.next
-        runner  = self.head
+    while runner:
+      count += 1
+      if count == n:
+        #break link 
+        newHead = runner.next
+        runner.next = None 
+        
+        #newHead must not be NULL
+        if newHead == None:
+          break 
+
+        # point runner to tail of new HEAD 
+        runner = newHead
         while runner.next:
-          runner = runner.next
-        runner.next = newTail
-        newTail.next = None 
+          runner = runner.next 
+
+        # link new list  with previous  HEAD 
+        runner.next = self.head
+        
+        # update head 
+        self.head = newHead  
+
+        break
+      runner = runner.next
+  
+  def sumNumerals (self, lista, listb):
+    a = lista.head 
+    b = listb.head 
+    sum = [0,0, 0] 
+    resultList = SList()
+    digit = None 
+    factor = 1
+
+    # pluck digits into sum array
+    while a or b:
+      if a:
+        sum[0] += a.val * factor
+        a = a.next
+      if b:
+        sum[1] += b.val * factor
+        b = b.next
+      factor += 10
+
+    #sum accumlators 
+    sum[2] = sum[0] + sum[1]
+    
+    #pluck least sig. digit into list queue  
+
+    while (sum[2] > 0):
+      digit = sum[2] % 10
+      resultList.pushBack(digit)
+      sum[2] = int(sum[2] / 10)
+    
+    return resultList
+  
+  def setupLoop (numberOfNodes, loopback_pos):
+    myList = SList()
+    feedback_node = None 
+
+    for i in range(1, numberOfNodes + 1):
+      myList.pushBack(i)
+      if loopback_pos == i:
+        feedback_node = myList.tail
+    
+    #feedback
+    if feedback_node:
+      myList.tail.next = feedback_node
+
+    return myList
+  
+  def flattenChildren(self):
+    runner = None 
+    d_queue = queue.Queue()
+    children = []
+    currTail = None 
+    
+    if self.head != None :
+      d_queue.put(self.head)
+
+    while not d_queue.empty():
+      runner = d_queue.get() # pop front of queue 
+      while runner:
+        if runner.child: # store child node 
+          d_queue.put(runner.child)
+          static_array_children.append(runner.child)
+        runner = runner.next
+    
+    # append children list to list  (update tail property)
+    for child in children:
+      self.tail.next = child
+      runner = child 
+      while runner.next:
+        runner = runner.next 
+      self.tail = runner 
+
+  def unflattenChildren(self):
+    histo = {}
+    runner = self.head 
+    runner_prev = None 
+    tailSet = False 
+
+    while runner:
+      if runner.child:
+        # hashMap frequency of child node in LL 
+        if histo.get(runner.child) == None:
+          histo[runner.child] = 0
+        histo[runner.child] += 1
+
+        #break if repeat  found 
+        if histo[runner.child] == 2:
+
+          if tailSet == False: # set tail  (first unlink) 
+            tail = runner_prev
+          
+          if runner_prev:
+            runner_prev.next = None 
+          
+      runner_prev = runner      
+      runner = runner.next
+
+  def hasLoop(self):
+    slow = self.head 
+    fast = self.head  
+    
+    while slow:
+      if fast:
+        fast = fast.next
+      if fast:
+        fast = fast.next
+      slow = slow.next
+      if fast == slow:
+        return true
+
+  def loopStart(self):
+    slow = self.head 
+    fast = self.head  
+    collision = None 
+    loopHead = None 
+    runner = None 
+    n = 0
+
+    while slow:
+      if fast:
+        fast = fast.next
+      if fast:
+        fast = fast.next
+      slow = slow.next
+      if fast == slow:
+        collision = slow 
+        break
+    
+    # n number of nodes in loop
+    if collision:
+      runner = collision.next 
+      while runner != collision:
+        n += 1
+        runner = runner.next 
+
+      # move loopHead  n-1 nodes from LL Head 
+      loopHead = self.head
+      for i in range(0, n-1):
+        loopHead = loopHead.next 
+
+      #break loop at feeback linking loopHead 
+      runner = loopHead
+      while runner.next != loopHead:
+        runner = runner.next
+    
+    return runner 
+  
+  def breakLoop (self):
+    feedback = self.loopStart()
+    if feedback:
+      feedback.next = None 
+  
+  def numberOfNodes(self):
+    feedback = self.loopStart()
+    runner = self.head 
+    count = 0 
+
+    if runner == None :
+      return count
+    while runner.next != feedback:
+      runner = runner.next 
+      count += 1
+    return count 
+  
+  def swapPairs(self):
+    runner = self.head 
+    runner_prev = None
+
+    while runner:
+
+      if runner_prev:
+        
+        if self.head == runner_prev:
+          self.head = runner
+        
+        if self.tail == runner:
+          self.tail = runner_prev
+        
+        runner_prev.next = runner.next
+        runner.next = runner_prev
+
+        runner = runner_prev
+        runner_prev = None 
+      
+      else:
+        runner_prev = runner 
+        runner = runner.next
+
 
   def display(self):
     runner = self.head 
@@ -181,6 +403,81 @@ class SList:
       print(runner.val, end='')
       runner = runner.next 
     print()
+
+
+
+class DLNode:
+  def __init__(self, value):
+    self.val = value
+    self.prev = None 
+    self.next = None 
+class DList:
+  def __init__(self):
+    self.head = None
+    self.tail = None 
+
+  def push(self, value):
+    node = DLNode(value)
+    if self.head == None:
+      self.head = self.tail = node 
+    else:
+      self.head.prev = node 
+      node.next = self.head 
+      self.head = node 
+  def pop (self):
+    node = None 
+    data = None 
+    
+    if self.head == None :
+      return result 
+    
+    node = self.head 
+    self.head = self.head.next 
+    data = node.val
+    del node 
+    return data 
+
+  def front (self):
+    if (self.head == None):
+      return None
+    else:
+      return self.head.val
+
+  def back (self):
+    if (self.tail == None):
+      return None 
+    else:
+      return self.tail.val
+
+  def contains(self, value):
+    runner_front = self.head
+    runner_back = self.tail
+    
+    while runner_front or runner_back:
+
+      if runner_back:
+        if runner_back.val == value:
+          return True
+        runner_back = runner_back.prev
+      
+      if runner_front:
+        if runner_front.val == value:
+          return True
+        runner_front = runner_front.next
+    
+    return False 
+
+  def size(self, value):
+    runner_front = self.head
+    runner_back = self.tail
+
+    while (runner_back.next != runner_front or runner_back != runner_front):
+      count+= 1
+      if runner_back:
+        runner_back = runner_back.prev
+      if runner_front:
+        runner_front = runner_front.next
+      count += +(runner_back == runner_front)
 
 llist = SList()
 llist.pushBack(2)

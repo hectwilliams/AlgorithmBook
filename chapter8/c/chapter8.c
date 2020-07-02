@@ -90,6 +90,164 @@ void  slist_display(void *data)
 	}
 }
 
+SLNode_t *reverse (SList_t *list) {
+	SLNode_t *runner = list->head;
+	SLNode_t *tmp = sl_node(2);
+	SLNode_t *tmp_node = NULL;
+
+	while (runner) {
+		tmp->next = list->head;
+		list->head = list->head->next;
+		tmp->next->next = tmp_node;
+		tmp_node = tmp->next;
+	}
+	
+	list->head = tmp->next;
+	free(tmp);
+	return list->head;
+} 
+
+boolean is_palindrome (SList_t *list) 
+{
+	SLNode_t *runner, *start, *end = NULL;
+	
+	if (list->head == NULL)
+		return False;
+
+	start = list->head;
+	
+	while (start) {
+		runner = start;
+		while (runner != end) {
+			runner = runner->next;
+		}
+		end = runner;
+		if (end->value != start->value)
+			return False; 
+		start = start->next;
+	}
+
+	return True;
+}
+
+return_data kthLastNode(SList_t *list, unsigned int k)
+{
+	SLNode_t *runner, *start, *end = NULL;
+	unsigned int count = 0;
+	return_data data =  {.valid = False};
+
+	if (list->head == NULL)
+		return data;
+	
+	runner = list->head;
+
+	/* count number of nodes */
+	while (runner) {
+		count += 1;
+		runner = runner->next;
+	}
+
+	count -= k;
+
+		/* point runner to kth node  */
+	if (count > 0) {
+		runner = list->head;
+		while (count--) 
+			runner = runner->next;
+	}
+
+	if (runner) {
+		data.valid = True;
+		data.value = runner->value;
+	}
+
+	return data; 
+
+}
+
+void shift_left (SList_t *list, int n)
+{
+	SLNode_t *runner = list->head;
+	SLNode_t *newHead = NULL;
+	int count = 0;
+
+	while (runner) {
+		count += 1;
+		
+		if (count == n) {
+		
+		/* break link */
+			newHead = runner->next;
+			runner->next = NULL;
+		
+		/*new Head must be NULL*/
+			if (newHead == NULL) 
+				break;
+			
+		/* point runner to tail of newHead */
+			runner = newHead;
+			while (runner->next) 
+				runner = runner->next;
+			
+		/* link new list with new Head*/
+			runner->next = list->head;
+		
+		/* update head */
+			list->head = newHead;
+
+			break;
+		}
+		runner = runner->next;
+	}
+
+}
+
+void shift_right (SList_t *list, int n)
+{
+  
+	SLNode_t *runner;
+	SLNode_t  *newHead = NULL, *oldHead = NULL;
+	int count = 0;
+
+	if (list == NULL)
+		return;
+
+	if (list->head == NULL)
+		return;
+
+	oldHead = list->head;
+	runner = oldHead;
+	
+	while (runner) {
+		runner = runner->next;
+		count += 1;
+	}
+
+	if (n > 0 && count > 1) {
+		runner = list->head;
+		for (int i = 0; i < abs(n - count); i++) {
+			runner = runner->next;
+		}
+
+		/* break list */
+		newHead = runner->next;
+		runner->next = NULL;
+
+		runner = newHead;
+		
+	  /* connect new head's tail to old head*/
+		while (runner->next) 
+			runner = runner->next;
+		runner->next = oldHead;
+		list->head = newHead;
+	}
+
+	if (n < 0) {
+		return shift_left(list, abs(n));
+	}
+
+}
+
 
 
 SList_t * slist_sum_numerals ( SList_t *a,  SList_t *b)
@@ -221,76 +379,94 @@ void slist_unflatten_children(SList_t *list) {
 struct SList_t *slist_setup_loop(unsigned int count, unsigned int repeat_n)
 {
 	SList_t * list = slist_malloc();
-	SLNode_t *repeat_node;
+	SLNode_t *feedback;
 	
 	for (int i = 1 ; i <= count; i++) {
 		slist_enqueue(list, i);
 		if (repeat_n == i ) {
-			repeat_node = list->tail;
+			feedback = list->tail;
 		}
 	}
-	list->tail->next = repeat_node;
+	list->tail->next = feedback;
 	return list;   
 }
 
 boolean slist_has_loop (SLNode_t *node)
 {
-	SLNode_t *head, *runner;
+	SLNode_t *slow, *fast;
+	boolean hasLoop = False; 
 
 	if (node == NULL)
-		return False;
-
-	runner = node->next;
-	head = node;
-	
-	while (runner) {
-		if (head == runner){
-			return True;
-		}
-		runner = runner->next;
-	}
-	return False; 
+		return hasLoop;
+	slow = fast = node;
+	while (slow && !hasLoop) {
+		slow = slow->next;
+		for (int i = 0; i < 2 && fast; i++) 
+			fast = fast->next; 
+		hasLoop = (fast == slow);
+	} 
+	return hasLoop;
 }
 
 SLNode_t*  slist_loop_start (SLNode_t *node)
 {
-	SLNode_t *a, *b, *prev;
+  SLNode_t *slow, *fast, *collision = NULL, *loopHead, *runner = NULL;
+	unsigned int n = 0;
 
-	if (!node)
-		return node;
+	if (node == NULL)
+		return runner;
 
-	if (node->next) 
-		return node; 
+	slow = fast = node; 
+
+  while (slow) {
+    slow = slow->next;
+    for (int i = 2; i-- && fast ;) 
+      fast = fast->next;
+    if (fast == slow)
+      collision = slow; 
+  }
+
+  if (collision) {
+    runner = collision->next;
+    while (runner != collision) {
+      n++;
+      runner = runner->next;
+    }
+
+    /* move loop head n-1 after LL Head */
+    loopHead = node;
+    for (int i = n-1; i-- ;) 
+      loopHead = loopHead->next;
+
+    runner = loopHead;
+    /* set runner to feedback node */
+    while (runner->next != loopHead) 
+      runner = runner->next;
+  }
 	
-	a = node;
-	b = node->next;
+	return runner; 
 
-	while (a) {
-		if (b->next == a) {
-			return prev;
-		}
-		prev = b;
-		a = a->next;
-		b = b->next;
-	}
-	return NULL;
 }
 
 void slist_break_loop(SLNode_t *node) {
-	SLNode_t *loop_node = slist_loop_start(node);
-	if (loop_node)
-		loop_node->next = NULL; 
+	SLNode_t *feedback = slist_loop_start(node);
+	if (feedback)
+		feedback->next = NULL; 
 }
 
 unsigned int slist_number_of_nodes (SLNode_t *node)
 {
+	SLNode_t *feedback = slist_loop_start(node);
 	unsigned int count = 0;
-	
-	slist_break_loop(node);
-	while (node) {
+
+	if (node == NULL)
+		return count;
+
+	while (node->next != feedback) {
 		count++;
 		node = node->next;
 	}
+
 	return count;
 }
 
@@ -299,20 +475,20 @@ void slist_swap_pairs(SList_t *list)
 	SLNode_t *runner, *runner_prev = NULL, *runner_next, *buffer;
 
 	if (list->head == NULL) 
-		return; 
-	runner = list->head;
+		runner = list->head;; 
+
 	while (runner) {
 		if (runner_prev) {
-			if (list->head == runner_prev) /* update pointer */
+			if (list->head == runner_prev)
 				list->head = runner;
-		
+			if (list->tail == runner) 
+				list->head = runner_prev;
 		/* [runner_prev] -->  [ runner] --> [runner_next] */			                   
-			runner_next = runner->next;    
-			runner_prev->next = runner_next;
+			runner_prev->next = runner->next;
 			runner->next = runner_prev;
 		/* move runner forward and initialize prev ptr */			
+			runner = runner_prev;
 			runner_prev = NULL;
-			runner = runner_next;
 		} else {
 			runner_prev = runner;
 			runner = runner->next;

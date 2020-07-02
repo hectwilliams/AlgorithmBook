@@ -178,79 +178,112 @@ bool SList_t<T>::isPalindrome() {
 }
 
 template <class T>
-ret_obj<T> SList_t<T>::kthLastNode(SList_t *list, unsigned int n)
+ret_obj<T> SList_t<T>::kthLastNode(SList_t *list, unsigned int k)
 {
-  SLNode_t<T> *runner, *runner_start;
+  SLNode_t<T> *runner = NULL;
   ret_obj<T> data{false};
-  int count;
+  int count = 0;
 
-  if (list == NULL)
-    list = this;
+  if (list == NULL) 
+    runner = head;
   
-  if (list->head == NULL)
-    return data; 
-
-  runner_start = list->head;
-
-  while (runner_start) {
-    runner = runner_start; 
-    count = 0;
-    while (runner) {
-      count++;
+	/* count number of nodes */
+  while (runner)  {
+    runner = runner->next;
+    count++;
+  }
+  
+  count -= k;
+  /* point runner to kth node  */
+  if (count > 0) {
+    runner = head;
+    while (count--) 
       runner = runner->next;
-    }
-    if (n == count) {
-      data.valid = true;
-      data.value = runner_start->value; 
-      return data;
-    }
-    runner_start = runner_start->next;
-  } 
-  return data; 
+  }
+
+  if (runner) {
+    data.valid = true;
+    data.value = runner->value;
+  }
+
+  return data;
 }
 
 template <class T>
 void SList_t<T>::shiftRight(int n)
 {
-  SLNode_t<T> *runner;
+  SLNode_t<T> *runner = head;
+	SLNode_t<T> *newHead = NULL, *oldHead = NULL;
+  int count = 0;
 
   if (head == NULL)
     return; 
   
-  if (head->next == NULL)
-    return;
-  
-  if (n < 0) 
-    return this->shiftLeft(-1 * n);
+	while (runner) {
+		runner = runner->next;
+		count += 1;
+	}
 
-  for (int i = 0 ; i < n; i++) {
-    runner = head;
-    while (runner->next != tail) {
+	if (n > 0 && count > 1) {
+		runner = list->head;
+		for (int i = 0; i < abs(n - count); i++) {
+			runner = runner->next;
+		}
+
+		/* break list */
+		newHead = runner->next;
+		runner->next = NULL;
+
+    runner = newHead;
+    
+    /* connect new head's tail to old head*/
+    while (runner->next) 
       runner = runner->next;
-    }
-    runner->next->next = head;
-    head = runner->next;
-    tail = runner;
-    tail->next = NULL;
-  }
+    runner->next = head;
+    head = newHead;
+	}
+
+	if (n < 0) {
+		return shift_left( abs(n));
+	}
+
 }
 
 template <class T>
-void SList_t<T>::shiftLeft(int n) {
-  SLNode_t<T> *runner, *tail;
+void SList_t<T>::shiftLeft(int n)
+{
+  SLNode_t<T> *runner = head;
+	SLNode_t<T> *newHead = NULL;
+	int count = 0;
   
-  if (head == NULL)
-    return; 
+	while (runner) {
+		count += 1;
+		
+		if (count == n) {
+		
+		/* break link */
+			newHead = runner->next;
+			runner->next = NULL;
+		
+		/*new Head must be NULL*/
+			if (newHead == NULL) 
+				break;
+			
+		/* point runner to tail of newHead */
+			runner = newHead;
+			while (runner->next) 
+				runner = runner->next;
+			
+		/* link new list with new Head*/
+			runner->next = list->head;
+		
+		/* update head */
+			list->head = newHead;
 
-  if (head->next == NULL)
-    return;
-    
-  for (int i = 0 ; i < n; i ++) {
-    tail->next = head;
-    head = head->next;
-    tail = tail->next;
-    tail->next = NULL;
-  }  
+			break;
+		}
+		runner = runner->next;
+  }
 }
 
 template <class T>
@@ -319,76 +352,88 @@ SList_t<T> *SList_t<T>::setupLoop(unsigned int count, unsigned int loop_pos)
 template <class T>
 bool SList_t<T>::hasLoop()
 {
-  SLNode_t<T> *runner_lag;
-  SLNode_t<T> *runner_lead;
-  bool result = false;
+  SLNode_t<T> *slow =, *fast;
+  bool hasLoop = false;
 
   if (head == NULL)
-    return false; 
-
-  runner_lag = head;
-  runner_lead = head->next;
-  
-  while (runner_lag) {
-    result |= (runner_lead->next == runner_lag);
-    if (result)
-      break;
-    if (runner_lag)
-      runner_lag = runner_lag->next;
-    if (runner_lead)
-      runner_lead = runner_lead->next;
+    return hasLoop;
+  slow = fast = head; 
+  while (slow && !hasLoop) {
+    slow = slow->next;
+    for (int i = 2; i-- && fast ;)
+      fast = fast.next;
+    hasLoop = fast == slow;
   }
-  return result;
+  return hasLoop;
 }
 
 template <class T>
 SLNode_t<T> *SList_t<T>::loopStart()
 {
-  SLNode_t<T> *runner_lag;
-  SLNode_t<T> *runner_lead;
-  SLNode_t<T> *prev;
-  bool result = false; 
+  SLNode_t<T> *slow, *fast, *collision = NULL, *loopHead, *runner = NULL;
+  unsigned int n = 0;
 
   if (head == NULL)
-    return false; 
+    return runner;
 
-  runner_lag = head;
-  runner_lead = head->next;
+  slow = fast = head;
   
-  while (runner_lag && !result) {
-    prev = runner_lag;
-    runner_lag = runner_lag->next;
-    runner_lead = runner_lead->next;
-    result |= (runner_lead->next == runner_lag);
+  while (slow) {
+    slow = slow->next;
+    
+    for (int i = 2; i-- && fast ;) 
+      fast = fast->next;
+    
+    if (fast == slow)
+      collision = slow; 
   }
 
-  if (result)
-    return prev;
-  else 
-    return NULL;
+  /* number of nodes in loop  */
+  if (collision) {
+    runner = collision->next;
+    while (runner != collision) {
+      n++;
+      runner = runner->next;
+    }
+
+    /* move loop head n-1 after LL Head */
+    loopHead = head;
+    for (int i = n-1; i-- ;) 
+      loopHead = loopHead->next;
+
+    runner = loopHead;
+    /* set runner to feedback node */
+    while (runner->next != loopHead) 
+      runner = runner->next;
+  }
+
+  return runner; 
 }
 
 template <class T>
 void SList_t<T>::breakLoop()
 {
-  SLNode_t<T> *tail_of_loop = loopStart();
-  tail_of_loop->next = NULL;
+  SLNode_t<T> *feedback = loopStart();
+  if (feedback)
+    feedback->next = NULL;
 }
 
 template <class T>
 unsigned int SList_t<T>::nodeCount()
 {
-  unsigned count = 0;
-  SLNode_t<T> *tail_of_loop = loopStart();
-  SLNode_t<T> *runner = head; 
+  SLNode_t<T> *feedback = loopStart(), *node = head;
+	unsigned int count = 0;
 
-  while (runner) {
-    count++;
-    if (runner == tail_of_loop)
-      break;
-    runner = runner->next;
+	if (node == NULL) {
+    return count;
   }
-  return count;
+
+	while (node->next != feedback) {
+		count++;
+		node = node->next;
+  }
+
+	return count;
 }
 
 template <class T>
@@ -396,14 +441,18 @@ void SList_t<T>::swapPairs()
 {
   SLNode_t<T> *runner = head, *runner_prev;
   while (runner) {
-    if (runner_prev == head)
-      head = runner;
-    if (runner == tail)
-      tail = runner_prev;
     if (runner_prev) {
-      runner_prev->next = runner_prev->next->next;
-      runner->next = runner_prev;
+      if (head == runner_prev)
+        head = runner;
+      if (tail == runner)
+        tail = runner_prev;
+      
+    	runner_prev->next = runner->next;
+			runner->next = runner_prev;
+
       runner = runner_prev;
+      runner_prev = NULL;
+
     }
     runner_prev = runner;
     runner = runner->next;
