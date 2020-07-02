@@ -831,16 +831,3 @@ template <class T>
   
 }
 
-int main() {
-  SList_t<int> *list_a = sl_list<int>();
-  SList_t<int> *list_b = sl_list<int>();
-
-  list_a->pushFront(1);
-  list_a->pushFront(0);
-  list_a->pushFront(2);
-
-  list_b->pushFront(4);
-  list_b->pushFront(8);
-  
-  list_a->sum_numerals(list_a, list_b,false);
-}
