@@ -93,7 +93,87 @@ void test_recursive_factorial()
   }
 }
 
+int fibonacci(double num)
+{
+  if (num <= 0)
+    return 0;
+  else if (num == 1)
+    return 1;
+  else
+    return fibonacci(num - 2) + fibonacci(num - 1);
+}
+
+int tribonacci(double num)
+{
+  if (num <= 1)
+    return 0;
+  else if (num == 2)
+    return 1;
+  else
+    return  tribonacci(num - 3) + tribonacci(num - 2) + tribonacci(num - 1);
+}
+
+
+void fibonacci_test() {
+  for (double i = 0; i < 5; i++) {
+    printf("[%d]\n", fibonacci(i));
+  }
+}
+
+void tribonacci_test() {
+  for (double i = 0; i < 5; i++) {
+    printf("[%d]\n", tribonacci(i));
+  }
+}
+
+int paging_ackermann(unsigned  a, unsigned b)
+{
+  if (a == 0)
+    return b + 1;
+  else if (b == 0) {
+    if (a > 0)
+      return paging_ackermann(a - 1, 1);
+    else
+      return b + 1;
+  } else
+    return paging_ackermann(a - 1, paging_ackermann(a, b -1));
+}
+
+int Zibonacci(unsigned number )
+{
+  unsigned n = 0;
+
+  if (number <= 1) {
+    return 1;
+  }
+
+  if (number == 2) {
+    return 2;
+  }
+
+  if (number % 2 == 1) {
+    n = --number / 2;
+    return Zibonacci(n) + Zibonacci(n - 1) + 1;
+  }
+
+  if (number % 2 == 0) {
+    n = number / 2;
+    return Zibonacci(n) + Zibonacci(n + 1) + 1;
+  }
+  return n;
+
+}
+
+void Zibonacci_test()
+{
+  int data;
+  for (int i = 0; i <10; i++) {
+    data = Zibonacci(i);
+    printf("%d --> %d\n", i, data );
+  }
+}
+
 int main()
 {
-  test_recursive_factorial();
+  Zibonacci_test();
 }
