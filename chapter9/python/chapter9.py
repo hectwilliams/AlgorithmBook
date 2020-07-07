@@ -130,4 +130,88 @@ def bestZibNum (value):
       break
   return result
 
-bestZibNum(3186)
+def recursive_search(collection, target):
+  mid = None  
+  sample = None 
+
+  if not collection:
+    return False 
+  
+  mid = int (len(collection) / 2)
+  sample = collection[mid]
+  print(collection, sample)
+  if sample == target: 
+    return True 
+  elif target < sample  :
+    return recursive_search(collection[0 : mid], target) 
+  elif  target > sample:
+    return recursive_search(collection[mid + 1: :], target)
+
+def recursive_search_test():
+  collection = [1,2,3,6]
+  answer = recursive_search(collection, 4)
+  print(answer) #False 
+  collection = [4,5,6,8,12]
+  answer = recursive_search(collection, 5)
+  print(answer) # True 
+
+def rGCF(num1, num2):
+  if num1 == 0:
+    return num2
+  return rGCF(num2 % num1, num1)
+
+def rGCF_test():
+  a = 10
+  b = 15 
+  print( rGCF(a,b))
+
+def tarai (x, y, z):
+  if x <= y:
+    return y
+  return tarai(tarai(x-1, y, z), tarai(y - 1, z, x), tarai(z-1, x, y))
+
+def tarai_test():
+ answer = tarai(10, 2, 9)
+ print(answer)
+
+def in_order_subset_remove_string(str, index, remove_count):
+  substr = ''
+  counter = 0
+  size = len(str) 
+
+  while (counter != size ):
+    if remove_count <= 0:
+      substr += str[index]
+    if index + 1 >= size:
+      index = 0
+    else:
+      index += 1
+    remove_count -= 1
+    counter += 1
+  return substr
+
+def in_order_subsets (string):
+  collection = [] 
+  size = len(string) 
+
+  for rcount in range (0, size + 1):
+    if (rcount == 0):
+      collection.append(string)
+    elif (rcount == size):
+      collection.append([])
+    else:
+    #remove rcount chars from string starting at index k 
+      for k in range(0, size):
+        collection.append(in_order_subset_remove_string(string, k, rcount))
+  return collection
+
+def in_order_subsets_test():
+  answer = in_order_subsets('abcd')
+  print(answer)
+
+def recursive_list_length (node):
+  if node == None:
+    return 0
+  return 1 + recursive_list_length(node.next)
+  
+in_order_subsets_test()

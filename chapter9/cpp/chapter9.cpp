@@ -18,7 +18,7 @@ int factorial(double number)
 }
 
 template <class T>
-void floodFill(std::vector< std::vector<T> > &canvas2D, const int startXY[2], const T &newColor)
+void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const T &newColor)
 {
   int row = startXY[0];
   int col = startXY[1];
@@ -78,7 +78,7 @@ void floodFill(std::vector< std::vector<T> > &canvas2D, const int startXY[2], co
 
 void test_recursive_factorial()
 {
-  std::vector< std::vector<int> > canvas;
+  std::vector<std::vector<int>> canvas;
   // Array Data
   // {
   //     {3, 2, 3, 4, 3},
@@ -92,9 +92,9 @@ void test_recursive_factorial()
   floodFill(canvas, startXY, 1);
 
   /*print array*/
-  for (int r = 0; r < 5; r++)
+  for (int r = 0; r < canvas.size(); r++)
   {
-    for (int c = 0; c < 5; c++)
+    for (int c = 0; c < canvas[r].size(); c++)
     {
       printf("[%d]", canvas[r][c]);
     }
@@ -102,53 +102,150 @@ void test_recursive_factorial()
   }
 }
 
-int ackerman(unsigned  a, unsigned b)
+int ackerman(unsigned a, unsigned b)
 {
   if (a == 0)
     return b + 1;
-  else if (b == 0) {
+  else if (b == 0)
+  {
     if (a > 0)
       return ackerman(a - 1, 1);
     else
       return b + 1;
-  } else
-    return ackerman(a - 1, ackerman(a, b -1));
+  }
+  else
+    return ackerman(a - 1, ackerman(a, b - 1));
 }
 
-int Zib(unsigned number )
+int Zib(unsigned number)
 {
   unsigned n = 0;
 
-  if (number <= 1) {
+  if (number <= 1)
+  {
     return 1;
   }
 
-  if (number == 2) {
+  if (number == 2)
+  {
     return 2;
   }
 
-  if (number % 2 == 1) {
+  if (number % 2 == 1)
+  {
     n = --number / 2;
     return Zib(n) + Zib(n - 1) + 1;
   }
 
-  if (number % 2 == 0) {
+  if (number % 2 == 0)
+  {
     n = number / 2;
     return Zib(n) + Zib(n + 1) + 1;
   }
   return n;
-
 }
 
 void Zib_test()
 {
   int data;
-  for (int i = 0; i <10; i++) {
+  for (int i = 0; i < 10; i++)
+  {
     data = Zib(i);
-    printf("%d --> %d\n", i, data );
+    printf("%d --> %d\n", i, data);
   }
+}
+
+template <class T>
+bool binarySearch(std::vector<T> collection, const T &target)
+{
+  bool is_odd = false;
+  T data;
+  unsigned midpoint;
+
+  if (collection.empty())
+    return false;
+
+  midpoint = (collection.size() / 2);
+  data = collection[midpoint];
+  is_odd = collection.size() % 2;
+
+  if (data == target)
+    return true;
+  if (target < data)
+    return binarySearch(std::vector<T>(collection.begin(), collection.begin() + midpoint), target);
+  if (target > data)
+    return binarySearch(std::vector<T>(collection.begin() + midpoint + 1 + is_odd, collection.end()), target);
+}
+
+int rGCF(int a, int b)
+{
+  if (a == 0)
+    return b;
+  return rGCF(b % a, a);
+}
+
+int tarai(int x, int y, int z)
+{
+  if (x <= y)
+    return y;
+  return tarai(tarai(x - 1, y, z), tarai(y - 1, z, x), tarai(z - 1, x, y));
+}
+
+std::string inorder_subsets_remove_char_from_string(std::string &str, int index, int remove_count)
+{
+  std::string substr = "";
+  unsigned counter = 0;
+
+  while (counter != str.size())
+  {
+    if (remove_count <= 0)
+    {
+      substr += str[index];
+    }
+    index = (index + 1) % str.size();
+    remove_count--;
+    counter++;
+  }
+  return substr;
+}
+
+std::vector<std::string> inorder_subsets(std::string str)
+{
+  std::vector<std::string> collection;
+  for (int rcount = 1; rcount < str.size(); rcount++)
+  {
+    for (int i = 0; i < str.size(); i++)
+    {
+      collection.push_back(inorder_subsets_remove_char_from_string(str, i, rcount));
+    }
+  }
+  collection.push_back(str);
+  collection.push_back("{}");
+  return collection;
+}
+
+std::ostream &operator<<(std::ostream &out, const std::vector<std::string> &collection)
+{
+  for (auto &element : collection)
+    out << "[" << element << "]";
+  return out;
+}
+
+void inorder_subsets_test()
+{
+  std::cout << inorder_subsets("abc");
+}
+
+unsigned recursive_list_length(void *node)
+{
+  struct SLNode slnode;
+
+  if (node == NULL)
+    return 0;
+  return 1 + recursive_list_length(((struct SLNode *)node)->next);
 }
 
 int main()
 {
+  inorder_subsets_test();
 }
