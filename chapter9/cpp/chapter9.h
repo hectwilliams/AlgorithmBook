@@ -8,7 +8,7 @@
 int recursive_sigma(int number);
 int recursive_factorial(double number);
 template <class T>
-void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const T &newColor);
+void floodFill(std::vector<std::vector<T> > &canvas2D, const T startXY[2], const T &newColor);
 template <class T>
 bool binarySearch(std::vector<T> collection, const T &target);
 int tarai(int x, int y, int z);
@@ -23,6 +23,6 @@ struct SLNode
 unsigned recursive_list_length(void *node);
 int got_any_grapes(int &max, std::vector<int> collection, unsigned index = 0, unsigned curr_max = 0);
 int collatz_apalooza(unsigned num);
-void telephone_words(std::vector<std::string> &collection, std::string *phone_number, std::string str_accum = "");
+void telephone_permutation(std::vector<std::string> &collection, const std::string &phone_number, unsigned index = 0 , std::string str_accum = "");
 
 #endif

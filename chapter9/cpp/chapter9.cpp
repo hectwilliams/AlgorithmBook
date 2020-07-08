@@ -2,6 +2,7 @@
 #include "chapter9.h"
 #include <vector>
 #include <iostream>
+#include <initializer_list>
 
 int sigma(int number)
 {
@@ -18,7 +19,7 @@ int factorial(double number)
 }
 
 template <class T>
-void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const T &newColor)
+void floodFill(std::vector<std::vector<T> > &canvas2D, const T startXY[2], const T &newColor)
 {
   int row = startXY[0];
   int col = startXY[1];
@@ -78,7 +79,7 @@ void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const 
 
 void test_recursive_factorial()
 {
-  std::vector<std::vector<int>> canvas;
+  std::vector<std::vector<int> > canvas;
   // Array Data
   // {
   //     {3, 2, 3, 4, 3},
@@ -226,7 +227,7 @@ std::vector<std::string> inorder_subsets(std::string str)
 
 std::ostream &operator<<(std::ostream &out, const std::vector<std::string> &collection)
 {
-  for (auto &element : collection)
+  for (std::string element: collection)
     out << "[" << element << "]";
   return out;
 }
@@ -265,7 +266,10 @@ int got_any_grapes(int &max, std::vector<int> collection, unsigned index, unsign
 
 void got_any_grapes_test()
 {
-  std::vector<int> collection = {1, 2, 3, 4};
+  std::vector<int> collection ;
+  for (int i = 1 ; i < 5; i++)
+    collection.push_back(i);
+
   int max = 0;
   int answer = got_any_grapes(max, collection);
   printf(" answer: %d \n", max);
@@ -289,12 +293,70 @@ void collatz_apalooza_test()
   // 5 16 8 4 2 -- printed
 }
 
-void telephone_words(std::vector<std::string> &collection, std::string *phone_number, std::string str_accum)
+void telephone_permutation(std::vector<std::string> &collection, const std::string &phone_number, unsigned index, std::string str_accum)
 {
-  char digit;
+  char c;
+  std::string map_seq;
+
+  if (phone_number.size() == 0) {
+    return;
+  }
+
+  if (index == phone_number.size())
+  {
+    std::cout << "[" << str_accum  << "]" << '\n';
+    collection.push_back(str_accum);
+    return;
+  }
+
+  c = phone_number[index];
+
+  if (c == '-')
+    map_seq = '_';
+
+  if (c == '0')
+    map_seq = "O";
+
+  if (c  =='1')
+    map_seq = "1";
+
+  if (c == '2')
+    map_seq = "ABC";
+
+  if (c == '3')
+    map_seq = "DEF";
+
+  if (c == '4')
+    map_seq = "GHI";
+
+  if (c == '5')
+    map_seq = "JKL";
+
+  if (c == '6')
+    map_seq = "MNO";
+
+  if (c == '7')
+    map_seq = "PQRS";
+
+  if (c == '8')
+    map_seq = "TUV";
+
+  if (c == '9')
+    map_seq = "WXYZ";
+
+  for (int i = 0; i < map_seq.size(); i++) {
+    telephone_permutation(collection, phone_number,index + 1, str_accum + map_seq[i]  );
+  }
+
+}
+
+void telephone_permutation_test ()
+{
+  std::vector<std::string> collection;
+  telephone_permutation(collection, "818-2612");
 }
 
 int main()
 {
-  collatz_apalooza_test();
+  telephone_permutation_test();
 }
