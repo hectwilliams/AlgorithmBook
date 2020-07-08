@@ -2,6 +2,7 @@
 #define CHAPTER_9_H
 #include <vector>
 #include <string>
+#include <array>
 #include <iostream>
 
 int recursive_sigma(int number);
@@ -20,5 +21,7 @@ struct SLNode
   struct SLNode *next;
 };
 unsigned recursive_list_length(void *node);
+int got_any_grapes(int &max, std::vector<int> collection, unsigned index = 0, unsigned curr_max = 0);
+int collatz_apalooza(unsigned num);
 
 #endif

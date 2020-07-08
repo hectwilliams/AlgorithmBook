@@ -21,4 +21,8 @@ struct SLNode
   struct SLNode *next;
 };
 unsigned recursive_list_length(void *node);
+int got_any_grapes_helper(int collection[], unsigned size, unsigned curr_index, unsigned curr_max, unsigned *max);
+int got_any_grapes(int collection[], unsigned size);
+int collatz_apalooza(unsigned num);
+void telephone_words(const char **collection, unsigned collection_index, const char *phone_number, unsigned int index, char *buffer);
 #endif

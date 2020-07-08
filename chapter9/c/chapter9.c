@@ -311,8 +311,135 @@ unsigned recursive_list_length(void *node)
   return 1 + recursive_list_length(((struct SLNode *)node)->next);
 }
 
+int got_any_grapes_helper(int collection[], unsigned size, unsigned curr_index, unsigned curr_max, unsigned *max)
+{
+  unsigned odd = curr_index * 2 + 1, even = curr_index * 2;
+  if (curr_max > *max)
+    *max = curr_max;
+
+  if (odd < size)
+    return got_any_grapes_helper(collection, size, curr_index + 1, curr_max + collection[odd], max);
+
+  if (even < size)
+    return got_any_grapes_helper(collection, size, curr_index + 1, curr_max + collection[even], max);
+}
+
+int got_any_grapes(int collection[], unsigned size)
+{
+  unsigned int max = 0;
+  got_any_grapes_helper(collection, size, 0, 0, &max);
+  return max;
+}
+
+int collatz_apalooza(unsigned num)
+{
+  if (num % 2 == 0)
+    return num / 2;
+  return 3 * num + 1;
+}
+
+void collatz_apalooza_test()
+{
+  int data = 5;
+  for (int i = 5; i--;)
+  {
+    printf("[%d]", data);
+    data = collatz_apalooza(data);
+  }
+  // 5 16 8 4 2 -- printed
+}
+
+unsigned word_count(char *word)
+{
+  unsigned count = 0;
+  while (*word != '\0')
+  {
+    word++;
+    count++;
+  }
+  return count;
+}
+void telephone_words(const char **collection, unsigned collection_index, const char *phone_number, unsigned index, char *buffer)
+{
+  char digit;
+  char str_buffer[5] = "";
+  char c;
+
+  if (word_count(buffer) == 8)
+  {
+    char temp[10] = "";
+    strcat(temp, buffer);
+    collection[collection_index] = temp;
+    collection[++collection_index] = "DEADBEEF";
+    printf("\t[%s]\n", buffer);
+    return;
+  }
+
+  digit = *(phone_number + index);
+
+  switch (digit)
+  {
+  case '0':
+    strcat(str_buffer, "O");
+    break;
+  case '1':
+    strcat(str_buffer, "I");
+    break;
+  case '2':
+    strcat(str_buffer, "ABC");
+    break;
+  case '3':
+    strcat(str_buffer, "DEF");
+    break;
+  case '4':
+    strcat(str_buffer, "GHI");
+    break;
+  case '5':
+    strcat(str_buffer, "JKL");
+    break;
+  case '6':
+    strcat(str_buffer, "MNO");
+    break;
+  case '7':
+    strcat(str_buffer, "PQRS");
+    break;
+  case '8':
+    strcat(str_buffer, "TUV");
+    break;
+  case '9':
+    strcat(str_buffer, "WXYZ");
+    break;
+  }
+
+  printf("  Enter \t \t %s\n", buffer);
+
+  if (str_buffer)
+  {
+    for (char *ptr = str_buffer; *ptr != 0; ptr++)
+    {
+      {
+        strncat(buffer, ptr, 1);
+        printf("  Inner \t \t %s\n", buffer);
+        char clone[100] = "";
+        memcpy(clone, buffer, word_count(buffer));
+        telephone_words(collection, collection_index, phone_number, index + 1, clone);
+      }
+    }
+  }
+}
+
+void telephone_words_test()
+{
+  const char *collection[] = {"DEADBEEF"};
+  char buffer[100] = "";
+  telephone_words(collection, 0, "818-2612", 0, buffer);
+
+  printf(" wwd  %s \n", collection[0]);
+  printf("dwd  %s \n", collection[1]);
+  // printf("wdw  %s\n", collection[2]);
+}
+
 int main()
 {
-  inorder_subsets_test();
-  printf("dd");
+  telephone_words_test();
 }

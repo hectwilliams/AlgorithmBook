@@ -213,5 +213,76 @@ def recursive_list_length (node):
   if node == None:
     return 0
   return 1 + recursive_list_length(node.next)
-  
-in_order_subsets_test()
+
+def got_any_grapes_helper(collection, n, obj, curr_sum):
+  even = 2*n
+  odd = 2*n + 1  
+
+  if obj['max'] == None or curr_sum >=  obj['max'] :
+    obj['max'] = curr_sum
+
+  if even < len(collection):
+    got_any_grapes_helper(collection, n + 1, obj, curr_sum + collection[even])
+
+  if odd < len(collection):
+    got_any_grapes_helper(collection, n + 1, obj, curr_sum + collection[odd])
+
+
+def got_any_grapes(collection):
+  obj = {'max': None }
+  got_any_grapes_helper(collection, 0, obj, 0)
+  print(obj)
+
+def got_any_grapes_test():
+  collection  = [1,2,3,4]
+  answer = got_any_grapes(collection)
+  print(answer)
+
+def collatz_apalooza(num):
+  if num >= 0:
+    if num % 2 == 0:
+      return int( num / 2)
+    else:
+      return  3* num + 1
+
+def collatz_apalooza_test():
+  count = 5
+  num = 5
+  while count:
+    num = collatz_apalooza(num)
+    count -= 1
+
+telephone_words_mapping = {
+  '0': 'O',
+  '1': 'I'   ,
+  '2': 'ABC' ,
+  '3': 'DEF' ,
+  '4': 'GHI' ,
+  '5': 'JKL' ,
+  '6': 'MNO' ,
+  '7': 'PQRS',
+  '8': 'TUV'  ,
+  '9': 'WXYZ' ,
+  '-': '-'   
+}
+
+def telephone_words(memo, phone_number, index = 0, code = ""):
+  digit = None 
+
+  if index == len(phone_number):
+    memo.append(code)
+    return 
+
+  digit = phone_number[index]
+ 
+  if digit in telephone_words_mapping:
+    for c in list(telephone_words_mapping[digit]):
+      telephone_words (memo, phone_number, index + 1, code + c)
+
+def telephone_words_test():
+  number = "818-2612"
+  collection = []
+  telephone_words(collection, number)
+  print(len(collection))
+
+telephone_words_test()

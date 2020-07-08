@@ -245,7 +245,51 @@ unsigned recursive_list_length(void *node)
   return 1 + recursive_list_length(((struct SLNode *)node)->next);
 }
 
+int got_any_grapes(int &max, std::vector<int> collection, unsigned index, unsigned curr_max)
+{
+  unsigned odd = index * 2 + 1;
+  unsigned even = index * 2;
+
+  if (curr_max > max)
+    max = curr_max;
+
+  if (odd < collection.size())
+    got_any_grapes(max, collection, index + 1, curr_max + collection[odd]);
+
+  if (even < collection.size())
+    got_any_grapes(max, collection, index + 1, curr_max + collection[even]);
+
+  if (index == 0)
+    return max;
+}
+
+void got_any_grapes_test()
+{
+  std::vector<int> collection = {1, 2, 3, 4};
+  int max = 0;
+  int answer = got_any_grapes(max, collection);
+  printf(" answer: %d \n", max);
+}
+
+int collatz_apalooza(unsigned num)
+{
+  if (num % 2 == 0)
+    return num / 2;
+  return 3 * num + 1;
+}
+
+void collatz_apalooza_test()
+{
+  int data = 5;
+  for (int i = 5; i--;)
+  {
+    printf("[%d]", data);
+    data = collatz_apalooza(data);
+  }
+  // 5 16 8 4 2 -- printed
+}
+
 int main()
 {
-  inorder_subsets_test();
+  collatz_apalooza_test();
 }
