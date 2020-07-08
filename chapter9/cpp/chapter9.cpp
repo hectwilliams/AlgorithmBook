@@ -289,6 +289,11 @@ void collatz_apalooza_test()
   // 5 16 8 4 2 -- printed
 }
 
+void telephone_words(std::vector<std::string> &collection, std::string *phone_number, std::string str_accum)
+{
+  char digit;
+}
+
 int main()
 {
   collatz_apalooza_test();

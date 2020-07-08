@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+
 #include "chapter9.h"
 
 int recursive_sigma(int number)
@@ -352,91 +354,84 @@ void collatz_apalooza_test()
 unsigned word_count(char *word)
 {
   unsigned count = 0;
+  char *prev;
+
   while (*word != '\0')
   {
+    prev = word;
+
+    if (*prev == 0)
+      break;
+
     word++;
     count++;
   }
   return count;
 }
-void telephone_words(const char **collection, unsigned collection_index, const char *phone_number, unsigned index, char *buffer)
+
+unsigned collection_index = 0;
+void telephone_words(const char **collection, const char *phone_number, int index, char *buffer)
 {
   char digit;
   char str_buffer[5] = "";
-  char c;
+  unsigned str_size = word_count(buffer);
 
-  if (word_count(buffer) == 8)
+  if (word_count(buffer) == telephone_words_MAX_WORD_LENGTH)
   {
-    char temp[10] = "";
-    strcat(temp, buffer);
-    collection[collection_index] = temp;
+    collection[collection_index] = buffer;
     collection[++collection_index] = "DEADBEEF";
-    printf("\t[%s]\n", buffer);
     return;
   }
 
   digit = *(phone_number + index);
 
-  switch (digit)
-  {
-  case '0':
+  if (digit == '-')
+    strcat(str_buffer, "-");
+  else if (digit == '0')
     strcat(str_buffer, "O");
-    break;
-  case '1':
+  else if (digit == '1')
     strcat(str_buffer, "I");
-    break;
-  case '2':
+  else if (digit == '2')
     strcat(str_buffer, "ABC");
-    break;
-  case '3':
+  else if (digit == '3')
     strcat(str_buffer, "DEF");
-    break;
-  case '4':
+  else if (digit == '4')
     strcat(str_buffer, "GHI");
-    break;
-  case '5':
+  else if (digit == '5')
     strcat(str_buffer, "JKL");
-    break;
-  case '6':
+  else if (digit == '6')
     strcat(str_buffer, "MNO");
-    break;
-  case '7':
+  else if (digit == '7')
     strcat(str_buffer, "PQRS");
-    break;
-  case '8':
+  else if (digit == '8')
     strcat(str_buffer, "TUV");
-    break;
-  case '9':
+  else if (digit == '9')
     strcat(str_buffer, "WXYZ");
-    break;
-  }
-
-  printf("  Enter \t \t %s\n", buffer);
+  else
+    strcat(str_buffer, "\0");
 
   if (str_buffer)
   {
     for (char *ptr = str_buffer; *ptr != 0; ptr++)
     {
-      {
-        strncat(buffer, ptr, 1);
-        printf("  Inner \t \t %s\n", buffer);
-        char clone[100] = "";
-        memcpy(clone, buffer, word_count(buffer));
-        telephone_words(collection, collection_index, phone_number, index + 1, clone);
-      }
+      char *clone = (char *)malloc(10); /* allocation heap data (persistent) */
+      strncpy(clone, buffer, str_size); /* copy current string */
+      clone[str_size] = *ptr;           /* append char */
+      clone[str_size + 1] = '\0';       /* append NULL */
+      telephone_words(collection, phone_number, index + 1, clone);
     }
   }
 }
 
 void telephone_words_test()
 {
-  const char *collection[] = {"DEADBEEF"};
-  char buffer[100] = "";
-  telephone_words(collection, 0, "818-2612", 0, buffer);
-
-  printf(" wwd  %s \n", collection[0]);
-  printf("dwd  %s \n", collection[1]);
-  // printf("wdw  %s\n", collection[2]);
+  const char *collection[300] = {"DEADBEEF"};
+  char buffer[10] = "";
+  telephone_words(collection, "818-2612", 0, buffer);
+  for (int i = 0; collection[i] != "DEADBEEF"; i++)
+  {
+    printf(" %d  [%s] \n", i, collection[i]);
+  }
 }
 
 int main()
