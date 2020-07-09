@@ -285,4 +285,51 @@ def telephone_words_test():
   telephone_words(collection, number)
   print(len(collection))
 
-telephone_words_test()
+def rising_squares(num, string = ""):
+  data = str(pow(num, 2))
+
+  if num == 0:
+    return string
+
+  if num % 2 == 0:
+    string = " " + string + data + " " 
+  else:
+    string = " " + data + string + " " 
+  return rising_squares(num - 1, string)
+ 
+def rising_squares_test():
+  answer = rising_squares(5)
+  print(answer)
+
+def string_expansion(bin_string, str_buffer = "", collection = []):
+  c = None 
+
+  if len(bin_string) == 0:
+    collection.append(str_buffer)
+    return
+  
+  c = bin_string[0]
+
+  if c == '?':
+    for i in range(0, 2):
+      string_expansion(bin_string[1: :] , str_buffer + str(i), collection)
+  else :
+    return string_expansion(bin_string[1: :], str_buffer + c, collection)
+
+  return collection
+
+def string_expansion_test():
+  function_data = '1?0?'
+  answer = string_expansion(function_data)
+  print(answer)
+
+def anagram(string, str_buffer = "", collection = []):
+  
+  if len (string) == 0:
+    collection.append(str_buffer) 
+
+  for i in range(0, len(string)):
+    anagram (string[ 1: :], str_buffer + string[i], collection) 
+
+
+anagram("lmi")

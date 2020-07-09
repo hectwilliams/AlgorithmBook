@@ -369,6 +369,21 @@ unsigned word_count(char *word)
   return count;
 }
 
+unsigned word_count(const char *word)
+{
+  unsigned count = 0;
+  const char *prev;
+  while (*word != '\0')
+  {
+    prev = word;
+    if (*prev == 0)
+      break;
+    word++;
+    count++;
+  }
+  return count;
+}
+
 unsigned collection_index = 0;
 void telephone_words(const char **collection, const char *phone_number, int index, char *buffer)
 {
@@ -434,7 +449,117 @@ void telephone_words_test()
   }
 }
 
+void rising_squares_step(int stop_index, int num)
+{
+
+  if (num % 2 == 0)
+  {
+    if (num <= stop_index)
+      return;
+    printf("[%d]", num * num);
+    return rising_squares_step(stop_index, num - 2);
+  }
+  else
+  {
+    if (num > stop_index)
+      return;
+    printf("[%d]", num * num);
+    return rising_squares_step(stop_index, num + 2);
+  }
+}
+
+void rising_squares(int num)
+{
+  rising_squares_step(num, 1);
+  rising_squares_step(0, num - 1);
+}
+
+void rising_squares_test()
+{
+  rising_squares(5);
+}
+
+void binary_expansion(const char **collection, const char *bin_string)
+{
+  unsigned start_index = 0;
+  unsigned len = word_count(bin_string) + 1; // tail char = null
+  unsigned wr_index = 0;
+  binary_expansion_helper(collection, &wr_index, bin_string, len, start_index, NULL);
+  for (int i = 0; i < wr_index; i++)
+    printf("%d  [%s]\n", i, collection[i]);
+}
+
+void binary_expansion_helper(const char **collection, unsigned *wr_index, const char *bin_string, const unsigned bin_string_len, unsigned index, char *str_buffer)
+{
+  char character;
+
+  if (index == bin_string_len - 1)
+  {
+    str_buffer[index] = '\0'; /* add null end of string */
+    collection[*wr_index] = str_buffer;
+    (*wr_index)++;
+    return;
+  }
+
+  if (str_buffer == NULL)
+    str_buffer = (char *)malloc(bin_string_len); /* char vector allocation*/
+
+  character = bin_string[index];
+
+  if (character == '?')
+  {
+    char *str_buffer_one = (char *)malloc(bin_string_len);
+    for (int i = 0; i < 2; i++)
+    {
+      char *str_buffer_copy = (char *)malloc(bin_string_len); /* char vector allocation*/
+      memcpy(str_buffer_copy, str_buffer, bin_string_len);    /* copy input string to copy variable*/
+      str_buffer_copy[index] = (i) ? '0' : '1';               /* possible expansion */
+      binary_expansion_helper(collection, wr_index, bin_string, bin_string_len, index + 1, str_buffer_copy);
+    }
+  }
+  else
+  {
+    str_buffer[index] = character;
+    return binary_expansion_helper(collection, wr_index, bin_string, bin_string_len, index + 1, str_buffer);
+  }
+}
+
+void binary_expansion_test()
+{
+  const char *collection[1000];
+  binary_expansion(collection, "1?0??");
+  /* solution 
+    string buffer 1101
+    string buffer 1100
+    string buffer 1001
+    string buffer 1000
+  */
+}
+
+void anagram(const char **collection, const char *string, unsigned index, char *buffer)
+{
+}
+
+void anagram(const char **collection, const char *string)
+{
+  unsigned string_len = word_count(string);
+  char c;
+
+  for (int i = 0; i < string_len; i++)
+  {
+    c = string[i];
+    /* copy string */
+    char *buffer = (char *)malloc(string_len);
+  }
+}
+
+void anagram_test()
+{
+  const char *collection[100];
+  anagram(collection, "lmi");
+}
+
 int main()
 {
-  telephone_words_test();
+  binary_expansion_test();
 }

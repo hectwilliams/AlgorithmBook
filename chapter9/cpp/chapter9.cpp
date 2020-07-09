@@ -3,7 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <initializer_list>
-
+#include <math.h>
 int sigma(int number)
 {
   if (number <= 0)
@@ -19,7 +19,7 @@ int factorial(double number)
 }
 
 template <class T>
-void floodFill(std::vector<std::vector<T> > &canvas2D, const T startXY[2], const T &newColor)
+void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const T &newColor)
 {
   int row = startXY[0];
   int col = startXY[1];
@@ -79,7 +79,7 @@ void floodFill(std::vector<std::vector<T> > &canvas2D, const T startXY[2], const
 
 void test_recursive_factorial()
 {
-  std::vector<std::vector<int> > canvas;
+  std::vector<std::vector<int>> canvas;
   // Array Data
   // {
   //     {3, 2, 3, 4, 3},
@@ -227,7 +227,7 @@ std::vector<std::string> inorder_subsets(std::string str)
 
 std::ostream &operator<<(std::ostream &out, const std::vector<std::string> &collection)
 {
-  for (std::string element: collection)
+  for (std::string element : collection)
     out << "[" << element << "]";
   return out;
 }
@@ -266,8 +266,8 @@ int got_any_grapes(int &max, std::vector<int> collection, unsigned index, unsign
 
 void got_any_grapes_test()
 {
-  std::vector<int> collection ;
-  for (int i = 1 ; i < 5; i++)
+  std::vector<int> collection;
+  for (int i = 1; i < 5; i++)
     collection.push_back(i);
 
   int max = 0;
@@ -298,13 +298,14 @@ void telephone_permutation(std::vector<std::string> &collection, const std::stri
   char c;
   std::string map_seq;
 
-  if (phone_number.size() == 0) {
+  if (phone_number.size() == 0)
+  {
     return;
   }
 
   if (index == phone_number.size())
   {
-    std::cout << "[" << str_accum  << "]" << '\n';
+    std::cout << "[" << str_accum << "]" << '\n';
     collection.push_back(str_accum);
     return;
   }
@@ -317,7 +318,7 @@ void telephone_permutation(std::vector<std::string> &collection, const std::stri
   if (c == '0')
     map_seq = "O";
 
-  if (c  =='1')
+  if (c == '1')
     map_seq = "1";
 
   if (c == '2')
@@ -344,19 +345,74 @@ void telephone_permutation(std::vector<std::string> &collection, const std::stri
   if (c == '9')
     map_seq = "WXYZ";
 
-  for (int i = 0; i < map_seq.size(); i++) {
-    telephone_permutation(collection, phone_number,index + 1, str_accum + map_seq[i]  );
+  for (int i = 0; i < map_seq.size(); i++)
+  {
+    telephone_permutation(collection, phone_number, index + 1, str_accum + map_seq[i]);
   }
-
 }
 
-void telephone_permutation_test ()
+void telephone_permutation_test()
 {
   std::vector<std::string> collection;
   telephone_permutation(collection, "818-2612");
 }
 
+std::string rising_squares(unsigned num, std::string str)
+{
+  std::string data = std::to_string((int)std::pow(num, 2));
+
+  if (num == 0)
+    return str;
+
+  if (num % 2 == 1)
+  {
+    str = " " + str + data + " ";
+  }
+  else
+  {
+    str = " " + data + str + +" ";
+  }
+  return rising_squares(num - 1, str);
+}
+
+void rising_squares_test()
+{
+  rising_squares(5);
+}
+
+void string_expansion(std::vector<std::string> &collection, std::string bin_string, std::string str_buffer)
+{
+  char c;
+
+  if (bin_string.empty() && !str_buffer.empty())
+  {
+    collection.push_back(str_buffer);
+    return;
+  }
+  c = bin_string[0];
+  if (c == '?')
+  {
+    for (int i = 0; i < 2; i++)
+    {
+      c = i ? '1' : '0';
+      string_expansion(collection, bin_string.substr(1), str_buffer + c);
+    }
+  }
+  else
+  {
+    return string_expansion(collection, bin_string.substr(1), str_buffer + c);
+  }
+}
+
+void string_expansion_test()
+{
+  std::vector < std::string>  collection;
+  string_expansion(collection, "1?0?");
+  for (auto ele: collection)
+    std::cout << ele << '\n';
+}
+
 int main()
 {
-  telephone_permutation_test();
+  string_expansion_test();
 }
