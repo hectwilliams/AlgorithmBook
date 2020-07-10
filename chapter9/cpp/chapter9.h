@@ -8,7 +8,7 @@
 int recursive_sigma(int number);
 int recursive_factorial(double number);
 template <class T>
-void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const T &newColor);
+void floodFill(std::vector<std::vector<T> > &canvas2D, const T startXY[2], const T &newColor);
 template <class T>
 bool binarySearch(std::vector<T> collection, const T &target);
 int tarai(int x, int y, int z);
@@ -26,4 +26,8 @@ int collatz_apalooza(unsigned num);
 void telephone_permutation(std::vector<std::string> &collection, const std::string &phone_number, unsigned index = 0, std::string str_accum = "");
 std::string rising_squares(unsigned num, std::string str = "");
 void string_expansion(std::vector<std::string> &collection, std::string bin_string, std::string str_buffer = "");
+void string_anagram ( std::vector<std::string> &collection, const std::string &str, std::string &&str_buffer = "") ;
+void climbing_stairs (std::vector<std::vector<int> > &collection, const unsigned &climb_count, std::vector<int> &&buffer = std::vector<int>() );
+std::ostream &operator<<(std::ostream &out, const std::vector < std::vector<int> >  &collection);  /* print string vector */
+
 #endif

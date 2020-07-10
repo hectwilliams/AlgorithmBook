@@ -4,6 +4,8 @@
 #include <iostream>
 #include <initializer_list>
 #include <math.h>
+#include <numeric>
+
 int sigma(int number)
 {
   if (number <= 0)
@@ -19,12 +21,13 @@ int factorial(double number)
 }
 
 template <class T>
-void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const T &newColor)
+void floodFill(std::vector<std::vector<T> > &canvas2D, const T startXY[2], const T &newColor)
 {
   int row = startXY[0];
   int col = startXY[1];
   int rowSize;
   int colSize;
+
   T prevColor;
   int xy[2];
 
@@ -79,7 +82,7 @@ void floodFill(std::vector<std::vector<T>> &canvas2D, const T startXY[2], const 
 
 void test_recursive_factorial()
 {
-  std::vector<std::vector<int>> canvas;
+  std::vector<std::vector<int> > canvas;
   // Array Data
   // {
   //     {3, 2, 3, 4, 3},
@@ -359,7 +362,7 @@ void telephone_permutation_test()
 
 std::string rising_squares(unsigned num, std::string str)
 {
-  std::string data = std::to_string((int)std::pow(num, 2));
+  std::string data = std::to_string((int)pow(num, 2));
 
   if (num == 0)
     return str;
@@ -412,7 +415,67 @@ void string_expansion_test()
     std::cout << ele << '\n';
 }
 
+void string_anagram (std::vector<std::string> &collection, const std::string &str, std::string &&str_buffer )
+{
+  if (str.empty()) {
+    collection.push_back(str_buffer);
+    return;
+  }
+
+  for (int i = 0; i < str.size(); i++) {
+    string_anagram(collection, str.substr(0, i) + str.substr(i + 1), str_buffer + str[i] );
+  }
+}
+
+void string_anagram_test()
+{
+  std::vector<std::string> collection;
+  string_anagram(collection, "lmi");
+  for (auto ele: collection)
+    std::cout << ele << '\n';
+}
+
+void climbing_stairs (std::vector<std::vector<int> > &collection, const unsigned &climb_count, std::vector<int> &&buffer )
+{
+  int curr_cum = std::accumulate(buffer.begin(), buffer.end(), 0);
+
+  if (curr_cum >=  climb_count )
+  {
+    if (curr_cum == climb_count)
+    {
+      collection.push_back(buffer);
+    }
+    return;
+  }
+
+  for (int i = 1; i < 3; i++) {
+    buffer.push_back(i);
+    climbing_stairs(collection, climb_count, std::vector<int>(buffer.begin(), buffer.end()) );
+    buffer.pop_back();
+  }
+}
+
+void climbing_stairs_test()
+{
+  std::vector<std::vector<int> > collection;
+  climbing_stairs(collection, 4);
+  std::cout << collection;
+}
+
+std::ostream &operator<<(std::ostream &out, const std::vector < std::vector<int> >  &collection)  /* print int vector */
+{
+  for (int i = 0; i < collection.size(); i++) {
+    for (auto ele: collection[i]) {
+      out << "[" << ele << "]";
+    }
+    out << '\n';
+  }
+  return out;
+}
+
+
 int main()
 {
-  string_expansion_test();
+  climbing_stairs_test();
+
 }

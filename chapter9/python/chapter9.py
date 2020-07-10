@@ -1,3 +1,4 @@
+import copy
 
 def recursive_sigma(number):
   if number <= 0:
@@ -131,29 +132,29 @@ def bestZibNum (value):
   return result
 
 def recursive_search(collection, target):
-  mid = None  
-  sample = None 
+  mid = None
+  sample = None
 
   if not collection:
-    return False 
-  
+    return False
+
   mid = int (len(collection) / 2)
   sample = collection[mid]
   print(collection, sample)
-  if sample == target: 
-    return True 
+  if sample == target:
+    return True
   elif target < sample  :
-    return recursive_search(collection[0 : mid], target) 
+    return recursive_search(collection[0 : mid], target)
   elif  target > sample:
     return recursive_search(collection[mid + 1: :], target)
 
 def recursive_search_test():
   collection = [1,2,3,6]
   answer = recursive_search(collection, 4)
-  print(answer) #False 
+  print(answer) #False
   collection = [4,5,6,8,12]
   answer = recursive_search(collection, 5)
-  print(answer) # True 
+  print(answer) # True
 
 def rGCF(num1, num2):
   if num1 == 0:
@@ -162,7 +163,7 @@ def rGCF(num1, num2):
 
 def rGCF_test():
   a = 10
-  b = 15 
+  b = 15
   print( rGCF(a,b))
 
 def tarai (x, y, z):
@@ -177,7 +178,7 @@ def tarai_test():
 def in_order_subset_remove_string(str, index, remove_count):
   substr = ''
   counter = 0
-  size = len(str) 
+  size = len(str)
 
   while (counter != size ):
     if remove_count <= 0:
@@ -191,8 +192,8 @@ def in_order_subset_remove_string(str, index, remove_count):
   return substr
 
 def in_order_subsets (string):
-  collection = [] 
-  size = len(string) 
+  collection = []
+  size = len(string)
 
   for rcount in range (0, size + 1):
     if (rcount == 0):
@@ -200,7 +201,7 @@ def in_order_subsets (string):
     elif (rcount == size):
       collection.append([])
     else:
-    #remove rcount chars from string starting at index k 
+    #remove rcount chars from string starting at index k
       for k in range(0, size):
         collection.append(in_order_subset_remove_string(string, k, rcount))
   return collection
@@ -216,7 +217,7 @@ def recursive_list_length (node):
 
 def got_any_grapes_helper(collection, n, obj, curr_sum):
   even = 2*n
-  odd = 2*n + 1  
+  odd = 2*n + 1
 
   if obj['max'] == None or curr_sum >=  obj['max'] :
     obj['max'] = curr_sum
@@ -263,18 +264,18 @@ telephone_words_mapping = {
   '7': 'PQRS',
   '8': 'TUV'  ,
   '9': 'WXYZ' ,
-  '-': '-'   
+  '-': '-'
 }
 
 def telephone_words(memo, phone_number, index = 0, code = ""):
-  digit = None 
+  digit = None
 
   if index == len(phone_number):
     memo.append(code)
-    return 
+    return
 
   digit = phone_number[index]
- 
+
   if digit in telephone_words_mapping:
     for c in list(telephone_words_mapping[digit]):
       telephone_words (memo, phone_number, index + 1, code + c)
@@ -292,22 +293,22 @@ def rising_squares(num, string = ""):
     return string
 
   if num % 2 == 0:
-    string = " " + string + data + " " 
+    string = " " + string + data + " "
   else:
-    string = " " + data + string + " " 
+    string = " " + data + string + " "
   return rising_squares(num - 1, string)
- 
+
 def rising_squares_test():
   answer = rising_squares(5)
   print(answer)
 
 def string_expansion(bin_string, str_buffer = "", collection = []):
-  c = None 
+  c = None
 
   if len(bin_string) == 0:
     collection.append(str_buffer)
     return
-  
+
   c = bin_string[0]
 
   if c == '?':
@@ -324,12 +325,30 @@ def string_expansion_test():
   print(answer)
 
 def anagram(string, str_buffer = "", collection = []):
-  
+
   if len (string) == 0:
-    collection.append(str_buffer) 
+    collection.append(str_buffer)
 
   for i in range(0, len(string)):
-    anagram (string[ 1: :], str_buffer + string[i], collection) 
+    anagram (string[ 1: :], str_buffer + string[i], collection)
 
+def climbing_stairs(collection, step_count, steps = []):
+  curr_sum = sum (steps)
 
-anagram("lmi")
+  if curr_sum >= step_count:
+    if curr_sum == step_count:
+      collection.append( copy.deepcopy(steps) )
+    return
+
+  for i in range(1, 3):
+    steps.append(i)
+    climbing_stairs( collection, step_count, steps) # deep copy
+    steps.pop()
+
+  return collection
+
+def climbing_stairs_test():
+  collection = []
+  climbing_stairs(collection,4)
+  print(collection)
+climbing_stairs_test()

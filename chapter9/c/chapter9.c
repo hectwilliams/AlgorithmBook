@@ -369,20 +369,20 @@ unsigned word_count(char *word)
   return count;
 }
 
-unsigned word_count(const char *word)
-{
-  unsigned count = 0;
-  const char *prev;
-  while (*word != '\0')
-  {
-    prev = word;
-    if (*prev == 0)
-      break;
-    word++;
-    count++;
-  }
-  return count;
-}
+// unsigned word_count(const char *word)
+// {
+//   unsigned count = 0;
+//   const char *prev;
+//   while (*word != '\0')
+//   {
+//     prev = word;
+//     if (*prev == 0)
+//       break;
+//     word++;
+//     count++;
+//   }
+//   return count;
+// }
 
 unsigned collection_index = 0;
 void telephone_words(const char **collection, const char *phone_number, int index, char *buffer)
@@ -528,7 +528,7 @@ void binary_expansion_test()
 {
   const char *collection[1000];
   binary_expansion(collection, "1?0??");
-  /* solution 
+  /* solution
     string buffer 1101
     string buffer 1100
     string buffer 1001
@@ -536,30 +536,143 @@ void binary_expansion_test()
   */
 }
 
-void anagram(const char **collection, const char *string, unsigned index, char *buffer)
-{
-}
-
-void anagram(const char **collection, const char *string)
+void anagram_helper(const char **collection, unsigned *wr_index, unsigned string_max_len, const char *string, char *buffer)
 {
   unsigned string_len = word_count(string);
+  unsigned buffer_len;
   char c;
+
+
+  if (buffer == NULL)
+    buffer = (char *)malloc(string_len +1);
+
+  buffer_len = word_count(buffer);
+
+  if (string_len == 0) {
+    collection [ (*wr_index)++ ] = buffer;
+   return;
+  }
 
   for (int i = 0; i < string_len; i++)
   {
     c = string[i];
-    /* copy string */
-    char *buffer = (char *)malloc(string_len);
+
+    /* shrink string */
+    {
+      char *mutate_string = (char *) malloc(string_len +1);  /* allocate char vector */
+      int index = 0;
+      for (int k = 0; k < string_len; k++) {
+        if (k != i) {                                     /* omit c(i index)*/
+          mutate_string[index++] = string[k];
+        }
+        mutate_string[index] = '\0';
+      }
+
+    // /* expand buffer */
+      char *expand_string = (char *)malloc(string_max_len +1);
+      memcpy(expand_string, buffer, buffer_len + 2); /* chars + null */
+      expand_string[buffer_len] = c;
+      expand_string[buffer_len + 1] = '\0';
+
+      anagram_helper(collection,wr_index, string_max_len, mutate_string, expand_string);
+      free(mutate_string);
+    }
   }
+}
+
+ struct anagram_data anagram(const char *string)
+{
+  static unsigned wr_index  = 0;
+  static struct anagram_data data = {.collection = NULL};
+
+  if (data.collection != NULL)
+    free(data.collection);
+  data.word_size = word_count(string);
+  data.array_size = recursive_factorial(data.word_size);
+  data.collection = (const char**) malloc(data.array_size * sizeof(const char**)); /* allocate array of strings */
+  wr_index = 0;
+  anagram_helper(data.collection, &wr_index,  data.word_size , string, NULL);
+  return data;
 }
 
 void anagram_test()
 {
-  const char *collection[100];
-  anagram(collection, "lmi");
+  struct anagram_data data = anagram("lmi");
+  for (int i = 0 ; i < data.array_size; i++)
+    printf("%s/\n", data.collection[i]);
+}
+
+unsigned climb_stairs_array_sum(struct stair_climb_array *arr_element)
+{
+  unsigned result = 0;
+
+  if (arr_element) {
+    for (int i = 0; i < arr_element->size; i++) {
+      result += arr_element->array[i];
+    }
+  }
+  return result;
+}
+
+
+  void print_array (struct  stair_climb_array *obj  )
+  {
+    for (int i = 0; i < obj->size; i++) {
+      printf( "   [ %d ] \n " , obj->array[i]  );
+    }
+    printf("\n");
+  }
+
+void climb_stairs_helper(const unsigned climb_count, struct stair_climb_array *element, struct stair_info *info)
+{
+  unsigned ele_count = element == NULL ? 0 : element->size;
+  unsigned curr_sum = climb_stairs_array_sum(element);
+
+
+  if (curr_sum >= climb_count) {
+    if (curr_sum == climb_count) {
+      info->size++;
+      if (info->stair_climb_array_list == NULL)
+        info->stair_climb_array_list = (struct stair_climb_array **)  malloc ( sizeof(struct stair_climb_array *));   /* allocate vector of array elements */
+      info->stair_climb_array_list = realloc( info->stair_climb_array_list,  info->size * sizeof(struct stair_climb_array *));
+      info->stair_climb_array_list[info->size - 1] = element;
+    }
+    return;
+  }
+
+  for (unsigned  i = 1; i < 3; i++)
+  {
+    struct stair_climb_array *clone = (struct stair_climb_array *) malloc( sizeof(struct stair_climb_array) *  (ele_count + 1)  );  /* allocate new array element */
+    clone->size = ele_count + 1;
+    clone->array =  (unsigned *) malloc( sizeof(unsigned) * clone->size ) ;  /* allocate unsigned array */
+    if (element != NULL)
+      memcpy(clone->array, element->array, ele_count * sizeof(unsigned)  );    /* cpy input array element to clone*/
+    clone->array[ele_count] = i;
+    climb_stairs_helper(climb_count, clone, info);
+  }
+ }
+
+struct stair_info climb_stairs(const unsigned climb_count)
+{
+  static struct stair_info info = {.size = 0, .stair_climb_array_list = NULL};
+  climb_stairs_helper(climb_count, NULL, &info);
+
+  for (unsigned i = 0; i < info.size; i++) {      /* iterate list of array structures */
+    struct stair_climb_array *array_element = info.stair_climb_array_list[i];
+    for (int k = 0; k < array_element->size; k++) {   /* print array elements */
+      printf("[%d]", array_element->array[k]);
+    }
+    printf("\n");
+  }
+  return info;
+}
+
+void climb_stairs_test()
+{
+  climb_stairs(4);
 }
 
 int main()
 {
-  binary_expansion_test();
+  climb_stairs_test();
 }
