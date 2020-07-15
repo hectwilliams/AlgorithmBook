@@ -770,7 +770,68 @@ void tower_of_hanoi_test ()
   std::cout << test_data << '\n';
 }
 
+void ipAddress_add (std::vector<std::string> &collection ,const std::string digits, const std::vector<int> &buffer)
+{
+  int digit_pos = 0;
+  int dot_count = 0;
+
+  collection.push_back("");
+
+  for (auto counter: buffer )
+  {
+    while (counter)
+    {
+      collection[collection.size() - 1] += digits[digit_pos++];
+      --counter;
+    }
+
+    if (++dot_count < 3)
+    {
+      collection[collection.size() - 1]  += '.';
+    }
+  }
+  std::cout << collection.back() << '\n';
+}
+
+ void ipAddress(const std::string &digits, std::vector<std::string> &collection, std::vector<int>  &&buffer)
+ {
+
+   int curr_sum = std::accumulate( buffer.begin(), buffer.end(), 0);
+
+   if (buffer.size() == 4)
+   {
+     if (curr_sum)
+     {
+       ipAddress_add(collection, digits, buffer);
+     }
+     return;
+   }
+   else if (curr_sum > digits.size())
+   {
+     return;
+   }
+
+   for (int i = 1; i <= 3; i++)
+   {
+     buffer.push_back(i);
+     ipAddress(digits, collection, std::vector<int>(buffer.begin(), buffer.end()) );
+     buffer.pop_back();
+   }
+
+ }
+
+ void ipAddress_test ()
+ {
+   std::vector<std::string> collection;
+   ipAddress("255255255", collection);
+
+   for (auto ele: collection)
+   {
+     std::cout << ele << '\n';
+   }
+ }
+
 int main()
 {
-  tower_of_hanoi_test();
+  ipAddress_test();
 }

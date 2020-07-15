@@ -499,4 +499,37 @@ def Tower_of_Hanoi_test():
   iterations = Tower_of_Hanoi(5).iterations
   print(iterations)
 
-Tower_of_Hanoi_test()
+def ip_address_add (digits, sum_array, collection):
+  pos = 0
+  dots = 1
+
+  collection.append("")
+  for sum in sum_array:
+    while sum:
+      collection[len(collection) - 1 ] += digits[pos]
+      pos += 1
+      sum -= 1
+
+    if dots < 3:
+      collection[len(collection) - 1 ] += '.'
+      dots += 1
+
+def ip_address(digits, collection =[], buffer = []):
+  accum = sum(buffer)
+
+  if len(buffer) == 4:
+    if accum == len(digits):
+      ip_address_add(digits, buffer, collection)
+    return
+  elif  accum > len(digits):
+    return
+
+  for i in range(1, 4):
+    ip_address(digits, collection, buffer + [i])
+
+def ip_address_test():
+  collection = []
+  ip_address("255255255" , collection)
+  print(collection)
+
+ip_address_test()

@@ -109,8 +109,25 @@ int tower_of_hanoi_move_disk (struct pole *tower, unsigned dest_sel, unsigned  s
 void tower_of_hanoi_buffer_poles_add (struct pole_list **collection, struct pole *poles);
 unsigned  tower_of_hanoi_buffer_has_pole(struct pole_list **collection, struct pole *poles, unsigned size);
 int tower_of_hanoi_compare_poles(struct pole *a, struct pole *b, unsigned size);
-#endif
 
+
+#define IP_ADDRESS_BUFFER_SIZE 4
+
+struct ip_address_list
+{
+  char * addr;
+  struct ip_address_list *next;
+};
+struct ip_address_list *ip_address ( char * digits);
+
+void ip_address_helper ( const char * digits, const unsigned size, struct ip_address_list **collection, int *buffer, unsigned index);
+void ip_address_buffer_deep_copy(int * dest, int * src);
+boolean ip_address_add(char * address, struct ip_address_list **collection);
+unsigned ip_address_buffer_sum (int *buffer);
+char *ip_address_construct(const char *digits, const unsigned size, int *buffer);
+
+
+#endif
 
 
 

@@ -46,5 +46,7 @@ bool tower_of_hanoi_tower_in_collection(std::vector<tower_t*> **collection, towe
 void tower_of_hanoi_tower_add_to_collection(std::vector<tower_t*> **collection, tower_t *tower);
 bool tower_of_hanoi_compare_towers(tower_t *tower_a, tower_t *tower_b, uint32_t size );
 void  tower_of_hanoi_remove_collection (std::vector <tower_t *> ** collection);
+void ipAddress_add (std::vector<std::string> &collection ,const std::string digits, const std::vector<int> &buffer);
+void ipAddress(const std::string &digits, std::vector<std::string> &collection, std::vector<int>  &&buffer = std::vector<int>() );
 
 #endif

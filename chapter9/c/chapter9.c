@@ -1135,7 +1135,143 @@ int tower_of_hanoi_test ()
   printf("total steps to move disk to far-right pole  = %d\n", total_steps);
 }
 
+void ip_address_buffer_deep_copy(int * dest, int * src)
+{
+  if (dest == NULL)
+  {
+    return;
+  }
+
+  for (int i = 0; i < IP_ADDRESS_BUFFER_SIZE; i++)
+  {
+    if (src == NULL)
+    {
+      dest[i] = 0;
+    }
+    else
+    {
+      dest[i] = src[i];
+    }
+  }
+}
+boolean ip_address_add(char * address, struct ip_address_list **collection)
+{
+  struct ip_address_list *list = (struct ip_address_list*) malloc (sizeof(struct ip_address_list));
+
+  list->addr = address;
+  list->next = NULL;
+
+  if (*collection == NULL)
+  {
+    *collection = list;
+  }
+  else
+  {
+    list->next = *collection;
+    *collection = list;
+  }
+}
+
+unsigned ip_address_buffer_sum (int *buffer)
+{
+  unsigned sum = 0;
+
+  if (buffer == NULL)
+  {
+    return sum;
+  }
+
+  for (int i = 0; i < IP_ADDRESS_BUFFER_SIZE; i++)
+  {
+    sum += buffer[i];
+  }
+  return sum;
+}
+
+char *ip_address_construct(const char *digits, const unsigned size, int *buffer)
+{
+  int len = size + 3 + 1; /* size +  {dots} + {"\0"}*/
+  char * ip_address  = ( char *) malloc(sizeof( char) * (len)  );
+  unsigned ip_address_pos = 0;
+  unsigned digits_pos = 0;
+
+  for (int buffer_index = 0; buffer_index < IP_ADDRESS_BUFFER_SIZE; buffer_index++)
+  {
+    while (buffer[buffer_index])
+    {
+      ip_address[ip_address_pos++] = digits[digits_pos++];
+      --buffer[buffer_index];
+    }
+    if (buffer_index < IP_ADDRESS_BUFFER_SIZE - 1)
+    {
+      ip_address[ip_address_pos++] =  '.' ;
+    }
+  }
+  return ip_address;
+}
+
+void ip_address_helper ( const char * digits, const unsigned size, struct ip_address_list **collection, int *buffer, unsigned index)
+{
+  int *clone_buffer;
+  unsigned curr_sum = ip_address_buffer_sum(buffer);
+  char * addr;
+
+  if (index == 4)
+  {
+    if (curr_sum == size)
+    {
+      addr = ip_address_construct(digits, size, buffer);
+      ip_address_add(addr, collection);
+    }
+    return;
+  }
+  else if (curr_sum > size)
+  {
+    return;
+  }
+
+  for (int i = 1; i <= 3; i++)
+  {
+    clone_buffer = (int *) malloc(sizeof(int) *IP_ADDRESS_BUFFER_SIZE);
+    ip_address_buffer_deep_copy(clone_buffer, buffer);
+    clone_buffer[index] = i;
+    ip_address_helper(digits, size, collection, clone_buffer, index + 1);
+  }
+}
+
+struct ip_address_list * ip_address (char * digits )
+{
+  struct ip_address_list *collection = NULL;
+  unsigned string_count = 0;
+  const int data[3] = {1, 2, 3};
+  char *ptr;
+
+
+  ptr = digits;
+
+  while (*ptr != 0)
+  {
+    string_count++;
+    ptr++;
+  }
+
+  ip_address_helper ( digits, string_count, &collection, NULL, 0);
+  return collection;
+}
+
+void ip_address_test()
+{
+  struct ip_address_list *runner;
+  /* print results */
+  runner = ip_address("255255255");
+  while (runner)
+  {
+    printf( " [ %s] \n", runner->addr );
+    runner = runner->next;
+  }
+}
+
 int main()
 {
-  tower_of_hanoi_test();
+  ip_address_test();
 }
