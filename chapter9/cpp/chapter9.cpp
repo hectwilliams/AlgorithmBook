@@ -706,7 +706,7 @@ void tower_of_hanoi_helper(unsigned size, std::vector <tower_t *> **towers_used,
   uint32_t  sel = 0;
   tower_t *clone_tower;
 
-  std::cout << *tower;  /* view current tower state */
+  // std::cout << *tower;  /* view current tower state */
 
   if (search_count > 0) {
     return;
@@ -714,7 +714,7 @@ void tower_of_hanoi_helper(unsigned size, std::vector <tower_t *> **towers_used,
 
   if (tower->at(2)[size - 1] != 0 )
   {
-    std::cout << *tower;
+    // std::cout << *tower;
     search_count = curr_count;
     return;
   }
@@ -766,7 +766,8 @@ unsigned  tower_of_hanoi(unsigned size)
 
 void tower_of_hanoi_test ()
 {
-  tower_of_hanoi(3);
+  unsigned test_data = tower_of_hanoi(3);
+  std::cout << test_data << '\n';
 }
 
 int main()
