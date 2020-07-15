@@ -750,6 +750,7 @@ void  tower_of_hanoi_remove_collection( std::vector<tower_t*> **collection) /*  
      free ( (*collection)->back());
      (*collection)->pop_back();
   }
+  free(*collection); /* free allocate vector */
 }
 
 unsigned  tower_of_hanoi(unsigned size)
