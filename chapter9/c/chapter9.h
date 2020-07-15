@@ -42,21 +42,75 @@ struct anagram_data
 };
 void anagram_helper(const char ** collection, unsigned *wr_index, unsigned string_max_len, const char *string, char *buffer);
 
-struct stair_info climb_stairs(const unsigned climb_count);
-
-
-struct stair_climb_array
+struct int_array_t
 {
   unsigned size;
-  unsigned *array;
+  int *data;
 };
 
-struct stair_info
+struct int_vector_array_t
 {
   unsigned size;
-  struct stair_climb_array **stair_climb_array_list;
+  struct int_array_t ** array_vector;
 };
 
-void climb_stairs_helper(const unsigned climb_count, struct stair_climb_array *element, struct stair_info *info);
-unsigned climb_stairs_array_sum(struct stair_climb_array *arr_element);
+struct int_vector_array_t climb_stairs(const unsigned climb_count);
+void climb_stairs_helper(const unsigned climb_count, struct int_array_t *element, struct int_vector_array_t *info);
+
+int int_array_t_sum (struct int_array_t *arr_element);
+
+struct int_vector_array_t  square_sum( const unsigned num );
+void square_sum_helper( const unsigned num, int start, struct int_vector_array_t *info , struct int_array_t *array);
+
+struct const_char_array_t
+{
+  unsigned size;
+  const char  **collection;
+};
+
+struct const_char_array_t valid_n_pair_paren (unsigned num);
+void valid_n_pair_paren_helper(const unsigned num,  char * buffer, struct const_char_array_t *obj);
+int valid_paren (const char * string);
+int tower_of_hanoi(const unsigned size);
+
+typedef struct disks {
+  int value;
+  struct disks *next;
+} disks;
+
+struct pole
+{
+  unsigned size;
+  disks *disk_list;
+};
+
+struct pole_list {
+  struct pole *curr_poles;
+  struct pole_list *next;
+};
+
+typedef struct tower
+{
+  struct pole *poles;
+  unsigned size;
+
+  struct tower *children_array;
+  unsigned children_size;
+} tower;
+
+void print_tower(struct pole *poles, unsigned size);
+void tower_of_hanoi_helper(unsigned size, unsigned *search_count, unsigned iteration, struct pole *poles, struct pole_list **collection );
+struct disks * tower_of_hanoi_pop();
+void tower_of_hanoi_copy_tower_state(struct pole *dest, struct pole *src, unsigned size);
+void tower_of_hanoi_insert(struct pole *pole, int value);
+struct disks *disk_allocate(int value);
+void print_disk(struct pole *pole);
+int tower_of_hanoi_move_disk (struct pole *tower, unsigned dest_sel, unsigned  src_sel);
+void tower_of_hanoi_buffer_poles_add (struct pole_list **collection, struct pole *poles);
+unsigned  tower_of_hanoi_buffer_has_pole(struct pole_list **collection, struct pole *poles, unsigned size);
+int tower_of_hanoi_compare_poles(struct pole *a, struct pole *b, unsigned size);
 #endif
+
+
+
+

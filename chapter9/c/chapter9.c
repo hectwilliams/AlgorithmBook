@@ -356,15 +356,17 @@ unsigned word_count(char *word)
   unsigned count = 0;
   char *prev;
 
-  while (*word != '\0')
-  {
-    prev = word;
+  if (word) {
+    while (*word != '\0')
+    {
+      prev = word;
 
-    if (*prev == 0)
-      break;
+      if (*prev == 0)
+        break;
 
-    word++;
-    count++;
+      word++;
+      count++;
+    }
   }
   return count;
 }
@@ -602,66 +604,76 @@ void anagram_test()
     printf("%s/\n", data.collection[i]);
 }
 
-unsigned climb_stairs_array_sum(struct stair_climb_array *arr_element)
+int int_array_t_sum(struct int_array_t *arr_element)
 {
-  unsigned result = 0;
+  int result = 0;
 
   if (arr_element) {
     for (int i = 0; i < arr_element->size; i++) {
-      result += arr_element->array[i];
+      result += arr_element->data[i];
     }
   }
   return result;
 }
 
 
-  void print_array (struct  stair_climb_array *obj  )
+  void print_int_array_t (struct  int_array_t *obj  )
   {
+    printf(" size of array %d", obj->size);
     for (int i = 0; i < obj->size; i++) {
-      printf( "   [ %d ] \n " , obj->array[i]  );
+      printf( "   [ %d ] \n " , obj->data[i]  );
     }
     printf("\n");
   }
 
-void climb_stairs_helper(const unsigned climb_count, struct stair_climb_array *element, struct stair_info *info)
+void climb_stairs_helper(const unsigned climb_count, struct int_array_t *element, struct int_vector_array_t *info)
 {
   unsigned ele_count = element == NULL ? 0 : element->size;
-  unsigned curr_sum = climb_stairs_array_sum(element);
+  int curr_sum = int_array_t_sum(element);
+  struct int_array_t *clone;
 
 
   if (curr_sum >= climb_count) {
     if (curr_sum == climb_count) {
       info->size++;
-      if (info->stair_climb_array_list == NULL)
-        info->stair_climb_array_list = (struct stair_climb_array **)  malloc ( sizeof(struct stair_climb_array *));   /* allocate vector of array elements */
-      info->stair_climb_array_list = realloc( info->stair_climb_array_list,  info->size * sizeof(struct stair_climb_array *));
-      info->stair_climb_array_list[info->size - 1] = element;
+
+      if (info->array_vector == NULL)
+        info->array_vector = (struct int_array_t **)  malloc ( sizeof(struct int_array_t *));   /* allocate vector of array elements */
+
+      info->array_vector = realloc( info->array_vector,  info->size * sizeof(struct int_array_t *));
+
+      info->array_vector[info->size - 1] = element;
     }
     return;
   }
 
-  for (unsigned  i = 1; i < 3; i++)
+  for (int  i = 1; i < 3; i++)
   {
-    struct stair_climb_array *clone = (struct stair_climb_array *) malloc( sizeof(struct stair_climb_array) *  (ele_count + 1)  );  /* allocate new array element */
+    clone = (struct int_array_t *) malloc( sizeof(struct int_array_t) *  (ele_count + 1)  );  /* allocate new array element */
     clone->size = ele_count + 1;
-    clone->array =  (unsigned *) malloc( sizeof(unsigned) * clone->size ) ;  /* allocate unsigned array */
-    if (element != NULL)
-      memcpy(clone->array, element->array, ele_count * sizeof(unsigned)  );    /* cpy input array element to clone*/
-    clone->array[ele_count] = i;
+
+    clone->data =  (int *) malloc( sizeof(int) *  clone->size ) ;  /* allocate unsigned array */
+    if (element)
+      memcpy(clone->data, element->data, ele_count * sizeof(int) * ele_count );    /* cpy input array element to clone*/
+
+    clone->data[ele_count] = i;
+
     climb_stairs_helper(climb_count, clone, info);
   }
  }
 
-struct stair_info climb_stairs(const unsigned climb_count)
+struct int_vector_array_t climb_stairs(const unsigned climb_count)
 {
-  static struct stair_info info = {.size = 0, .stair_climb_array_list = NULL};
+  static struct int_vector_array_t info = {.size = 0, .array_vector = NULL};
   climb_stairs_helper(climb_count, NULL, &info);
 
   for (unsigned i = 0; i < info.size; i++) {      /* iterate list of array structures */
-    struct stair_climb_array *array_element = info.stair_climb_array_list[i];
+    struct int_array_t *array_element = info.array_vector[i];
+
     for (int k = 0; k < array_element->size; k++) {   /* print array elements */
-      printf("[%d]", array_element->array[k]);
+      printf("[%d]", array_element->data[k]);
     }
+
     printf("\n");
   }
   return info;
@@ -672,7 +684,458 @@ void climb_stairs_test()
   climb_stairs(4);
 }
 
+
+void square_sum_helper( const unsigned num, int start, struct int_vector_array_t *info , struct int_array_t *array)
+{
+  struct int_array_t *clone;
+  unsigned curr_size = array == NULL ? 0 : array->size;
+  int array_sum = int_array_t_sum(array);
+
+  if (array_sum >= num) {
+    if (array_sum == num) {
+
+      if (info->size == 0)
+        info->array_vector = (struct int_array_t **) malloc( sizeof (struct int_array_t *));
+      info->array_vector = realloc(info->array_vector, sizeof(struct int_array_t *) * (info->size + 1) );
+      info->array_vector[info->size] = array;
+      info->size++;
+      return;
+    }
+    free (array);
+    return;
+  }
+
+
+  for (int  i = start; i < num; i++) {
+    /* allocate array structure */
+    clone = (struct int_array_t *) malloc( sizeof(struct int_array_t) );
+    clone->size = curr_size + 1;
+
+    /* allocate array */
+    clone->data = (int *) malloc(sizeof(int) * clone->size);
+
+    /* copy element data to clone */
+    if (array)
+      memcpy(clone->data, array->data , sizeof(int) * curr_size);
+
+    /* append(assign) number to array */
+    clone->data[curr_size] = i*i;
+    /*recursion */
+    square_sum_helper(num, start + 1, info, clone);
+  }
+}
+
+struct int_vector_array_t  square_sum( const unsigned num )
+{
+  struct int_vector_array_t vector  = {.size = 0, .array_vector = NULL};
+  square_sum_helper(num, 1, &vector, NULL);
+  return vector;
+}
+
+void square_sum_test()
+{
+  struct int_vector_array_t result  =  square_sum(30);
+  struct int_array_t *array;
+
+  for (int i = 0; i < result.size; i++) {
+    array = result.array_vector[i];
+    print_int_array_t(array);
+
+ }
+}
+
+int valid_paren (const char * string)
+{
+  int opem_brace_count = 0;
+  char c;
+
+  for (int i = 0;  *(string + i) != 0; i++)
+  {
+    c = *(string + i);
+
+    if (c == '(')
+      opem_brace_count++;
+
+    if (c == ')')
+      opem_brace_count--;
+
+    if (opem_brace_count < 0)
+      return 0;
+  }
+
+  return (opem_brace_count == 0);
+}
+
+void valid_n_pair_paren_helper(const unsigned num,  char * buffer, struct const_char_array_t *obj )
+{
+  unsigned int str_len = word_count(buffer);
+  unsigned paren_len = (int) pow(2, num ) ;
+  char pair [2] = { '(', ')'};
+  char *clone;
+  char c;
+
+  if ( str_len >=  paren_len)
+  {
+    if (valid_paren(buffer) && str_len == paren_len) {
+      if (obj->collection == NULL)
+        obj->collection = (const char **) malloc (sizeof(const char *) );
+
+      obj->collection  = realloc(obj->collection, sizeof(const char *) * (obj->size + 1));
+      obj->collection[ obj->size] = buffer;
+      obj->size++;
+      return;
+    }
+    free(buffer);
+    return;
+  }
+
+  for (int k = 0; k < 2; k++)
+  {
+    c = pair[k];
+    clone = ( char *) malloc ( sizeof( char)  * (str_len + 1)  );
+    if (buffer )
+      memcpy(clone , buffer, sizeof( char) * str_len );
+    clone[str_len] = c;
+    valid_n_pair_paren_helper(num, clone, obj);
+  }
+
+}
+
+struct const_char_array_t  valid_n_pair_paren (unsigned num)
+{
+  struct const_char_array_t  result = {.size = 0, .collection= NULL};
+  valid_n_pair_paren_helper(num, NULL, &result);
+  return result;
+}
+
+valid_n_pair_paren_test()
+{
+   struct const_char_array_t  result  = valid_n_pair_paren(2);
+   for (int i = 0 ; i < result.size; i++) {
+    printf( "[%s]\n", result.collection[i] );
+   }
+}
+
+struct disks *disk_allocate(int value)
+{
+  struct disks *node = (disks *) malloc(sizeof(disks));
+  node->next = NULL;
+  node->value = value;
+  return node;
+}
+
+void print_disk(struct pole *pole)
+{
+  struct disks *disk_list;
+
+  if (pole == NULL)
+    return;
+
+  disk_list = pole->disk_list;
+  printf("DISK[%d]: \t", pole->size);
+  while (disk_list) {
+    printf( " [%d]", disk_list->value);
+    disk_list = disk_list->next;
+  }
+  printf("\n");
+
+}
+
+void print_tower(struct pole *pole, unsigned size)
+{
+  disks *runner;
+  struct pole *p;
+
+  for (int i = 0 ; i < size; i++)
+  {
+    printf("TOWER %d \n", i);
+    p = (pole + i);
+    print_disk(p);
+  }
+  printf("---------------\n");
+}
+
+void tower_of_hanoi_insert(struct pole *pole, int value)
+{
+   struct disks *node;
+  if (pole) {
+
+    node = disk_allocate (value);
+
+    if (pole->disk_list == NULL) {
+      pole->disk_list = node;
+      ++pole->size;
+      return;
+    } else {
+      node->next = pole->disk_list;
+      pole->disk_list = node;
+      ++pole->size;
+      return;
+    }
+    free(node);
+  }
+}
+
+void tower_of_hanoi_copy_tower_state(struct pole *dest, struct pole *src, unsigned size)
+{
+  struct disks * disk = NULL;
+  struct disks *runner_disk;
+  struct pole *p, *dest_p;
+  int *buffer = (int *) malloc (sizeof(int) *(size));
+  unsigned index = 0;
+
+  for (int i = 0; i < 3; i++) {
+    p = (src + i) ;
+    dest_p = (dest + i);
+    index = 0;
+
+    runner_disk = p -> disk_list;
+
+    while (runner_disk) {
+      buffer[ index++ ] = runner_disk->value;
+      runner_disk = runner_disk->next;
+    }
+
+    while (index > 0) {
+      tower_of_hanoi_insert(dest_p, buffer [ index - 1] );
+      index = index - 1;
+    }
+  }
+
+  free(buffer);
+}
+
+
+struct disks * tower_of_hanoi_pop( struct pole *pole )
+{
+
+ struct disks * disk = NULL;
+
+  if (pole == NULL)
+    return disk;
+
+  if (pole->disk_list == NULL)
+    return disk;
+
+  --(pole->size);
+  disk = pole->disk_list;
+  pole->disk_list = pole->disk_list->next;
+
+  return disk;
+};
+
+
+int tower_of_hanoi_move_disk (struct pole *tower, unsigned dest_sel, unsigned  src_sel)
+{
+  struct pole *src = tower + src_sel;
+  struct pole *dest = tower + dest_sel;
+
+  if (src == NULL || dest == NULL)
+    return 0;
+
+  if (dest_sel == src_sel)
+    return 0;
+
+  if (src->size == 0)
+    return 0;
+
+  if ( dest->size == 0 )
+  {
+    tower_of_hanoi_insert(dest, tower_of_hanoi_pop(src)->value );
+    return 1;
+  }
+  else if (dest->disk_list->value > src->disk_list->value)
+  {
+    tower_of_hanoi_insert(dest, tower_of_hanoi_pop(src)->value);
+    return 1;
+  }
+
+  return 0;
+}
+
+void tower_of_hanoi_buffer_poles_add (struct pole_list **collection, struct pole *poles)
+{
+  struct pole_list *runner;
+  struct pole_list *node;
+
+  if (collection == NULL || poles == NULL)
+    return;
+
+  /* new list element */
+  node = (struct pole_list *) malloc ( sizeof(struct pole_list));
+  node -> curr_poles = poles;
+  node -> next = NULL;
+
+  if (*collection == NULL) /* addr of pointer points to NULL */
+  {
+    *collection = node;
+    return;
+  }
+  else
+  {
+    runner = *collection;
+    while (runner->next)
+      runner = runner->next;
+    runner->next = node;
+  }
+}
+
+int tower_of_hanoi_compare_poles(struct pole *a, struct pole *b, unsigned size)
+{
+  disks *data_a, *data_b;
+
+  if (a == NULL || b == NULL)
+  {
+    return 0;
+  }
+
+  for (int i = 0; i < size; i++)
+  {
+    if ((a + i )->size != (b + i)->size )
+    {
+      return 0;
+    }
+
+    data_a = (a + i ) -> disk_list;
+    data_b = (b + i ) -> disk_list;
+
+    while (data_a)
+    {
+      if (data_a->value != data_b->value)
+      {
+        return 0;
+      }
+      data_a = data_a->next;
+      data_b = data_b->next;
+    }
+  }
+
+  return 1;
+
+}
+
+
+unsigned  tower_of_hanoi_buffer_has_pole(struct pole_list **collection, struct pole *poles, unsigned size)
+{
+  struct pole_list *runner;
+
+  if (*collection == NULL)
+    return 0;
+
+  runner = *collection;
+
+  while (runner)
+  {
+    if ( (tower_of_hanoi_compare_poles(runner->curr_poles, poles, size)) )
+    {
+      return 1;
+    }
+    runner = runner->next;
+  }
+
+   return 0;
+
+}
+
+void tower_of_hanoi_helper(unsigned size, unsigned *search_count, unsigned iteration, struct pole *poles, struct pole_list **collection )
+{
+  struct pole *a = poles, *b = poles + 1, *c = poles + 2;
+  struct pole *clone_pole, *clone_ptr;
+
+  if (*search_count != 0)
+    return;
+    // free(poles); /* possible leaks TODO */
+
+  if (tower_of_hanoi_buffer_has_pole(collection, poles, size)) /* pole found in list */
+  {
+    return;
+  }
+  else
+  {
+    tower_of_hanoi_buffer_poles_add(collection, poles); /* store pole in list */
+    printf("\t added pole\n");
+    print_tower(poles, size);
+    printf("\t added pole end \n");
+  }
+
+  if ( c->size == size ) {
+    printf("COMPLETE  %d  %d \n ", iteration, *search_count);
+    *search_count = iteration;
+    print_tower(poles, size);
+    return;
+  }
+
+  /* pop  A pole */
+  if (a->size > 0 ) {
+    for (int sel = 0; sel < 3; sel++)
+    {
+      clone_pole = (struct pole *) malloc( sizeof( struct pole) * 3) ;
+      tower_of_hanoi_copy_tower_state(clone_pole, poles, size);
+      clone_ptr = clone_pole + sel;
+
+      if ( tower_of_hanoi_move_disk(clone_pole, sel, 0)) {
+        tower_of_hanoi_helper(size, search_count, iteration + 1, clone_pole, collection);
+      }
+    }
+  }
+
+  /* pop  B pole */
+  if (b->size > 0) {
+    for (int sel = 0; sel < 3; sel++)
+    {
+      clone_pole = (struct pole *) malloc( sizeof( struct pole) * 3);
+      tower_of_hanoi_copy_tower_state(clone_pole, poles, size);
+      clone_ptr = clone_pole + sel;
+
+      if ( tower_of_hanoi_move_disk(clone_pole, sel, 1)) {
+        tower_of_hanoi_helper(size, search_count, iteration + 1, clone_pole, collection);
+      }
+    }
+  }
+
+  /* pop C pole */
+  if (c->size > 0 ) {
+    for (int sel = 0; sel < 3; sel++)
+    {
+      clone_pole = (struct pole *) malloc( sizeof( struct pole) * 3) ;
+      tower_of_hanoi_copy_tower_state(clone_pole, poles, size);
+      clone_ptr = clone_pole + sel;
+
+      if ( tower_of_hanoi_move_disk(clone_pole, sel, 2) ) {
+        tower_of_hanoi_helper(size, search_count, iteration + 1, clone_pole, collection);
+      }
+    }
+  }
+}
+
+int tower_of_hanoi (const unsigned size)
+{
+  struct pole *poles = (struct pole *) malloc ( sizeof (struct pole) * size);
+
+  int count = 0;
+  unsigned steps_to_solve = 0 ;
+  struct pole_list *ptr_pole_list = NULL;
+
+  for (int i = 0; i < size; i++) {
+    (poles + i )->disk_list = NULL;
+    (poles + i )->size = 0;
+  }
+
+  for (int i = size; i > 0; i--) {
+    tower_of_hanoi_insert(poles, i);
+  }
+
+  tower_of_hanoi_helper(size, &steps_to_solve, count, poles, &ptr_pole_list);
+  return steps_to_solve;
+}
+
+int tower_of_hanoi_test ()
+{
+  int total_steps = tower_of_hanoi(3);
+  printf("total steps to move disk to far-right pole  = %d\n", total_steps);
+}
+
 int main()
 {
-  climb_stairs_test();
+  tower_of_hanoi_test();
 }

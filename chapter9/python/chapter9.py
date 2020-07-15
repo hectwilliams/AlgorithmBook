@@ -351,4 +351,152 @@ def climbing_stairs_test():
   collection = []
   climbing_stairs(collection,4)
   print(collection)
-climbing_stairs_test()
+
+def perfect_squares (collection, num, start = 1, buffer = [] ):
+  if sum(buffer) >= num:
+    if sum(buffer) == num:
+      collection.append( copy.deepcopy(buffer))
+    return
+
+  for i in range(start, num) :
+    perfect_squares(collection, num, start + 1, buffer + [i * i] )
+
+def perfect_squares_test():
+  collection = []
+  perfect_squares(collection, 30)
+  print(collection)
+
+def valid_paren(str):
+  stack = []
+  for c in str:
+    if (c == '('):
+      stack.append(stack)
+    if (c == ')'):
+      if len(stack) == 0:
+        return False
+      stack.pop()
+  return len(stack) == 0
+
+
+
+def n_valid_pairs(num, collection, buffer = "") :
+  pairs = ['(', ')']
+
+  if len(buffer)  >= pow(2,num):
+    if valid_paren(buffer) and pow(2,num) == len(buffer):
+      collection.append(copy.deepcopy(buffer))
+    return
+
+  for i in range(0, 2):
+    n_valid_pairs(num, collection, buffer + pairs[i] )
+
+def n_valid_pairs_tesst():
+  collection = []
+  n_valid_pairs(2, collection)
+  print( collection)
+
+class Tower_of_Hanoi:
+
+  def __solve(self, curr_tower_state, tower_states = [], curr_tower = []):
+      pass
+  def __get_init_pole (self, len):
+    poles = []
+    for i in range (0, len):
+      poles.append([])
+      if i == 0:
+        for k in range(len,  0 , -1):
+          poles[0].append(len + 1 - k)
+    return poles
+
+  def __init__(self, len):
+    self.__POLE_COUNT = 3
+    self.__init_tower_state = self.__get_init_pole(len)
+    self.__len = len
+    self.iterations = None
+    self.__solve(self.__init_tower_state, 0)
+
+  def __move_src_to_dest(self, src_index, dest_index, curr_tower_state):
+
+    src_pole = curr_tower_state[src_index]
+    dest_pole = curr_tower_state[dest_index]
+
+    if (src_pole == None or dest_pole == None):
+      return 0
+
+    if src_index == dest_index:
+      return 0
+
+    # empty source (not permitted )
+    if not src_pole:
+      return 0
+
+    # (permitted moves)
+    if not dest_pole:
+      dest_pole.insert(0, src_pole.pop())
+      return 1
+
+    if dest_pole[0] > src_pole[0]:
+      dest_pole.insert(0, src_pole.pop())
+      return 1
+
+    return 0
+
+  def __collection_compare (self, collection_a, collection_b):
+    a = None
+    b = None
+
+    for row in range(0, self.__len):
+      a = collection_a[row]
+      b = collection_b[row]
+
+      if len(a) != len(b):
+        return 0
+
+      for col in range(0, len(a)):
+        if collection_a[row][col] != collection_b[row][col]:
+          return 0
+
+    return 1
+
+  def __collection_has_pole (self, tower_collection, curr_tower):
+
+    for tower in tower_collection:
+      if self.__collection_compare(tower, curr_tower):
+        return 1
+    return 0
+
+  def __collection_add_pole(self, tower_collection, curr_tower):
+    tower_collection.append(curr_tower)
+
+  def __solve(self, curr_tower_state, iteration,  tower_states = []):
+    clone_tower_state = None
+    sel = None
+
+    if self.iterations != None:
+      del curr_tower_state
+      return
+
+    if len(curr_tower_state[self.__POLE_COUNT - 1]) == self.__len and self.iterations == None :
+      print(curr_tower_state, iteration)
+      self.iterations = iteration
+      return
+
+    if self.__collection_has_pole (tower_states, curr_tower_state) :
+      return
+    else:
+      self.__collection_add_pole(tower_states, curr_tower_state)
+
+    for pole_index in range (0, self.__POLE_COUNT ) : # src pole
+      for k in range (1, self.__POLE_COUNT ):
+        sel = (pole_index + k) % self.__POLE_COUNT  # possible dest pole
+        clone_tower_state = copy.deepcopy(curr_tower_state) # clone tower
+        if (self.__move_src_to_dest(pole_index, sel, clone_tower_state)): # disk move permitted?
+          self.__solve(clone_tower_state, iteration + 1, tower_states)
+        else:
+          del clone_tower_state
+
+def Tower_of_Hanoi_test():
+  iterations = Tower_of_Hanoi(5).iterations
+  print(iterations)
+
+Tower_of_Hanoi_test()

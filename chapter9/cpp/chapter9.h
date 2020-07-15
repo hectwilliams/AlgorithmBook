@@ -1,8 +1,8 @@
 #ifndef CHAPTER_9_H
 #define CHAPTER_9_H
 #include <vector>
-#include <string>
 #include <array>
+#include <string>
 #include <iostream>
 
 int recursive_sigma(int number);
@@ -29,5 +29,22 @@ void string_expansion(std::vector<std::string> &collection, std::string bin_stri
 void string_anagram ( std::vector<std::string> &collection, const std::string &str, std::string &&str_buffer = "") ;
 void climbing_stairs (std::vector<std::vector<int> > &collection, const unsigned &climb_count, std::vector<int> &&buffer = std::vector<int>() );
 std::ostream &operator<<(std::ostream &out, const std::vector < std::vector<int> >  &collection);  /* print string vector */
+void sum_of_squares(std::vector< std::vector<int> >  & collection, const unsigned &target, unsigned start = 1, std::vector<int> &&buffer = std::vector<int>());
+void all_valid_n_paren (std::vector<std::string> &collection, unsigned n, std::string &&buffer = "");
+bool valid_paren (std::string str);
+
+typedef std::array < std::vector<int> , 3 > tower_t;
+std::ostream &operator << (std::ostream &out, const tower_t &tower);
+
+typedef unsigned int uint32_t;
+void tower_of_hanoi_helper(unsigned size, std::vector <tower_t *> **towers_used, tower_t *tower, unsigned &search_count, unsigned  &&curr_count);
+unsigned  tower_of_hanoi(unsigned size);
+void tower_of_hanoi_deep_copy_tower(tower_t *dest, tower_t *src, uint32_t size);
+bool tower_of_hanoi_mv(tower_t *tower, uint32_t dest_index, uint32_t src_index, uint32_t size);
+void tower_of_hanoi_shift_pole(tower_t *tower, uint32_t pole_index, bool right_shift_en = false, uint32_t size = 3);
+bool tower_of_hanoi_tower_in_collection(std::vector<tower_t*> **collection, tower_t *tower, uint32_t size);
+void tower_of_hanoi_tower_add_to_collection(std::vector<tower_t*> **collection, tower_t *tower);
+bool tower_of_hanoi_compare_towers(tower_t *tower_a, tower_t *tower_b, uint32_t size );
+void  tower_of_hanoi_remove_collection (std::vector <tower_t *> ** collection);
 
 #endif

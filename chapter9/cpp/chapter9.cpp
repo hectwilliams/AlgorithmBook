@@ -474,8 +474,301 @@ std::ostream &operator<<(std::ostream &out, const std::vector < std::vector<int>
 }
 
 
+void sum_of_squares(std::vector< std::vector<int> >  & collection, const unsigned &target, unsigned start , std::vector<int> &&buffer)
+{
+  int curr_sum = std::accumulate(buffer.begin(), buffer.end(), 0) ;
+
+  if (curr_sum >= target)  {
+    if (curr_sum == target) {
+      collection.push_back(buffer);
+    }
+    return;
+  }
+
+  for (unsigned  i  = start; i < target; i++ )
+  {
+    buffer.push_back(i*i);
+    sum_of_squares(collection, target, start + 1, std::vector<int>(buffer.begin(), buffer.end()) );  // new instance recursion
+    buffer.pop_back();
+
+  }
+}
+
+void sum_of_squares_test ()
+{
+
+  std::vector< std::vector<int> >  vector;
+  sum_of_squares(vector, 10);  // [1][9]
+  for (auto ele: vector)
+    std::cout << vector;
+}
+
+void all_valid_n_paren (std::vector<std::string> &collection, unsigned n, std::string && buffer)
+{
+  char pair [2] = {'(', ')'};
+
+  if ( buffer.size() >= std::pow(2,n))
+  {
+    if (valid_paren(buffer) &&  buffer.size() == std::pow(2, n))
+    {
+      collection.push_back(buffer);
+    }
+    return;
+  }
+
+  for (int i = 0; i < 2; i++)
+  {
+    all_valid_n_paren(collection, n, buffer + pair[i]);
+  }
+}
+
+bool valid_paren (std::string str)
+{
+  std::vector<char> stack;
+
+  for (auto ele: str) {
+    if (ele == '(')
+      stack.push_back(ele);
+
+    if (ele == ')') {
+      if (stack.empty())
+        return false;
+      stack.pop_back();
+    }
+  }
+  return stack.empty();
+}
+
+void all_valid_n_paren_test()
+{
+  std::vector<std::string> collection;
+  all_valid_n_paren(collection, 2);
+  std::cout << collection;;
+}
+
+unsigned tower_of_hanoi_init_tower (tower_t *tower)
+{
+  int  poles = 3;
+
+  for (unsigned i = 0; i < poles; i++)
+  {
+    for (unsigned n = 0; n < poles; n++)
+    {
+      tower->at(i).push_back( i == 0 ? n + 1 : 0);
+    }
+  }
+}
+
+
+
+
+std::ostream &operator << (std::ostream &out, const tower_t &tower)
+{
+  for (int row = 0; row < 3; row++)
+  {
+    out << "\t Tower " << row << "\t [  ";
+    for (int col = 0; col < tower.size(); col++)
+    {
+      out << tower[row][col] <<  "  |   ";
+    }
+    out << "]\n";
+  }
+  return out;
+}
+
+
+
+void tower_of_hanoi_shift_pole(tower_t *tower, uint32_t pole_index, bool right_shift_en , uint32_t size)
+{
+  std::vector <int>  &vector = tower->at(pole_index);
+
+  if ( right_shift_en == false )
+  {
+    for (int i = 0; i  < size - 1 ; i++)
+    {
+      vector[i] = vector[i + 1];
+    }
+    vector[size - 1] = 0;
+  }
+  else if (right_shift_en == true)
+  {
+    for (int i = size - 1; i > 0; i--)
+    {
+      vector[i] = vector[i - 1];
+    }
+    vector[0] = 0;
+  }
+}
+
+
+
+bool tower_of_hanoi_mv(tower_t *tower, uint32_t dest_index, uint32_t src_index, uint32_t size)
+{
+  if (tower == NULL)
+  {
+    return false;
+  }
+
+  if (src_index == dest_index) /* reassigning itself not allowed */
+  {
+    return false;
+  }
+
+  if (tower->at(src_index)[0] == 0)   /* src pole empty */
+  {
+    return false;
+  }
+
+  if ( tower->at(dest_index)[0] == 0) /* empty dest index */
+  {
+    tower->at(dest_index)[0] = tower->at(src_index)[0];
+    tower_of_hanoi_shift_pole(tower, src_index, false, size);  // false = left
+    return true;
+  }
+
+  if (  (tower->at(dest_index)[ size - 1 ] == 0) &&  (tower->at(dest_index)[0] > tower->at(src_index)[0])  )
+  {
+    /* shift dest array right */
+    tower_of_hanoi_shift_pole(tower, dest_index, true, size);
+
+    /* insert src pole top value */
+    tower->at(dest_index)[0] = tower->at(src_index)[0];
+
+    /* shift src array left */
+    tower_of_hanoi_shift_pole(tower, src_index, false, size);
+
+    return true;
+  }
+  return false;
+}
+
+void tower_of_hanoi_deep_copy_tower(tower_t *dest, tower_t *src, uint32_t size)
+{
+  if (dest == NULL || src == NULL)
+  {
+    return;
+  }
+  for (int pole_index = 0; pole_index < 3; pole_index++)
+  {
+    for (int i = 0; i < size; i++)
+    {
+      dest->at(pole_index).push_back( src->at(pole_index)[i]);
+    }
+  }
+}
+
+bool tower_of_hanoi_tower_in_collection(std::vector<tower_t*> **collection, tower_t *tower, uint32_t size )
+{
+  tower_t *collection_element;
+
+  if (*collection == NULL)
+  {
+    return false;
+  }
+
+  for (int i = 0; i < (*collection)->size(); i++)
+  {
+    if (tower_of_hanoi_compare_towers((*collection)->at(i), tower, size))
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+void tower_of_hanoi_tower_add_to_collection(std::vector<tower_t*> **collection, tower_t *tower)
+{
+  if (*collection == NULL)
+  {
+    *collection = (std::vector<tower_t*> *) malloc( sizeof( std::vector<tower_t*> ) );
+  }
+
+  (*collection)->push_back(tower);
+}
+
+bool tower_of_hanoi_compare_towers(tower_t *tower_a, tower_t *tower_b, uint32_t size )
+{
+  for (int row = 0; row < 3; row++)
+  {
+    for (int col = 0; col < size; col++)
+    {
+      if ( tower_b->at(row)[col] != tower_a->at(row)[col])
+      {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+void tower_of_hanoi_helper(unsigned size, std::vector <tower_t *> **towers_used, tower_t *tower, unsigned &search_count, unsigned  &&curr_count)
+{
+  uint32_t  sel = 0;
+  tower_t *clone_tower;
+
+  std::cout << *tower;  /* view current tower state */
+
+  if (search_count > 0) {
+    return;
+  }
+
+  if (tower->at(2)[size - 1] != 0 )
+  {
+    std::cout << *tower;
+    search_count = curr_count;
+    return;
+  }
+
+  if (tower_of_hanoi_tower_in_collection(towers_used, tower, size))
+  {
+    return;
+  }
+  else
+  {
+    tower_of_hanoi_tower_add_to_collection(towers_used, tower);
+  }
+
+  for (uint32_t pole_index = 0;  pole_index < 3; pole_index++)
+  {
+    for (uint32_t step_pole = 1; step_pole < 3; step_pole++)
+    {
+      sel = (pole_index + step_pole) % 3;
+      clone_tower = (tower_t *) malloc(sizeof(tower_t));
+      tower_of_hanoi_deep_copy_tower(clone_tower, tower, size);
+      if (tower_of_hanoi_mv (clone_tower, sel, pole_index, size))
+      {
+        tower_of_hanoi_helper(size, towers_used, clone_tower, search_count, curr_count+ 1);
+      }
+    }
+  }
+}
+
+void  tower_of_hanoi_remove_collection( std::vector<tower_t*> **collection) /*  free up resources usedd*/
+{
+  while ( (*collection)->size() != 1) /*0th pointer allocated on stack */
+  {
+     free ( (*collection)->back());
+     (*collection)->pop_back();
+  }
+}
+
+unsigned  tower_of_hanoi(unsigned size)
+{
+  tower_t init_tower;
+  unsigned search_count = 0;
+  std::vector <tower_t *> *tower_collection = NULL;
+  tower_of_hanoi_init_tower(&init_tower); // initliaze tower
+  tower_of_hanoi_helper(size, &tower_collection, &init_tower, search_count, 0 ); // solver
+  tower_of_hanoi_remove_collection(&tower_collection);
+  return search_count;
+}
+
+void tower_of_hanoi_test ()
+{
+  tower_of_hanoi(3);
+}
+
 int main()
 {
-  climbing_stairs_test();
-
+  tower_of_hanoi_test();
 }
