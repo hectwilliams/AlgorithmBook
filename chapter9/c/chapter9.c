@@ -1271,7 +1271,58 @@ void ip_address_test()
   }
 }
 
+int uneven_digits_helper( int number,  boolean is_neg,  int index)
+{
+  int digit;
+  int factor;
+  int data = 0;
+
+  if (index == 0 && number < 0)
+  {
+    is_neg = False;
+    number = number * -1;
+  }
+
+  if (number <= 0)
+  {
+    return 0;
+  }
+
+  digit =  number % 10;
+
+  if (digit % 2 == 0)
+  {
+    data =   0 + uneven_digits_helper( number / 10, is_neg, index + 1);
+  }
+  else
+  {
+    data =  digit*pow(10, index) + uneven_digits_helper(number / 10, is_neg, index + 1);
+  }
+
+  if (index == 0 && is_neg)
+  {
+    data = data * -1;
+  }
+
+  
+  printf("data %d", data);
+
+  return data;
+}
+
+int uneven_digits(int number)
+{
+  return uneven_digits_helper(number, -1, 0);
+}
+
+void uneven_digits_test()
+
+{
+  int data = uneven_digits(79);
+  printf("[data %d]\n", data);
+}
+
 int main()
 {
-  ip_address_test();
+  uneven_digits_test();
 }

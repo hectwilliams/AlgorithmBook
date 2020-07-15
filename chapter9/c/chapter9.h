@@ -125,7 +125,8 @@ void ip_address_buffer_deep_copy(int * dest, int * src);
 boolean ip_address_add(char * address, struct ip_address_list **collection);
 unsigned ip_address_buffer_sum (int *buffer);
 char *ip_address_construct(const char *digits, const unsigned size, int *buffer);
-
+int uneven_digits_helper( int number, boolean is_neg, int index);
+int uneven_digits(int number);
 
 #endif
 

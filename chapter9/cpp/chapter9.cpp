@@ -831,7 +831,47 @@ void ipAddress_add (std::vector<std::string> &collection ,const std::string digi
    }
  }
 
+int unevenDigit(int number, unsigned index, bool is_neg)
+{
+  int digit;
+  int data;
+
+  if (index == 0 && number < 0)
+  {
+    is_neg = true;
+    number *= -1;
+  }
+
+  if (number <= 0)
+  {
+    return 0;
+  }
+
+  digit = number % 10;
+
+  if (digit % 2 == 0)
+  {
+    data =  0 + unevenDigit(number / 10, index + 1, is_neg );
+  }
+  else
+  {
+    data =  digit * (int)pow(10, index) + unevenDigit(number / 10, index + 1, is_neg );
+  }
+
+  if (index == 0 && is_neg)
+  {
+    data *= -1;
+  }
+  return data;
+}
+
+void unevenDigit_test ()
+{
+  int answer = unevenDigit(79);
+  std::cout << answer << '\n';
+}
+
 int main()
 {
-  ipAddress_test();
+  unevenDigit_test();
 }

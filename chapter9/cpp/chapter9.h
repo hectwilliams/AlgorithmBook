@@ -49,4 +49,5 @@ void  tower_of_hanoi_remove_collection (std::vector <tower_t *> ** collection);
 void ipAddress_add (std::vector<std::string> &collection ,const std::string digits, const std::vector<int> &buffer);
 void ipAddress(const std::string &digits, std::vector<std::string> &collection, std::vector<int>  &&buffer = std::vector<int>() );
 
+int unevenDigit(int number, unsigned index = 0, bool is_neg = false);
 #endif

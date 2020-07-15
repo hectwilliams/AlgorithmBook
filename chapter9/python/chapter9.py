@@ -532,4 +532,31 @@ def ip_address_test():
   ip_address("255255255" , collection)
   print(collection)
 
-ip_address_test()
+def uneven_digit(number, index = 0, is_neg = False):
+  digit = None
+  data = None
+
+  if number < 0 and  index == 0:
+    is_neg = True
+    number = abs(number)
+
+  if number <= 0 :
+    return 0
+
+  if not is_neg and digit < 0:
+    is_neg =True
+
+  digit = number % 10
+
+  if digit % 2 == 0:
+    data = 0 + uneven_digit( int(number / 10), index + 1, is_neg)
+  else:
+    data = int( pow(10, index)* digit ) + uneven_digit( int(number / 10), index + 1, is_neg)
+
+  if index == 0 and is_neg:
+    data *= -1
+  return data
+
+def uneven_digit_test():
+  print(uneven_digit(-79))
+uneven_digit_test()
