@@ -150,7 +150,23 @@ void generate_all_coin_change_helper( unsigned cents, struct coin_change *obj );
 boolean is_chess_move_safe(int  intended_move[2] , int queen [2] );
 boolean is_chess_move_safe_queens(int intended_move[2], int **queens, int size );
 
+struct chess_pos_list_t
+{
+  int pos[2];
+  struct chess_pos_list_t *next;
+};
 
+#define CHESS_BOARD_ROWS 8
+#define CHESS_BOARD_COLUMNS 8
+
+struct chess_pos_list_t *all_safe_chess_move(int queen [2]);
+struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size);
+
+void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection, int counter);
+void  all_safe_chess_move_helper_add(int *pos, unsigned size, struct chess_pos_list_t **collection);
+void  all_safe_chess_move_helper_remove(int *pos, unsigned size, struct chess_pos_list_t **collection);
+boolean chess_pos_cmpr(int *pos_a, int *pos_b, int size);
+#define CHESS_POS_LEN 2
 #endif
 
 

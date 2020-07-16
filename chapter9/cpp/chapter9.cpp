@@ -917,6 +917,11 @@ void generate_coin_change_test()
   );
 }
 
+std::ostream &operator << (std::ostream &out, const chess_pos_t & arr)
+{
+  out << "[" << arr[0] << "," << arr[1] << "]";
+  return out;
+}
 bool isMoveSafe (  chess_pos_t intended_move, chess_pos_t queen)
 {
   /* left diagonal   \ */
@@ -977,8 +982,132 @@ void isMoveSafe_test()
 
 }
 
+bool chessMoveCmpr(chess_pos_t pos_a, chess_pos_t pos_b)
+{
+  for (int i = 0; i < pos_a.size(); i++)
+  {
+    if (pos_a[i] != pos_b[i])
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+void allSafeChessSquares (chess_pos_t queen, std::vector<chess_pos_t> &collection, unsigned count)
+{
+  chess_pos_t pos = {count / CHESS_BOARD_ROW, count % CHESS_BOARD_COL};
+  if (count>= CHESS_BOARD_COL * CHESS_BOARD_ROW)
+  {
+    return;
+  }
+
+  if (isMoveSafe(pos, queen))
+  {
+    positionListAdd(pos, collection);
+  }
+  else
+  {
+    positionListRemove(pos, collection);
+  }
+  return allSafeChessSquares( queen, collection , count + 1);
+}
+
+void allSafeChessSquares (std::vector<chess_pos_t> queens, std::vector<chess_pos_t> &collection, int index , int counter)
+{
+  chess_pos_t pos = {counter / CHESS_BOARD_ROW, counter % CHESS_BOARD_COL};
+
+  if (counter >= CHESS_BOARD_ROW *CHESS_BOARD_COL)
+  {
+    ++index;
+    counter = 0;
+
+  }
+
+  if (index >= queens.size())
+  {
+    return;
+  }
+
+  if (isMoveSafe(pos, queens[index]))
+  {
+    positionListAdd(pos, collection);
+  }
+  else
+  {
+    positionListRemove(pos, collection);
+  }
+  return allSafeChessSquares( queens, collection , index,  counter + 1);
+
+
+}
+
+void positionListAdd(chess_pos_t mv, std::vector<chess_pos_t> &collection)
+{
+  /* redunancy not allowed */
+  for (chess_pos_t & valid_moves: collection)
+  {
+    if ( chessMoveCmpr(valid_moves, mv))
+    {
+      return;
+    }
+  }
+  collection.push_back(mv);
+}
+
+void positionListRemove(chess_pos_t mv, std::vector<chess_pos_t> &collection)
+{
+  int index = 0;
+  chess_pos_t delme;
+
+  while (index != collection.size())
+  {
+    if (chessMoveCmpr(collection[index], mv))
+    {
+      delme = collection[index];
+      collection.erase(collection.begin() + index);
+    }
+    else
+    {
+      index = index + 1;
+    }
+  }
+}
+
+void allSafeChessSquaes_test ()
+{
+  std::vector<chess_pos_t> collection;
+  chess_pos_t pos =  {0,1};
+  allSafeChessSquares(pos, collection);
+  std::cout <<  collection.size() << '\n';
+  for (auto ele: collection)
+  {
+    std::cout << ele << '\n';
+  }
+}
+
+void allSafeChessSquaes_queens_test ()
+{
+  std::vector<chess_pos_t> collection;
+  std::vector<chess_pos_t> queens;
+
+  chess_pos_t queen = {0,1};
+  chess_pos_t queen2 = {0,2};
+
+  queens.push_back(queen);
+
+  // queens.push_back(queen2);
+
+  allSafeChessSquares(queens, collection);
+
+  for (auto ele: collection)
+  {
+    std::cout << ele << '\n';
+  }
+
+}
 
 int main()
 {
-  isMoveSafe_test();
+  allSafeChessSquaes_queens_test();
 }

@@ -71,5 +71,16 @@ void  generate_coin_change_data (unsigned cents, struct CoinData &obj);
 typedef std::array<int, 2> chess_pos_t;
 bool isMoveSafe(  std::array<int ,2 > intended_move, std::array<int, 2> queen);
 bool isMoveSafe_queens( chess_pos_t mv, std::vector< chess_pos_t> &collection, unsigned index = 0 );
+void allSafeChessSquares (chess_pos_t queen, std::vector<chess_pos_t> &collection, unsigned count = 0);
+void allSafeChessSquares (std::vector<chess_pos_t> queens, std::vector<chess_pos_t> &collection, int index = 0, int counter = 0);
+
+bool chessMoveCmpr(chess_pos_t pos_a, chess_pos_t pos_b);
+void positionListAdd(chess_pos_t mv, std::vector<chess_pos_t> &collection);
+
+void positionListRemove(chess_pos_t mv, std::vector<chess_pos_t> &collection);
+
+#define CHESS_BOARD_ROW 8
+#define CHESS_BOARD_COL 8
 
 #endif
+

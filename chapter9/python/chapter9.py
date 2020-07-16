@@ -615,4 +615,51 @@ def is_move_safe_test() :
   print(is_move_safe_queens([0,1], [[6,2],[6,1]] )) #false
   print(is_move_safe_queens([0,1], [[6,2],[6,3]] )) #true
 
-is_move_safe_test()
+CHESS_ROWS = 8
+CHESS_COLS = 8
+
+def allSafeChessSquares( queens_list, collection , index = 0, counter = 0):
+  pos = [int(counter/ CHESS_ROWS ), counter % CHESS_COLS ]
+  if counter == CHESS_COLS *CHESS_ROWS:
+    index += 1
+    counter = 0
+
+  if len(queens_list) == index:
+      return
+
+  if is_move_safe( pos , queens_list[index]):
+    allSafeChessSquares_add(pos, collection)
+  else:
+    allSafeChessSquares_remove(pos, collection)
+  return allSafeChessSquares(queens_list, collection, index, counter + 1)
+
+def chess_move_cmpr(pos_a, pos_b):
+  for i in range(0, 2):
+    if pos_a[i] != pos_b[i]:
+      return False
+  return True
+
+def allSafeChessSquares_add(mv, collection):
+  for pos in collection:
+    if chess_move_cmpr(pos, mv): # redundancy not allowed
+      return
+  collection.append(mv)
+
+def allSafeChessSquares_remove(mv , collection):
+  index = 0
+  while index < len(collection):
+    if chess_move_cmpr(mv, collection[index]):
+      collection.pop(index)
+    else:
+      index += 1
+
+def allSafeChessSquares_test():
+  collection = []
+  queens =  [
+    [0,1],
+    {0,2}
+  ]
+  allSafeChessSquares(queens, collection)
+  print(collection)
+
+allSafeChessSquares_test()

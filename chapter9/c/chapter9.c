@@ -1378,7 +1378,8 @@ void generate_all_coin_change_test()
 
 boolean is_chess_move_safe(int  intended_move[2] , int queen [2] )
 {
-  printf("queen x queen by %d %d \n",  queen[0] ,queen[1]);
+  // printf( "  IS MOVE SAGE [%d]  [%d]\n" , queen[0] , queen[1] );
+
   /* left diagonal   \ */
   if (intended_move[0] - intended_move[1] == queen[0] - queen[1] )
   {
@@ -1414,31 +1415,199 @@ boolean is_chess_move_safe_queens(int intended_move[2], int **queens, int size )
   {
     return True;
   }
-  return is_chess_move_safe(intended_move, (queens + size - 1)) && is_chess_move_safe_queens(intended_move, queens , size - 1);
+  return is_chess_move_safe(intended_move, (queens + size - 1) ) && is_chess_move_safe_queens(intended_move, queens , size - 1);
 }
-
 
 boolean is_chess_move_safe_test()
 {
   int mv[2], queen[2];
 
   int queens[2][2] = {
-    {6,3},
-    {6,2}
+    {0,1},
+    {3,2}
   };
 
-  mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 2;
-  printf( " move [0][7]  queen [6][2]  =>  %d\n", is_chess_move_safe( mv, queen ));
+/* single */
+  // mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 2;
+  // printf( " move [0][7]  queen [6][2]  =>  %d\n", is_chess_move_safe( mv, queen ));
 
-  mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 1;
-  printf( " move [0][7]  queen [6][3]  =>  %d\n", is_chess_move_safe( mv, queen ));
+  // mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 1;
+  // printf( " move [0][7]  queen [6][3]  =>  %d\n", is_chess_move_safe( mv, queen ));
 
-  printf(" queen array  == > %d", is_chess_move_safe_queens(mv, queens, 2));
+/*array*/
+  // printf(" queen array  == > %d", is_chess_move_safe_queens(mv, queens, 2));
+
 }
 
+void  all_safe_chess_move_helper_add(int *pos, unsigned size, struct chess_pos_list_t **collection)
+{
+  struct chess_pos_list_t *node;
+  struct chess_pos_list_t *runner;
 
+  if (pos == NULL || collection == NULL)
+  {
+    return;
+  }
+  runner = *collection;
+
+  /*allocate node and add values */
+  node =  (struct chess_pos_list_t *) malloc (sizeof(struct chess_pos_list_t));
+  node->next = NULL;
+
+  for (int i =0; i<size; i++)
+  {
+    node->pos[i] = pos[i];
+  }
+
+  /* add node to list  */
+  if (*collection == NULL)
+  {
+    *collection = node;
+  }
+  else
+  {
+    while(runner->next)
+    {
+      /* list redundancy not allowed */
+      if (chess_pos_cmpr(runner->pos, pos, size))
+      {
+        return;
+      }
+      runner = runner->next;
+    }
+    runner->next = node;
+  }
+}
+
+void  all_safe_chess_move_helper_remove(int *pos, unsigned size, struct chess_pos_list_t **collection)
+{
+  struct chess_pos_list_t *runner, *delme;
+
+  if (pos == NULL || collection == NULL) /*invalid intput */
+  {
+    return;
+  }
+
+  if (*collection == NULL) /*empty list*/
+  {
+    return;
+  }
+
+  runner = *collection;
+
+  /*head node removed */
+  if ( chess_pos_cmpr(pos, runner->pos, size) )
+  {
+    delme = runner;
+    *collection = runner->next;
+    free(delme);
+  }
+  else
+  {
+    while(runner->next != NULL)
+    {
+      if (chess_pos_cmpr(runner->next->pos, pos, size))
+      {
+        delme = runner->next;
+        runner->next = runner->next->next;
+        free(delme);
+      }
+      runner = runner->next;
+    }
+  }
+}
+
+boolean chess_pos_cmpr(int *pos_a, int *pos_b, int size)
+{
+  if (pos_a == NULL || pos_b == NULL)
+    return False;
+
+  for (int i = 0 ; i < size; i++)
+  {
+    if (pos_a[i] != pos_b[i])
+    {
+      return False;
+    }
+  }
+  return True;
+}
+
+void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection, int counter)
+{
+  int sel_queens2D;
+  int queen_pos[CHESS_POS_LEN];
+  int mv[CHESS_POS_LEN] = { counter / CHESS_BOARD_ROWS ,  counter % CHESS_BOARD_COLUMNS};
+
+
+  if (counter >= CHESS_BOARD_COLUMNS * CHESS_BOARD_ROWS)
+  {
+    counter = 0;
+    --size;
+  }
+
+  if (size <= 0)
+  {
+    return;
+  }
+
+  sel_queens2D = 2 * (size - 1);
+  queen_pos[0] = queen2D[ sel_queens2D];
+  queen_pos[1] = queen2D[ sel_queens2D + 1] ;
+
+  if (is_chess_move_safe(mv, queen_pos ))
+  {
+    all_safe_chess_move_helper_add(mv, CHESS_POS_LEN, collection);
+  }
+  else
+  {
+    all_safe_chess_move_helper_remove(mv, CHESS_POS_LEN, collection);
+  }
+  return all_safe_chess_move_helper(queen2D, size, collection, counter + 1);
+}
+
+struct chess_pos_list_t *all_safe_chess_move(int queen [2])
+{
+  struct chess_pos_list_t *list = NULL;
+  if (queen != NULL)
+  {
+    all_safe_chess_move_helper(queen, 1, &list, 0);
+  }
+  return list;
+}
+
+struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size)
+{
+  struct chess_pos_list_t *list = NULL;
+  if (queens2D != NULL)
+  {
+    all_safe_chess_move_helper(queens2D, size, &list, 0 );
+  }
+  return list;
+}
+
+void all_safe_chess_move_test()
+{
+  // int queen[2] = {0, 1};
+  // struct chess_pos_list_t *runners = all_safe_chess_move(queen);
+  int queens[2][2] = {
+    {0, 1},
+    {0, 3}
+
+  };
+int index = 1;
+  struct chess_pos_list_t *runners = all_safe_chess_move_queens(queens , 2);
+  while (runners)
+  {
+    printf(" \t [%d] --> [%d  %d]\n", index++, runners->pos[0], runners->pos[1]);
+    runners = runners->next;
+  }
+}
 
 int main()
 {
-  is_chess_move_safe_test();
+  all_safe_chess_move_test();
 }
+
+
+
+
