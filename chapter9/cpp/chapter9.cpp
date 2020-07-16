@@ -871,7 +871,54 @@ void unevenDigit_test ()
   std::cout << answer << '\n';
 }
 
+void generate_coin_change_data (unsigned cents, struct CoinData &obj)
+{
+
+  if (cents <= 0)
+  {
+    return;
+  }
+
+  if (cents >= QUARTER)
+  {
+    obj.quarters++;
+    cents -= QUARTER;
+  }
+
+  else if (cents >= DIME)
+  {
+    obj.dimes++;
+    cents -= DIME;
+  }
+
+  else if (cents >= NICKEL)
+  {
+    obj.nickels++;
+   cents -= NICKEL;
+  }
+
+  else if (cents >= PENNY)
+  {
+    obj.pennies++;
+    cents -= PENNY;
+  }
+  return generate_coin_change_data(cents, obj);
+}
+
+void generate_coin_change_test()
+{
+  struct CoinData obj = {.dimes = 0, .nickels = 0, .pennies = 0, .quarters = 0} ;
+  generate_coin_change_data(23, obj);
+   printf(" Quarte [%d] Dimes[%d] Nickel[%d]  Penny[%d] \n",
+    obj.quarters,
+    obj.dimes,
+    obj.nickels,
+    obj.pennies
+  );
+
+}
+
 int main()
 {
-  unevenDigit_test();
+  generate_coin_change_test();
 }

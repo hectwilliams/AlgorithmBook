@@ -559,4 +559,28 @@ def uneven_digit(number, index = 0, is_neg = False):
 
 def uneven_digit_test():
   print(uneven_digit(-79))
-uneven_digit_test()
+
+def generate_all_coin_change(cents, obj = {25: 0, 10: 0, 5: 0, 1: 0 }):
+  coin = None
+
+  if cents <= 0:
+    return obj
+
+  for key in obj.keys():
+    coin = int(key)
+
+    if cents >= coin:
+      cents -= coin
+      obj[key] = obj[key] + 1
+      break
+
+  return generate_all_coin_change(cents, obj)
+
+    # if int(key) > cents:
+    #   cents -=
+def generate_all_coin_change_test():
+  answer = generate_all_coin_change(23 )
+  print(answer)
+
+
+generate_all_coin_change_test()

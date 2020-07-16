@@ -1304,7 +1304,7 @@ int uneven_digits_helper( int number,  boolean is_neg,  int index)
     data = data * -1;
   }
 
-  
+
   printf("data %d", data);
 
   return data;
@@ -1322,7 +1322,62 @@ void uneven_digits_test()
   printf("[data %d]\n", data);
 }
 
+void generate_all_coin_change_helper( unsigned cents, struct coin_change *obj )
+{
+
+  if (cents <= 0 )
+  {
+    return;
+  }
+
+  if (cents >= QUARTER)
+  {
+    obj->quarters++;
+    cents -= QUARTER;
+  }
+
+  else if (cents >= DIME)
+  {
+    obj->dimes++;
+    cents -= DIME;
+  }
+
+  else if (cents >= NICKEL)
+  {
+    obj->nickels++;
+    cents -= NICKEL;
+  }
+
+  else if (cents >= PENNY)
+  {
+    obj->pennies++;
+    cents -= PENNY;
+  }
+  printf("cents:  %d", cents);
+
+  return generate_all_coin_change_helper(cents, obj);
+
+}
+
+struct coin_change generate_all_coin_change( unsigned cents)
+{
+  struct coin_change obj = {.dimes = 0, .nickels = 0, .pennies = 0, .quarters = 0};
+  generate_all_coin_change_helper(cents, &obj);
+}
+
+void generate_all_coin_change_test()
+{
+  struct coin_change obj = generate_all_coin_change(5);
+  printf(" Quarte [%d] Dimes[%d] Nickel[%d]  Penny[%d] \n",
+    obj.quarters,
+    obj.dimes,
+    obj.nickels,
+    obj.pennies
+  );
+}
+
+
 int main()
 {
-  uneven_digits_test();
+  generate_all_coin_change_test();
 }

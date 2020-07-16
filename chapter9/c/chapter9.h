@@ -128,6 +128,26 @@ char *ip_address_construct(const char *digits, const unsigned size, int *buffer)
 int uneven_digits_helper( int number, boolean is_neg, int index);
 int uneven_digits(int number);
 
+struct coin_change
+{
+ unsigned dimes;
+ unsigned nickels;
+ unsigned pennies;
+ unsigned quarters;
+};
+
+ enum coins
+  {
+    PENNY = 1,
+    NICKEL = 5,
+    DIME = 10,
+    QUARTER = 25
+  };
+
+void generate_all_coin_change_test();
+struct coin_change generate_all_coin_change( unsigned cents);
+void generate_all_coin_change_helper( unsigned cents, struct coin_change *obj );
+
 #endif
 
 

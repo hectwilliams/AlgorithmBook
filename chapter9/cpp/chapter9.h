@@ -50,4 +50,22 @@ void ipAddress_add (std::vector<std::string> &collection ,const std::string digi
 void ipAddress(const std::string &digits, std::vector<std::string> &collection, std::vector<int>  &&buffer = std::vector<int>() );
 
 int unevenDigit(int number, unsigned index = 0, bool is_neg = false);
+
+struct CoinData
+{
+ unsigned dimes;
+ unsigned nickels;
+ unsigned pennies;
+ unsigned quarters;
+};
+
+ enum coins
+  {
+    PENNY = 1,
+    NICKEL = 5,
+    DIME = 10,
+    QUARTER = 25
+  };
+
+void  generate_coin_change_data (unsigned cents, struct CoinData &obj);
 #endif
