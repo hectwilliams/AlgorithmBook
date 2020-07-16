@@ -68,4 +68,8 @@ struct CoinData
   };
 
 void  generate_coin_change_data (unsigned cents, struct CoinData &obj);
+typedef std::array<int, 2> chess_pos_t;
+bool isMoveSafe(  std::array<int ,2 > intended_move, std::array<int, 2> queen);
+bool isMoveSafe_queens( chess_pos_t mv, std::vector< chess_pos_t> &collection, unsigned index = 0 );
+
 #endif

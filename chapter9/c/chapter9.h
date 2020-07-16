@@ -147,6 +147,9 @@ struct coin_change
 void generate_all_coin_change_test();
 struct coin_change generate_all_coin_change( unsigned cents);
 void generate_all_coin_change_helper( unsigned cents, struct coin_change *obj );
+boolean is_chess_move_safe(int  intended_move[2] , int queen [2] );
+boolean is_chess_move_safe_queens(int intended_move[2], int **queens, int size );
+
 
 #endif
 

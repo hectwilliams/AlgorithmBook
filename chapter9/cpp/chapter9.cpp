@@ -909,16 +909,76 @@ void generate_coin_change_test()
 {
   struct CoinData obj = {.dimes = 0, .nickels = 0, .pennies = 0, .quarters = 0} ;
   generate_coin_change_data(23, obj);
-   printf(" Quarte [%d] Dimes[%d] Nickel[%d]  Penny[%d] \n",
+  printf(" Quarte [%d] Dimes[%d] Nickel[%d]  Penny[%d] \n",
     obj.quarters,
     obj.dimes,
     obj.nickels,
     obj.pennies
   );
+}
+
+bool isMoveSafe (  chess_pos_t intended_move, chess_pos_t queen)
+{
+  /* left diagonal   \ */
+  if (intended_move[0] - intended_move[1] == queen[0] - queen[1] )
+  {
+    return false;
+  }
+
+  /* right diagonal * / */
+  if (intended_move[0] + intended_move[1] == queen[0] + queen[1] )
+  {
+    return false;
+  }
+
+  /* row */
+  if (intended_move[0] ==  queen[0])
+  {
+    return false;
+  }
+
+  /* col */
+  if (intended_move[1] == queen[1])
+  {
+    return false;
+  }
+
+  return true;
+}
+
+bool isMoveSafe_queens( chess_pos_t mv, std::vector< chess_pos_t> &collection, unsigned index  )
+{
+  if (collection.size() == index)
+  {
+    return true;
+  }
+  else
+  {
+    return isMoveSafe(mv, collection[index]) && isMoveSafe_queens(mv, collection, index + 1 );
+  }
+}
+
+void isMoveSafe_test()
+{
+  std::array<int, 2> mv, queen;
+
+  mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 2;  // pass
+  std::cout << isMoveSafe( mv, queen) << '\n';
+
+  mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 1; // fail
+  std::cout << isMoveSafe( mv, queen) << '\n';
+
+  std::vector<chess_pos_t> queens;
+  chess_pos_t data = {6, 2};
+  chess_pos_t data2 = {6,3};
+  queens.push_back(data);
+  queens.push_back(data2);
+  std::cout << "array is  safe "<<  isMoveSafe_queens(mv, queens) << '\n';
 
 }
 
+
 int main()
 {
-  generate_coin_change_test();
+  isMoveSafe_test();
 }

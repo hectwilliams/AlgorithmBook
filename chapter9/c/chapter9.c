@@ -1376,8 +1376,69 @@ void generate_all_coin_change_test()
   );
 }
 
+boolean is_chess_move_safe(int  intended_move[2] , int queen [2] )
+{
+  printf("queen x queen by %d %d \n",  queen[0] ,queen[1]);
+  /* left diagonal   \ */
+  if (intended_move[0] - intended_move[1] == queen[0] - queen[1] )
+  {
+    return False;
+  }
+
+  /* right diagonal * / */
+  if (intended_move[0] + intended_move[1] == queen[0] + queen[1] )
+  {
+    return False;
+  }
+
+  /* row */
+  if (intended_move[0] ==  queen[0])
+  {
+    return False;
+  }
+
+  /* col */
+
+  if (intended_move[1] == queen[1])
+  {
+    return False;
+  }
+
+  return True;
+}
+
+boolean is_chess_move_safe_queens(int intended_move[2], int **queens, int size )
+{
+
+  if (queens == NULL || size  <= 0)
+  {
+    return True;
+  }
+  return is_chess_move_safe(intended_move, (queens + size - 1)) && is_chess_move_safe_queens(intended_move, queens , size - 1);
+}
+
+
+boolean is_chess_move_safe_test()
+{
+  int mv[2], queen[2];
+
+  int queens[2][2] = {
+    {6,3},
+    {6,2}
+  };
+
+  mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 2;
+  printf( " move [0][7]  queen [6][2]  =>  %d\n", is_chess_move_safe( mv, queen ));
+
+  mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 1;
+  printf( " move [0][7]  queen [6][3]  =>  %d\n", is_chess_move_safe( mv, queen ));
+
+  printf(" queen array  == > %d", is_chess_move_safe_queens(mv, queens, 2));
+}
+
+
 
 int main()
 {
-  generate_all_coin_change_test();
+  is_chess_move_safe_test();
 }

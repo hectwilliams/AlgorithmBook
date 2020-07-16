@@ -583,4 +583,36 @@ def generate_all_coin_change_test():
   print(answer)
 
 
-generate_all_coin_change_test()
+def is_move_safe(mv , queen) :
+  zipped = zip(mv, queen)
+
+  if zipped[0][0] - zipped[1][0] ==   zipped[0][1] - zipped[1][1]:
+    return False
+
+  if zipped[0][0] + zipped[1][0] ==   zipped[0][1] + zipped[1][1]:
+    return False
+
+  if (zipped[0][0] == zipped[0][1]):
+    return False
+
+  if (zipped[1][0] == zipped[1][1]):
+    return False
+
+  return True
+
+def is_move_safe_queens(mv, collection):
+
+  if not collection:
+    return True
+
+  if collection:
+    return is_move_safe(mv, collection[0])  and is_move_safe_queens (mv, collection[1 : :])
+
+def is_move_safe_test() :
+  print( is_move_safe([0,1], [6,1])) #false
+  print( is_move_safe([0,1], [6,2])) #true
+
+  print(is_move_safe_queens([0,1], [[6,2],[6,1]] )) #false
+  print(is_move_safe_queens([0,1], [[6,2],[6,3]] )) #true
+
+is_move_safe_test()
