@@ -674,8 +674,37 @@ def allSafeChessSquares_test():
     [7, 3] ,
     [5, 2]
   ]
+
   allSafeChessSquares(queens, collection)
 
   print(collection)
 
-allSafeChessSquares_test()
+def eightQueens(n = 8):
+  queens = []
+
+  for r in range(0, n):
+    for c in range(0, n):
+      eightQueens_helper( [ [r,c] ], queens)
+  return queens
+
+def eightQueens_helper(queens, collection):
+  next_row = None
+  available_queens = []
+
+  if len(queens) >= 8:
+    if len(queens) == 8:
+      collection.append(queens)
+    return
+
+  next_row = queens[len(queens) - 1][0] + 1
+  allSafeChessSquares(queens, available_queens)
+
+  for ele in available_queens:
+    if ele[0] != next_row:
+      break
+    eightQueens_helper( queens + [ele], collection)
+
+def eightQueens_test():
+  eightQueens()
+
+eightQueens_test()

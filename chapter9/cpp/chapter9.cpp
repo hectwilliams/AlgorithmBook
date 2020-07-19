@@ -1128,10 +1128,91 @@ void allSafeChessSquaes_queens_test ()
   {
     std::cout << ele << '\n';
   }
+}
 
+
+std::vector< std::vector<chess_pos_t> >  eightQueens()
+{
+  std::vector<chess_pos_t> pos_list;
+  std::vector< std::vector<chess_pos_t> > collection;
+
+  for (int r = 0; r < 8; r++)
+  {
+    for (int c = 0; c < 8; c++)
+    {
+      chess_pos_t pos = {r, c};
+      pos_list.push_back(pos);
+      eightQueensHelper(std::vector<chess_pos_t>(pos_list.begin(), pos_list.end()), collection);
+      pos_list.pop_back();
+    }
+  }
+  return collection;
+}
+
+void eightQueensHelper(std::vector<chess_pos_t> &&queens, std::vector< std::vector<chess_pos_t> > &collection )
+{
+  std::vector <chess_pos_t> available_queens;
+  int next_row;
+
+  if (queens.size() >= 8)
+  {
+    if (queens.size() == 8)
+    {
+      collection.push_back(queens);
+    }
+    return;
+  }
+
+  allSafeChessSquares (queens, available_queens);
+
+  if ( eightQueenBoardValid(available_queens) == 8 - queens.size()  )
+  {
+    next_row = queens.back()[0] + 1;
+    /* search next row for queen to add*/
+    for (auto ele: available_queens)
+    {
+      if (ele[0] != next_row)
+      {
+        break;
+      }
+      queens.push_back(ele);
+      eightQueensHelper(std::vector<chess_pos_t>(queens.begin(), queens.end()), collection ) ;
+      queens.pop_back();
+    }
+  }
+
+  return;
+}
+
+unsigned eightQueenBoardValid (const std::vector<chess_pos_t> &queen_pos_list)
+{
+  std::array <int, 8> n_array;
+  unsigned counter = 0;
+
+  for (int i = 0; i < n_array.size(); i++)
+  {
+    n_array[i] = 0;
+  }
+
+  for ( const chess_pos_t &xy: queen_pos_list)
+  {
+    if ( n_array [ xy[0] ] == 0)
+    {
+      n_array [ xy[0] ]  = 1;
+      counter++;
+    }
+  }
+
+  return counter;
+}
+
+
+void eightQueens_test()
+{
+  eightQueens();
 }
 
 int main()
 {
-  allSafeChessSquaes_queens_test();
+  eightQueens_test();
 }

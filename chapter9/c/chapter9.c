@@ -1635,11 +1635,6 @@ void eight_queen()
   int pos[2];
   int count = 0;
   struct eight_queen_list *collection = NULL;
-  struct board_state board = {
-    .cols = CHESS_BOARD_COLUMNS,
-    .rows = CHESS_BOARD_ROWS,
-    .chess_board = (int *) malloc( sizeof(int) * (CHESS_BOARD_ROWS * CHESS_BOARD_COLUMNS) )
-  };
 
   for (int r = 0; r < CHESS_BOARD_ROWS ; r++)
   {

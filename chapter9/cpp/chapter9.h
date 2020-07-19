@@ -77,11 +77,14 @@ void allSafeChessSquares (std::vector<chess_pos_t> queens, std::vector<chess_pos
 
 bool chessMoveCmpr(chess_pos_t pos_a, chess_pos_t pos_b);
 void positionListAdd(chess_pos_t mv, std::vector<chess_pos_t> &collection);
-
 void positionListRemove(chess_pos_t mv, std::vector<chess_pos_t> &collection);
 
 #define CHESS_BOARD_ROW 8
 #define CHESS_BOARD_COL 8
+
+std::vector< std::vector<chess_pos_t> >  eightQueens();
+void eightQueensHelper(std::vector<chess_pos_t> &&queens, std::vector< std::vector<chess_pos_t> > &collection );
+unsigned eightQueenBoardValid (const std::vector<chess_pos_t> &queen_pos_list);
 
 #endif
 
