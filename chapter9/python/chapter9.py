@@ -705,6 +705,7 @@ def eightQueens_helper(queens, collection):
     eightQueens_helper( queens + [ele], collection)
 
 def eightQueens_test():
-  eightQueens()
+  queens = eightQueens()
+  print(queens)
 
 eightQueens_test()
