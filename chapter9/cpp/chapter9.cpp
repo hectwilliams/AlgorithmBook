@@ -1013,32 +1013,49 @@ void allSafeChessSquares (chess_pos_t queen, std::vector<chess_pos_t> &collectio
   return allSafeChessSquares( queen, collection , count + 1);
 }
 
-void allSafeChessSquares (std::vector<chess_pos_t> queens, std::vector<chess_pos_t> &collection, int index , int counter)
+void allSafeChessSquares (std::vector<chess_pos_t> queens, std::vector<chess_pos_t> &collection, int index )
 {
-  chess_pos_t pos = {counter / CHESS_BOARD_ROW, counter % CHESS_BOARD_COL};
-
-  if (counter >= CHESS_BOARD_ROW *CHESS_BOARD_COL)
-  {
-    ++index;
-    counter = 0;
-
-  }
+  int collection_index = 0;
 
   if (index >= queens.size())
   {
     return;
   }
 
-  if (isMoveSafe(pos, queens[index]))
+  if (collection.empty())
   {
-    positionListAdd(pos, collection);
+    for (int r = 0; r < 8; r++)
+    {
+      for (int c = 0; c < 8; c++)
+      {
+        chess_pos_t pos ={r,c};
+
+        if  (isMoveSafe(queens[index] , pos))
+        {
+          positionListAdd(pos, collection);
+        }
+      }
+    }
   }
+
   else
   {
-    positionListRemove(pos, collection);
-  }
-  return allSafeChessSquares( queens, collection , index,  counter + 1);
+    collection_index = 0;
+    while(collection_index < collection.size())
+    {
+      if (!isMoveSafe(queens[index], collection[collection_index]))
+      {
+        collection.erase(collection.begin() + collection_index);
+      }
+      else
 
+      {
+        collection_index++;
+      }
+    }
+  }
+
+  return allSafeChessSquares( queens, collection , index + 1);
 
 }
 
@@ -1091,10 +1108,17 @@ void allSafeChessSquaes_queens_test ()
   std::vector<chess_pos_t> collection;
   std::vector<chess_pos_t> queens;
 
-  chess_pos_t queen = {0,1};
-  chess_pos_t queen2 = {0,2};
+    chess_pos_t queen = {0,0};
+  chess_pos_t queen2 = {0,3};
+  chess_pos_t queen3 = {1,3};
+  chess_pos_t queen4 = {7,3};
+  chess_pos_t queen5 = {5,2};
 
   queens.push_back(queen);
+  queens.push_back(queen2);
+  queens.push_back(queen3);
+  queens.push_back(queen4);
+  queens.push_back(queen5);
 
   // queens.push_back(queen2);
 

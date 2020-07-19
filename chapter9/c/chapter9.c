@@ -1408,14 +1408,17 @@ boolean is_chess_move_safe(int  intended_move[2] , int queen [2] )
   return True;
 }
 
-boolean is_chess_move_safe_queens(int intended_move[2], int **queens, int size )
+boolean is_chess_move_safe_queens(int intended_move[2], int *queens, int size )
 {
+  int *queen_ptr;
+  int offset = 2*(size - 1);
 
   if (queens == NULL || size  <= 0)
   {
     return True;
   }
-  return is_chess_move_safe(intended_move, (queens + size - 1) ) && is_chess_move_safe_queens(intended_move, queens , size - 1);
+
+  return is_chess_move_safe(intended_move, offset + queens ) && is_chess_move_safe_queens(intended_move, queens , size - 1);
 }
 
 boolean is_chess_move_safe_test()
@@ -1430,6 +1433,7 @@ boolean is_chess_move_safe_test()
 /* single */
   // mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 2;
   // printf( " move [0][7]  queen [6][2]  =>  %d\n", is_chess_move_safe( mv, queen ));
+
 
   // mv[0] = 0; mv[1] = 7; queen[0] = 6; queen[1] = 1;
   // printf( " move [0][7]  queen [6][3]  =>  %d\n", is_chess_move_safe( mv, queen ));
@@ -1450,6 +1454,17 @@ void  all_safe_chess_move_helper_add(int *pos, unsigned size, struct chess_pos_l
   }
   runner = *collection;
 
+  /*check check for redundancy */
+  while (runner)
+  {
+    if (chess_pos_cmpr(pos, runner->pos , size))
+    {
+      return;
+    }
+    runner = runner->next;
+  }
+
+
   /*allocate node and add values */
   node =  (struct chess_pos_list_t *) malloc (sizeof(struct chess_pos_list_t));
   node->next = NULL;
@@ -1458,6 +1473,8 @@ void  all_safe_chess_move_helper_add(int *pos, unsigned size, struct chess_pos_l
   {
     node->pos[i] = pos[i];
   }
+
+  runner = *collection;
 
   /* add node to list  */
   if (*collection == NULL)
@@ -1475,9 +1492,12 @@ void  all_safe_chess_move_helper_add(int *pos, unsigned size, struct chess_pos_l
       }
       runner = runner->next;
     }
+
     runner->next = node;
+
   }
 }
+
 
 void  all_safe_chess_move_helper_remove(int *pos, unsigned size, struct chess_pos_list_t **collection)
 {
@@ -1510,9 +1530,12 @@ void  all_safe_chess_move_helper_remove(int *pos, unsigned size, struct chess_po
       {
         delme = runner->next;
         runner->next = runner->next->next;
+
         free(delme);
+        break;
       }
       runner = runner->next;
+
     }
   }
 }
@@ -1532,45 +1555,65 @@ boolean chess_pos_cmpr(int *pos_a, int *pos_b, int size)
   return True;
 }
 
-void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection, int counter)
+void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection)
 {
-  int sel_queens2D;
-  int queen_pos[CHESS_POS_LEN];
-  int mv[CHESS_POS_LEN] = { counter / CHESS_BOARD_ROWS ,  counter % CHESS_BOARD_COLUMNS};
-
-
-  if (counter >= CHESS_BOARD_COLUMNS * CHESS_BOARD_ROWS)
-  {
-    counter = 0;
-    --size;
-  }
+  int offset;
+  int mv[2];
+   struct chess_pos_list_t *runner;
 
   if (size <= 0)
   {
     return;
   }
 
-  sel_queens2D = 2 * (size - 1);
-  queen_pos[0] = queen2D[ sel_queens2D];
-  queen_pos[1] = queen2D[ sel_queens2D + 1] ;
+  offset = (2 * (size - 1));
 
-  if (is_chess_move_safe(mv, queen_pos ))
+  if (*collection == NULL)  /* NO LIST */
   {
-    all_safe_chess_move_helper_add(mv, CHESS_POS_LEN, collection);
+    for (int r = 0; r < CHESS_BOARD_ROWS; r++)
+    {
+      for (int c = 0;  c < CHESS_BOARD_COLUMNS; c++)
+      {
+        mv[0] = r;
+        mv[1] = c;
+
+        if (is_chess_move_safe(mv, queen2D + offset) )
+        {
+          all_safe_chess_move_helper_add(mv, CHESS_COORDINATE_SIZE, collection);
+        }
+        else
+        {
+          all_safe_chess_move_helper_remove(mv, CHESS_COORDINATE_SIZE, collection);
+        }
+      }
+    }
   }
   else
   {
-    all_safe_chess_move_helper_remove(mv, CHESS_POS_LEN, collection);
+    runner = *collection;
+    while (runner )
+    {
+      if (is_chess_move_safe(runner->pos, queen2D + offset) )
+      {
+        all_safe_chess_move_helper_add(runner->pos, CHESS_COORDINATE_SIZE, collection);
+      }
+      else
+      {
+        all_safe_chess_move_helper_remove(runner->pos, CHESS_COORDINATE_SIZE, collection);
+      }
+      runner = runner->next;
+    }
   }
-  return all_safe_chess_move_helper(queen2D, size, collection, counter + 1);
+  return all_safe_chess_move_helper( queen2D, size - 1, collection);
 }
+
 
 struct chess_pos_list_t *all_safe_chess_move(int queen [2])
 {
   struct chess_pos_list_t *list = NULL;
   if (queen != NULL)
   {
-    all_safe_chess_move_helper(queen, 1, &list, 0);
+    all_safe_chess_move_helper(queen, 1, &list);
   }
   return list;
 }
@@ -1578,24 +1621,155 @@ struct chess_pos_list_t *all_safe_chess_move(int queen [2])
 struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size)
 {
   struct chess_pos_list_t *list = NULL;
+
   if (queens2D != NULL)
   {
-    all_safe_chess_move_helper(queens2D, size, &list, 0 );
+    all_safe_chess_move_helper(queens2D, size, &list );
   }
   return list;
 }
 
+
+void eight_queen()
+{
+  int pos[2];
+  int count = 0;
+  struct eight_queen_list *collection = NULL;
+  struct board_state board = {
+    .cols = CHESS_BOARD_COLUMNS,
+    .rows = CHESS_BOARD_ROWS,
+    .chess_board = (int *) malloc( sizeof(int) * (CHESS_BOARD_ROWS * CHESS_BOARD_COLUMNS) )
+  };
+
+  for (int r = 0; r < CHESS_BOARD_ROWS ; r++)
+  {
+    for (int c = 0; c < CHESS_BOARD_COLUMNS; c++)
+    {
+      /* clear state */
+      pos[0] = r; // r;
+      pos[1] = c; // c;
+      eight_queen_helper( pos, 1, &collection,&count);
+    }
+  }
+  printf("COUNT %d\n", count);
+}
+
+void eight_queen_helper(int *queens, unsigned size, struct eight_queen_list **collection, int *count)
+{
+  int *clone_queens;
+  struct chess_pos_list_t *valid_moves_list, * runner;
+  int array_len = size * 2;
+  int next_row;
+
+  if (size >= 8 )
+  {
+    if (size == 8)
+    {
+      print_array(queens , size);  /* print queens array  */
+      *count = *count + 1;
+    }
+    return;
+  }
+
+  valid_moves_list = all_safe_chess_move_queens(queens, size);
+
+  if (available_chess_moves(valid_moves_list) ==  8 - size )
+  {
+    next_row = queens[array_len - 2]  + 1;
+    runner = valid_moves_list; /* list of available queen positons*/
+
+    while (runner)
+    {
+      if (runner->pos[0] == next_row)
+      {
+        /* allocate clone array */
+        clone_queens = (int *) malloc ( sizeof(int) * (array_len + 2));   /* len + 2   *2 is new entries*/
+
+        /* clone input queenss(array) */
+        for (int i = 0; i < array_len; i++)
+        {
+          clone_queens[i] = queens[i];
+        }
+        /* insert new queen position*/
+        clone_queens[array_len] = runner->pos[0];
+        clone_queens[array_len + 1] = runner->pos[1];
+        eight_queen_helper(clone_queens, size + 1, collection, count);
+      }
+      else
+      {
+        return;
+      }
+      runner = runner->next;
+    }
+  }
+}
+
+
+unsigned available_chess_moves(struct chess_pos_list_t *collection)
+{
+  struct chess_pos_list_t *runner;
+  int i = 0;
+  unsigned count = 0;
+  int *n_array = (int*) calloc(8,sizeof(int));
+  int counter = 0;
+
+  if (collection == NULL)
+  {
+    return 0;
+  }
+
+  runner = collection;
+
+  while (runner)
+  {
+    if ( n_array[runner->pos[0]] == 0 )
+    {
+      n_array[runner->pos[0]]  = 1;
+      counter++;
+    }
+    runner = runner->next;
+  }
+  return counter;
+}
+
+void print_array(int *queens, int size)
+{
+  for (int i = 0; i < size*2; i++)
+  {
+    printf("[%d]", queens[i]);
+    if (i % 2 == 1)
+    {
+      printf(" ");
+    }
+  }
+  printf("\n");
+}
+
+void eight_queen_test ()
+{
+  eight_queen();
+}
+
 void all_safe_chess_move_test()
 {
-  // int queen[2] = {0, 1};
-  // struct chess_pos_list_t *runners = all_safe_chess_move(queen);
-  int queens[2][2] = {
-    {0, 1},
-    {0, 3}
 
+  int queens[5][2] = {
+    {0, 0},
+    {0, 3},
+    {1, 3},
+    {7, 3},
+    {5, 2}
   };
-int index = 1;
-  struct chess_pos_list_t *runners = all_safe_chess_move_queens(queens , 2);
+
+  int index = 1;
+
+  struct chess_pos_list_t *runners = all_safe_chess_move_queens(queens , 5);
+
+  available_chess_moves(runners);
+
+
+
+
   while (runners)
   {
     printf(" \t [%d] --> [%d  %d]\n", index++, runners->pos[0], runners->pos[1]);
@@ -1605,9 +1779,6 @@ int index = 1;
 
 int main()
 {
+  // eight_queen_test();
   all_safe_chess_move_test();
 }
-
-
-
-

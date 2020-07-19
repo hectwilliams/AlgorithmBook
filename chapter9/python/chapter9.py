@@ -584,18 +584,17 @@ def generate_all_coin_change_test():
 
 
 def is_move_safe(mv , queen) :
-  zipped = zip(mv, queen)
 
-  if zipped[0][0] - zipped[1][0] ==   zipped[0][1] - zipped[1][1]:
+  if mv[0] - mv[1] == queen[0] - queen[1]:
     return False
 
-  if zipped[0][0] + zipped[1][0] ==   zipped[0][1] + zipped[1][1]:
+  if mv[0] + mv[1] == queen[0] + queen[1]:
     return False
 
-  if (zipped[0][0] == zipped[0][1]):
+  if mv[0] == queen[0]:
     return False
 
-  if (zipped[1][0] == zipped[1][1]):
+  if mv[1] == queen[1]:
     return False
 
   return True
@@ -618,20 +617,32 @@ def is_move_safe_test() :
 CHESS_ROWS = 8
 CHESS_COLS = 8
 
-def allSafeChessSquares( queens_list, collection , index = 0, counter = 0):
-  pos = [int(counter/ CHESS_ROWS ), counter % CHESS_COLS ]
-  if counter == CHESS_COLS *CHESS_ROWS:
-    index += 1
-    counter = 0
+def allSafeChessSquares( queens_list, collection , index = 0):
+  pos = None
+  i = 0
 
-  if len(queens_list) == index:
-      return
+  if index >= len(queens_list):
+    return
 
-  if is_move_safe( pos , queens_list[index]):
-    allSafeChessSquares_add(pos, collection)
+  if not collection :
+    for r in range(0, CHESS_ROWS):
+      for c in range(0, CHESS_COLS):
+        pos = [r,c]
+        if is_move_safe(pos, queens_list[index] ) :
+          allSafeChessSquares_add(pos, collection)
+        else:
+          allSafeChessSquares_remove(pos, collection)
   else:
-    allSafeChessSquares_remove(pos, collection)
-  return allSafeChessSquares(queens_list, collection, index, counter + 1)
+    pos = queens_list[index]
+    i = 0
+    while i <  len(collection):
+      if not is_move_safe(pos, collection[i]) :
+        collection.pop(i)
+      else:
+        i = i + 1
+
+  return allSafeChessSquares(queens_list, collection, index + 1)
+
 
 def chess_move_cmpr(pos_a, pos_b):
   for i in range(0, 2):
@@ -649,6 +660,7 @@ def allSafeChessSquares_remove(mv , collection):
   index = 0
   while index < len(collection):
     if chess_move_cmpr(mv, collection[index]):
+      print( "DELETE ",  mv)
       collection.pop(index)
     else:
       index += 1
@@ -656,10 +668,14 @@ def allSafeChessSquares_remove(mv , collection):
 def allSafeChessSquares_test():
   collection = []
   queens =  [
-    [0,1],
-    {0,2}
+    [0,0] ,
+    [0,3] ,
+    [1,3] ,
+    [7, 3] ,
+    [5, 2]
   ]
   allSafeChessSquares(queens, collection)
+
   print(collection)
 
 allSafeChessSquares_test()

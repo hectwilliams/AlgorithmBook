@@ -148,7 +148,7 @@ void generate_all_coin_change_test();
 struct coin_change generate_all_coin_change( unsigned cents);
 void generate_all_coin_change_helper( unsigned cents, struct coin_change *obj );
 boolean is_chess_move_safe(int  intended_move[2] , int queen [2] );
-boolean is_chess_move_safe_queens(int intended_move[2], int **queens, int size );
+boolean is_chess_move_safe_queens(int intended_move[2], int *queens, int size );
 
 struct chess_pos_list_t
 {
@@ -161,13 +161,43 @@ struct chess_pos_list_t
 
 struct chess_pos_list_t *all_safe_chess_move(int queen [2]);
 struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size);
+unsigned available_chess_moves(struct chess_pos_list_t *collection);
 
-void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection, int counter);
+#define CHESS_COORDINATE_SIZE 2
+void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection);
 void  all_safe_chess_move_helper_add(int *pos, unsigned size, struct chess_pos_list_t **collection);
 void  all_safe_chess_move_helper_remove(int *pos, unsigned size, struct chess_pos_list_t **collection);
+void  all_safe_chess_move_helper_clear(struct chess_pos_list_t **collection);
+
 boolean chess_pos_cmpr(int *pos_a, int *pos_b, int size);
-#define CHESS_POS_LEN 2
+
+struct eight_queen_list
+{
+  int array[8];
+  struct eight_queen_list *next;
+};
+
+struct board
+{
+  int pos;
+  boolean used;
+};
+
+struct board_state
+{
+  int rows;
+  int cols;
+  int *chess_board;
+};
+
+void eight_queen();
+void eight_queen_helper(int *queens, unsigned size, struct eight_queen_list **collection, int *count);
+void eight_queen_add(int *queens , struct eight_queen_list **collection);
+
+void print_array(int *queens, int size);
 #endif
+
+
 
 
 
