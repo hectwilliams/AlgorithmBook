@@ -617,7 +617,7 @@ def is_move_safe_test() :
 CHESS_ROWS = 8
 CHESS_COLS = 8
 
-def allSafeChessSquares( queens_list, collection , index = 0):
+def allSafeChessSquares( queens_list, collection,row,col , index = 0):
   pos = None
   i = 0
 
@@ -625,8 +625,8 @@ def allSafeChessSquares( queens_list, collection , index = 0):
     return
 
   if not collection :
-    for r in range(0, CHESS_ROWS):
-      for c in range(0, CHESS_COLS):
+    for r in range(0, row):
+      for c in range(0, col):
         pos = [r,c]
         if is_move_safe(pos, queens_list[index] ) :
           allSafeChessSquares_add(pos, collection)
@@ -641,7 +641,7 @@ def allSafeChessSquares( queens_list, collection , index = 0):
       else:
         i = i + 1
 
-  return allSafeChessSquares(queens_list, collection, index + 1)
+  return allSafeChessSquares(queens_list, collection,row, col, index + 1)
 
 
 def chess_move_cmpr(pos_a, pos_b):
@@ -675,7 +675,7 @@ def allSafeChessSquares_test():
     [5, 2]
   ]
 
-  allSafeChessSquares(queens, collection)
+  allSafeChessSquares(queens, collection, 8, 8)
 
   print(collection)
 
@@ -684,28 +684,40 @@ def eightQueens(n = 8):
 
   for r in range(0, n):
     for c in range(0, n):
-      eightQueens_helper( [ [r,c] ], queens)
+      nQueens_helper( [ [r,c] ], queens, 8)
   return queens
 
-def eightQueens_helper(queens, collection):
-  next_row = None
+def nQueens_helper(queens, collection, n):
   available_queens = []
 
-  if len(queens) >= 8:
-    if len(queens) == 8:
+  if len(queens) >= n:
+    if len(queens) == n:
       collection.append(queens)
     return
 
-  next_row = queens[len(queens) - 1][0] + 1
-  allSafeChessSquares(queens, available_queens)
+  allSafeChessSquares(queens, available_queens, n, n)
 
   for ele in available_queens:
-    if ele[0] != next_row:
+    if ele[0] != len(queens):
       break
-    eightQueens_helper( queens + [ele], collection)
+    nQueens_helper( queens + [ele], collection, n)
 
 def eightQueens_test():
   queens = eightQueens()
   print(queens)
 
-eightQueens_test()
+
+def nQueens (n):
+  queens = []
+
+  for r in range(0, 1):
+    for c in range(0, n):
+      nQueens_helper( [ [r,c] ], queens, n)
+  return queens
+
+def nQueens_tests():
+  N = 12
+  for n_queen_vector in nQueens(8):
+    print(n_queen_vector)
+
+nQueens_tests()

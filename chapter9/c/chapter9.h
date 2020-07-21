@@ -160,11 +160,11 @@ struct chess_pos_list_t
 #define CHESS_BOARD_COLUMNS 8
 
 struct chess_pos_list_t *all_safe_chess_move(int queen [2]);
-struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size);
-unsigned available_chess_moves(struct chess_pos_list_t *collection);
+struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size, unsigned n);
+unsigned available_chess_moves(struct chess_pos_list_t *collection, int n);
 
 #define CHESS_COORDINATE_SIZE 2
-void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection);
+void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection, unsigned n);
 void  all_safe_chess_move_helper_add(int *pos, unsigned size, struct chess_pos_list_t **collection);
 void  all_safe_chess_move_helper_remove(int *pos, unsigned size, struct chess_pos_list_t **collection);
 void  all_safe_chess_move_helper_clear(struct chess_pos_list_t **collection);
@@ -192,7 +192,17 @@ struct board_state
 
 void eight_queen();
 void eight_queen_helper(int *queens, unsigned size, struct eight_queen_list **collection, int *count);
-void eight_queen_add(int *queens , struct eight_queen_list **collection);
+// void eight_queen_add(int *queens/ , struct eight_queen_list **collection);
+
+struct n_queen_list
+{
+  int *array;
+  struct n_queen_list *next;
+};
+void n_queens(unsigned n);
+void n_queen_helper(int *queens, unsigned size, struct n_queen_list **collection, unsigned n, int *count);
+
+
 
 void print_array(int *queens, int size);
 #endif

@@ -1555,7 +1555,7 @@ boolean chess_pos_cmpr(int *pos_a, int *pos_b, int size)
   return True;
 }
 
-void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection)
+void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_list_t **collection, unsigned n)
 {
   int offset;
   int mv[2];
@@ -1570,9 +1570,9 @@ void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_
 
   if (*collection == NULL)  /* NO LIST */
   {
-    for (int r = 0; r < CHESS_BOARD_ROWS; r++)
+    for (int r = 0; r < n; r++)
     {
-      for (int c = 0;  c < CHESS_BOARD_COLUMNS; c++)
+      for (int c = 0;  c < n; c++)
       {
         mv[0] = r;
         mv[1] = c;
@@ -1604,7 +1604,7 @@ void  all_safe_chess_move_helper(int *queen2D, unsigned size , struct chess_pos_
       runner = runner->next;
     }
   }
-  return all_safe_chess_move_helper( queen2D, size - 1, collection);
+  return all_safe_chess_move_helper( queen2D, size - 1, collection, n);
 }
 
 
@@ -1613,18 +1613,18 @@ struct chess_pos_list_t *all_safe_chess_move(int queen [2])
   struct chess_pos_list_t *list = NULL;
   if (queen != NULL)
   {
-    all_safe_chess_move_helper(queen, 1, &list);
+    all_safe_chess_move_helper(queen, 1, &list, 8);
   }
   return list;
 }
 
-struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size)
+struct chess_pos_list_t *all_safe_chess_move_queens(int *queens2D, unsigned size, unsigned n)
 {
   struct chess_pos_list_t *list = NULL;
 
   if (queens2D != NULL)
   {
-    all_safe_chess_move_helper(queens2D, size, &list );
+    all_safe_chess_move_helper(queens2D, size, &list, n );
   }
   return list;
 }
@@ -1651,6 +1651,7 @@ void eight_queen()
 
 void eight_queen_helper(int *queens, unsigned size, struct eight_queen_list **collection, int *count)
 {
+
   int *clone_queens;
   struct chess_pos_list_t *valid_moves_list, * runner;
   int array_len = size * 2;
@@ -1666,9 +1667,9 @@ void eight_queen_helper(int *queens, unsigned size, struct eight_queen_list **co
     return;
   }
 
-  valid_moves_list = all_safe_chess_move_queens(queens, size);
+  valid_moves_list = all_safe_chess_move_queens(queens, size, 8);
 
-  if (available_chess_moves(valid_moves_list) ==  8 - size )
+  if (available_chess_moves(valid_moves_list, 8) ==  8 - size )
   {
     next_row = queens[array_len - 2]  + 1;
     runner = valid_moves_list; /* list of available queen positons*/
@@ -1700,12 +1701,12 @@ void eight_queen_helper(int *queens, unsigned size, struct eight_queen_list **co
 }
 
 
-unsigned available_chess_moves(struct chess_pos_list_t *collection)
+unsigned available_chess_moves(struct chess_pos_list_t *collection, int n)
 {
   struct chess_pos_list_t *runner;
   int i = 0;
   unsigned count = 0;
-  int *n_array = (int*) calloc(8,sizeof(int));
+  int *n_array = (int*) calloc(n ,sizeof(int));
   int counter = 0;
 
   if (collection == NULL)
@@ -1758,12 +1759,9 @@ void all_safe_chess_move_test()
 
   int index = 1;
 
-  struct chess_pos_list_t *runners = all_safe_chess_move_queens(queens , 5);
+  struct chess_pos_list_t *runners = all_safe_chess_move_queens(queens , 5, 8);
 
-  available_chess_moves(runners);
-
-
-
+  available_chess_moves(runners, 8);
 
   while (runners)
   {
@@ -1772,8 +1770,82 @@ void all_safe_chess_move_test()
   }
 }
 
+void n_queens(unsigned n)
+{
+  int pos[2];
+  struct n_queen_list *collection = NULL;
+  int count = 0;
+
+  /* search rows */
+  for (int r = 0; r < 1 ; r++)
+  {
+    for (int c = 0; c < n ; c++)
+    {
+      pos[0] = r;
+      pos[1] = c;
+      n_queen_helper( pos, 1, &collection, n, &count);
+    }
+  }
+
+  printf(" N(%d) QUEENS COUNT = %d\n", n, count);
+}
+
+
+void n_queen_helper(int *queens, unsigned size, struct n_queen_list **collection, unsigned n, int * count)
+{
+
+  int *clone_queens;
+  struct chess_pos_list_t *valid_moves_list, * runner;
+  int array_len = size * 2;
+
+  if (size >= n )
+  {
+    if (size == n)
+    {
+      print_array(queens , size);
+      *count = *count + 1;
+    }
+    return;
+  }
+
+  valid_moves_list = all_safe_chess_move_queens(queens, size, n);
+  runner = valid_moves_list; /* list of available queen positons*/
+
+  if (available_chess_moves(valid_moves_list, n) ==  n - size )
+  {
+    while (runner)
+    {
+      if (runner->pos[0] == size)
+      {
+        clone_queens = (int *) malloc ( sizeof(int) * (array_len + 2));   /* len + 2   *2 is new entries*/
+
+      /*update first placeholder*/
+        clone_queens[0] = runner->pos[0];
+        clone_queens[1] = runner->pos[1];
+
+      /*cpy to remaining  array locations*/
+        for (int i = 2; i < 2 + array_len; i++)
+        {
+          clone_queens[i] = queens[i - 2];
+        }
+        n_queen_helper(clone_queens, size + 1, collection, n, count);
+      }
+      else
+      {
+        return;
+      }
+      runner = runner->next;
+    }
+  }
+}
+void n_queens_test()
+{
+  n_queens(8);
+
+}
+
+
 int main()
 {
-  // eight_queen_test();
-  all_safe_chess_move_test();
+  n_queens_test();
 }

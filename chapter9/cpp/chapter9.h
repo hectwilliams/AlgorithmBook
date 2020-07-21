@@ -72,8 +72,8 @@ typedef std::array<int, 2> chess_pos_t;
 bool isMoveSafe(  std::array<int ,2 > intended_move, std::array<int, 2> queen);
 bool isMoveSafe_queens( chess_pos_t mv, std::vector< chess_pos_t> &collection, unsigned index = 0 );
 
-void allSafeChessSquares (chess_pos_t queen, std::vector<chess_pos_t> &collection, unsigned count = 0);
-void allSafeChessSquares (std::vector<chess_pos_t> queens, std::vector<chess_pos_t> &collection, int index = 0);
+void allSafeChessSquares (chess_pos_t queen, std::vector<chess_pos_t> &collection, unsigned row, unsigned col);
+void allSafeChessSquares (std::vector<chess_pos_t> queens, std::vector<chess_pos_t> &collection , unsigned row, unsigned col,int index = 0);
 
 bool chessMoveCmpr(chess_pos_t pos_a, chess_pos_t pos_b);
 void positionListAdd(chess_pos_t mv, std::vector<chess_pos_t> &collection);
@@ -83,8 +83,9 @@ void positionListRemove(chess_pos_t mv, std::vector<chess_pos_t> &collection);
 #define CHESS_BOARD_COL 8
 
 std::vector< std::vector<chess_pos_t> >  eightQueens();
-void eightQueensHelper(std::vector<chess_pos_t> &&queens, std::vector< std::vector<chess_pos_t> > &collection );
-unsigned eightQueenBoardValid (const std::vector<chess_pos_t> &queen_pos_list);
+void nQueensHelper(std::vector<chess_pos_t> &&queens, std::vector< std::vector<chess_pos_t> > &collection , unsigned n );
+unsigned QueenBoardValid (const std::vector<chess_pos_t> &queen_pos_list, unsigned n);
+std::vector< std::vector<chess_pos_t> >  nQueens(unsigned n);
 
 #endif
 
