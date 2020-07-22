@@ -31,5 +31,18 @@ def ionis_rotate_test():
   test = ionis_rotate ("abcd", "bc")
   print(test)
 
+def bad_character (string, bad):
+  index = 0
+  while index < len(string):
+    if string[index] in bad:
+      string = string.replace(string[index], '', 1)
+    else:
+      index += 1
+  return string
 
-ionis_rotate_test()
+def bad_character_test():
+  string = "abcdef"
+  bad = "ab"
+  print(bad_character(string, bad))
+
+bad_character_test()

@@ -25,7 +25,7 @@ void rotateString_test()
   std::cout << rotateString(s, 5) << '\n';
 }
 
-bool ionis_rotate(std::string str1, std::string str2)
+bool ionisRotate(std::string str1, std::string str2)
 {
   if (str1.length() != str2.length())
   {
@@ -43,13 +43,35 @@ bool ionis_rotate(std::string str1, std::string str2)
   return false;
 }
 
-void ionis_rotate_test()
+void ionisRotate_test()
 {
-  std::cout <<    ionis_rotate("abcd", "cbcd") << '\n'; //  false
-  std::cout <<    ionis_rotate("abcd", "dabc") << '\n'; // true
+  std::cout << ionisRotate("abcd", "cbcd") << '\n'; //  false
+  std::cout << ionisRotate("abcd", "dabc") << '\n'; // true
 }
+
+void badCharacters(std::string &str, std::string bad)
+{
+  std::size_t index ;
+
+  for (char c: bad)
+  {
+    index = str.find(c);
+    if (index != std::string::npos)
+    {
+      str.erase(index, 1);
+    }
+  }
+}
+
+void badCharacters_test()
+{
+  std::string str = "abcdef";
+  badCharacters(str, "ac");
+  std::cout << str << '\n';
+}
+
 
 int main()
 {
-  ionis_rotate_test();
+  badCharacters_test();
 }

@@ -66,10 +66,44 @@ void ionis_rotate_test ()
 {
   ionis_rotate("abcd", "cbcd"); /*false */
   ionis_rotate("abcd", "dabc"); /*true */
+}
 
+void bad_characters(char * str, char *bad_chars)
+{
+  char *ptr = str, *runner;
+  uint32_t len = string_len(str);
+  char *bad_ptr;
+
+  while (*ptr != 0) /* iterate string characters */
+  {
+    /* chec for bad characters */
+    bad_ptr = bad_chars;
+    while (*bad_ptr)
+    {
+      if (*bad_ptr == *ptr)
+      {
+        /* shift sub-string removing bad character*/
+        runner = ptr;
+        while (*runner)
+        {
+          *runner = *(runner + 1);
+          runner++;
+        }
+      }
+      bad_ptr++;
+    }
+    ptr++;
+  }
+}
+
+void bad_characters_test()
+{
+  char msg[20] = "abdcef";
+  bad_characters(msg, "af");
+  printf("result %s\n", msg);
 }
 
 int main()
 {
-  ionis_rotate_test();
+  bad_characters_test();
 }

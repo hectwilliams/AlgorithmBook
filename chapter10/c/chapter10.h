@@ -11,3 +11,4 @@ typedef enum boolean
 } boolean;
 
 boolean ionis_rotate(char* str1, char * str2);
+void bad_characters(char * str, char *bad_chars);
