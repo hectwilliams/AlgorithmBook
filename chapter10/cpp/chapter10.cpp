@@ -70,8 +70,40 @@ void badCharacters_test()
   std::cout << str << '\n';
 }
 
+void censor(std::string &str, std::vector<std::string> naughty_list)
+{
+  int pos;
+  std::string insertion_data;
+
+  for (std::string &word: naughty_list)
+  {
+
+    pos = str.find(word);
+    if (pos != std::string::npos)
+    {
+      insertion_data.clear();
+      for (int i = 0; i < word.size(); i++)
+      {
+        insertion_data += 'x';
+
+      }
+      str.replace( pos, word.size() , insertion_data);
+    }
+  }
+}
+
+void censor_test()
+{
+  std::string data = "hector_williams_abc_def";
+  std::vector<std::string> list;
+  list.push_back( "abc");
+  list.push_back( "ee");
+  list.push_back( "def");
+  censor (data, list);
+  std::cout << data << '\n';
+}
 
 int main()
 {
-  badCharacters_test();
+  censor_test();
 }

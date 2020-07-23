@@ -45,4 +45,14 @@ def bad_character_test():
   bad = "ab"
   print(bad_character(string, bad))
 
-bad_character_test()
+def censor (string, naughty_list):
+  for word in naughty_list:
+    index = string.find(word)
+    string = string.replace(word, 'x'* len(word))
+  return string
+
+def censor_test():
+  string = "hector_williams_abc_def"
+  censor(string, ['abc', 'ee', 'def'])
+
+censor_test()

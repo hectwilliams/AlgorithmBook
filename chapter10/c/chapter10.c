@@ -103,7 +103,60 @@ void bad_characters_test()
   printf("result %s\n", msg);
 }
 
+void censor_string (char * string, char  ** naughty_list, uint32_t size)
+{
+  unsigned len = 0, count = 0;
+  char *ptr;
+  char *word;
+  char c;
+  uint32_t index = 0;
+
+  for (int i = 0; i < size; i++)
+  {
+    word = naughty_list[i];
+    len = string_len(word);
+    ptr = string;
+    count = 0;
+
+    while (*ptr != 0 )
+    {
+      if (*ptr == *word)
+      {
+        count++;
+        word++;
+      }
+      else
+      {
+        /* reset counter and word ptr */
+        count = 0;
+        word = naughty_list[i];
+      }
+
+      if (count == len)
+      {
+        memset(ptr - (len - 1), 'x', len);
+        count = 0;
+      }
+      ptr++;
+    }
+  }
+
+}
+
+
+void censor_string_test ()
+{
+  char data[30] = "hector_williams_abc_def";
+  char  *words[2] =  {
+    "hector",
+    "abc",
+  };
+  censor_string(data, words, 2);
+  printf("\t [%s]\n", data);
+}
+
 int main()
 {
-  bad_characters_test();
+  censor_string_test();
 }
+
