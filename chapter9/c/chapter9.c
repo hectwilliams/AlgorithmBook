@@ -1838,12 +1838,11 @@ void n_queen_helper(int *queens, unsigned size, struct n_queen_list **collection
     }
   }
 }
+
 void n_queens_test()
 {
   n_queens(8);
-
 }
-
 
 int main()
 {

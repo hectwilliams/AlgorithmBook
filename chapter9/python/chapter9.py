@@ -706,18 +706,16 @@ def eightQueens_test():
   queens = eightQueens()
   print(queens)
 
-
 def nQueens (n):
   queens = []
-
   for r in range(0, 1):
     for c in range(0, n):
       nQueens_helper( [ [r,c] ], queens, n)
   return queens
 
 def nQueens_tests():
-  N = 12
-  for n_queen_vector in nQueens(8):
-    print(n_queen_vector)
+  N = 8
+  for index, n_queen_vector in enumerate(nQueens(N)):
+    print (index, n_queen_vector)
 
 nQueens_tests()
