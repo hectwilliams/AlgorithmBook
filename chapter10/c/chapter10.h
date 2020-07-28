@@ -29,3 +29,11 @@ void optimal_sequence_helper_helper_sort_by_column(char **list, char **buffer, u
 char ** optimal_sequence_helper_clone_list(char **list, uint32_t list_size, uint32_t word_size, boolean has_data);
 void optimal_sequence_helper_swap( char **collection, int src_pos, int dest_pos , uint32_t length);
 void optimal_sequence_helper_cpy(char ** dest, char ** src, uint32_t list_size, uint32_t word_size);
+
+char * dedupe (const char * string);
+
+int first_unique_letter_index (const char * msg);
+char * unique_letters (const char * str);
+
+ char * num_to_string(double number);
+void num_to_string_helper(double number, int k, char *buffer);

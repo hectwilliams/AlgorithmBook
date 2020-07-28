@@ -1,4 +1,4 @@
-#include <string>
+#include <string.h>
 #include <vector>
 
 std::string  rotateString(std::string str, unsigned n);
@@ -12,3 +12,12 @@ void optimumSSequenceHelper(  std::vector<std::string> collection, std::vector<s
 void optimumSequenceSortColumn(std::vector<std::string> &collection, std::vector<std::string> &buffer, unsigned col);
 bool optimumSequenceIsSorted(std::vector<std::string> buffer, unsigned col);
 void optimumDisplay(std::vector<std::string> buffer);
+
+ std::string DedupeStr(const std::string &str);
+std::string DedupeTest();
+
+int firstUniqueLetter(const std::string &str, int index = 0);
+
+std::string uniqueLetters (const std::string &str, int index = 0);
+
+std::string numToString(double num, int n = 0);

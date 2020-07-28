@@ -2,6 +2,7 @@
 #include "chapter10.h"
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 uint32_t string_len (const char * string)
 {
@@ -367,8 +368,209 @@ void optimal_sequence_test()
   optimal_sequence_helper_display(optimum.data, list_len);
 }
 
+
+char * dedupe (const char * string)
+{
+  static boolean reset = 0;
+  static char buffer[20] ;
+  static unsigned index = 0;
+
+  if (reset == 1 )
+  {
+    /* clear string buffer */
+    reset = 0;
+    index = 0;
+  }
+
+  if (*string == '\0')
+  {
+    /*reset sub routine */
+    reset = 1;
+    return buffer;
+  }
+
+  char c = string[0];
+  for (int n = 1;  string[n] != 0; n++)
+  {
+    if (string[n] == c)
+    {
+      return dedupe(string + 1);
+    }
+  }
+  buffer[index++] = c;
+  return dedupe(string + 1);
+}
+
+void dedupe_test()
+{
+  char * data = dedupe("Snaps! crackles! pops!");
+}
+
+
+int first_unique_letter_index (const char * msg)
+{
+  static int done_flag = 0;
+  static unsigned index = 0;
+  char curr_c;
+
+  if (done_flag == 1)
+  {
+    index = 0;
+  }
+
+  if (*msg == 0 || msg == NULL)
+  {
+    return -1;
+  }
+
+  curr_c = msg[index];
+
+  for (int i = 0; msg[i] != 0; i++)
+  {
+    if (i == index)
+    {
+      continue;
+    }
+
+    if (curr_c == msg[i])
+    {
+      index++;
+      return first_unique_letter_index(msg);
+    }
+  }
+
+  done_flag = 1;
+  printf("[%s]\n", msg);
+  return index;
+
+}
+
+void first_unique_letter_index_test()
+{
+  int i = first_unique_letter_index("empathetic monarch meets primo stinker");
+  printf("index %d\n", i);
+}
+
+char * unique_letters (const char * str)
+{
+  static int search_index = 0;
+  static int curr_index = 0;
+  static int done = 0;
+  static char buffer[100];
+  char c;
+
+
+  if (str == NULL || search_index >= 100)
+  {
+    search_index = curr_index = 0;
+    return buffer;
+  }
+
+  if (done)
+  {
+    search_index = curr_index = 0;
+    done = 0;
+  }
+
+  if ( str[search_index] == '\0' )
+  {
+    done = 1;
+    return buffer;
+  }
+
+  for (int i = 0; str[i] != 0; i++)
+  {
+    if (i == search_index )
+    {
+      continue;
+    }
+
+    if ( str[i] == str[search_index])   /* not unique */
+    {
+      search_index++;
+      return unique_letters(str);
+    }
+  }
+
+  buffer[curr_index++] =  str[search_index] ;
+  search_index++;
+  return unique_letters(str);
+}
+
+void unique_letter_test()
+{
+  const char * msg = "Snap! Crackle! Poop!";
+  char * data  = unique_letters(msg);
+  printf("[%s]\n", data);
+}
+
+  void  num_to_string_helper(double number, int k, char *buffer)
+ {
+
+  int digit =  ( (int) (number) )% 10;
+  char c = (char) ( 48 + digit );
+
+  if (k >= 0)
+  {
+    if (digit)
+    {
+      memset(buffer + k, c, 1);
+      return num_to_string_helper(number /10.0, k + 1, buffer);
+    }
+  }
+
+  else if (  digit  || number - (float) ((int) number) >  0.0 )
+  {
+    memset(buffer + abs(k) - 1, c, 1);  /* k < 0 */
+    return num_to_string_helper(number * 10.0, k - 1, buffer);
+  }
+
+  /* terminate string */
+
+  if (k < 0)
+  {
+    memset(buffer + abs(k) - 1 , 0, 1);
+  }
+  else
+  {
+    memset(buffer + abs(k) , 0, 1);
+  }
+}
+
+ char * num_to_string(double number)
+{
+  char buffer[100];
+  char buffer_decimal[50];
+  unsigned idx = 0;
+
+  num_to_string_helper(number, 0, buffer);
+  num_to_string_helper(number * 10.0, -1, buffer_decimal);
+
+  /* append decimal to whole string */
+
+  while (buffer[idx] != 0)
+  {
+    idx++;
+  }
+
+  /* write decimal char*/
+  buffer[idx++] = '.';
+
+  /* cpy mv decimal data*/
+  memmove(buffer + idx, buffer_decimal, string_len(buffer_decimal));
+
+  return buffer;
+}
+
+void num_to_string_test()
+{
+  double number = 11.2051;
+  char * result = num_to_string(number);
+  printf("result  = %s\n", result);
+}
+
 int main()
 {
-  optimal_sequence_test();
+  num_to_string_test();
 }
 

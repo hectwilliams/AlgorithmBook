@@ -158,11 +158,61 @@ def optimal_sequence_helper(collection, buffer, threshold, state, col_index = 0)
     for i in range( 0, len(clone_collection) ):
       clone_collection[i] = collection[i]
 
-
 def optimal_sequence_test():
   collection = ["EA?K","?RX?","GAG?"]
 
   result = optimal_sequence(collection)
   print(result)
 
-optimal_sequence_test()
+def dedupe(string):
+  if not string:
+    return ''
+  return  ('' if (string.rfind(string[0]) != 0) else string[0] ) + dedupe(string[1: :])
+
+def dedupe_test():
+  msg = "Snaps! crackles! pops!"
+  test = dedupe(msg)
+  print(test)
+
+def dedupe(string, index = 0) :
+  if index >= len(string):
+    return -1
+
+  if string.count(string[index]) == 1:
+    return index
+
+  return dedupe(string, index + 1)
+
+def dedupe_test():
+  msg = "empathetic monarch meets primo stinker"
+  x = dedupe(msg)
+  print(x)
+
+def uniqueLetters(string, index = 0):
+  if index >= len(string):
+    return ''
+  return string[index] + uniqueLetters(string, index + 1) if string.count(string[index]) == 1 else uniqueLetters(string, index + 1)
+
+def unqiueLetters_test():
+  msg = "Snap! Crackle! Poop!"
+  print(uniqueLetters(msg))
+
+def num_to_string(num):
+  return num_to_string_helper(num,0) + "." + num_to_string_helper(num * 10, -1)
+
+def num_to_string_helper (num, dir):
+  digit = int(num) % 10
+
+  if dir >= 0 and digit:
+    return str(digit) + num_to_string_helper(num / 10, dir + 1)
+
+  if dir < 0 and  (num - int(num) > 0.0  or digit):
+    return str(digit) + num_to_string_helper(num * 10, dir - 1)
+
+  return ''
+
+def num_to_string_test():
+  test = num_to_string(11.2051)
+  print(test)
+
+num_to_string_test()
