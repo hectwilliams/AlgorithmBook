@@ -1,6 +1,7 @@
 #include <iostream>
 #include "chapter10.h"
-
+#include <math.h>
+#include <locale>
 std::string rotateString(std::string str, unsigned n)
 {
   std::string tmp = str;
@@ -352,31 +353,387 @@ void uniqueLetters_test ()
 
 std::string numToString(double num, int n)
 {
-  int digit = static_cast<int>(num);
-  char c = static_cast<char>(48 + digit % 10);
+  long int numberInt =  static_cast< long int>(num) ;
+  int digit = numberInt % 10;
+  char c =  (char) (48 + digit);
+  std::string a,b;
 
   if (n == 0)
   {
-    return c + numToString(num / 10, n + 1) + '.' + numToString(num * 10, n -1 )  ;
+    a = c + numToString(num / 10, n + 1);
+    b = numToString(num * 10.0, n - 1);
+    return a + "." + b;
   }
 
-  if (n > 0 && digit)
+  if (n > 0 )
   {
-    return c+ numToString(num / 10, n + 1);
+    if (numberInt > 0)
+    {
+      return c + numToString(num / 10, n + 1);
+    }
+    return "";
   }
-  else if (digit > 0 ||  num -  static_cast<int>(num) > 0.0 )
+
+  if (n < 0)
   {
-    return c + numToString(num / 10, n + 1);
+    if (digit > 0 || !numToStringZeros(num))  /* function checks last digit in fractional value */
+    {
+      return c + numToString(num * 10.0, n - 1);
+    }
+    return "";
   }
 }
 
-void numToStringTest ()
+bool numToStringZeros(double num, int size)
 {
-  double number = 11.2051;
-  std::cout << numToString(number) << '\n';
+  for (int i = 0; i < size; i++)
+  {
+    num *= pow(10, i);
+    if ( static_cast<long int>(num) % 10 != 0 )
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::string numToText(double number)
+{
+  std::string base = numToString(number);
+  std::string whole, dec;
+  std::size_t pos = base.find('.') ;
+
+  if (pos != std::string::npos)
+  {
+    dec = base.substr( pos + 1);
+    whole = base.substr( 0, pos );
+  }
+  else
+  {
+    whole = base;
+  }
+
+  return numToTextParserWhole(whole) + numToTextParserDecimal(dec);
+}
+
+std::string numToTextParserDecimal( std::string data, int index)
+{
+  if (data.size() >= index)
+  {
+    return "";
+  }
+  return (index == 0 ? "point " : "") + digitToText( static_cast<int>(48 - data[index]), true);
+}
+
+std::string numToTextParserWhole( std::string data , int level)
+{
+  std::string buffer = "xxx";
+  std::string text = "";
+
+  for (int i = 0; i < 3 ; i++)
+  {
+    if ( data[i] >= 48 && data[i] < 58)
+    {
+      buffer[3 - 1 - i] = data[i];
+    }
+  }
+
+  text = numToTextTranslate(buffer, level);
+
+  if (data.size() >= 3)
+  {
+    return numToTextParserWhole(data.substr(3), level + 1)  + text;
+  }
+
+  return text;
+}
+
+std::string numToTextTranslate(std::string data, unsigned level)
+{
+  std::string buffer;
+  int digit;
+  char c;
+
+  if (data[0] != 'x')
+  {
+    digit = data[0] - 48;
+    switch(digit)
+    {
+      case 1:
+        buffer += "One Hundred ";
+        break;
+      case 2:
+        buffer += "Two Hundred ";
+        break;
+      case 3:
+        buffer += "Three Hundred ";
+      case 4:
+        buffer += "Four Hundred ";
+        break;
+      case 5:
+        buffer += "Five Hundred ";
+        break;
+      case 6:
+        buffer += "Six Hundred ";
+        break;
+      case 7:
+        buffer += "Seven Hundred ";
+        break;
+      case 8:
+        buffer += "Eight Hundred ";
+        break;
+      case 9:
+        buffer+= "Nine Hundred ";
+        break;
+    }
+  }
+
+  if (data[1] != 'x')
+  {
+    digit = data[1] - 48;
+
+    switch(digit)
+    {
+      case 1:
+        /* NO OP*/
+        break;
+
+      case 2:
+        buffer += "Twenty ";
+        break;
+
+      case 3:
+        buffer += "Thirty ";
+        break;
+
+      case 4:
+        buffer += "Fourty ";
+        break;
+
+      case 5:
+        buffer += "Fifty ";
+        break;
+
+      case 6:
+        buffer += "Sixty ";
+        break;
+
+      case 7:
+        buffer += "Seventy ";
+
+      case 8:
+        buffer += "Eighty ";
+
+      case 9:
+        buffer += "Ninety ";
+    }
+
+    if (data[2] != 'x')
+    {
+      digit = data[2] - 48;
+
+      if (data[1] == '1')
+      {
+        /* n-TEENS */
+        switch(digit)
+        {
+           case 0:
+            buffer += "Ten ";
+            break;
+          case 1:
+            buffer += "Eleven ";
+            break;
+          case 2:
+            buffer += "Twelve ";
+            break;
+          case 3:
+            buffer += "Thirteen ";
+            break;
+          case 4:
+            buffer += "Fourteen ";
+            break;
+          case 5:
+            buffer += "Fifteen ";
+            break;
+          case 6:
+            buffer += "Sixteen ";
+            break;
+          case 7:
+            buffer += "Seventeen ";
+            break;
+          case 8:
+            buffer += "Eighteen ";
+            break;
+          case 9:
+            buffer += "Nineteen ";
+            break;
+        }
+      }
+      else
+      {
+        buffer += digitToText(digit);
+      }
+    }
+
+  }
+
+  switch (level)
+  {
+    case 1:
+      buffer+= "Thousand ";
+      break;
+    case 2:
+      buffer += "Million ";
+      break;
+    case 3:
+      buffer += "Billion ";
+      break;
+    case 4:
+      buffer += "Trillion ";
+      break;
+    case 5:
+      buffer += "Quadrillion ";
+      break;
+    case 6:
+      buffer += "Quintillion ";
+      break;
+
+    default:
+      break;
+  }
+
+  return buffer;
+
+}
+
+std::string digitToText(int digit,
+ bool en_zero)
+{
+  std::string result;
+  switch(digit)
+  {
+    case 0:
+      if (en_zero)
+      {
+        result = "zero ";
+      }
+      break;
+    case 1:
+      result = "one ";
+      break;
+
+    case 2:
+      result = "two ";
+      break;
+
+    case 3:
+      result = "three ";
+      break;
+
+    case 4:
+      result = "four ";
+      break;
+
+    case 5:
+      result = "five ";
+      break;
+
+    case 6:
+      result = "six ";
+      break;
+
+    case 7:
+      result = "seven" ;
+      break;
+
+    case 8:
+      result = "eight ";
+      break;
+
+    case 9:
+      result = "nine ";
+      break;
+  }
+
+  return result;
+
+}
+
+void numToTextTest()
+{
+  std::string test = numToText(40213.23);
+  std::cout << test << '\n';
+}
+
+bool isPermtutaoin(std::string str,const std::string &perm, std::string &&buffer)
+{
+  bool state;
+
+  if (buffer.size() == perm.size())
+  {
+    if (buffer.compare(perm) == 0)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+
+  for (int i = 0; i < str.size() && !state; i++)
+  {
+    state = isPermtutaoin( str.substr(0, i) + str.substr(i + 1), perm, buffer + str[i]);
+  }
+
+  return state;
+}
+
+void isPermutaoinTest()
+{
+  bool state = false;
+  std::cout <<  isPermtutaoin("mister", "stimer") << '\n';
+}
+
+bool isPangram (std::string str)
+{
+  return 26 == isPangram_helper(str);
+}
+
+int isPangram_helper(std::string str, std::map<char, bool> mapper )
+{
+  int count = 0;
+  char c;
+  int bit = 0;
+
+  if (str.size() == 0)
+  {
+    return 0;
+  }
+
+  c = std::tolower(str[0]);
+
+  if (mapper.count(c) == 0 && std::isalpha(c))
+  {
+    mapper.insert( std::make_pair(c, 1) );
+    bit = 1;
+  }
+  count = bit + isPangram_helper(str.substr(1), mapper);
+
+  return count;
+}
+
+void isPangramTest()
+{
+  const char *msg = "How quickly daft jumping zebras vex!"; // true
+  std::cout << isPangram(msg) << '\n';
+  const char *msg2 = "abcdef ghijkl mno pqrs tuv wxy, not so fast!"; // false
+  std::cout << isPangram(msg2) << '\n';
+
 }
 
 int main()
 {
-  numToStringTest();
+  isPangramTest();
 }

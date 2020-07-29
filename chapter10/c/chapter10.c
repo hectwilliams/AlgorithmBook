@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
 uint32_t string_len (const char * string)
 {
@@ -569,8 +570,488 @@ void num_to_string_test()
   printf("result  = %s\n", result);
 }
 
+char * num_to_text(double number)
+{
+  struct NumToTextStruct obj;
+  static char text [200];
+
+  for (int i = 0; i < 200; i++)
+  {
+    text[i] = '\0';
+  }
+
+  num_to_text_helper(number , &obj, 0);
+  num_to_text_helper(number * 10, &obj, -1);
+  num_to_text_helper_parser_natural(obj.whole, text);
+  num_to_text_helper_parser_decimal(obj.decimals, text);
+
+  return text;
+}
+
+void num_to_text_helper_parser_decimal(char * string, char *text )
+{
+  int digit;
+
+  if (string == NULL)
+  {
+    return;
+  }
+
+  if (*string == 0)
+  {
+    return;
+  }
+
+  strcat(text, "point ");
+
+  while (*string != 0 )
+  {
+    digit = (char) *string - 48;
+    switch (digit)
+    {
+      case 1:
+        strcat(text, "one ");
+        break;
+      case 2:
+        strcat(text, "two ");
+        break;
+      case 3:
+        strcat(text, "three ");
+        break;
+      case 4:
+        strcat(text, "four ");
+        break;
+      case 5:
+        strcat(text, "five ");
+        break;
+      case 6:
+        strcat(text, "six ");
+        break;
+      case 7:
+        strcat(text, "seven ");
+        break;
+      case 8:
+        strcat(text, "eight ");
+        break;
+      case 9:
+        strcat(text, "nine ");
+        break;
+
+    }
+    string++;
+  }
+
+
+}
+
+void num_to_text_helper_parser_natural(char * string , char *text)
+{
+  int size = 3;
+  char buffer[3];
+  char data[100] = "";
+  int data_len;
+  static int counter = 0;
+
+  if (text == NULL)
+  {
+    counter = 0;
+  }
+
+  if (*text == 0)
+  {
+    counter = 0;
+  }
+
+  for (int i = 0; i < size; i++)
+  {
+    buffer[size - 1 - i] = string[size - 1 - i];
+  }
+
+   if ( ( buffer[1] >=48 && buffer[1] < 58) == 0 )
+  {
+    /* 1 digit in buffer  */
+    num_to_text_helper_translate(buffer, 1, data);
+  }
+  else if ( ( buffer[2] >=48 && buffer[2] < 58) == 0 )
+  {
+    /* 2 digits  buffer*/
+    num_to_text_helper_translate(buffer, 2, data);
+  }
+  else
+  {
+    /* 3 digits  in buffer */
+    num_to_text_helper_translate(buffer, 3, data);
+  }
+
+  switch(counter)
+  {
+    case 1:
+      strcat(data, "thousand ");
+      break;
+    case 2:
+      strcat(data, "million ");
+      break;
+    case 3:
+      strcat(data, "billion ");
+      break;
+    case 4:
+      strcat(data, "trillion ");
+      break;
+    case 5:
+      strcat(data, "quadrillion ");
+      break;
+    case 6:
+      strcat(data, "quintillion");
+      break;
+  }
+
+  /* append to text */
+  if (*data == 0)
+  {
+    strcat(text, data);
+  }
+  else
+  {
+    data_len = string_len(data);
+    memmove(text + data_len, text, string_len(text));
+    memcpy(text, data, data_len);
+  }
+
+  if (string[3] != 0) /* recursion*/
+  {
+    counter++;
+    return num_to_text_helper_parser_natural(string + 3, text);
+  }
+}
+
+void num_to_text_helper(double number, struct NumToTextStruct *obj, int pos )
+{
+  int digit = (int) number % 10;
+  char c = (char) (48 + digit);
+  int sel;
+
+  /* decimal */
+  if (pos < 0) {
+    if ( digit > 0 || number - (float)( (int) number)  > 0 )
+    {
+      obj->decimals[ abs(pos) - 1] = c;
+      return num_to_text_helper(number * 10, obj, pos - 1);
+    }
+    obj->decimals[abs(pos) - 1] = 0;
+  }
+
+  /* integer */
+  else if (pos >= 0 )
+  {
+    if ( (int) number > 0 )
+    {
+      sel = (int) pos / 3;
+      /* right shift segment*/
+      for (int i = (sel + 1)* 3 - 1 ; i >  sel * 3; i--)
+      {
+        obj->whole[ i ] = obj->whole[i - 1];
+      }
+      /* insert @ pos 0 */
+      obj->whole[  sel * 3 ] = c;
+      return num_to_text_helper(number / 10, obj, pos + 1);
+    }
+  }
+}
+
+void num_to_text_helper_translate(char *data,  unsigned width, char *text )
+{
+  int real_pos = 3 - width;
+  int index = 0;
+  int digit;
+  char prev_char;
+  char msg[100];
+
+  if (real_pos == 0 )   /* hundreds */
+  {
+    width--;
+    digit = data[index] - 48;
+    real_pos++;
+
+    switch
+     (digit)
+    {
+      case 1:
+        strcat(text, "one hundred ");
+        break;
+
+      case 2:
+        strcat(text, "two hundred ");
+        break;
+
+      case 3:
+        strcat(text, "two hundred ");
+        break;
+
+      case 4:
+        strcat(text, "three hundred ");
+        break;
+
+      case 5:
+        strcat(text, "five hundred ");
+        break;
+
+      case 6:
+        strcat(text, "six hundred ");
+        break;
+
+      case 7:
+        strcat(text, "seven hundred ");
+        break;
+
+      case 8:
+        strcat(text, "eight hundred ");
+        break;
+
+      case 9:
+        strcat (text, "nine hundred ");
+        break;
+    }
+    index++; /* next char */
+  }
+
+  if (real_pos == 1 && width--)   /* tens */
+  {
+    digit = data[index] - 48;
+    prev_char = data[index];  /*store middle character */
+    real_pos++;
+
+    switch(digit)
+    {
+      case 1:
+        break;
+      case 2:
+        strcat(text, "twenty ");
+        break;
+      case 3:
+        strcat(text, "thirty ");
+        break;
+      case 4:
+        strcat(text, "fourty ");
+        break;
+      case 5:
+        strcat(text, "fifty ");
+        break;
+      case 6:
+        strcat(text, "sixty ");
+        break;
+      case 7:
+        strcat(text, "seventy ");
+        break;
+      case 8:
+        strcat(text, "eighty ");
+        break;
+      case 9:
+        strcat(text, "ninety ");
+        break;
+    }
+    index++; /* next char */
+  }
+
+  if (real_pos == 2 && width)   /* ones (unit) */
+  {
+    digit = data[index] - 48;
+
+    if (data[index - 1] - 48 == 1)
+    {
+       /* TEENS */
+      switch (digit)
+      {
+
+        case 0:
+          strcat(text, "ten" );
+          break;
+
+        case 1:
+          strcat(text, "eleven ");
+          break;
+
+        case 2:
+          strcat(text, "twelve ");
+          break;
+
+        case 3:
+          strcat(text, "thirteen ");
+          break;
+
+        case 4:
+          strcat(text, "fourteen ");
+          break;
+
+        case 5:
+          strcat(text, "fifteen ");
+          break;
+
+        case 6:
+          strcat(text, "sixteen ");
+          break;
+
+        case 7:
+          strcat(text, "seventeen ");
+          break;
+
+        case 8:
+          strcat(text, "eighteen ");
+          break;
+
+        case 9:
+          strcat(text, "nineteen ");
+          break;
+      }
+    }
+
+    else
+
+    {
+      switch (digit)
+      {
+        case 1:
+          strcat(text, "one ");
+          break;
+        case 2:
+          strcat(text, "two ");
+          break;
+        case 3:
+          strcat(text, "three ");
+          break;
+        case 4:
+          strcat(text, "four ");
+          break;
+        case 5:
+          strcat(text, "five ");
+          break;
+        case 6:
+          strcat(text, "six ");
+          break;
+        case 7:
+          strcat(text, "seven ");
+          break;
+        case 8:
+          strcat(text, "eight ");
+          break;
+        case 9:
+          strcat(text, "nine ");
+          break;
+      }
+    }
+  }
+}
+
+void num_to_text_test()
+{
+  char *text = num_to_text(40213.23);
+  printf("%s \n", text);
+}
+
+boolean is_permtutaoin(const char *string, const char *perm)
+{
+  boolean search_done = 0;
+  is_permtutaoin_helper(string, perm, NULL, &search_done);
+  return search_done;
+}
+
+void is_permtutaoin_helper ( char *string,  const char *perm,  char *buffer, boolean *done)
+{
+  char clone_buffer[50] = "";
+  char clone_string[50] = "";
+  int buffer_index = 0;
+  int clone_wr_index = 0;
+
+  if (string == NULL || perm == NULL)
+  {
+    return;
+  }
+
+  if (*string == 0)
+  {
+    if (strcmp(buffer, perm) == 0) /* match found */
+    {
+      *done = 1;
+    }
+    return;
+  }
+
+  if (*done)  /* match previous found*/
+  {
+    return;
+  }
+
+   if (buffer)
+  {
+    buffer_index = string_len(buffer);
+    if ( string_len(buffer) >= string_len(perm) )
+    {
+      return;
+    }
+    memcpy(clone_buffer, buffer, 50);
+  }
+
+  for (int i = 0;  *(string + i) != 0; i++)
+  {
+    clone_wr_index = 0;
+    for (int k = 0; *(string + k) != 0; k++)
+    {
+      if (i != k)
+      {
+        clone_string[clone_wr_index++] = string[k];
+      }
+      else
+      {
+        clone_buffer[buffer_index] = string[k];
+      }
+    }
+    is_permtutaoin_helper(clone_string, perm, clone_buffer, done);
+  }
+}
+
+void is_permtutaoin_test()
+{
+  boolean result = is_permtutaoin("mister", "stimer");
+  printf("permtation exist  %d\n", result);
+}
+
+boolean is_pangram(const char *str)
+{
+  char alpha[26] = "";
+  return 26 == is_pangram_helper(str, alpha);
+}
+
+int is_pangram_helper(const char *str, char * array)
+{
+  int index;
+  boolean bit = 0;
+
+  if (*str == 0)
+  {
+    return 0;
+  }
+
+  index = tolower(*str) - 97; /* lower case only */
+
+  if (index >= 0 && index < 26 )
+  {
+    if (array[index] == 0)  /*paint array */
+    {
+      array[index] = 1;
+      bit = 1;
+    }
+  }
+  return bit + is_pangram_helper(str + 1, array);
+}
+
+void is_pangram_test()
+{
+  const char *msg = "How quickly daft jumping zebras vex!"; // true
+  const char *msg2 = "abcdef ghijkl mno pqrs tuv wxy, not so fast!"; // false
+  printf("[%d]\n", is_pangram(msg2));
+}
+
 int main()
 {
-  num_to_string_test();
+  is_pangram_test();
 }
 

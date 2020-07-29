@@ -35,5 +35,25 @@ char * dedupe (const char * string);
 int first_unique_letter_index (const char * msg);
 char * unique_letters (const char * str);
 
- char * num_to_string(double number);
+char * num_to_string(double number);
 void num_to_string_helper(double number, int k, char *buffer);
+
+
+struct NumToTextStruct
+{
+  char decimals[25];
+  char whole [16];
+};
+
+char * num_to_text(double number);
+void num_to_text_helper(double number, struct NumToTextStruct *obj, int pos );
+void num_to_text_helper_parser_natural(char * string, char *text );
+void num_to_text_helper_parser_decimal(char * string, char *text );
+void num_to_text_helper_translate(char *data,  unsigned width,  char *text);
+
+boolean is_permtutaoin(const char *string, const char *perm);
+
+void is_permtutaoin_helper ( char *string,  const char *perm,  char *buffer, boolean *done);
+
+boolean is_pangram(const char *str);
+int is_pangram_helper(const char *str, char * array);

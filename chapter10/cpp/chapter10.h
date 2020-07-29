@@ -1,6 +1,6 @@
-#include <string.h>
+#include <string>
 #include <vector>
-
+#include <map>
 std::string  rotateString(std::string str, unsigned n);
 bool ionisRotate(std::string &str1, std::string str2);
 
@@ -21,3 +21,17 @@ int firstUniqueLetter(const std::string &str, int index = 0);
 std::string uniqueLetters (const std::string &str, int index = 0);
 
 std::string numToString(double num, int n = 0);
+
+bool numToStringZeros(double num, int size = 0);
+
+std::string numToText();
+
+std::string numToTextParserWhole( std::string data ,int level = 0);
+std::string numToTextTranslate(std::string data, unsigned level);
+std::string numToTextParserDecimal( std::string data, int index = 0);
+std::string digitToText(int digit, bool en_zero = false);
+bool isPermtutaoin(std::string str,const std::string &perm, std::string &&buffer = "");
+
+int isPangram_helper(std::string str, std::map<char, bool> mapper = std::map<char, bool>());
+bool isPangram(std::string str);
+

@@ -198,21 +198,187 @@ def unqiueLetters_test():
   print(uniqueLetters(msg))
 
 def num_to_string(num):
-  return num_to_string_helper(num,0) + "." + num_to_string_helper(num * 10, -1)
+  return num_to_string_helper(num,0) + "." + num_to_string_helper(num * 10.0, -1)
 
 def num_to_string_helper (num, dir):
   digit = int(num) % 10
 
-  if dir >= 0 and digit:
+  if dir >= 0  and int(num) > 0:
     return str(digit) + num_to_string_helper(num / 10, dir + 1)
 
-  if dir < 0 and  (num - int(num) > 0.0  or digit):
-    return str(digit) + num_to_string_helper(num * 10, dir - 1)
+  if dir < 0:
+    if (num_to_string_zeros(num) or digit):
+      return str(digit) + num_to_string_helper(num * 10, dir - 1)
 
   return ''
+
+def num_to_string_zeros (number, count = 0):
+  if count == 5:
+    return True
+
+  if number % 10 != 0:
+    return False
+
+  return num_to_string_zeros(number * 10, count + 1)
+
 
 def num_to_string_test():
   test = num_to_string(11.2051)
   print(test)
 
-num_to_string_test()
+def num_to_text(number):
+  base = num_to_string(number)
+  whole = ""
+  decimal = ""
+  point_pos = base.find('.')
+
+  text_map = {
+    0: {
+      1: "One Hundred ",
+      2: "Two Hundred ",
+      3: "Three Hundred ",
+      4: "Four Hundred",
+      5: "Five Hundred",
+      6: "Six Hundred",
+      7: "Seven Hundred",
+      8: "Eight Hundred",
+      9: "Nine Hundred"
+    },
+
+    1: {
+      2: "Twenty ",
+      3: "Thirty ",
+      4: "Fourty ",
+      5: "Fifty ",
+      6: "Sixty ",
+      7: "Seventy ",
+      8: "Eighty ",
+      9: "Ninety "
+    },
+
+    2: {
+      0: "zero",
+      1: "one ",
+      2: "two ",
+      3: "three ",
+      4: "four ",
+      5: "five ",
+      6: "six ",
+      7: "seven ",
+      8: "eight ",
+      9: "nine "
+    },
+
+    3: {
+      1: "Thousand ",
+      2: "Million ",
+      3: "Billion ",
+      4: "Trillion ",
+      5: "Quadrillion",
+      6: "Quintillion"
+      # ...
+    }
+  }
+
+  if point_pos > 0:
+    whole = base[0 : point_pos]
+    decimal = base [point_pos + 1 : :]
+
+  return num_to_text_parser_whole(whole, text_map) +  num_to_text_parser_decimal(decimal, text_map)
+
+def num_to_text_parser_whole(string, obj, level = 0):
+  buffer = ['', '', '']
+  text = ""
+  length = len(string)
+
+  for i in range(0, 3):
+    if length:
+      buffer [3 - 1 - i] = string[i]
+    length -= 1
+
+  text = num_to_text_translate(buffer, obj)
+
+  if level in obj[3]:
+    text += obj[3][level]
+
+  if len(string) >= 3:
+    return num_to_text_parser_whole(string[3 : :], obj,  level + 1) + text
+
+  return text
+
+def num_to_text_translate(array, obj ):
+  buffer = ""
+  digit = 0
+
+  for i in range(0, 3) :
+    if array[i] != '' :
+      digit = ord(array[i]) - 48
+      if i == 2 and digit == 0:
+        continue
+      if digit in obj[i]:
+        buffer += obj[i][digit]
+  return buffer
+
+def num_to_text_parser_decimal(string, obj, index = 0):
+  digit = None
+
+  if not string:
+    return ""
+
+  digit = ord(string[0]) - 48
+
+  if digit in obj[2]:
+    return  ("point " if index == 0 else "")  +  obj[2][digit] + num_to_text_parser_decimal(string[1 : :], obj, index + 1)
+
+  return ""
+
+
+def num_to_text_test():
+  test = num_to_text(40213.23)
+  print(test)
+
+def isPermtutaoin (string, perm, buffer = "") :
+  state = False
+
+  if len(buffer) == len(perm) :
+    if buffer == perm:
+      return True
+    return False
+
+  for i in range(0, len(string)):
+    state = isPermtutaoin(string[0 : i] + string[i + 1 : :], perm, buffer + string[i])
+    if state:
+      break
+  return state
+
+def isPermtutaoin_test():
+  state = isPermtutaoin("mister", "timer")
+  print(state)
+
+def is_pangram_helper(string, obj = {}):
+  c = ''
+  bit = 0
+
+  if not string:
+    return 0
+
+  c = string[0].lower()
+
+  if c.isalpha() and c not in obj:
+    obj[c] = 1
+    bit = 1
+
+  return bit + is_pangram_helper(string[1 : : ], obj)
+
+def is_pangram (string):
+  return is_pangram_helper(string) == 26
+
+def is_pangram_test():
+  msg = "How quickly daft jumping zebras vex!"
+  answer = is_pangram(msg)
+  print(answer) # true
+  msg2 = "abcdef ghijkl mno pqrs tuv wxy, not so fast!"
+  answer = is_pangram(msg)  # false
+  print(answer)
+
+is_pangram_test()
