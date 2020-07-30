@@ -1050,8 +1050,228 @@ void is_pangram_test()
   printf("[%d]\n", is_pangram(msg2));
 }
 
+struct str_permutations all_string_permutations (const char *string)
+{
+  struct str_permutations *perms = NULL;
+  int len = string_len(string);
+  all_string_permutations_helper(string, len , &perms, NULL );
+  return *perms;
+}
+
+void all_string_permutations_helper(const char *string, unsigned size, struct str_permutations **llist, char *buffer)
+{
+
+  int buffer_wr_index;
+  char * clone_buffer;
+  char * clone_string;
+  int string_wr_index;
+
+  buffer_wr_index = (!buffer) ? 0 : string_len(buffer);
+
+  if (size == buffer_wr_index)
+  {
+     struct str_permutations *node = (char *) malloc(size);
+     node->next = NULL;
+     node->data = buffer;
+
+    if (*llist == NULL)
+    {
+      *llist = node;
+    }
+    else
+    {
+      node->next = *llist;
+      *llist = node;
+    }
+    return;
+  }
+
+  clone_buffer = (char *) malloc( sizeof( buffer_wr_index + 1));
+  clone_string = (char *) calloc(sizeof(string_len(string)) , sizeof(char));
+
+  if (buffer)
+  {
+    memcpy(clone_buffer, buffer, buffer_wr_index);
+  }
+
+  for (int i = 0; string[i] != 0; i++ )
+  {
+    string_wr_index = 0;
+    for (int k = 0; k < string[k] !=0; k++)
+    {
+      if (i != k)
+      {
+        clone_string[string_wr_index++] = string[k];
+      }
+      else
+      {
+        clone_buffer[buffer_wr_index] = string[k];
+      }
+
+    }
+
+    all_string_permutations_helper(clone_string, size, llist, clone_buffer);
+  }
+
+}
+
+
+void all_string_permutations_test()
+{
+  struct str_permutations llist = all_string_permutations("team");
+  struct str_permutations *runner = &llist;
+  while (runner)
+  {
+    printf("\t[%s]\n", runner->data);
+    runner = runner->next;
+  }
+}
+
+boolean perfect_pangram (const char *str)
+{
+  char alpha[26] = "";
+  return 26 == perfect_pangram_helper(str, alpha);
+}
+
+int perfect_pangram_helper(const char *str, char * alpha)
+{
+  char c;
+  int bit = 0;
+
+  if (*str == 0)
+  {
+    return 0;
+  }
+
+  c = tolower(*str);
+
+  if (c >= 'a' && c <= 'z' )
+  {
+    if (alpha[c - 97] == 0)
+    {
+      bit = 1;
+      alpha[c - 97] = 1;
+    }
+    else
+    {
+      bit = -1;
+    }
+  }
+
+  return bit + perfect_pangram_helper(str+ 1, alpha);
+}
+
+void perfect_pangram_test()
+{
+  const char *msg = "Playing jazz vibe chords quickly excites my wife."; //false
+  const char *msg2 = "Mr. Jock, TV quiz PhD, bags few lynx."; // true
+  boolean x = perfect_pangram(msg);
+  boolean y = perfect_pangram(msg2);
+
+  printf(" is perfect pangram %d\n",y);
+}
+
+void best_single_buy_sell_test ()
+{
+  int mem[]  = {6,4,6,5,9,7,6,12,2,6,11,2,4};
+  int size = sizeof(mem) / sizeof(mem[0]);
+  int max = best_single_buy_sell(mem, size );
+  printf("max %d \n", max);
+}
+
+int best_single_buy_sell (int *array, int size)
+{
+  int max = 0;
+  best_single_buy_sell_helper(array, size, NULL, 0, &max);
+  return max;
+}
+
+void best_single_buy_sell_helper  (int *array, int array_size, int *buffer, int buffer_size, int *max)
+{
+  int wr_index = buffer_size == 0 ? 0: buffer_size;
+  int *clone_buffer = (int *) malloc(sizeof(int) * (wr_index + 1) );
+
+  if (array_size <= 0)
+  {
+    return;
+  }
+
+  // #clone
+  if (buffer_size > 0)
+  {
+    memcpy(clone_buffer, buffer, buffer_size);
+  }
+
+  clone_buffer[wr_index] = array[0]; /* recent entry aggregate */
+
+  if (array[1] > array[0] && array_size - 1 != 0)
+  {
+    best_single_buy_sell_helper(array + 1, array_size -  1, clone_buffer, wr_index + 1, max);
+  }
+  else  /* discontinuity*/
+  {
+    if (buffer_size)
+    {
+      if (clone_buffer[wr_index] - clone_buffer[0] > *max)
+      {
+        *max = clone_buffer[wr_index] - clone_buffer[0];
+      }
+    }
+    return best_single_buy_sell_helper(array + 1, array_size -  1, NULL, 0, max);
+  }
+}
+
+int best_single_buy_sell_second (int *array, int size)
+{
+  int sum = 0;
+  best_single_buy_sell_helper_second(array, size, NULL, 0, &sum);
+  return sum;
+}
+
+void best_single_buy_sell_helper_second  (int *array, int array_size, int *buffer, int buffer_size, int *data)
+{
+  int wr_index = buffer == NULL ? 0: buffer_size;
+  int *clone_buffer = (int *) malloc(sizeof(int) * (wr_index + 1) );
+
+  if (array_size <= 0)
+  {
+    return;
+  }
+
+  if (buffer_size > 0)
+  {
+    memcpy(clone_buffer, buffer, buffer_size);
+  }
+
+  clone_buffer[wr_index] = array[0];
+
+
+  if (array[1] >= array[0] && array_size - 1 != 0)
+  {
+    best_single_buy_sell_helper_second(array + 1, array_size - 1, clone_buffer, wr_index + 1, data);
+  }
+  else
+  {
+    if (buffer_size)
+    {
+      *data += clone_buffer[wr_index] - clone_buffer[0];  /* buy/ sell price (sum profits) */
+    }
+
+    return  best_single_buy_sell_helper_second(array + 1, array_size - 1, NULL, 0, data);
+  }
+ }
+
+void best_single_buy_sell_second_test ()
+{
+  int mem[]  = {6,4,6,5,9,7,6,12,2,6,11,2,4};
+  int size = sizeof(mem) / sizeof(mem[0]);
+  int max = best_single_buy_sell_second(mem, size );
+  printf("%d\n", max);
+}
+
 int main()
 {
-  is_pangram_test();
+  best_single_buy_sell_second_test();
+
 }
 

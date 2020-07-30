@@ -57,3 +57,20 @@ void is_permtutaoin_helper ( char *string,  const char *perm,  char *buffer, boo
 
 boolean is_pangram(const char *str);
 int is_pangram_helper(const char *str, char * array);
+
+struct str_permutations {
+  char *data;
+  struct str_permutations *next;
+};
+
+struct str_permutations all_string_permutations (const char *string);
+void all_string_permutations_helper(const char *string, unsigned size, struct str_permutations **llist, char *buffer);
+
+int perfect_pangram_helper(const char *str, char * alpha);
+boolean perfect_pangram (const char *str);
+
+int best_single_buy_sell (int *array, int size);
+void best_single_buy_sell_helper  (int *array, int array_size, int *buffer, int buffer_size, int *max);
+
+int best_single_buy_sell_second (int *array, int size);
+void best_single_buy_sell_helper_second  (int *array, int array_size, int *buffer, int buffer_size, int *data);

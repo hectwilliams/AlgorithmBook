@@ -730,10 +730,172 @@ void isPangramTest()
   std::cout << isPangram(msg) << '\n';
   const char *msg2 = "abcdef ghijkl mno pqrs tuv wxy, not so fast!"; // false
   std::cout << isPangram(msg2) << '\n';
-
 }
+
+std::vector<std::string> stringPermutations(const std::string &str)
+{
+ std::vector<std::string> collection;
+ stringPermutationsHelper(str, str.size(), collection);
+ return collection;
+}
+
+void stringPermutationsHelper(std::string str, const int &size, std::vector<std::string> &collection, std::string buffer)
+{
+  if (size == buffer.size())
+  {
+    collection.push_back(buffer);
+  }
+
+  for (int i = 0; i < str.size(); i++)
+  {
+    stringPermutationsHelper ( str.substr(0, i) + str.substr(i+1), size, collection,  buffer + str[i]);
+  }
+}
+
+void stringPermutationsTest()
+{
+  std::vector<std::string> list = stringPermutations("team");
+  for (auto &ele: list)
+  {
+    std::cout << '\t' << ele << '\n';
+  }
+}
+
+bool perfectPangram (std::string str)
+{
+  std::map<char, bool> alpha;
+  return 26 == perfectPangram_helper(str, alpha);
+}
+
+int perfectPangram_helper(std::string str, std::map<char, bool> &alpha)
+{
+  bool state = 0;
+  char c;
+
+  if (str.size() == 0)
+  {
+    return 0;
+  }
+
+  c = std::tolower (str[0]);
+
+  if (c >= 'a' && c <= 'z')
+  {
+    if (alpha.count(c) == 0)
+    {
+      alpha[c] = 1;
+      state = 1;
+    }
+    else
+    {
+      state = -1;
+    }
+  }
+
+  return state + perfectPangram_helper(str.substr(1), alpha);
+}
+
+void perfectPangramTest ()
+{
+  bool state, state2;
+  std::string msg = "Playing jazz vibe chords quickly excites my wife.";   //false
+  state = perfectPangram(msg);
+
+  std::string  msg2 = "Mr. Jock, TV quiz PhD, bags few lynx."; // true
+  state2 = perfectPangram(msg2);
+
+  std::cout << state << "\t" << state2 << "\n";
+}
+
+void bestSingleBuySell (int &value, std::vector<int> collection, std::vector<int> buffer )
+{
+  if (collection.empty())
+  {
+    return;
+  }
+
+  buffer.push_back(collection[0]);
+
+  if (collection.size() <= 1)
+  {
+    return;
+  }
+
+  if (collection[1] > collection[0])
+  {
+    bestSingleBuySell(value, std::vector<int> (collection.begin() + 1, collection.end()), buffer);
+  }
+  else
+  {
+    if (buffer.size())
+    {
+      if (buffer[buffer.size() -1] - buffer[0] > value)
+      {
+        value = buffer[buffer.size() -1] - buffer[0];
+      }
+    }
+    return bestSingleBuySell(value, std::vector<int> (collection.begin() + 1, collection.end()), std::vector<int>() );
+  }
+}
+
+void bestSingleBuySellTest()
+{
+  const int data[] = {6,4,6,5,9,7,6,12,2,6,11,2,4};
+  std::vector<int> mem (data, data + sizeof(data) / sizeof(data[0]));
+  int value = 0;
+  bestSingleBuySell(value, mem);
+  std::cout << value << '\n';
+}
+
+void bestSingleBuySell_2(int &value,   std::vector< std::vector<int> >  &buffer_list , std::vector<int> collection, std::vector<int> buffer  )
+{
+  if (collection.size() == 0)
+  {
+    return;
+  }
+
+
+  buffer.push_back(collection[0]);
+
+  if (collection.size() <= 1)
+  {
+    if (buffer.size() > 1)
+    {
+      buffer_list.push_back(buffer);
+      value += buffer.back() - buffer.front();
+    }
+    return;
+  }
+
+  if (collection[1] > collection[0] )
+  {
+    bestSingleBuySell_2(value,buffer_list, std::vector<int> (collection.begin() + 1, collection.end()), buffer);
+  }
+  else
+  {
+    if (buffer.size() > 1)
+    {
+      buffer_list.push_back(buffer);
+      value += buffer.back() - buffer.front();
+    }
+
+    return bestSingleBuySell_2( value, buffer_list,  std::vector<int> (collection.begin() + 1, collection.end()) , std::vector<int>());
+  }
+}
+
+
+void bestSingleBuySell_2_test()
+{
+  const int data[] = {6,4,6,5,9,7,6,12,2,6,11,2,4};
+  std::vector<int> mem (data, data + sizeof(data) / sizeof(data[0]));
+  int maximal_proift = 0;
+  std::vector< std::vector<int> >  transactions;
+  bestSingleBuySell_2(maximal_proift, transactions, mem);
+  std::cout << maximal_proift << '\n';
+}
+
 
 int main()
 {
-  isPangramTest();
+  bestSingleBuySell_2_test();
 }

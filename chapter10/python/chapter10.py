@@ -381,4 +381,174 @@ def is_pangram_test():
   answer = is_pangram(msg)  # false
   print(answer)
 
-is_pangram_test()
+def string_permutation(string, size = -1, buffer = ""):
+  arr = []
+
+  if size == -1:
+    size = len(string)
+
+  if len(buffer) == size:
+    return [buffer]
+
+  for i in range(0, len(string)):
+   arr +=  string_permutation(string[0 : i] + string[i+1 : :], size, buffer + string[i])
+
+  return arr
+
+def string_permutation_test():
+  data = "team"
+  x = string_permutation(data)
+  print(x)
+
+def perfect_pangram (string, obj = {}, index = 0):
+  c = ''
+  bit = 0
+  data = None
+
+  if not string:
+    return 0
+
+  c = string[0].lower()
+
+  if c >= 'a' and c <= 'z':
+    if c not in obj:
+      obj[c] = 1
+      bit = 1
+    else:
+      bit = -1
+
+  data = bit + perfect_pangram(string[1: :], obj, index + 1)
+
+  if index == 0:
+    return data == 26
+
+  return data
+
+def perfect_pangram_test ():
+  msg = "Playing jazz vibe chords quickly excites my wife.";   #//false
+  # msg  = "Mr. Jock, TV quiz PhD, bags few lynx."; #// true
+  x = perfect_pangram(msg)
+  print(x)
+
+def best_single_buy_sell(collection,  buffer = [], obj = {'min' : 0, 'array': None }):
+  if not collection:
+    return obj
+
+  if len(collection) <= 1:
+    return obj
+
+  buffer.append( collection[0] )
+
+  if collection[1] >= collection[0]:
+    best_single_buy_sell(collection[1 : :] , buffer , obj)
+  else :
+    print(buffer, collection)
+    if buffer:
+      if buffer[-1] - buffer[0] > obj['min'] :
+        obj['min ']  =  buffer[-1] - buffer[0]
+        obj['array']   = buffer
+    return best_single_buy_sell(collection [1  : :  ] , [] , obj)
+
+  return obj
+
+def best_single_buy_sell_test():
+  price_list = [6,4,6,5,9,7,6,12,2,6,11,2,4]
+  x  = best_single_buy_sell(price_list)
+  print(x)
+
+
+def best_single_buy_sell_second(collection,  buffer = [], buffer_list = []):
+  if not collection:
+    return
+
+  buffer.append( collection[0] )
+
+  if len(collection) <= 1:
+    if len(buffer) > 1 :
+      buffer_list.append(buffer)
+    return
+
+  if collection[1] >= collection[0]:
+    best_single_buy_sell_second(collection[1 : :] , buffer , buffer_list)
+  else :
+    if len(buffer) > 1:
+      buffer_list.append(buffer)
+    return best_single_buy_sell_second(collection [1  : :  ] , [] , buffer_list)
+
+def best_single_buy_sell_second_test():
+  price_list = [6,4,6,5,9,7,6,12,2,6,11,2,4]
+  x  = best_single_buy_sell_second(price_list)
+  print(x)
+
+
+def best_single_buy_sell_third(collection, k):
+  transactions = []
+  maxData = [0]
+  best_single_buy_sell_third_helper (collection, transactions)
+  best_single_buy_sell_third_k(maxData, transactions, k)
+  return (maxData)
+
+
+def best_single_buy_sell_third_helper(collection, buffer_list, buffer = []):
+  if not collection:
+    return
+
+  buffer.append( collection[0] )
+
+  if len(collection) <= 1:
+    if len(buffer) > 1:
+        buffer_list.append(buffer)
+    return
+
+  if collection[1] >= collection[0] and len(collection) > 0:
+    best_single_buy_sell_third_helper(collection[1 : :] ,    buffer_list, buffer)
+  else :
+    if len(buffer) > 1:
+      buffer_list.append(buffer)
+    return best_single_buy_sell_third_helper(collection [1  : :  ] , buffer_list, [] )
+
+
+def best_single_buy_sell_third_k_max(buysellArray):
+  acc = 0
+  buy = 0
+  sell = 0
+
+  for i in range(0, len(buysellArray) ,2):
+    buy = buysellArray[i]
+    sell = buysellArray[i+1]
+    if sell > buy:
+      acc += buysellArray[i+1] - buysellArray[i]
+  return acc
+
+def best_single_buy_sell_third_k(maxData , transactions, k, count = 0, buffer = [] ):
+  buysell = None
+  k_trans_max = 0
+
+  if not transactions:
+    return
+
+  if len(buffer) >= 4:
+    if buffer[-1] == buffer[-3] and buffer[-2] == buffer[-4]:  # redudant trades not allowed
+      return
+
+  if len(buffer) == k*2:
+    k_trans_max = (best_single_buy_sell_third_k_max(buffer))
+    if k_trans_max > maxData[0]:
+      maxData[0] = k_trans_max
+    return
+
+  for i  in range(0, len(transactions)):
+    if count % 2 == 0:
+      buysell = transactions[i][0]
+    else:
+      buysell = transactions[i][-1]
+
+    best_single_buy_sell_third_k( maxData, transactions[i  : :] ,k,  count + 1, buffer + [buysell]  )
+
+
+def best_single_buy_sell_third_test():
+  price_list = [6,4,6,5,9,7,6,12,2,6,11,2,4]  #  17
+  x  = best_single_buy_sell_third(price_list,2)
+  print(x)
+
+best_single_buy_sell_third_test()

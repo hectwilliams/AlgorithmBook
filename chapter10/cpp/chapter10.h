@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <array>
+
 std::string  rotateString(std::string str, unsigned n);
 bool ionisRotate(std::string &str1, std::string str2);
 
@@ -35,3 +37,12 @@ bool isPermtutaoin(std::string str,const std::string &perm, std::string &&buffer
 int isPangram_helper(std::string str, std::map<char, bool> mapper = std::map<char, bool>());
 bool isPangram(std::string str);
 
+
+std::vector<std::string> stringPermutations(const std::string &str);
+void stringPermutationsHelper(std::string str, const int &size, std::vector<std::string> &collection, std::string buffer = "");
+int perfectPangram_helper(std::string str, std::map<char, bool> &alpha );
+bool perfectPangram (std::string str);
+
+void bestSingleBuySell (int &value, std::vector<int> collection, std::vector<int> buffer = std::vector<int>() );
+
+void bestSingleBuySell_2(int &value,   std::vector< std::vector<int> >  &buffer_list , std::vector<int> collection, std::vector<int> buffer =  std::vector<int>() );
