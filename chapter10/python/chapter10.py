@@ -597,4 +597,55 @@ def all_loosely_interleaved_test():
   all_loosely_interleaved(collection, a, b)
   print(collection)
 
-all_loosely_interleaved_test()
+def make_palindrome_remove(string, index =0):
+  buffer = string
+  isPalin = None
+
+  if index >= len(string):
+    return -2
+
+  if index >=0 :
+    buffer = buffer[0 : index] + buffer[index + 1 : : ]
+
+  if buffer == buffer[: : -1]:
+    return index
+
+  return make_palindrome_remove(string, index + 1)
+
+def make_palindrome_add (string, index = -1):
+  wr_pos = 0
+  buffer = range(len(string) + 1)
+
+  if index > len(string):
+    return
+
+  if index >= 0:
+    for code in range (97, 123):
+
+      wr_pos = 0
+      for i in range ( 0, len(buffer)):
+        if i != index:
+          buffer[i] =  string[wr_pos]
+          wr_pos += 1
+        else:
+          buffer[index] = chr(code)
+
+      # is palindrome
+      if buffer == buffer[::-1]:
+        return chr(code)
+  else:
+    if string == string[::-1]:
+      return ""
+
+  return make_palindrome_add(string, index + 1)
+
+def make_palindrome_add_test():
+  answer = make_palindrome_add("dad")
+  print(answer)
+
+def make_palindrome_test():
+  inputData = "top"
+  solution = make_palindrome_remove(inputData)
+  print(solution)
+
+make_palindrome_add_test()

@@ -1403,21 +1403,19 @@ void all_loosely_interleaved_helper ( const char *a, const char *b, char * buffe
 
 }
 
-
 void all_loosely_interleaved_helper_branch_search(char *a, int a_len,  char *b, char *buffer, int buffer_len , struct str_llist **llist)
 {
-
   char *clone_a, *clone_buffer;
 
   /*branch data A */
-    clone_a = (char *)  malloc(a_len - 1);
-    all_loosely_interleaved_helper_clone(clone_a, a + 1, a_len - 1);
+  clone_a = (char *)  malloc(a_len - 1);
+  all_loosely_interleaved_helper_clone(clone_a, a + 1, a_len - 1);
 
-    clone_buffer = (char *) malloc(buffer_len + 1);
-    all_loosely_interleaved_helper_clone(clone_buffer, buffer, buffer_len);
-    clone_buffer[buffer_len] = *a;
+  clone_buffer = (char *) malloc(buffer_len + 1);
+  all_loosely_interleaved_helper_clone(clone_buffer, buffer, buffer_len);
+  clone_buffer[buffer_len] = *a;
 
-    all_loosely_interleaved_helper(clone_a, b, clone_buffer, llist);
+  all_loosely_interleaved_helper(clone_a, b, clone_buffer, llist);
 }
 
 void all_loosely_interleaved_test()
@@ -1432,8 +1430,71 @@ void all_loosely_interleaved_test()
  }
 }
 
+boolean is_palindrome(const char *string )
+{
+  int len =  string_len(string);
+  int mid = len / 2;
+
+  for (int i = 0; i < mid ; i++)
+  {
+    if (string[i] != string[len - 1 - i])
+    {
+      return False;
+    }
+  }
+  return True;
+}
+
+int make_string_palindrome_remove(const char * string)
+{
+  int start = 0;
+
+  if (is_palindrome(string))
+  {
+    return -1;
+  }
+  return make_string_palindrome_remove_helper(string, start);
+}
+
+int make_string_palindrome_remove_helper(const char *string, int exclude_index)
+{
+  char buffer[20] = "";
+
+  if ( string[exclude_index] == 0)
+  {
+    return -2;
+  }
+
+  if (exclude_index == 0)
+  {
+    strcat(buffer, string + 1);
+    printf(" %s\n", buffer);
+  }
+  else
+  {
+    strncat(buffer, string, exclude_index);
+    strcat(buffer, string + exclude_index + 1);
+  }
+
+  if (is_palindrome(buffer))
+  {
+    return exclude_index;
+  }
+  else
+  {
+    return make_string_palindrome_remove_helper(string, exclude_index + 1);
+  }
+
+}
+
+void make_string_palindrome_remove_test()
+{
+  int answer = make_string_palindrome_remove("ene");
+  printf(" [%d] \n", answer);
+}
+
 int main()
 {
-  all_loosely_interleaved_test();
+  make_string_palindrome_remove_test();
 }
 

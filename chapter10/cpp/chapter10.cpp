@@ -910,7 +910,6 @@ bool stringLooselyInterleaved(std::string a, std::string b, std::string c, std::
   {
     return false;
   }
-
   return stringLooselyInterleaved(a.substr(1), b.substr(1), c, buffer + a[0] + b[0]);
 
 }
@@ -918,11 +917,99 @@ bool stringLooselyInterleaved(std::string a, std::string b, std::string c, std::
 void stringLooselyInterleavedTest()
 {
   std::cout << stringLooselyInterleaved ( "dne", "ail", "daniel")  << '\n';  // true
-
   std::cout << stringLooselyInterleaved(  "dne","ail","ddaanneeiill" )  << '\n'; // false
 }
 
+int makePalindromeRemove(std::string str, int index)
+{
+    std::string data = str ;
+    bool isPalin = true;
+
+    if ( str.size() == index)
+    {
+      return -2;
+    }
+
+    if (index >=0)
+    {
+      data = str.substr(0, index) + str.substr(index + 1);
+    }
+
+    for (int i = 0; i < data.size() / 2; i++)
+    {
+      isPalin &= data[i] == data [ data.size() - 1 - i];
+    }
+
+    if (isPalin)
+    {
+      return index;
+    }
+
+    return makePalindromeRemove(str, index + 1);
+}
+
+bool isPalindrome(std::string data)
+{
+  bool isPalin = true;
+   for (int i = 0; i < data.size() / 2; i++)
+    {
+      isPalin &= data[i] == data [ data.size() - 1 - i];
+    }
+    return isPalin;
+}
+
+
+void makePalindromeRemoveTest ()
+{
+  std::cout << makePalindromeRemove("dude" ) << '\n';
+}
+
+char makePalindromeAdd( std::string str, int index)
+{
+  int wr_pos = 0;
+  std::string buffer = std::string(str.size() + 1, 'x');
+
+  if (index == 0 && isPalindrome(str) )
+  {
+    return '!';
+  }
+
+  if (index >= str.size())
+  {
+    return '!';
+  }
+
+  for (int code = 97; code < 123; code++)
+  {
+    wr_pos = 0;
+    for (int i = 0; i < buffer.size(); i++)
+    {
+      if (i != index) {
+        buffer[i] = str[wr_pos++];
+      }
+      else
+      {
+        buffer[i] = char (code);
+      }
+    }
+
+    if ( isPalindrome(buffer)  )
+    {
+      return  code;
+    }
+
+  }
+
+  return makePalindromeAdd(str, index + 1);
+}
+
+
+void makePalindromeAddTest ()
+{
+
+  std::cout << "-->  " << makePalindromeAdd("tutu") << '\n';
+}
 int main()
 {
-  stringLooselyInterleavedTest();
+  makePalindromeAddTest();
 }

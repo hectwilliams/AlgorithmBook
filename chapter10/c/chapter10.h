@@ -90,3 +90,6 @@ void all_loosely_interleaved_helper (const char *a, const char *b, char * buffer
 void all_loosely_interleaved_helper_clone(char *dest, char *src, int length);
 void all_loosely_interleaved_helper_branch_search(char *a, int a_len,  char *b, char *buffer, int buffer_len, struct str_llist **llist);
 void all_loosely_interleaved_helper_insert_interleave_data(char *data, struct str_llist **llist);
+
+int make_string_palindrome_remove(const char * string);
+int make_string_palindrome_remove_helper(const char *string, int exclude_index);
