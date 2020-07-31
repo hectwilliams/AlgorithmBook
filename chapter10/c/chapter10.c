@@ -1269,9 +1269,171 @@ void best_single_buy_sell_second_test ()
   printf("%d\n", max);
 }
 
+
+boolean loosely_interleaved(const char * a, const char *b , const char *c)
+{
+  boolean isInterleaved;
+  int size = string_len(c);
+  char * tmp_string = (char *) malloc(size);
+  isInterleaved = loosely_interleaved_helper(a, b , c, tmp_string );
+
+  free(tmp_string);
+  return isInterleaved;
+}
+
+boolean loosely_interleaved_helper(const char * a, const char *b, const char *c, char *buffer)
+{
+  int index = string_len(buffer);
+
+  if (*a == 0 ^ *b == 0)
+  {
+    return False;
+  }
+
+  if (strcmp(buffer, c) == 0)
+  {
+    return True;
+  }
+
+  if (*a == 0 && *b == 0)
+  {
+    return False;
+  }
+
+  buffer[index++] = *a;
+  buffer[index++] = *b;
+
+  return loosely_interleaved_helper(a + 1, b + 1, c, buffer);
+}
+
+void loosely_interleaved_test()
+{
+  boolean x = loosely_interleaved ( "dne", "ail", "daniel");
+  printf(" \t [%d] \n", x);
+}
+
+struct str_llist *all_loosely_interleaved(const char *a, const char *b)
+{
+  char *data_a = (char *) malloc(string_len(a));
+  char *data_b = (char *) malloc(string_len(b));
+  char *data = (char *) malloc(string_len(a) + string_len(b));
+  char *data_reverse = (char *) malloc(string_len(a) + string_len(b));
+
+  struct str_llist *llist = NULL;
+  all_loosely_interleaved_helper(a, b, "",  &llist);
+
+  /* edge case interleave base data [a][b]  and reverse  [b][a]*/
+
+  strcat(data,a);
+  strcat(data,b);
+
+  strcat(data_reverse,b);
+  strcat(data_reverse,a);
+
+  all_loosely_interleaved_helper_insert_interleave_data(data_reverse, &llist);
+  all_loosely_interleaved_helper_insert_interleave_data(data, &llist);
+
+  return llist;
+}
+
+void all_loosely_interleaved_helper_clone(char *dest, char *src, int length)
+{
+    char *  clone = (char *)  malloc(length);
+    memcpy(dest,  src, length);
+}
+
+void all_loosely_interleaved_helper_insert_interleave_data(char *data, struct str_llist **llist)
+{
+  struct str_llist *llistElement =  (struct str_llist*) malloc(sizeof(struct str_llist));
+  llistElement->data = data;
+  llistElement->next = NULL;
+
+  if (*llist == NULL)
+  {
+    *llist = llistElement;
+  }
+  else
+  {
+    llistElement->next =  *llist;
+    *llist = llistElement;
+  }
+
+}
+
+void all_loosely_interleaved_helper ( const char *a, const char *b, char * buffer , struct str_llist **llist)
+{
+  char *clone_a, *clone_b;
+  int buffer_wr = string_len(buffer);
+  int length_a  = string_len(a);
+  int length_b = string_len(b);
+  char *clone_buffer;
+
+
+  if (*a == 0 && *b == 0)
+  {
+    all_loosely_interleaved_helper_insert_interleave_data(buffer, llist);
+    return;
+  }
+
+
+  if (length_a == length_b)
+  {
+    /* BRANCH A */
+    all_loosely_interleaved_helper_branch_search(a, length_a, b, buffer, buffer_wr, llist);
+
+
+    /* BRANCH B */
+
+    all_loosely_interleaved_helper_branch_search(b, length_b, a, buffer, buffer_wr, llist);
+
+  }
+
+  else if (length_a > length_b)
+  {
+    /* BRANCH A */
+    all_loosely_interleaved_helper_branch_search(a, length_a, b, buffer, buffer_wr, llist);
+  }
+
+  else if (length_b > length_a)
+  {
+    /* BRANCH B */
+
+    all_loosely_interleaved_helper_branch_search(b, length_b, a, buffer, buffer_wr, llist);
+  }
+
+}
+
+
+void all_loosely_interleaved_helper_branch_search(char *a, int a_len,  char *b, char *buffer, int buffer_len , struct str_llist **llist)
+{
+
+  char *clone_a, *clone_buffer;
+
+  /*branch data A */
+    clone_a = (char *)  malloc(a_len - 1);
+    all_loosely_interleaved_helper_clone(clone_a, a + 1, a_len - 1);
+
+    clone_buffer = (char *) malloc(buffer_len + 1);
+    all_loosely_interleaved_helper_clone(clone_buffer, buffer, buffer_len);
+    clone_buffer[buffer_len] = *a;
+
+    all_loosely_interleaved_helper(clone_a, b, clone_buffer, llist);
+}
+
+void all_loosely_interleaved_test()
+{
+ struct str_llist *llist =  all_loosely_interleaved ( "ab" , "yz");
+ struct str_llist *runner = llist;
+
+ while (runner)
+ {
+   printf( "[%s] \n", runner->data);
+   runner = runner->next;
+ }
+}
+
 int main()
 {
-  best_single_buy_sell_second_test();
-
+  all_loosely_interleaved_test();
 }
 

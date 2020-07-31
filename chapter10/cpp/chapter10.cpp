@@ -894,8 +894,35 @@ void bestSingleBuySell_2_test()
   std::cout << maximal_proift << '\n';
 }
 
+bool stringLooselyInterleaved(std::string a, std::string b, std::string c, std::string buffer)
+{
+  if (a.empty() ^ b.empty() )
+  {
+    return false;
+  }
+
+  if (buffer == c)
+  {
+    return true;
+  }
+
+  if ( a.empty() && b.empty())
+  {
+    return false;
+  }
+
+  return stringLooselyInterleaved(a.substr(1), b.substr(1), c, buffer + a[0] + b[0]);
+
+}
+
+void stringLooselyInterleavedTest()
+{
+  std::cout << stringLooselyInterleaved ( "dne", "ail", "daniel")  << '\n';  // true
+
+  std::cout << stringLooselyInterleaved(  "dne","ail","ddaanneeiill" )  << '\n'; // false
+}
 
 int main()
 {
-  bestSingleBuySell_2_test();
+  stringLooselyInterleavedTest();
 }

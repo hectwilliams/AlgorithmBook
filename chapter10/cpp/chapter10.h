@@ -46,3 +46,5 @@ bool perfectPangram (std::string str);
 void bestSingleBuySell (int &value, std::vector<int> collection, std::vector<int> buffer = std::vector<int>() );
 
 void bestSingleBuySell_2(int &value,   std::vector< std::vector<int> >  &buffer_list , std::vector<int> collection, std::vector<int> buffer =  std::vector<int>() );
+
+bool stringLooselyInterleaved(std::string a, std::string b, std::string c, std::string buffer = "");

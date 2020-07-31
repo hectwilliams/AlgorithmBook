@@ -74,3 +74,19 @@ void best_single_buy_sell_helper  (int *array, int array_size, int *buffer, int 
 
 int best_single_buy_sell_second (int *array, int size);
 void best_single_buy_sell_helper_second  (int *array, int array_size, int *buffer, int buffer_size, int *data);
+
+
+boolean loosely_interleaved(const char * a, const char *b , const char *c);
+boolean loosely_interleaved_helper(const char * a, const char *b, const char *c, char *buffer);
+
+
+struct str_llist {
+  char *data;
+  struct str_llist *next;
+};
+
+struct str_llist *all_loosely_interleaved(const char *a, const char *b);
+void all_loosely_interleaved_helper (const char *a, const char *b, char * buffer, struct str_llist **llist );
+void all_loosely_interleaved_helper_clone(char *dest, char *src, int length);
+void all_loosely_interleaved_helper_branch_search(char *a, int a_len,  char *b, char *buffer, int buffer_len, struct str_llist **llist);
+void all_loosely_interleaved_helper_insert_interleave_data(char *data, struct str_llist **llist);

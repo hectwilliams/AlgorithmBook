@@ -507,7 +507,6 @@ def best_single_buy_sell_third_helper(collection, buffer_list, buffer = []):
       buffer_list.append(buffer)
     return best_single_buy_sell_third_helper(collection [1  : :  ] , buffer_list, [] )
 
-
 def best_single_buy_sell_third_k_max(buysellArray):
   acc = 0
   buy = 0
@@ -551,4 +550,51 @@ def best_single_buy_sell_third_test():
   x  = best_single_buy_sell_third(price_list,2)
   print(x)
 
-best_single_buy_sell_third_test()
+def strings_loosely_interleaved(str1, str2, str3, buffer = ""):
+
+  if bool(str1) ^ bool(str2):
+    return False
+
+  if buffer == str3:
+    return True
+
+  if not str1 and not str2:
+    return False
+
+  return strings_loosely_interleaved(str1[1 : : ], str2[1 : :] , str3, buffer + str1[0] + str2[0])
+
+
+def strings_loosely_interleaved_test():
+  boolean = strings_loosely_interleaved( "dne", "ail", "daniel")
+  print(boolean)
+
+  boolean = strings_loosely_interleaved(  "dne","ail","ddaanneeiill" )
+  print(boolean)
+
+def all_loosely_interleaved (collection, str1, str2, buffer = ""):
+  if (not str1 and not str2):
+    collection.append(buffer)
+    return
+
+  if len(str1) == len(str2):
+    all_loosely_interleaved(collection, str1[1: :], str2, buffer + str1[0])
+    all_loosely_interleaved(collection, str1, str2[1: :], buffer + str2[0])
+
+  if (len(str1) > len(str2)):
+    all_loosely_interleaved(collection, str1[1: :], str2 , buffer + str1[0] )
+
+  if (len(str2) > len(str1)):
+    all_loosely_interleaved(collection, str1, str2[1: :] , buffer + str2[0] )
+
+def all_loosely_interleaved_test():
+  a = "ab"
+  b = "yz"
+  collection = []
+
+  collection.append(a+b)
+  collection.append(b+a)
+
+  all_loosely_interleaved(collection, a, b)
+  print(collection)
+
+all_loosely_interleaved_test()
