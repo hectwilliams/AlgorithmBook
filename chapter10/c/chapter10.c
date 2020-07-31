@@ -1484,7 +1484,6 @@ int make_string_palindrome_remove_helper(const char *string, int exclude_index)
   {
     return make_string_palindrome_remove_helper(string, exclude_index + 1);
   }
-
 }
 
 void make_string_palindrome_remove_test()
@@ -1493,8 +1492,93 @@ void make_string_palindrome_remove_test()
   printf(" [%d] \n", answer);
 }
 
+char * encode_string(const char *str)
+{
+  static int reset = 0;
+  static int count = 0;
+  static char data[25] = "";
+  static int data_wr_pos = 0;
+
+  if (reset == 1)
+  {
+    /* reset data array */
+    for (int i = 0; i < 25; i++)
+    {
+      data[i] = '\0';
+    }
+  }
+
+  if (*str == 0)
+  {
+    reset = 1;
+    return data;
+  }
+
+  count++;
+
+  if ( str[1] == 0 || str[0] != str[1] )
+  {
+    data[data_wr_pos++] = *str;
+    data[data_wr_pos++] = (char) (48 + count);
+    count = 0;
+  }
+
+  return encode_string(str + 1);
+}
+
+void encode_string_test()
+{
+  const char * msg = "aaaabbcddd";
+  char * data = encode_string(msg);
+
+  printf(" [%s] \n " , data);
+}
+
+
+char * string_decode(const char *str)
+{
+  static char buffer[25] = "";
+  static reset = 0;
+  char c;
+  int count = 0 ;
+  static int index = 0;
+
+  if (reset == 1)
+  {
+    for (int i = 0; buffer[i] != 0; i++ )
+    {
+      buffer[i] = 0;
+    }
+    reset = 0;
+    index = 0;
+  }
+
+  if (*str == 0)
+  {
+    reset = 1;
+    return buffer;
+  }
+
+  c = str[0];
+  count = str[1] - 48;
+  while (count--)
+  {
+    buffer[index++] = c;
+  }
+  return string_decode(str + 2);
+}
+
+void string_decode_test ()
+{
+  const char * msg = "a4b2c1d3";
+
+  char * solution = string_decode(msg);
+  printf(" \t [%s] \n" , solution);
+}
+
+
 int main()
 {
-  make_string_palindrome_remove_test();
+  string_decode_test();
 }
 

@@ -52,3 +52,7 @@ bool stringLooselyInterleaved(std::string a, std::string b, std::string c, std::
 int makePalindromeRemove(std::string str, int index = -1);
 
 char makePalindromeAdd( std::string str, int index = 0);
+
+std::string encodeString (std::string str, std::string buffer ="", int count = 0, char active_char = ' ');
+
+std::string decodeString(std::string str, std::string buffer = "");

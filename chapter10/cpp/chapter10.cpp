@@ -1003,13 +1003,58 @@ char makePalindromeAdd( std::string str, int index)
   return makePalindromeAdd(str, index + 1);
 }
 
-
 void makePalindromeAddTest ()
 {
-
-  std::cout << "-->  " << makePalindromeAdd("tutu") << '\n';
+  std::cout << " -->  " << makePalindromeAdd("tutu") << '\n';
 }
+
+std::string encodeString (std::string str, std::string buffer, int count, char active_char)
+{
+  if (str.size() == 0)
+  {
+    if (active_char != ' ') /* end of sequence  */
+    {
+      buffer += active_char + std::to_string(count);
+    }
+    return buffer;
+  }
+
+  if (str[0] != active_char && active_char != ' ') /* discontinuity */
+  {
+   return encodeString(str.substr(1), buffer + active_char +  std::to_string(count), 1, str[0]);
+  }
+
+  return encodeString(str.substr(1) , buffer, count + 1, str[0]);
+}
+
+void encodeStringTest()
+{
+  std::string msg = "aaaabbcddd";
+  std::string solution = encodeString(msg);
+  std::cout << "\t" << solution << '\n';
+}
+
+std::string decodeString(std::string str, std::string buffer)
+{
+  std::string data;
+
+  if (str.size() == 0)
+  {
+    return buffer;
+  }
+
+  return decodeString(str.substr(2) , buffer + std::string(  str[1] -48 , str[0])  );
+}
+
+
+void decodeStringTest()
+{
+  std::string data = "a4b2c1d3";
+  std::string solution  = decodeString(data);
+  std::cout << solution << '\n';
+}
+
 int main()
 {
-  makePalindromeAddTest();
+  decodeStringTest();
 }

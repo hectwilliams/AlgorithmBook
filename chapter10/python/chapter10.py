@@ -648,4 +648,32 @@ def make_palindrome_test():
   solution = make_palindrome_remove(inputData)
   print(solution)
 
-make_palindrome_add_test()
+def encode_string (string, buffer = "", count = 0, active_char= ' '):
+  if not string:
+    if active_char != ' ':
+      buffer += active_char + str(count)
+    return buffer
+
+  if string[0] != active_char and active_char != ' ':
+    return encode_string(string[1 : :] , buffer + active_char + str(count), 1, string[0])
+
+  return encode_string(string[1 : :], buffer, count + 1, string[0])
+
+def encode_string_test():
+  msg = "aaaabbcddd"
+  solution =  encode_string(msg)
+  print(solution)
+  return solution
+
+def decode_string (string, buffer = "") :
+  if not string:
+    return buffer
+
+  return decode_string(  string[2 : :] , buffer + string[0]  * int(string[1])  )
+
+def decode_string_test ():
+  msg = "a4b2c1d3"
+  solution = decode_string(msg)
+  print(solution)
+
+decode_string_test()
