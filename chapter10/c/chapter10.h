@@ -93,3 +93,6 @@ void all_loosely_interleaved_helper_insert_interleave_data(char *data, struct st
 
 int make_string_palindrome_remove(const char * string);
 int make_string_palindrome_remove_helper(const char *string, int exclude_index);
+
+char * shortener_string(  char * str, int length);
+void shortener_string_remove_char(char *str);

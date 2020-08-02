@@ -56,3 +56,5 @@ char makePalindromeAdd( std::string str, int index = 0);
 std::string encodeString (std::string str, std::string buffer ="", int count = 0, char active_char = ' ');
 
 std::string decodeString(std::string str, std::string buffer = "");
+
+std::string shortenerString(std::string &str, const  int &expected_length, int mode = 0 );

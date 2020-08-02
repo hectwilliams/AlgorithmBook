@@ -1054,7 +1054,106 @@ void decodeStringTest()
   std::cout << solution << '\n';
 }
 
+
+std::string shortenerString(std::string &str, const int &expectedLength , int mode )
+{
+
+  int index = 0;
+  if (str.size() == expectedLength || mode > 4)
+  {
+    return str;
+  }
+
+  while (str.size() < expectedLength && mode == 0)
+  {
+    if (str.size() < expectedLength )
+    {
+      str = ' ' + str;
+    }
+
+    if (str.size() < expectedLength)
+    {
+      str =  str + ' ';
+    }
+  }
+
+  index =  str.size() ;
+
+  if (mode == 1)
+  {
+    while (index >=0 && str.size() != expectedLength)
+    {
+      if (str[index] == ' ')
+      {
+        str[index + 1] = std::toupper(str[index + 1]);
+        str.erase(index, 1);
+      }
+      index--;
+    }
+  }
+
+  if (mode == 2)
+  {
+    while (index >=0 && str.size() != expectedLength)
+    {
+      if ( std::string("':\",-!()?.;").find(str[index]) != std::string::npos )
+      {
+        str.erase(index, 1);
+      }
+      index--;
+    }
+  }
+
+  if (mode == 3)
+  {
+    /* first erase vowels */
+    while (index >=0 && str.size() != expectedLength)
+    {
+      if ( std::string("aeiou") .find(str[index]) != std::string::npos )
+      {
+        str.erase(index, 1);
+      }
+      index--;
+    }
+
+    index = str.size() - 1;
+       /* first erase vowels */
+    while (index >=0 && str.size() != expectedLength)
+    {
+      if ( std::islower(str[index]))
+      {
+        str.erase(index, 1);
+      }
+      index--;
+    }
+
+  }
+
+  if (mode == 4)
+  {
+    /* first erase vowels */
+    while (index >=0 && str.size() != expectedLength)
+    {
+      if ( std::isupper(str[index]))
+      {
+        str.erase(index, 1);
+      }
+      index--;
+    }
+  }
+
+  return shortenerString(str, expectedLength, mode + 1);
+}
+
+void shortenerStringTest()
+{
+  std::string msg = "It's a wonderful life, Beth! ";
+
+  std::cout << msg << '\n';
+  std::cout << shortenerString(msg, 3) << '\n';
+}
+
 int main()
 {
-  decodeStringTest();
+  shortenerStringTest();
 }

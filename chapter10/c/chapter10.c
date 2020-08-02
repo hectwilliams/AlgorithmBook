@@ -1576,9 +1576,171 @@ void string_decode_test ()
   printf(" \t [%s] \n" , solution);
 }
 
+void shortener_string_remove_char(char *str)
+{
+  int len = string_len(str);
+
+  memmove(str, str + 1, len - 1);
+  memset(str + len - 1 , 0, 1 );
+}
+
+char * shortener_string(  char * str, int length)
+{
+  static int state = 0;
+  int len = string_len(str) ;
+  char * buffer = (char *) malloc(sizeof(char) * 50 ) ;
+  char *ptr;
+
+
+  if (len == length)
+  {
+    return str;
+
+  }
+
+  memcpy(buffer, str,len );
+
+  switch (state)
+  {
+    case 0:
+      ptr = buffer;
+
+      if (length > len)
+      {
+
+        while (len != length)
+        {
+          if (length != string_len(buffer) )
+          {
+            memmove(buffer + 1, buffer, string_len(buffer));
+            memset(buffer, 32 , 1);
+          }
+
+          if (length != string_len(buffer))
+          {
+            memset(buffer + string_len(buffer), 32, 1);
+          }
+          len = string_len(buffer);
+        }
+      }
+      else
+      {
+        while (len > length &&   ( *ptr == ' ' || *(ptr + len - 1) == ' ' )  )
+        {
+          if (*ptr == ' ')
+          {
+            shortener_string_remove_char(ptr);
+          }
+          else if ( *(ptr + len - 1) == ' ' )
+          {
+            shortener_string_remove_char(ptr + len - 1) ;
+          }
+          else
+          {
+            ptr++;
+          }
+          len = string_len(buffer);
+        }
+
+        ++state;
+        return shortener_string(buffer, length);
+      }
+
+    case 1:
+      ptr = buffer + len - 1;
+
+      while (len > length && ptr > buffer)
+      {
+        if (*(ptr - 1) == ' ' && *ptr != ' ')
+        {
+          *ptr = toupper(*ptr);
+          shortener_string_remove_char(ptr - 1);
+        }
+        ptr--;
+
+        len  = string_len(buffer);
+      }
+
+      ++state;
+      return shortener_string(buffer, length);
+
+    case 2:
+      ptr = buffer + len - 1;
+
+      while (len > length && ptr > buffer)
+      {
+        if (*ptr == ',' || *ptr == '\'' || *ptr == '!' || *ptr == '.' || *ptr == '-' || *ptr == '\"' || *ptr == ':' || *ptr == ';'  )
+        {
+          shortener_string_remove_char(ptr);
+        }
+        ptr--;
+        len = string_len(buffer);
+      }
+      ++state;
+
+      return shortener_string(buffer, length);
+
+    case 3:
+      ptr = buffer + len ;
+
+      /* lower vowels first */
+      while (len > length && ptr > buffer)
+      {
+        if ( *ptr == 'a' || *ptr == 'e' || *ptr == 'i' || *ptr == 'o' || *ptr == 'u')
+        {
+          shortener_string_remove_char(ptr);
+        }
+        ptr--;
+        len = string_len(buffer);
+      }
+
+      ptr = buffer + string_len(buffer);
+
+      /* others lower case values removed */
+
+      while (len > length && ptr > buffer)
+      {
+        if (islower(*ptr))
+        {
+          shortener_string_remove_char(ptr);
+        }
+        ptr--;
+        len = string_len(buffer);
+      }
+      ++state;
+      return shortener_string(buffer, length);
+
+    case 4:
+
+      ptr = buffer + len;
+      while (len > length && ptr > buffer)
+      {
+        if (isupper(*ptr))
+        {
+          shortener_string_remove_char(ptr);
+        }
+        ptr--;
+        len = string_len(buffer);
+      }
+      ++state;
+      return shortener_string(buffer, length);
+  }
+  return buffer;
+
+}
+
+void shortener_string_test()
+{
+
+  const char * msg = "It's a wonderful life, Beth! ";
+  char * data = shortener_string(msg, 3);
+
+  printf("[%s] \n", data);
+
+}
 
 int main()
 {
-  string_decode_test();
+  shortener_string_test();
 }
 

@@ -676,4 +676,69 @@ def decode_string_test ():
   solution = decode_string(msg)
   print(solution)
 
-decode_string_test()
+def shortner_string(string, expectedLength, mode = 0):
+  index = None
+
+  if len(string) == expectedLength :
+    return string
+
+  if mode == 0:
+    if (expectedLength > len(string)):
+      while len(string) < expectedLength:
+        string = ' ' + string
+        if  len(string) < expectedLength:
+          string += ' '
+    else:
+      while string[0] == ' ':
+        string = string [1 : :]
+
+      while string[-1] == ' ':
+        string = string[0 : len(string)  - 1]
+
+  index = len(string) - 1
+
+  if mode == 1:
+
+    while index >=0:
+      if string[index] == ' ':
+        string = string[0 : index] + string[index] + string[index + 1].upper() + string[index + 2 : :]
+      index = index - 1
+
+    index = len(string) - 1
+    while index >=0 and len(string) != expectedLength:
+      if string[index] == ' ':
+        string = string[0 : index] + string[index + 1].upper() + string[index + 2 : :]
+      index = index - 1
+
+  if mode == 2:
+    while index>=0 and len(string) != expectedLength:
+      if string[index] in "':\",-!()?.;":
+        string = string[0 : index] + string[index + 1: : ]
+      index -= 1
+
+  if mode == 3:
+
+    while index >=0 and len(string) != expectedLength:
+      if string[index] in "aeiou":
+        string = string[0 : index]  + string[index + 1 : :]
+      index = index - 1
+
+    index = len(string) - 1
+    while index >=0 and len(string) != expectedLength:
+      if string[index].islower():
+        string = string[0 : index]  + string[index + 1 : :]
+      index = index - 1
+
+  if mode == 4:
+    while index >= 0 and len(string) != expectedLength:
+      if string[index].isupper():
+        string = string[0 : index] + string[index + 1 : :]
+      index = index - 1
+  return shortner_string(string, expectedLength, mode + 1)
+
+def shortner_string_test():
+  msg = "It's a wonderful life, Beth! "
+  solution = shortner_string(msg, 3)
+  print(solution)
+
+shortner_string_test()
