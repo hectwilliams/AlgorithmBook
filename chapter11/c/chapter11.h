@@ -40,11 +40,11 @@ struct BST *BST_array_to_bst (int *array, int size);
 int BST_common_ancestor(struct BST **tree, int val_a, int val_b);
 int BST_common_ancestor_helper( struct BTNode *node, int val_a, int val_b);
 
-/*
-      1 2 3 4
+void BST_traverse_pre_order(struct BST **tree);
+void BST_traverse_pre_order_helper(struct BTNode *node);
 
+void BST_traverse_post_order(struct BST **tree);
+void BST_traverse_post_order_helper(struct BTNode *node);
 
-      3
-     2 4
-    1   5
-*/
+void BST_traverse_in_order(struct BST **tree);
+void BST_traverse_in_order_helper(struct BTNode *node);

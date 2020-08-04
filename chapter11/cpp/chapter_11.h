@@ -43,6 +43,8 @@ class BST
   bool  is_balanced (BTNode *node = NULL , BTNode *prev = NULL );
   static BST array_to_bst (const std::vector<int> &collection );
   int common_ancestor(int a, int b, BTNode *node = NULL);
+  void preOrder(BTNode *node = NULL);
+  void postOrder(BTNode *node = NULL);
 };
 
 BTNode *btnodeAllocate(int value);

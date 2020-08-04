@@ -164,6 +164,45 @@ class BST:
 
     return node.value
 
+  def preOrder(self, node = None):
+
+    if node == None:
+      node = self.root
+
+
+    if node:
+      print( "[" + str(node.value) + "]" ,   end ='')
+      if node.left:
+        self.preOrder(node.left)
+      if node.right:
+        self.preOrder(node.right)
+
+
+  def postOrder(self, node = None):
+
+    if node == None:
+      node = self.root
+
+    if node:
+      if node.left:
+        self.preOrder(node.left)
+      if node.right:
+        self.preOrder(node.right)
+      print( "[" + str(node.value) + "]" ,   end ='')
+
+  def inOrder(self, node = None):
+
+    if node == None:
+      node = self.root
+
+    if node:
+      if node.left:
+        self.preOrder(node.left)
+      print( "[" + str(node.value) + "]" ,   end ='')
+      if node.right:
+        self.preOrder(node.right)
+
+
 # TESTS
 
 def bst_min_test():
@@ -235,7 +274,17 @@ def common_ancestor_test():
   tree.add(0)
   sol = tree.common_ancestor(1,0)
   print("common ancestor " + str(sol))
-common_ancestor_test()
+
+def preOrder_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+  tree.preOrder()
+  print()
+preOrder_test()
 
 
 

@@ -392,7 +392,7 @@ int BST_common_ancestor_helper( struct BTNode *node, int val_a, int val_b)
 
   if (val_a < node->value && val_b < node->value && node->left)
   {
-    if (node->left->value != val_a && node->left->value != val_b) 
+    if (node->left->value != val_a && node->left->value != val_b)
     {
       return BST_common_ancestor_helper(node->left, val_a, val_b);
     }
@@ -406,8 +406,6 @@ int BST_common_ancestor_helper( struct BTNode *node, int val_a, int val_b)
   }
 
   return node->value;
-
-
 }
 
 void BST_common_ancestor_test()
@@ -422,8 +420,117 @@ void BST_common_ancestor_test()
   printf("common node  %d\n", commonVal);
 }
 
+void BST_traverse_pre_order(struct BST **tree)
+{
+  BST_traverse_pre_order_helper((*tree)->root);
+}
+
+void BST_traverse_pre_order_helper(struct BTNode *node)
+{
+  if (node)
+  {
+    printf("[%d]", node->value);
+  }
+
+  if (node->left)
+  {
+    BST_traverse_pre_order_helper(node->left);
+  }
+
+  if (node->right)
+  {
+    BST_traverse_pre_order_helper(node->right);
+  }
+}
+
+void BST_traverse_pre_order_test()
+{
+ struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  BST_traverse_pre_order(&tree);
+  printf("\n");
+}
+
+
+void BST_traverse_post_order(struct BST **tree)
+{
+  BST_traverse_post_order_helper((*tree)->root);
+}
+
+void BST_traverse_post_order_helper(struct BTNode *node)
+{
+  if (node->left)
+  {
+    BST_traverse_post_order_helper(node->left);
+  }
+
+  if (node->right)
+  {
+    BST_traverse_post_order_helper(node->right);
+  }
+
+  if (node)
+  {
+    printf("[%d]", node->value);
+  }
+}
+
+void BST_traverse_post_order_test()
+{
+ struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  BST_traverse_post_order(&tree);
+  printf("\n");
+}
+
+
+
+void BST_traverse_in_order(struct BST **tree)
+{
+  BST_traverse_in_order_helper((*tree)->root);
+}
+
+void BST_traverse_in_order_helper(struct BTNode *node)
+{
+  if (node->left)
+  {
+    BST_traverse_in_order_helper(node->left);
+  }
+
+  if (node)
+  {
+    printf("[%d]", node->value);
+  }
+
+  if (node->right)
+  {
+    BST_traverse_in_order_helper(node->right);
+  }
+}
+
+void BST_traverse_in_order_test()
+{
+ struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  BST_traverse_in_order(&tree);
+  printf("\n");
+}
+
+
 int main()
 {
-  BST_common_ancestor_test();
+  BST_traverse_post_order_test();
 }
 

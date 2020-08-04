@@ -380,8 +380,95 @@ void common_ancestor_test()
 
   std::cout << tree.common_ancestor(1,0) << '\n';
 }
-int main()
 
+void BST::preOrder(BTNode *node)
 {
-  common_ancestor_test();
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    printf("[%d]", node->value);
+
+    if (node->left)
+    {
+      preOrder(node->left);
+    }
+
+    if (node->right)
+    {
+      preOrder(node->right);
+    }
+  }
+}
+
+void preOrderTest()
+{
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+  tree.preOrder();
+  printf("\n");
+}
+
+void BST::postOrder(BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+
+    if (node->left)
+    {
+      postOrder(node->left);
+    }
+
+    if (node->right)
+    {
+      postOrder(node->right);
+    }
+
+    printf("[%d]", node->value);
+
+  }
+}
+
+
+void BST::inOrder(BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+
+    if (node->left)
+    {
+      postOrder(node->left);
+    }
+
+    printf("[%d]", node->value);
+
+    if (node->right)
+    {
+      postOrder(node->right);
+    }
+
+
+  }
+}
+
+int main()
+{
+
 }
