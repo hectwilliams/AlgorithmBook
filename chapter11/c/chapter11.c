@@ -247,8 +247,63 @@ void BST_is_empty_test()
 
 }
 
-int main()
+unsigned BST_height_node(struct BTNode *node)
 {
-  BST_is_empty_test();
+  unsigned height_left = 0;
+  unsigned height_right = 0;
+
+  if (node)
+  {
+    if (node->left)
+    {
+      height_left = 1 + BST_height_node(node->left);
+    }
+    if (node->right)
+    {
+      height_right =  1 + BST_height_node(node->right);
+    }
+  }
+
+  if (height_left == height_right)
+  {
+    return height_right;
+  }
+  if (height_right > height_left)
+  {
+    return height_right;
+  }
+  else
+  {
+    return height_left;
+  }
+
+}
+
+int BST_height(struct BST **tree)
+{
+  if (*tree)
+  {
+    return BST_height_node((*tree)->root);
+  }
+  return -1;
+}
+
+void BST_height_test()
+{
+  struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+
+  int h = BST_height(&tree);
+  printf("height [%d]\n", h);
+}
+
+int main()
+
+{
+  BST_height_test();
 }
 

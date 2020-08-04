@@ -29,3 +29,6 @@ struct TreeNodeData BST_min(struct BTNode *node);
 struct TreeNodeData BST_min(struct BTNode *node);
 int BST_size(struct BTNode *node);
 int BST_is_empty(struct BST **tree);
+
+int BST_height(struct BST **tree);
+unsigned BST_height_node(struct BTNode *node);

@@ -97,6 +97,28 @@ class BST:
   def empty(self):
     return self.root == None
 
+  def height(self, node = None) :
+    left = 0
+    right = 0
+
+    if node == None:
+      node = self.root
+
+    if node:
+      if node.left:
+        left += 1 + self.height(node.left)
+      if node.right:
+        right += 1 + self.height(node.right)
+
+    if left == right:
+      return left
+
+    if left > right:
+      return left
+    else:
+      return right
+
+
 # TESTS
 
 def bst_min_test():
@@ -138,5 +160,13 @@ def bst_empty_test():
   empty_tree = BST()
   print(empty_tree.empty())
 
+def bst_height_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(1)
+  tree.add(0)
 
-bst_empty_test()
+  print("height", tree.height())
+
+bst_height_test()

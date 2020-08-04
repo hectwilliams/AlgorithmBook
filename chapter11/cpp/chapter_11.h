@@ -39,6 +39,7 @@ class BST
   struct nodeData max(BTNode *node = NULL);
   unsigned size(BTNode *node = NULL);
   bool empty();
+  unsigned height(BTNode *node = NULL);
 };
 
 BTNode *btnodeAllocate(int value);

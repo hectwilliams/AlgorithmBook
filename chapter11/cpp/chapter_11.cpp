@@ -219,10 +219,56 @@ void bstemptyTest()
 
   BST empty_tree;
   std::cout << empty_tree.empty() << '\n';
+}
 
+unsigned BST::height(BTNode *node)
+{
+  unsigned height_left = 0, height_right = 0;
+
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      height_left += 1 +height(node->left);
+    }
+
+    if (node->right)
+    {
+      height_right = 1 + height(node->right);
+    }
+  }
+
+  if (height_left == height_right)
+  {
+    return height_right;
+  }
+
+  if (height_left > height_right)
+  {
+    return height_left;
+  }
+  else
+  {
+    return height_right;
+  }
+}
+
+unsigned heightTest ()
+{
+  BST tree;
+  tree.add(5);
+  tree.add(6);
+  tree.add(32);
+  tree.add(1);
+  std::cout << tree.height() << '\n';
 }
 
 int main()
 {
-  bstemptyTest();
+  heightTest();
 }
