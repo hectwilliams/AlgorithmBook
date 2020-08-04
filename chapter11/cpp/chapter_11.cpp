@@ -268,6 +268,43 @@ unsigned heightTest ()
   std::cout << tree.height() << '\n';
 }
 
+  bool BST::is_balanced (BTNode *node , BTNode *prev )
+  {
+    int l, r;
+
+    l = r = 0;
+
+    if (prev == NULL)
+    {
+      node = root;
+    }
+
+    if (node == NULL)
+    {
+      return 1;
+    }
+
+    if (node)
+    {
+      l = height(node->left);
+      r = height(node->right);
+      return std::abs(l - r) <= 1 && is_balanced(node->left, node) && is_balanced(node->right, node);
+    }
+
+  }
+
+  unsigned isBalancedTest ()
+{
+  BST tree;
+  tree.add(5);
+  tree.add(6);
+  tree.add(32);
+  tree.add(1);
+  std::cout << tree.is_balanced() << '\n';
+}
+
+
+
 int main()
 {
   heightTest();

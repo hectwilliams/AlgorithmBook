@@ -40,6 +40,8 @@ class BST
   unsigned size(BTNode *node = NULL);
   bool empty();
   unsigned height(BTNode *node = NULL);
+  bool  is_balanced (BTNode *node = NULL , BTNode *prev = NULL );
+
 };
 
 BTNode *btnodeAllocate(int value);

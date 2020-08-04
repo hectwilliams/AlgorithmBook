@@ -118,6 +118,21 @@ class BST:
     else:
       return right
 
+  def bst_is_balanced(self, node = None, prev = None ):
+    left = 0
+    right = 0
+
+    if (prev == None and node == None):
+      node = self.root
+
+    if node == None:
+      return 1
+
+    if node:
+      left  = self.height(node.left)
+      right = self.height(node.right)
+      return abs(left - right) <= 1 and self.bst_is_balanced(node.left, node) and self.bst_is_balanced(node.right, node)
+
 
 # TESTS
 
@@ -169,4 +184,14 @@ def bst_height_test():
 
   print("height", tree.height())
 
-bst_height_test()
+def bst_is_balanced_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(1)
+
+  print("is balanced", tree.bst_is_balanced())
+
+
+
+bst_is_balanced_test()

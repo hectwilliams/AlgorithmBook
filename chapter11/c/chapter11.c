@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "chapter11.h"
+#include  <math.h>
 
 struct BTNode * btnode_alloc(int value)
 {
@@ -301,9 +302,51 @@ void BST_height_test()
   printf("height [%d]\n", h);
 }
 
-int main()
-
+int BST_is_balanced_helper(struct BTNode *node)
 {
-  BST_height_test();
+  int left = 0;
+  int right = 0;
+
+  if (node == NULL)
+  {
+    return 1;
+  }
+
+  if (node)
+  {
+    left  = BST_height_node(node->left);
+    right  = BST_height_node(node->right);
+    return (
+      abs(left - right) <= 1) && BST_is_balanced_helper(node->left) && BST_is_balanced_helper(node->right);
+  }
+
+}
+
+int BST_is_balanced(struct BST **tree)
+{
+  if (*tree)
+  {
+    return BST_is_balanced_helper ((*tree)->root );
+  }
+  return -1;
+}
+
+void BST_is_balanced_test()
+{
+
+ struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  printf("is balanaced   %d\n", BST_is_balanced(&tree));
+}
+
+
+
+int main()
+{
+  BST_is_balanced_test();
 }
 
