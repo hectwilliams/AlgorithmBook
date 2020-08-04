@@ -150,6 +150,20 @@ class BST:
         break
     return tree
 
+  def common_ancestor(self, a,b, node = None):
+    if node == None:
+      node = self.root
+
+    if a < node.value and b < node.value and node.left:
+      if node.left.value != a and node.right.value != b:
+        return self.common_ancestor(a,b, node.left)
+
+    if a > node.value and b > node.value  and node.right:
+      if node.left.value != a and node.right.value != b:
+        return self.common_ancestor(a,b, node.right)
+
+    return node.value
+
 # TESTS
 
 def bst_min_test():
@@ -212,4 +226,27 @@ def array_to_bst_test():
   tree = BST.array_to_bst([1,2,3,4,5])
   tree.display()
 
-array_to_bst_test()
+def common_ancestor_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+  sol = tree.common_ancestor(1,0)
+  print("common ancestor " + str(sol))
+common_ancestor_test()
+
+
+
+
+"""
+
+      5
+    / \
+    2   100
+  /      \
+  1        12
+ /
+0
+"""

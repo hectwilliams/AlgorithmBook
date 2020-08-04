@@ -343,9 +343,45 @@ void array_to_bst_test()
   tree.display();
 }
 
+  int BST::common_ancestor(int a, int b, BTNode *node)
+  {
+    if (node == NULL)
+    {
+      node = root;
+    }
 
+    if (a < node->value && b < node->value && node->left)
+    {
+      if (node->left->value != a && node->left->value != b)
+      {
+        return common_ancestor(a,b, node->left);
+      }
+    }
 
-int main()
+    if (a > node->value && b > node->value && node->right)
+    {
+      if (node->right->value != a && node->right->value != b)
+      {
+        return common_ancestor(a,b, node->right);
+      }
+    }
+
+    return node->value;
+  }
+
+void common_ancestor_test()
 {
-  array_to_bst_test();
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+
+  std::cout << tree.common_ancestor(1,0) << '\n';
+}
+int main()
+
+{
+  common_ancestor_test();
 }

@@ -37,6 +37,9 @@ int BST_is_balanced_helper(struct BTNode*node);
 
 struct BST *BST_array_to_bst (int *array, int size);
 
+int BST_common_ancestor(struct BST **tree, int val_a, int val_b);
+int BST_common_ancestor_helper( struct BTNode *node, int val_a, int val_b);
+
 /*
       1 2 3 4
 

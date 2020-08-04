@@ -374,18 +374,56 @@ void BST_array_to_bst_test()
   struct BST *tree = BST_array_to_bst(array, sizeof(array)/ sizeof(array[0]));
 
   printf("  [%d]  [%d]  [%d]  [%d]   [%d] \n",
-
-  tree->root->left->left->value,    // 1
-  tree->root->left->value,  // 2
-  tree->root->value,   // 3
-  tree->root->right->value,  // 4
-  tree->root->right->right->value  // 5
+    tree->root->left->left->value,    // 1
+    tree->root->left->value,  // 2
+    tree->root->value,   // 3
+    tree->root->right->value,  // 4
+    tree->root->right->right->value  // 5
   );
+}
 
+int BST_common_ancestor(struct BST **tree, int val_a, int val_b)
+{
+  return BST_common_ancestor_helper( (*tree)->root, val_a, val_b);
+}
+
+int BST_common_ancestor_helper( struct BTNode *node, int val_a, int val_b)
+{
+
+  if (val_a < node->value && val_b < node->value && node->left)
+  {
+    if (node->left->value != val_a && node->left->value != val_b) 
+    {
+      return BST_common_ancestor_helper(node->left, val_a, val_b);
+    }
+  }
+  else if (val_a > node->value && val_b > node->value && node->right)
+  {
+    if (node->right->value != val_a && node->right->value != val_b) /* right subtree cannot equate to values */
+    {
+      return BST_common_ancestor_helper(node->right, val_a, val_b);
+    }
+  }
+
+  return node->value;
+
+
+}
+
+void BST_common_ancestor_test()
+{
+  struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  int commonVal  = BST_common_ancestor(&tree, 1, 0);
+  printf("common node  %d\n", commonVal);
 }
 
 int main()
 {
-  BST_array_to_bst_test();
+  BST_common_ancestor_test();
 }
 
