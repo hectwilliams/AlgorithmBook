@@ -34,3 +34,14 @@ int BST_height(struct BST **tree);
 unsigned BST_height_node(struct BTNode *node);
 int BST_is_balanced(struct BST **tree);
 int BST_is_balanced_helper(struct BTNode*node);
+
+struct BST *BST_array_to_bst (int *array, int size);
+
+/*
+      1 2 3 4
+
+
+      3
+     2 4
+    1   5
+*/

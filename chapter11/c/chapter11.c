@@ -22,7 +22,7 @@ void BST_add_node(struct BTNode **node, int value)
 {
   struct BTNode *curr = *node;
 
-  if (*node == NULL)
+  if (curr == NULL)
   {
     *node = btnode_alloc(value);
     return;
@@ -58,14 +58,11 @@ void BST_add(struct BST **tree, int value)
 
   if (*tree == NULL)
   {
-    *tree = bts_alloc(value);
-    return BST_add_node( &(*tree)->root, value);
+    *tree = bts_alloc();
+    return BST_add_node( & (*tree)->root, value);
+  }
 
-  }
-  else if ((*tree)->root)
-  {
-    return BST_add_node( &(*tree)->root, value);
-  }
+  return BST_add_node( &(*tree)->root, value);
 }
 
 void display(struct BTNode *node)
@@ -333,7 +330,6 @@ int BST_is_balanced(struct BST **tree)
 
 void BST_is_balanced_test()
 {
-
  struct BST *tree = NULL;
   BST_add(&tree, 5);
   BST_add(&tree, 100);
@@ -343,10 +339,53 @@ void BST_is_balanced_test()
   printf("is balanaced   %d\n", BST_is_balanced(&tree));
 }
 
+struct BST *BST_array_to_bst (int *array, int size)
+{
+  struct BST *tree = bts_alloc();
+  int lpos, rpos;
 
+  lpos = size / 2;
+  rpos = lpos + 1;
+
+  while (1)
+  {
+
+    if (lpos >= 0)
+    {
+      BST_add(&tree, array[lpos--]);
+    }
+
+    if (rpos < size)
+    {
+      BST_add(&tree, array[rpos++]);
+    }
+
+    if (lpos < 0 && rpos >= size)
+    {
+      break;
+    }
+  }
+  return tree;
+}
+
+void BST_array_to_bst_test()
+{
+  int array[] = {1,2,3,4,5};
+  struct BST *tree = BST_array_to_bst(array, sizeof(array)/ sizeof(array[0]));
+
+  printf("  [%d]  [%d]  [%d]  [%d]   [%d] \n",
+
+  tree->root->left->left->value,    // 1
+  tree->root->left->value,  // 2
+  tree->root->value,   // 3
+  tree->root->right->value,  // 4
+  tree->root->right->right->value  // 5
+  );
+
+}
 
 int main()
 {
-  BST_is_balanced_test();
+  BST_array_to_bst_test();
 }
 

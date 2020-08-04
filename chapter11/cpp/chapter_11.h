@@ -41,7 +41,7 @@ class BST
   bool empty();
   unsigned height(BTNode *node = NULL);
   bool  is_balanced (BTNode *node = NULL , BTNode *prev = NULL );
-
+  static BST array_to_bst (const std::vector<int> &collection );
 };
 
 BTNode *btnodeAllocate(int value);

@@ -133,6 +133,22 @@ class BST:
       right = self.height(node.right)
       return abs(left - right) <= 1 and self.bst_is_balanced(node.left, node) and self.bst_is_balanced(node.right, node)
 
+  @staticmethod
+  def array_to_bst( collection):
+    tree = BST()
+    lpos = int( len(collection) / 2)
+    rpos = lpos + 1
+
+    while 1:
+      if lpos >= 0:
+        tree.add(collection[lpos])
+        lpos -= 1
+      if rpos < len(collection):
+        tree.add(collection[rpos])
+        rpos += 1
+      if lpos < 0 and rpos >= len(collection):
+        break
+    return tree
 
 # TESTS
 
@@ -192,6 +208,8 @@ def bst_is_balanced_test():
 
   print("is balanced", tree.bst_is_balanced())
 
+def array_to_bst_test():
+  tree = BST.array_to_bst([1,2,3,4,5])
+  tree.display()
 
-
-bst_is_balanced_test()
+array_to_bst_test()

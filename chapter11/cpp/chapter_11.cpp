@@ -268,32 +268,31 @@ unsigned heightTest ()
   std::cout << tree.height() << '\n';
 }
 
-  bool BST::is_balanced (BTNode *node , BTNode *prev )
+bool BST::is_balanced (BTNode *node , BTNode *prev )
+{
+  int l, r;
+
+  l = r = 0;
+
+  if (prev == NULL)
   {
-    int l, r;
-
-    l = r = 0;
-
-    if (prev == NULL)
-    {
-      node = root;
-    }
-
-    if (node == NULL)
-    {
-      return 1;
-    }
-
-    if (node)
-    {
-      l = height(node->left);
-      r = height(node->right);
-      return std::abs(l - r) <= 1 && is_balanced(node->left, node) && is_balanced(node->right, node);
-    }
-
+    node = root;
   }
 
-  unsigned isBalancedTest ()
+  if (node == NULL)
+  {
+    return 1;
+  }
+
+  if (node)
+  {
+    l = height(node->left);
+    r = height(node->right);
+    return std::abs(l - r) <= 1 && is_balanced(node->left, node) && is_balanced(node->right, node);
+  }
+}
+
+unsigned isBalancedTest ()
 {
   BST tree;
   tree.add(5);
@@ -303,9 +302,50 @@ unsigned heightTest ()
   std::cout << tree.is_balanced() << '\n';
 }
 
+BST BST::array_to_bst (const std::vector<int> &collection )
+{
+  BST tree;
+  int lpos, rpos;
+
+  lpos = collection.size() / 2;
+  rpos = lpos + 1;
+
+  while (1)
+  {
+
+    if (lpos >=0)
+    {
+      tree.add(collection[lpos--]);
+    }
+
+    if (rpos < collection.size())
+    {
+      tree.add(collection[rpos++]);
+    }
+
+    if (lpos < 0 && rpos >= collection.size())
+    {
+      break;
+    }
+  }
+  return tree;
+}
+
+void array_to_bst_test()
+{
+  std::vector<int> collection;
+  for (int i = 5; i--;)
+  {
+    collection.push_back(i);
+  }
+  BST tree = BST::array_to_bst(collection);
+
+  tree.display();
+}
+
 
 
 int main()
 {
-  heightTest();
+  array_to_bst_test();
 }
