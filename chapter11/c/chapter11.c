@@ -645,6 +645,16 @@ struct BST_LL_NODE * BST_to_list(struct BST **tree, int mode)
   return llist;
 }
 
+struct BST_LL_NODE * BST_to_list_post(struct BST **tree, int mode)
+{
+  return  BST_to_list(tree, mode);
+}
+
+struct BST_LL_NODE * BST_to_list_pre(struct BST **tree, int mode)
+{
+  return  BST_to_list(tree, mode);
+}
+
 void BST_to_list_helper(struct BTNode *node, struct BST_LL_NODE **llnode, int mode)
 {
   if (node)
