@@ -536,7 +536,104 @@ void bst_to_array_test()
   }
 }
 
+BST_LL *allocate_bst_ll (int value)
+{
+  BST_LL *node =  (struct BST_LL*)  malloc(sizeof(struct BST_LL));
+  node->value = value;
+  node->next = NULL;
+  return node;
+}
+
+void bst_ll_insert( BST_LL **llist, int data)
+{
+   BST_LL *runner;
+
+  if (*llist == NULL)
+  {
+    *llist = allocate_bst_ll(data);
+  }
+  else
+  {
+    runner  = *llist;
+    while (runner->next)
+    {
+      runner = runner->next;
+    }
+
+    if (runner->value != data)
+    {
+      runner->next  =  allocate_bst_ll(data);
+    }
+  }
+}
+
+struct BST_LL * BST::bst_to_list(int mode)
+{
+  BST_LL *llist = NULL;
+  bst_to_list_helper(root, mode, &llist);
+  return llist;
+}
+
+void BST::bst_to_list_helper(BTNode *node, int mode, BST_LL **llist)
+{
+  if (node )
+  {
+    if (mode == 1 ) //
+    {
+      bst_ll_insert(llist, node->value);
+    }
+
+    if (node->left)
+    {
+      bst_to_list_helper(node->left, mode, llist);
+    }
+
+    if (mode == 0)  //
+    {
+      bst_ll_insert(llist, node->value);
+    }
+
+    if (node->right)
+    {
+      bst_to_list_helper(node->right, mode, llist);
+    }
+
+     if (mode == 2)  //
+    {
+      bst_ll_insert(llist, node->value);
+    }
+  }
+}
+
+struct BST_LL * BST::bst_to_list_post(int mode )
+{
+ return  bst_to_list(mode);
+}
+
+struct BST_LL * BST::bst_to_list_pre(int mode)
+{
+  return bst_to_list(mode);
+}
+
+void bst_to_list_test()
+{
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+  struct BST_LL *llist =  tree.bst_to_list();
+  struct BST_LL *runner = llist;
+
+  while (runner)
+  {
+    std::cout << runner->value << '\n';
+    runner = runner->next;
+  }
+}
+
 int main()
 {
-  bst_to_array_test();
+  bst_to_list_test();
 }

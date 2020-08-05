@@ -1,4 +1,17 @@
 
+class BST_LLNode:
+  def __init__(self, value):
+    self.data = value
+    self.next = None
+
+def bst_to_list_insert(node, data):
+  if node.data == None:
+    node.data = data
+  else:
+    while node.next:
+      node = node.next
+    node.next = BST_LLNode(data)
+
 class BTNode:
   def __init__(self, value):
     self.value  = value
@@ -229,6 +242,40 @@ class BST:
   def bst_to_array_post(self, node = None, mode = 2):
     return self.bst_to_array(None, mode)
 
+
+  def bst_to_list(self, node = None, mode = 0, llist = None):
+
+    if node == None:
+      node = self.root
+
+    if llist == None:
+      llist = BST_LLNode(None)
+
+    if node:
+
+      if mode == 1:
+        bst_to_list_insert(llist, node.value)
+
+      if node.left:
+        self.bst_to_list(node.left, mode, llist)
+
+      if mode == 0:
+        bst_to_list_insert(llist, node.value)
+
+      if node.right:
+        self.bst_to_list(node.right, mode, llist)
+
+      if mode == 2:
+        bst_to_list_insert(llist, node.value)
+
+    return llist
+
+  def bst_to_list_pre(self, llist = None):
+    return self.bst_to_list(None, 1, llist)
+
+  def bst_to_list_post(self, llist = None):
+    return self.bst_to_list(None, 2, llist)
+
 # TESTS
 
 def bst_min_test():
@@ -321,11 +368,23 @@ def bst_to_array_test():
   collection  = tree.bst_to_array()
   print(collection)
 
+def bst_to_list_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+
+  llist =  tree.bst_to_list_pre()
+  runner = llist
+  while runner:
+    print(runner.data)
+    runner = runner.next
 
 
 
-
-bst_to_array_test()
+bst_to_list_test()
 
 
 

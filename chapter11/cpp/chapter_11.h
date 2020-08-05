@@ -22,6 +22,12 @@ class BTNode
     ~BTNode() {}
 };
 
+struct BST_LL
+{
+  int value;
+  struct BST_LL *next;
+};
+void bst_ll_insert( BST_LL *node, int data);
 class BST
 {
   private:
@@ -49,6 +55,12 @@ class BST
   void bst_to_array(std::vector<int> &collection, BTNode *node = NULL, int mode = 0);
   void bst_to_array_pre(std::vector<int> &collection);
   void bst_to_array_post(std::vector<int> &collection);
+  struct BST_LL * bst_to_list(int mode = 0);
+  struct BST_LL * bst_to_list_pre(int mode = 1);
+  struct BST_LL * bst_to_list_post(int mode = 2);
+
+  private:
+  void bst_to_list_helper(BTNode *node, int mode , BST_LL **llist);
 
 };
 

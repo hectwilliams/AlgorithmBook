@@ -611,11 +611,97 @@ struct bst_to_array_data BST_to_array_post(struct BST **tree)
 }
 
 
+struct BST_LL_NODE * allocate_BST_LL_NODE(int data)
+{
+  struct BST_LL_NODE *node = (struct BST_LL_NODE *) malloc(sizeof(struct BST_LL_NODE )) ;
+  node->value =data;
+  node->next = NULL;
+  return node;
+}
 
+void BST_LL_NODE_INSERT(struct BST_LL_NODE **node, int data)
+{
+  struct BST_LL_NODE *runner;
+
+  if (*node ==NULL)
+  {
+    *node =allocate_BST_LL_NODE(data);
+  }
+  else
+  {
+    runner = *node;
+    while (runner->next)
+    {
+      runner = runner->next;
+    }
+    runner->next = allocate_BST_LL_NODE( data);
+  }
+}
+
+struct BST_LL_NODE * BST_to_list(struct BST **tree, int mode)
+{
+  struct BST_LL_NODE *llist = NULL;
+  BST_to_list_helper( (*tree)->root, &llist, mode);
+  return llist;
+}
+
+void BST_to_list_helper(struct BTNode *node, struct BST_LL_NODE **llnode, int mode)
+{
+  if (node)
+  {
+    if (mode == 1)
+    {
+      BST_LL_NODE_INSERT(llnode, node->value);
+    }
+
+    if (node->left)
+    {
+      BST_to_list_helper(node->left, llnode, mode);
+    }
+
+    if (mode == 0)
+    {
+      BST_LL_NODE_INSERT(llnode, node->value);
+    }
+
+
+    if (node->right)
+    {
+      BST_to_list_helper(node->right, llnode, mode);
+    }
+
+    if (mode == 2)
+    {
+      BST_LL_NODE_INSERT(llnode, node->value);
+    }
+  }
+}
+
+
+BST_to_list_test()
+{
+  struct BST *tree = NULL;
+  struct BST_LL_NODE *llist = NULL, *runner ;
+
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+
+  llist = BST_to_list(&tree, 0);
+
+  runner = llist;
+  while (runner)
+  {
+    printf("[%d]\n", runner->value);
+    runner = runner->next;
+  }
+}
 
 
 int main()
 {
-  BST_to_array_test();
+  BST_to_list_test();
 }
 
