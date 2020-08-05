@@ -276,6 +276,25 @@ class BST:
   def bst_to_list_post(self, llist = None):
     return self.bst_to_list(None, 2, llist)
 
+
+  def min_height(self):
+    obj = {'height': 0}
+
+    def min_height_helper(obj , node = None, depth = 0):
+      if node:
+        if node.left:
+          min_height_helper(obj, node.left, depth + 1)
+
+        if  node.right:
+          min_height_helper(obj, node.right, depth + 1)
+
+        if node.right == None and node.left == None:
+          if obj['min'] == 0 or depth < obj['min']:
+            obj['min'] = depth
+
+    min_height_helper(obj, self.root)
+    return obj
+
 # TESTS
 
 def bst_min_test():
@@ -382,9 +401,17 @@ def bst_to_list_test():
     print(runner.data)
     runner = runner.next
 
+def min_height_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+  print( "min height" , tree.min_height())
 
 
-bst_to_list_test()
+min_height_test()
 
 
 

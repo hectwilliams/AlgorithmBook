@@ -58,9 +58,11 @@ class BST
   struct BST_LL * bst_to_list(int mode = 0);
   struct BST_LL * bst_to_list_pre(int mode = 1);
   struct BST_LL * bst_to_list_post(int mode = 2);
+  int min_height ();
 
   private:
   void bst_to_list_helper(BTNode *node, int mode , BST_LL **llist);
+  int min_height_helper ( int &min, BTNode *node = NULL, int depth = 0 );
 
 };
 

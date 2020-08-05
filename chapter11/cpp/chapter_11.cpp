@@ -633,7 +633,58 @@ void bst_to_list_test()
   }
 }
 
+int BST::min_height ()
+{
+  int min = 0;
+  min_height_helper(min);
+  return min;
+}
+
+int BST::min_height_helper ( int &min, BTNode *node , int depth )
+{
+
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      min_height_helper(min, node->left,  depth + 1 );
+    }
+
+    if (node->right)
+    {
+      min_height_helper(min, node->right, depth  + 1 );
+    }
+
+    if (node->right == NULL && node->left == NULL)
+    {
+      if (min == 0 || depth < min)
+      {
+        min = depth;
+      }
+    }
+  }
+}
+
+void min_height_test()
+{
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+
+  std::cout <<  tree.min_height() << '\n';
+}
+
+
+
 int main()
 {
-  bst_to_list_test();
+  min_height_test();
 }

@@ -709,9 +709,55 @@ BST_to_list_test()
   }
 }
 
+int BST_min_height(struct BST **tree)
+{
+  int min = 0;
+  BST_min_height_helper( (*tree)->root, 0 , &min) ;
+  return min;
+}
+
+void BST_min_height_helper(struct BTNode *node, int depth, int *min)
+{
+  if (node)
+  {
+    if (node->left)
+    {
+      BST_min_height_helper(node->left, depth + 1, min);
+    }
+
+    if (node->right)
+    {
+      BST_min_height_helper(node->right, depth + 1 ,  min);
+    }
+
+    if (node->left == NULL && node->right == NULL)
+    {
+      if (*min == 0 || depth < *min)
+      {
+        *min = depth;
+      }
+    }
+
+  }
+}
+
+
+void BST_min_height_test()
+{
+  struct BST *tree = NULL;
+  int min;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 120);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  min = BST_min_height(&tree);
+  printf("min data   %d\n", min);
+}
 
 int main()
 {
-  BST_to_list_test();
+  BST_min_height_test();
 }
 
