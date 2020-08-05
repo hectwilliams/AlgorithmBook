@@ -71,6 +71,8 @@ struct BST_LL_NODE
 struct BST_LL_NODE * BST_to_list(struct BST **tree, int mode);
 void BST_to_list_helper(struct BTNode *node, struct BST_LL_NODE **llnode, int mode);
 void BST_LL_NODE_INSERT(struct BST_LL_NODE **node, int data);
+void BST_LL_NODE_INSERT_STACK(struct BST_LL_NODE **node, int data);
+
 struct BST_LL_NODE * allocate_BST_LL_NODE(int data);
 struct BST_LL_NODE * BST_to_list_pre(struct BST **tree, int mode);
 struct BST_LL_NODE * BST_to_list_post(struct BST **tree, int mode);
@@ -78,3 +80,4 @@ struct BST_LL_NODE * BST_to_list_post(struct BST **tree, int mode);
 int BST_min_height(struct BST **tree);
 void BST_min_height_helper(struct BTNode *node, int depth, int *min);
 
+void BST_traverse_preOrder_no_recursion(struct BST **tree);

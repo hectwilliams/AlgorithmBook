@@ -295,6 +295,21 @@ class BST:
     min_height_helper(obj, self.root)
     return obj
 
+  def preOrder_no_recursion_traverse(self):
+    nodeList = []
+    node = self.root
+
+    while node:
+      print(node.value)
+      if node.right:
+        nodeList.append(node.right)
+      if node.left:
+        node = node.left
+      elif nodeList:
+        node = nodeList.pop()
+      else:
+        break
+
 # TESTS
 
 def bst_min_test():
@@ -410,8 +425,17 @@ def min_height_test():
   tree.add(0)
   print( "min height" , tree.min_height())
 
+def preOrder_no_recursion_traverse_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+  tree.preOrder_no_recursion_traverse()
 
-min_height_test()
+
+preOrder_no_recursion_traverse_test()
 
 
 

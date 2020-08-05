@@ -638,6 +638,20 @@ void BST_LL_NODE_INSERT(struct BST_LL_NODE **node, int data)
   }
 }
 
+void BST_LL_NODE_INSERT_STACK(struct BST_LL_NODE **node, int data)
+{
+  struct BST_LL_NODE *newnode =  allocate_BST_LL_NODE(data);;
+  if (*node ==NULL)
+  {
+    *node = newnode;
+  }
+  else
+  {
+    (*node)->next =  newnode;
+    *node = newnode;
+  }
+}
+
 struct BST_LL_NODE * BST_to_list(struct BST **tree, int mode)
 {
   struct BST_LL_NODE *llist = NULL;
@@ -756,8 +770,65 @@ void BST_min_height_test()
   printf("min data   %d\n", min);
 }
 
+void BST_traverse_preOrder_no_recursion(struct BST **tree)
+{
+   struct BTNode *node;
+   static int size = 0;
+   struct BTNode **collection = NULL;
+
+  if (*tree == NULL)
+  {
+    return;
+  }
+
+  if (size > 0)
+  {
+     collection = (struct BTNode **) malloc(sizeof(struct BTNode *));
+     size = 0;
+  }
+
+ node = (*tree)->root;
+
+  while (node)
+  {
+    if (node->right != NULL)
+    {
+      collection = realloc(collection, sizeof(struct BTNode*) * (size + 1) );
+      collection [size++] = node->right;
+    }
+
+    if (node->left != NULL)
+    {
+      node = node->left;
+    }
+    else if (size > 0)
+    {
+      node = collection[size - 1];
+      --size;
+    }
+    else
+    {
+      break;
+    }
+
+  }
+
+}
+
+void BST_traverse_preOrder_no_recursion_test()
+{
+  struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 120);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  BST_traverse_preOrder_no_recursion(&tree);
+}
+
 int main()
 {
-  BST_min_height_test();
+  BST_traverse_preOrder_no_recursion_test();
 }
 

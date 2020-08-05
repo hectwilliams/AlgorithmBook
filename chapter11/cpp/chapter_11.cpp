@@ -670,6 +670,7 @@ int BST::min_height_helper ( int &min, BTNode *node , int depth )
   }
 }
 
+
 void min_height_test()
 {
   BST tree = BST();
@@ -678,13 +679,57 @@ void min_height_test()
   tree.add(2);
   tree.add(1);
   tree.add(0);
-
   std::cout <<  tree.min_height() << '\n';
+}
+
+void BST::preOrderTraverselNoRecursion(BTNode *node)
+{
+  std::vector<BTNode*> collection;
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  while (node)
+  {
+    if (node->right)
+    {
+      collection.push_back(node->right);
+    }
+    std::cout << node->value << '\n';
+
+    if (node->left)
+    {
+      node = node->left;
+    }
+    else if (collection.size())
+    {
+      node = collection.back();
+      collection.pop_back();
+    }
+    else
+    {
+      break;
+    }
+
+  }
+
+}
+
+void preOrderTraverselNoRecursion_test()
+{
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+  tree.preOrderTraverselNoRecursion();
 }
 
 
 
 int main()
 {
-  min_height_test();
+  preOrderTraverselNoRecursion_test();
 }
