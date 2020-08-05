@@ -198,10 +198,36 @@ class BST:
     if node:
       if node.left:
         self.preOrder(node.left)
+
       print( "[" + str(node.value) + "]" ,   end ='')
+
       if node.right:
         self.preOrder(node.right)
 
+  def bst_to_array(self, node = None, mode = 0):
+    collection = []
+
+    if node == None:
+      node = self.root
+
+    if node:
+
+      if mode == 0:
+        collection.append(node.value)
+
+      if node.left:
+        collection += self.bst_to_array(node.left, mode)
+
+      if node.right:
+        collection += self.bst_to_array(node.right, mode)
+
+    return collection
+
+  def bst_to_array_pre(self, node = None, mode = 1):
+    return self.bst_to_array(None, mode)
+
+  def bst_to_array_post(self, node = None, mode = 2):
+    return self.bst_to_array(None, mode)
 
 # TESTS
 
@@ -284,18 +310,22 @@ def preOrder_test():
   tree.add(0)
   tree.preOrder()
   print()
-preOrder_test()
+
+def bst_to_array_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+  collection  = tree.bst_to_array()
+  print(collection)
 
 
 
 
-"""
 
-      5
-    / \
-    2   100
-  /      \
-  1        12
- /
-0
-"""
+bst_to_array_test()
+
+
+

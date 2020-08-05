@@ -528,9 +528,94 @@ void BST_traverse_in_order_test()
   printf("\n");
 }
 
+struct bst_to_array_data BST_to_array(struct BST **tree)
+{
+  struct bst_to_array_data obj = {.size = 0};
+  BST_to_array_helper(&obj, (*tree)->root, 0);
+  return obj;
+}
+
+void BST_to_array_helper(struct bst_to_array_data *obj, struct BTNode *node, int mode)
+{
+  if (node)
+  {
+
+     if (mode == 1)
+    {
+      bst_to_array_data_insert(obj, node->value);
+    }
+
+
+    if (node->left)
+    {
+      BST_to_array_helper(obj, node->left, mode);
+    }
+
+    if (mode == 0)
+    {
+      bst_to_array_data_insert(obj, node->value);
+    }
+
+    if (node->right)
+    {
+      BST_to_array_helper(obj, node->right, mode);
+    }
+
+    if (mode == 2)
+    {
+      bst_to_array_data_insert(obj, node->value);
+    }
+
+  }
+}
+
+void bst_to_array_data_insert(struct bst_to_array_data *obj, int data)
+{
+  if (obj->size == 0)
+  {
+    obj->array = (int *) malloc (sizeof(int));
+  }
+
+  obj->array = realloc(obj->array, ++obj->size * sizeof(int) );
+  obj->array[obj->size - 1] = data;
+}
+
+void BST_to_array_test()
+{
+  struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+
+  struct bst_to_array_data collection = BST_to_array(&tree);
+  for (int i = 0; i < collection.size; i++ )
+  {
+    printf("data [%d]\n", collection.array[i]);
+  }
+}
+
+struct bst_to_array_data BST_to_array_pre(struct BST **tree)
+{
+  struct bst_to_array_data obj = {.size = 0};
+  BST_to_array_helper(&obj, (*tree)->root, 1);
+  return obj;
+}
+
+struct bst_to_array_data BST_to_array_post(struct BST **tree)
+{
+  struct bst_to_array_data obj = {.size = 0};
+  BST_to_array_helper(&obj, (*tree)->root, 2);
+  return obj;
+}
+
+
+
+
 
 int main()
 {
-  BST_traverse_post_order_test();
+  BST_to_array_test();
 }
 

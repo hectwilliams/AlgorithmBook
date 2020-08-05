@@ -468,7 +468,75 @@ void BST::inOrder(BTNode *node)
   }
 }
 
+void BST::bst_to_array(std::vector<int> &collection, BTNode *node, int mode)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (mode == 1)
+    {
+      /* pre order*/
+      collection.push_back(node->value);
+    }
+
+    if (node->left)
+    {
+      bst_to_array(collection, node->left, mode);
+    }
+
+    if (mode == 0)
+    {
+      /*in order */
+      collection.push_back(node->value);
+    }
+
+    if (node->right)
+    {
+      bst_to_array(collection, node->right, mode);
+    }
+
+    if (mode == 2)
+    {
+      /*post order*/
+      collection.push_back(node->value);
+    }
+  }
+}
+
+void BST::bst_to_array_pre(std::vector<int> &collection)
+{
+  bst_to_array(collection, NULL, 1);
+}
+
+void BST::bst_to_array_post(std::vector<int> &collection)
+{
+  bst_to_array(collection, NULL, 2);
+}
+
+void bst_to_array_test()
+{
+  std::vector<int> array;
+  BST tree = BST();
+
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+
+  tree.bst_to_array(array);
+
+  for (auto ele: array)
+  {
+    std::cout << '\t' << ele << '\n';
+  }
+}
+
 int main()
 {
-
+  bst_to_array_test();
 }

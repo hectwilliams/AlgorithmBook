@@ -45,6 +45,11 @@ class BST
   int common_ancestor(int a, int b, BTNode *node = NULL);
   void preOrder(BTNode *node = NULL);
   void postOrder(BTNode *node = NULL);
+  void inOrder(BTNode *node = NULL);
+  void bst_to_array(std::vector<int> &collection, BTNode *node = NULL, int mode = 0);
+  void bst_to_array_pre(std::vector<int> &collection);
+  void bst_to_array_post(std::vector<int> &collection);
+
 };
 
 BTNode *btnodeAllocate(int value);

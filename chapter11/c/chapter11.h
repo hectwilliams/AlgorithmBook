@@ -48,3 +48,17 @@ void BST_traverse_post_order_helper(struct BTNode *node);
 
 void BST_traverse_in_order(struct BST **tree);
 void BST_traverse_in_order_helper(struct BTNode *node);
+
+struct bst_to_array_data
+{
+  int *array;
+  int size;
+};
+
+void bst_to_array_data_insert(struct bst_to_array_data *obj, int data);
+
+struct bst_to_array_data BST_to_array(struct BST **tree);
+void BST_to_array_helper(struct bst_to_array_data *obj, struct BTNode *node, int mode);
+struct bst_to_array_data BST_to_array_pre(struct BST **tree);
+struct bst_to_array_data BST_to_array_post(struct BST **tree);
+
