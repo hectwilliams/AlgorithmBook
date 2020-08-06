@@ -670,7 +670,6 @@ int BST::min_height_helper ( int &min, BTNode *node , int depth )
   }
 }
 
-
 void min_height_test()
 {
   BST tree = BST();
@@ -711,9 +710,7 @@ void BST::preOrderTraverselNoRecursion(BTNode *node)
     {
       break;
     }
-
   }
-
 }
 
 void preOrderTraverselNoRecursion_test()
@@ -727,9 +724,208 @@ void preOrderTraverselNoRecursion_test()
   tree.preOrderTraverselNoRecursion();
 }
 
+BTNode *BST::successor(BTNode * node)
+{
+  BTNode *deleteNode = node;
+  BTNode *prev = NULL;
 
+  if (node)
+  {
+    if (node->right)
+    {
+      prev = node;
+      node = node->right;
+      while (node->left)
+      {
+        prev = node;
+        node = node->left;
+      }
+    }
+
+    /*re-route prev node */
+    if (prev)
+    {
+      if (prev->left == node)
+      {
+        prev->left = node->right;
+      }
+      else
+      {
+        prev->right = node->right;
+      }
+    }
+
+    delete(deleteNode);
+  }
+  return node;
+}
+
+void BST::remove(const int &value, BTNode *node, BTNode *prev)
+{
+  BTNode *tmp;
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (node->value == value)
+    {
+      delete(node);
+
+      if (node->left != NULL && node->right != NULL)  /* MAX CHILDREN */
+      {
+        tmp = successor(node);
+
+        tmp->left = node->left;
+        tmp->right = node->right;
+
+        if (prev == NULL)
+        {
+          root = tmp;
+        }
+        else if (prev->left == node)
+        {
+          prev->left = tmp;
+        }
+        else
+        {
+          prev->right = tmp;
+        }
+      }
+
+      else if (node->left == NULL ^ node->right == NULL)  /* 1 CHILD */
+      {
+        if (prev == NULL)
+        {
+          if (node->right)
+          {
+            root = node->right;
+          }
+          else
+          {
+            root = node->left;
+          }
+        }
+        else if (prev->left == node)
+        {
+          if (node->right)
+          {
+            prev->left = node->right;
+          }
+          else
+          {
+            prev->left = node->left;
+          }
+        }
+        else if (prev->right == node)
+        {
+          if (node->right)
+          {
+            prev->right = node->right;
+          }
+          else
+          {
+            prev->right = node->left;
+          }
+        }
+
+      }
+
+      else if (node->left == NULL && node->right == NULL)  /* NO CHILDREN */
+      {
+        if (prev == NULL)
+        {
+          root = NULL;
+        }
+        else if (prev->left == node)
+        {
+          prev->left = NULL;
+        }
+        else if (prev->right == node)
+        {
+          prev -> right = NULL;
+        }
+      }
+    }
+
+    if (node->left)
+    {
+      remove(value ,node->left, node);
+    }
+
+    if (node->right)
+    {
+      remove (value, node->right, node);
+    }
+  }
+}
+
+void remove_test()
+{
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+  tree.remove(0);
+  tree.inOrder();
+}
+
+void BST::removeAll(BTNode *node, BTNode *prev)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      removeAll(node->left, node);
+    }
+
+    if (node->right)
+    {
+      removeAll(node->right, node);
+    }
+
+    if (prev)
+    {
+      if (prev->left)
+      {
+        prev->left = NULL;
+      }
+
+      if (prev->right)
+      {
+        prev->right = NULL;
+      }
+
+      delete(node);
+    }
+    else
+    {
+      root = NULL;
+    }
+  }
+}
+
+void removeAllTest ()
+{
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+  tree.inOrder();
+}
 
 int main()
 {
-  preOrderTraverselNoRecursion_test();
+  removeAllTest();
 }

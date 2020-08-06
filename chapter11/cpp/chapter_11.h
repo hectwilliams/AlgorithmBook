@@ -19,7 +19,7 @@ class BTNode
       value = value;
       left = right = NULL;
     }
-    ~BTNode() {}
+    // ~BTNode() {}
 };
 
 struct BST_LL
@@ -58,13 +58,15 @@ class BST
   struct BST_LL * bst_to_list(int mode = 0);
   struct BST_LL * bst_to_list_pre(int mode = 1);
   struct BST_LL * bst_to_list_post(int mode = 2);
-  int min_height ();
-  void preOrderTraverselNoRecursion();
+  int min_height();
+  void preOrderTraverselNoRecursion(BTNode *node = NULL);
+  void remove(const int &value, BTNode *node = NULL, BTNode *prev = NULL);
+  void removeAll(BTNode *node = NULL, BTNode *prev = NULL);
 
   private:
   void bst_to_list_helper(BTNode *node, int mode , BST_LL **llist);
   int min_height_helper ( int &min, BTNode *node = NULL, int depth = 0 );
-
+  BTNode *successor(BTNode * node = NULL);
 };
 
 BTNode *btnodeAllocate(int value);

@@ -422,7 +422,10 @@ void BST_common_ancestor_test()
 
 void BST_traverse_pre_order(struct BST **tree)
 {
-  BST_traverse_pre_order_helper((*tree)->root);
+  if ((*tree)->root)
+  {
+    BST_traverse_pre_order_helper((*tree)->root);
+  }
 }
 
 void BST_traverse_pre_order_helper(struct BTNode *node)
@@ -458,7 +461,10 @@ void BST_traverse_pre_order_test()
 
 void BST_traverse_post_order(struct BST **tree)
 {
-  BST_traverse_post_order_helper((*tree)->root);
+  if ( (*tree)->root )
+  {
+    BST_traverse_post_order_helper((*tree)->root);
+  }
 }
 
 void BST_traverse_post_order_helper(struct BTNode *node)
@@ -495,7 +501,10 @@ void BST_traverse_post_order_test()
 
 void BST_traverse_in_order(struct BST **tree)
 {
-  BST_traverse_in_order_helper((*tree)->root);
+  if ( (*tree)->root )
+  {
+    BST_traverse_in_order_helper((*tree)->root);
+  }
 }
 
 void BST_traverse_in_order_helper(struct BTNode *node)
@@ -810,9 +819,7 @@ void BST_traverse_preOrder_no_recursion(struct BST **tree)
     {
       break;
     }
-
   }
-
 }
 
 void BST_traverse_preOrder_no_recursion_test()
@@ -827,8 +834,237 @@ void BST_traverse_preOrder_no_recursion_test()
   BST_traverse_preOrder_no_recursion(&tree);
 }
 
+
+void BST_remove_helper(int value , struct BTNode **node , struct BTNode *prev)
+{
+  struct BTNode *curr = *node;
+  struct BTNode *tmp = NULL;
+
+  if (curr)
+  {
+    if (curr->value == value)
+    {
+      free(curr);
+
+      if (curr->right && curr->left)  /* MAX CHILDREN */
+      {
+        tmp = BST_removal_successsor(curr); /*successor*/
+
+      /*link successor to node's children */
+        tmp->left = curr->left;
+        tmp->right = curr->right;
+
+
+      /* replace root */
+        if (prev == NULL)
+        {
+          *node = tmp;
+        }
+
+      /* re-route */
+        else
+        {
+          if (prev->left == curr)
+          {
+            prev->left = tmp;
+          }
+          else
+          {
+            prev->right = tmp;
+          }
+        }
+
+      }
+
+      else if (curr->left == NULL ^ curr->right == NULL)  /* 1 CHILD */
+      {
+        if (prev == NULL)
+        {
+          if (curr->left == NULL)
+          {
+            *node = curr->right;
+          }
+          else
+          {
+            *node = curr->left;
+          }
+        }
+
+        else if (prev->left == curr)
+        {
+          if (curr->right != NULL)
+          {
+            prev->left = curr->right;
+          }
+          else
+          {
+            prev->left = curr->left;
+          }
+        }
+
+        else if(prev->right == curr)
+        {
+          if (curr->right != NULL)
+          {
+            prev->right = curr->right;
+          }
+          else
+          {
+            prev->right = curr->left;
+          }
+        }
+      }
+
+      else if (curr->left == NULL && curr->right == NULL)
+      {
+        if (prev == NULL)
+        {
+          *node == NULL;
+        }
+        else if (prev->left == curr)
+        {
+          prev->left = NULL;
+        }
+        else if (prev->right == curr)
+        {
+          prev->right = NULL;
+        }
+      }
+
+
+    }
+
+    if (curr->left)
+    {
+      BST_remove_helper(value, &curr->left, curr);
+    }
+
+    if (curr->right)
+    {
+      BST_remove_helper(value, &curr->right, curr);
+    }
+
+  }
+}
+
+struct BTNode *BST_removal_successsor(struct BTNode *node)
+{
+  struct BTNode *prev = NULL;
+
+  if (!node)
+  {
+    return NULL;
+  }
+
+  if (node->right)
+  {
+    prev = node;
+    node = node->right;
+    while (node->left)
+    {
+      prev = node;
+      node = node->left;
+    }
+  }
+
+  if (prev)
+  {
+    if (prev->left == node)
+    {
+      prev->left = node->right;
+    }
+    else if (prev->right == node)
+    {
+      prev->right = node->right;
+    }
+  }
+
+  return node; /*return success */
+}
+
+void BST_remove(struct BST **tree, int value)
+{
+  if (*tree)
+  {
+    BST_remove_helper (value, &(*tree)->root, NULL);
+  }
+}
+
+void BST_removal_successor_test()
+{
+  struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 120);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  BST_remove(&tree, 0);
+  BST_traverse_in_order(&tree);
+}
+
+void BST_remove_all(struct BST **tree)
+{
+  if (*tree)
+  {
+
+    BST_remove_all_helper( &(*tree)->root, NULL);
+  }
+}
+
+void BST_remove_all_helper(struct BTNode **node, struct BTNode *prev)
+{
+  if (*node)
+  {
+
+    if ( (*node)->left )
+    {
+      BST_remove_all_helper( &(*node)->left, *node );
+    }
+
+    if ( (*node)->right )
+    {
+      BST_remove_all_helper( &(*node)->right, *node );
+    }
+
+    if (prev)
+    {
+      if (prev->left)
+      {
+        prev->left = NULL;
+      }
+
+      if (prev->right)
+      {
+        prev->right = NULL;
+      }
+
+      // free(*node);
+    }
+    else
+    {
+      *node = NULL;
+    }
+
+  }
+}
+
+void BST_remove_all_test()
+{
+  struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 100);
+  BST_add(&tree, 120);
+  BST_add(&tree, 2);
+  BST_add(&tree, 1);
+  BST_add(&tree, 0);
+  BST_remove_all(&tree);
+  BST_traverse_in_order(&tree);
+}
+
+
 int main()
 {
-  BST_traverse_preOrder_no_recursion_test();
+  BST_remove_all_test();
 }
 

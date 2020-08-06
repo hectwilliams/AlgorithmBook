@@ -309,6 +309,98 @@ class BST:
         node = nodeList.pop()
       else:
         break
+    return
+
+  @staticmethod
+  def successor_promote (node):
+    prev = None
+
+    if node:
+      if node.right:
+        prev = node
+        node = node.right
+        while node.left:
+          prev = node
+          node  = node.left
+      if prev:
+        if prev.left == node:
+          prev.left = node.right
+        else:
+          prev.right = node.left
+    return node
+
+  def remove(self, value, node = None, prev = None ):
+    if node == None:
+      node = self.root
+
+    if node:
+      if node.value == value:
+
+        if bool(node.left) and bool(node.right):
+          tmp = self.successor_promote(node)
+          tmp.left = node.left
+          tmp.right = node.right
+
+          if prev == None:
+            self.root = tmp
+          elif prev.left == node:
+            prev.left = tmp
+          elif prev.right == node :
+            prev.right = tmp
+
+        elif bool(node.left) ^ bool(node.right):
+          if prev == None:
+            if node.left:
+              self.root = node.left
+            else:
+              self.root = node.right
+
+          elif prev.left == node:
+            if node.right:
+              prev.left = node.right
+            else:
+              prev.left = node.left
+
+          elif prev.right == node:
+            if node.right:
+              prev.right = node.right
+            else:
+              prev.right = node.left
+
+        elif bool(node.left) == 0  and  bool(node.right) == 0:
+          if prev == None:
+            self.root = None
+          elif prev.left == node:
+            prev.left = None
+          elif prev.right == node:
+            prev.right = None
+
+    if node.left:
+      self.remove(value, node.left, node)
+
+    if node.right:
+      self.remove(value, node.right, node)
+
+  def remove_all(self, node = None, prev = None):
+    if node == None:
+      node = self.root
+
+    if node:
+
+      if node.left :
+        self.remove_all (node.left, node)
+
+      if node.right :
+        self.remove_all (node.right, node)
+
+      if prev:
+        if prev.left == node:
+          prev.left =  None
+        if prev.right == node:
+          prev.right = None
+        del node
+      else:
+        self.root = None
 
 # TESTS
 
@@ -434,8 +526,21 @@ def preOrder_no_recursion_traverse_test():
   tree.add(0)
   tree.preOrder_no_recursion_traverse()
 
+def remove_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+  # tree.inOrder()
 
-preOrder_no_recursion_traverse_test()
+  # tree.remove(1)
+  tree.remove_all()
+
+  tree.inOrder()
+
+remove_test()
 
 
 

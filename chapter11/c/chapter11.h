@@ -81,3 +81,12 @@ int BST_min_height(struct BST **tree);
 void BST_min_height_helper(struct BTNode *node, int depth, int *min);
 
 void BST_traverse_preOrder_no_recursion(struct BST **tree);
+
+void BST_remove(struct BST **tree, int value);
+void BST_remove_helper(int value , struct BTNode **node , struct BTNode *prev);
+struct BTNode *BST_removal_successsor(struct BTNode *node);
+// struct BTNode *BST_successsor(struct BTNode *node);
+
+void BST_remove_all(struct BST **tree);
+void BST_remove_all_helper(struct BTNode **node, struct BTNode *prev);
+
