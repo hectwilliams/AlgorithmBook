@@ -925,7 +925,64 @@ void removeAllTest ()
   tree.inOrder();
 }
 
+bool BST::isValid(BTNode *node)
+{
+  bool result = true;
+
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node )
+  {
+    if (node->left)
+    {
+      if (node->left->value < node->value && node->left != node)
+      {
+        result &= isValid(node->left);
+      }
+      else
+      {
+        result &= false;
+      }
+    }
+
+    if (node->right)
+    {
+      if (node->right->value >= node->value && node->right != node)
+      {
+        result &= isValid(node->right);
+      }
+      else
+      {
+        result &= false;
+      }
+
+    }
+  }
+
+  return result;
+}
+
+void isValidTest()
+{
+  BST tree = BST();
+  tree.add(5);
+  tree.add(100);
+  tree.add(2);
+  tree.add(1);
+  tree.add(0);
+
+  std::cout << tree.isValid() << '\n'; // true
+
+  // tree.root->left->value = 100; // not allowed proerty protected
+  // std::cout << tree.isValid() << '\n'; // false
+
+}
+
+
 int main()
 {
-  removeAllTest();
+  isValidTest();
 }

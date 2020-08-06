@@ -402,6 +402,23 @@ class BST:
       else:
         self.root = None
 
+  def isValid(self, node = None):
+    result = True
+    branch_list = ['left', 'right']
+    next = None
+
+    if node == None:
+      node = self.root
+    for dir in branch_list:
+      next = node.__dict__[dir]
+      if next:
+        if dir == 'left':
+          if next.value < node.value  and next != node:
+            result &= self.isValid(next)
+        if dir == 'right':
+          if next.value >= node.value and node != next :
+            result &= self.isValid(next)
+    return result
 # TESTS
 
 def bst_min_test():
@@ -533,14 +550,17 @@ def remove_test():
   tree.add(2)
   tree.add(1)
   tree.add(0)
-  # tree.inOrder()
-
-  # tree.remove(1)
   tree.remove_all()
+  tree.inOrder() #nothing
 
-  tree.inOrder()
+def isValid_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(1)
+  tree.isValid()
 
-remove_test()
+isValid_test()
 
 
 

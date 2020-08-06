@@ -1063,8 +1063,67 @@ void BST_remove_all_test()
 }
 
 
+boolean BST_is_valid(struct BST **tree )
+{
+  if (  (*tree)->root  )
+  {
+    return BST_is_valid_helper( (*tree)->root);
+  }
+}
+
+
+boolean BST_is_valid_helper(struct BTNode *node)
+{
+  boolean result = true;
+
+  if (node)
+  {
+    if (node->left)
+    {
+      if (node->left->value < node->value && node->left != node)
+      {
+        result &= BST_is_valid_helper(node->left);
+      }
+      else
+      {
+        result &= false;
+      }
+    }
+
+    if (node->right)
+    {
+      if (node->right->value >= node->value && node->right != node)
+      {
+        result & =  BST_is_valid_helper(node->right);
+      }
+    }
+    else
+    {
+      result &= false;
+    }
+
+  }
+
+  return result;
+}
+
+void BST_is_valid_test()
+{
+  struct BST *tree = NULL;
+  BST_add(&tree, 5);
+  BST_add(&tree, 3);
+  BST_add(&tree, 7);
+
+  printf("is valid    \t %d\n" , BST_is_valid(&tree));  // valid
+
+  (tree)->root->left->value = 5;
+
+  printf("is valid    \t %d\n" , BST_is_valid(&tree));  // in valid
+
+}
+
 int main()
 {
-  BST_remove_all_test();
+  BST_is_valid_test();
 }
 

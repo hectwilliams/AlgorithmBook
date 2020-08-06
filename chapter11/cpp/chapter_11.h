@@ -63,6 +63,8 @@ class BST
   void remove(const int &value, BTNode *node = NULL, BTNode *prev = NULL);
   void removeAll(BTNode *node = NULL, BTNode *prev = NULL);
 
+  bool isValid(BTNode *node = NULL);
+
   private:
   void bst_to_list_helper(BTNode *node, int mode , BST_LL **llist);
   int min_height_helper ( int &min, BTNode *node = NULL, int depth = 0 );
