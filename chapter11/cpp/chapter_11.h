@@ -64,11 +64,12 @@ class BST
   void removeAll(BTNode *node = NULL, BTNode *prev = NULL);
 
   bool isValid(BTNode *node = NULL);
-
+  void add_no_dupes(const int &value, BTNode *node = NULL);
   private:
   void bst_to_list_helper(BTNode *node, int mode , BST_LL **llist);
   int min_height_helper ( int &min, BTNode *node = NULL, int depth = 0 );
   BTNode *successor(BTNode * node = NULL);
+
 };
 
 BTNode *btnodeAllocate(int value);

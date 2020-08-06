@@ -94,3 +94,6 @@ void BST_remove_all_helper(struct BTNode **node, struct BTNode *prev);
 boolean BST_is_valid(struct BST **tree);
 boolean BST_is_valid_helper(struct BTNode *node);
 boolean BST_is_valid_helper_loop_test(struct BTNode *node);
+
+void BST_add_no_dupes(struct BST **tree, int value);
+void BST_add_node_no_dupes(struct BTNode **node, int value);

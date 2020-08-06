@@ -976,13 +976,56 @@ void isValidTest()
 
   std::cout << tree.isValid() << '\n'; // true
 
-  // tree.root->left->value = 100; // not allowed proerty protected
+  // tree.root->left->value = 100; // not allowed proerty pro
   // std::cout << tree.isValid() << '\n'; // false
-
 }
 
+void BST::add_no_dupes(const int &value, BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (root == NULL)
+  {
+    root = btnodeAllocate(value);
+  }
+  else if (value < node->value)
+  {
+    if (node->left)
+    {
+      add_no_dupes(value, node->left);
+    }
+    else
+    {
+      node->left = btnodeAllocate(value);
+    }
+  }
+  else if(value > node->value)
+  {
+    if (node->right)
+    {
+      add_no_dupes(value, node->right);
+    }
+    else
+    {
+      node->right = btnodeAllocate(value);
+    }
+  }
+}
+
+void add_no_dupes_test()
+{
+  BST tree = BST();
+  tree.add_no_dupes(5);
+  tree.add_no_dupes(100);
+  tree.add_no_dupes(2);
+  tree.add_no_dupes(2);
+  tree.inOrder();
+}
 
 int main()
 {
-  isValidTest();
+  add_no_dupes_test();
 }

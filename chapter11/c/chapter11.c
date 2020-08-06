@@ -1094,7 +1094,7 @@ boolean BST_is_valid_helper(struct BTNode *node)
     {
       if (node->right->value >= node->value && node->right != node)
       {
-        result & =  BST_is_valid_helper(node->right);
+        result &=  BST_is_valid_helper(node->right);
       }
     }
     else
@@ -1122,8 +1122,65 @@ void BST_is_valid_test()
 
 }
 
-int main()
+
+
+void BST_add_no_dupes(struct BST **tree, int value)
 {
-  BST_is_valid_test();
+  if (*tree == NULL)
+  {
+    *tree = bts_alloc();
+  }
+  return BST_add_node_no_dupes( &(*tree)->root, value);
 }
 
+void BST_add_node_no_dupes(struct BTNode **node, int value)
+{
+  struct BTNode *curr = *node;
+
+
+  if (curr == NULL)
+  {
+    *node = btnode_alloc(value);
+    return;
+  }
+
+  else if (value < curr->value)
+  {
+    if (curr->left == NULL)
+    {
+      curr->left = btnode_alloc(value);
+    }
+    else
+    {
+      return BST_add_node_no_dupes(&curr->left, value);
+    }
+  }
+  else if (value > curr->value)
+  {
+    if (curr->right == NULL)
+    {
+      curr->right = btnode_alloc(value);
+    }
+    else
+    {
+      return BST_add_node_no_dupes(&curr->right, value);
+    }
+  }
+
+}
+
+void BST_add_no_dupes_test()
+{
+  struct BST *tree = NULL;
+  BST_add_no_dupes(&tree, 5);
+  BST_add_no_dupes(&tree, 3);
+  BST_add_no_dupes(&tree, 7);
+  BST_add_no_dupes(&tree, 7);
+  BST_traverse_in_order(&tree);
+
+}
+
+int main()
+{
+  BST_add_no_dupes_test();
+}

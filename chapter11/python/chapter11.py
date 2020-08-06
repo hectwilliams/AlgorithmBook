@@ -419,6 +419,26 @@ class BST:
           if next.value >= node.value and node != next :
             result &= self.isValid(next)
     return result
+
+  def add_no_dupes(self,value, node = None):
+    if node == None:
+      node = self.root
+
+    if self.root == None:
+      self.root = BTNode(value)
+
+    elif value < node.value:
+      if node.left:
+        self.add_no_dupes(value, node.left)
+      else:
+        node.left = BTNode(value)
+
+    elif value > node.value:
+      if node.right:
+        self.add_no_dupes(value, node.right)
+      else:
+        node.right = BTNode(value)
+
 # TESTS
 
 def bst_min_test():
@@ -560,7 +580,16 @@ def isValid_test():
   tree.add(1)
   tree.isValid()
 
-isValid_test()
+def no_dupes_test():
+  tree = BST()
+  tree.add_no_dupes(5)
+  tree.add_no_dupes(100)
+  tree.add_no_dupes(1)
+  tree.add_no_dupes(1)
+
+  tree.inOrder()
+
+no_dupes_test()
 
 
 
