@@ -1025,6 +1025,31 @@ void add_no_dupes_test()
   tree.inOrder();
 }
 
+void BST::bst_reverse_order(BTNode *node)
+{
+
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (node->right)
+    {
+      bst_reverse_order(node->right);
+    }
+
+    std::cout << node->value << '\n';
+
+    if (node->left)
+    {
+      bst_reverse_order(node->left);
+    }
+  }
+}
+
+
 int main()
 {
   add_no_dupes_test();

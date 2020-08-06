@@ -439,6 +439,20 @@ class BST:
       else:
         node.right = BTNode(value)
 
+  def bstReverseOrder(self, node = None):
+    if node == None:
+      node = self.root
+
+    if node:
+
+      if node.right:
+        self.bstReverseOrder(node.right)
+
+      print(node.value)
+
+      if node.left:
+        self.bstReverseOrder(node.left)
+
 # TESTS
 
 def bst_min_test():
@@ -586,10 +600,17 @@ def no_dupes_test():
   tree.add_no_dupes(100)
   tree.add_no_dupes(1)
   tree.add_no_dupes(1)
-
   tree.inOrder()
 
-no_dupes_test()
 
 
+def bstReverseOrder_test():
+  tree = BST()
+  tree.add(5)
+  tree.add(100)
+  tree.add(2)
+  tree.add(1)
+  tree.add(0)
+  tree.bstReverseOrder() #nothing
 
+bstReverseOrder_test()

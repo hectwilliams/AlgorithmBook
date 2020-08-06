@@ -97,3 +97,5 @@ boolean BST_is_valid_helper_loop_test(struct BTNode *node);
 
 void BST_add_no_dupes(struct BST **tree, int value);
 void BST_add_node_no_dupes(struct BTNode **node, int value);
+
+void BST_reverse_order( struct BTNode *root);

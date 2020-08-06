@@ -1177,8 +1177,26 @@ void BST_add_no_dupes_test()
   BST_add_no_dupes(&tree, 7);
   BST_add_no_dupes(&tree, 7);
   BST_traverse_in_order(&tree);
-
 }
+
+void BST_reverse_order( struct BTNode *root)
+{
+  if (root)
+  {
+    if (root->right)
+    {
+      BST_reverse_order(root->right);
+    }
+
+    printf("[%d]", root->value);
+
+    if (root->left)
+    {
+      BST_reverse_order(root->left);
+    }
+  }
+}
+
 
 int main()
 {

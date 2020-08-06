@@ -65,6 +65,9 @@ class BST
 
   bool isValid(BTNode *node = NULL);
   void add_no_dupes(const int &value, BTNode *node = NULL);
+
+  void bst_reverse_order(BTNode *node = NULL);
+
   private:
   void bst_to_list_helper(BTNode *node, int mode , BST_LL **llist);
   int min_height_helper ( int &min, BTNode *node = NULL, int depth = 0 );
