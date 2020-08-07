@@ -17,6 +17,7 @@ class BTNode:
     self.value  = value
     self.left = None
     self.right = None
+    self.parent = None 
 
 class BST:
   def __init__(self):
@@ -32,11 +33,13 @@ class BST:
       if value < node.value:
         if node.left == None:
           node.left = BTNode(value)
+          node.left.parent = node 
         else:
           return self.add(value, node.left)
       else:
         if node.right == None:
           node.right = BTNode(value)
+          node.right.parent = node 
         else:
           return self.add(value, node.right)
 
@@ -347,6 +350,7 @@ class BST:
             prev.left = tmp
           elif prev.right == node :
             prev.right = tmp
+          tmp.parent = prev 
 
         elif bool(node.left) ^ bool(node.right):
           if prev == None:
@@ -354,19 +358,19 @@ class BST:
               self.root = node.left
             else:
               self.root = node.right
-
+            self.root.parent = None 
           elif prev.left == node:
             if node.right:
               prev.left = node.right
             else:
               prev.left = node.left
-
+            prev.left.parent = prev 
           elif prev.right == node:
             if node.right:
               prev.right = node.right
             else:
               prev.right = node.left
-
+            prev.right.parent = prev 
         elif bool(node.left) == 0  and  bool(node.right) == 0:
           if prev == None:
             self.root = None
@@ -432,185 +436,163 @@ class BST:
         self.add_no_dupes(value, node.left)
       else:
         node.left = BTNode(value)
-
+        node.left.parent = node 
     elif value > node.value:
       if node.right:
         self.add_no_dupes(value, node.right)
       else:
         node.right = BTNode(value)
+        node.right.parent = node 
 
   def bstReverseOrder(self, node = None):
     if node == None:
       node = self.root
-
     if node:
-
       if node.right:
         self.bstReverseOrder(node.right)
-
       print(node.value)
-
       if node.left:
         self.bstReverseOrder(node.left)
 
-# TESTS
+  def valBefore(self,before, node = None):
+    if node == None:
+      node = self.root 
+    if node:
+      if before < node.value and node.left:
+        return self.valBefore(before, node.left)
+      elif before >= node.value and node.right:
+        return self.valBefore(before, node.right)
+      elif before == node.value:
+        return node.parent.value
+      else:
+        if node.left:
+          return node.value
+        return None 
 
-def bst_min_test():
-  """
-  create tree
-     5
-    / \
-  1    100
-  """
+  def valAfter(self, after, node = None):
+    if node == None:
+      node = self.root 
+    
+    if node:
+      if after < node.value and node.left:
+        return self.valAfter(after, node.left)
+      elif after >= node.value and node.right:
+        return self.valAfter(after, node.right)
+      elif after == node.value:
+        if node.right:
+          return node.right.value 
+        else:
+          return None 
+      else:
+        if node.parent:
+          return node.parent.value
+        else:
+          return None 
+
+  def node_after(self, node):
+    if node:
+      if node.parent:
+        if node.parent.value > node.value:
+          return node.parent 
+      if node.right:
+        return node.right 
+    return None 
+  
+  def node_before(self, node):
+    if node:
+      if node.parent:
+        if node.parent.value < node.value:
+          return node.parent 
+      if node.left:
+        return node.left 
+    return None 
+  
+  def closest(self, value, node = None ):
+    if node == None:
+      node = self.root 
+    if node:
+      if value < node.value and node.left:
+        return self.closest(value, node.left)
+      elif value >= node.value and node.right:
+        return self.closest(value, node.right) 
+      else:
+        return node.value
+    return None 
+
+  def tree_path_contains_sum(self, target, node = None, acc = 0):
+    state = False
+
+    if node == None:
+      node = self.root 
+
+    if node:
+      
+      if node.left:
+        state |= self.tree_path_contains_sum(target, node.left, acc + node.value)
+      
+      if node.right:
+        state |= self.tree_path_contains_sum(target, node.right, acc + node.value)
+      
+      if node.right == None and node.left == None:
+        acc += node.value 
+        state = acc == target
+
+    return state 
+  
+  def tree_path_contains_sum_root_to_path_list(self, collection = [], buffer= [], node = None ):
+    
+    if (node == None):
+      node = self.root
+    
+    if node:
+      
+      if node.left:
+        self.tree_path_contains_sum_root_to_path_list(collection, buffer + [node.value], node.left )
+
+      if node.right:
+        self.tree_path_contains_sum_root_to_path_list(collection, buffer + [node.value], node.right)
+
+      if node.right == None and node.left == None:
+        buffer += [node.value]
+        collection.append(buffer)
+
+    return collection
+
+  def root_leaf_numbers(self, node = None, depth = 0, acc = 0):
+    if node == None:
+      node = self.root
+    if node:
+      acc =  10 * acc + node.value
+      if node.left:
+        self.root_leaf_numbers(node.left, depth + 1,acc)
+      if  node.right:
+        self.root_leaf_numbers(node.right, depth + 1, acc)
+      if node.right == None and node.left == None:
+        print(acc)
+        
+  def left_side_binary(self, maxDepth = [-1], collection = [], node = None, depth = 0):
+    if node == None:
+      node = self.root
+    if node:
+      if maxDepth[0] < depth:
+        collection.append(node.value)
+        maxDepth[0] = maxDepth[0] + 1
+      if node.left:
+        self.left_side_binary(maxDepth, collection, node.left, depth + 1)
+      if node.right:
+        self.left_side_binary(maxDepth, collection, node.right, depth +1)
+
+    return collection 
+    
+def tree_path_contains_sum_test():
   tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(1)
-  print(tree.minimum())
-
-
-def bst_max_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(1)
-  print(tree.maximum())
-
-def bst_size_test():
-
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(1)
-  print(tree.size())
-
-def bst_empty_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(1)
-  print(tree.empty())
-
-  empty_tree = BST()
-  print(empty_tree.empty())
-
-def bst_height_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(1)
-  tree.add(0)
-
-  print("height", tree.height())
-
-def bst_is_balanced_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(1)
-
-  print("is balanced", tree.bst_is_balanced())
-
-def array_to_bst_test():
-  tree = BST.array_to_bst([1,2,3,4,5])
-  tree.display()
-
-def common_ancestor_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-  sol = tree.common_ancestor(1,0)
-  print("common ancestor " + str(sol))
-
-def preOrder_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-  tree.preOrder()
-  print()
-
-def bst_to_array_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-  collection  = tree.bst_to_array()
-  print(collection)
-
-def bst_to_list_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-
-  llist =  tree.bst_to_list_pre()
-  runner = llist
-  while runner:
-    print(runner.data)
-    runner = runner.next
-
-def min_height_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-  print( "min height" , tree.min_height())
-
-def preOrder_no_recursion_traverse_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-  tree.preOrder_no_recursion_traverse()
-
-def remove_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-  tree.remove_all()
-  tree.inOrder() #nothing
-
-def isValid_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(1)
-  tree.isValid()
-
-def no_dupes_test():
-  tree = BST()
+  tree.add_no_dupes(4)
   tree.add_no_dupes(5)
-  tree.add_no_dupes(100)
+  tree.add_no_dupes(2)
+  tree.add_no_dupes(3)
   tree.add_no_dupes(1)
-  tree.add_no_dupes(1)
-  tree.inOrder()
+  tree.add_no_dupes(6)
+  tree.add_no_dupes(7)
+  print(tree.left_side_binary())
 
-
-
-def bstReverseOrder_test():
-  tree = BST()
-  tree.add(5)
-  tree.add(100)
-  tree.add(2)
-  tree.add(1)
-  tree.add(0)
-  tree.bstReverseOrder() #nothing
-
-bstReverseOrder_test()
+tree_path_contains_sum_test()

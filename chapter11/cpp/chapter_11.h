@@ -9,17 +9,18 @@ struct nodeData
 
 class BTNode
 {
-  private:
-  public:
-    int value;
-    BTNode *left;
-    BTNode *right;
-    BTNode(int value)
-    {
-      value = value;
-      left = right = NULL;
-    }
-    // ~BTNode() {}
+private:
+public:
+  int value;
+  BTNode *left;
+  BTNode *right;
+  BTNode *parent;
+  BTNode(int value)
+  {
+    value = value;
+    parent = left = right = NULL;
+  }
+  // ~BTNode() {}
 };
 
 struct BST_LL
@@ -27,17 +28,17 @@ struct BST_LL
   int value;
   struct BST_LL *next;
 };
-void bst_ll_insert( BST_LL *node, int data);
+void bst_ll_insert(BST_LL *node, int data);
 class BST
 {
-  private:
-    BTNode *root;
+private:
+  BTNode *root;
 
-  public:
-    BST()
-    {
-      root = NULL;
-    }
+public:
+  BST()
+  {
+    root = NULL;
+  }
   void add(int value, BTNode *parent = NULL);
   void display(BTNode *node = NULL);
   bool contains(int value, BTNode *node);
@@ -46,8 +47,8 @@ class BST
   unsigned size(BTNode *node = NULL);
   bool empty();
   unsigned height(BTNode *node = NULL);
-  bool  is_balanced (BTNode *node = NULL , BTNode *prev = NULL );
-  static BST array_to_bst (const std::vector<int> &collection );
+  bool is_balanced(BTNode *node = NULL, BTNode *prev = NULL);
+  static BST array_to_bst(const std::vector<int> &collection);
   int common_ancestor(int a, int b, BTNode *node = NULL);
   void preOrder(BTNode *node = NULL);
   void postOrder(BTNode *node = NULL);
@@ -55,9 +56,9 @@ class BST
   void bst_to_array(std::vector<int> &collection, BTNode *node = NULL, int mode = 0);
   void bst_to_array_pre(std::vector<int> &collection);
   void bst_to_array_post(std::vector<int> &collection);
-  struct BST_LL * bst_to_list(int mode = 0);
-  struct BST_LL * bst_to_list_pre(int mode = 1);
-  struct BST_LL * bst_to_list_post(int mode = 2);
+  struct BST_LL *bst_to_list(int mode = 0);
+  struct BST_LL *bst_to_list_pre(int mode = 1);
+  struct BST_LL *bst_to_list_post(int mode = 2);
   int min_height();
   void preOrderTraverselNoRecursion(BTNode *node = NULL);
   void remove(const int &value, BTNode *node = NULL, BTNode *prev = NULL);
@@ -67,12 +68,20 @@ class BST
   void add_no_dupes(const int &value, BTNode *node = NULL);
 
   void bst_reverse_order(BTNode *node = NULL);
+  int valBefore(const int &before, BTNode *node = NULL);
+  int valAfter(const int &after, BTNode *node = NULL);
+  BTNode *before(BTNode *node = NULL);
+  BTNode *after(BTNode *node = NULL);
+  int closest(const int &value, BTNode *node = NULL);
+  bool tree_path_contains_sum(const int &target, BTNode *node = NULL, int acc = 0);
+  void root_leaf_numbers(BTNode *node = NULL, int depth = 0, int acc = 0);
+  std::vector<int> left_side_binary();
 
-  private:
-  void bst_to_list_helper(BTNode *node, int mode , BST_LL **llist);
-  int min_height_helper ( int &min, BTNode *node = NULL, int depth = 0 );
-  BTNode *successor(BTNode * node = NULL);
-
+private:
+  void bst_to_list_helper(BTNode *node, int mode, BST_LL **llist);
+  int min_height_helper(int &min, BTNode *node = NULL, int depth = 0);
+  BTNode *successor(BTNode *node = NULL);
+  void left_side_binary_helper(int &maxDepth, std::vector<int> &collection, BTNode *node = NULL, int depth = 0);
 };
 
 BTNode *btnodeAllocate(int value);

@@ -26,6 +26,7 @@ void BST::add(int value, BTNode *node)
       if (node->left == NULL)
       {
         node->left = btnodeAllocate(value);
+        node->left->parent = node;
       }
       else
       {
@@ -37,6 +38,7 @@ void BST::add(int value, BTNode *node)
       if (node->right == NULL)
       {
         node->right = btnodeAllocate(value);
+        node->right->parent = node;
       }
       else
       {
@@ -94,7 +96,9 @@ bool BST::contains(int value, BTNode *node)
 
 struct nodeData BST::min(BTNode *node)
 {
-  struct nodeData result = {.valid = false};
+  struct nodeData result;
+
+  result.valid = false;
 
   if (node == NULL)
   {
@@ -116,7 +120,6 @@ struct nodeData BST::min(BTNode *node)
   return result;
 }
 
-
 void bstMinTest()
 {
   /*
@@ -132,11 +135,12 @@ void bstMinTest()
   std::cout << tree.min().value << '\n';
 }
 
-
-
 struct nodeData BST::max(BTNode *node)
 {
-  struct nodeData result = {.valid = false};
+  struct nodeData result;
+
+  result.valid = false;
+
   if (node == NULL)
   {
     node = root;
@@ -156,7 +160,6 @@ struct nodeData BST::max(BTNode *node)
   }
   return result;
 }
-
 
 void bstMaxTest()
 {
@@ -234,7 +237,7 @@ unsigned BST::height(BTNode *node)
   {
     if (node->left)
     {
-      height_left += 1 +height(node->left);
+      height_left += 1 + height(node->left);
     }
 
     if (node->right)
@@ -258,7 +261,7 @@ unsigned BST::height(BTNode *node)
   }
 }
 
-unsigned heightTest ()
+unsigned heightTest()
 {
   BST tree;
   tree.add(5);
@@ -268,7 +271,7 @@ unsigned heightTest ()
   std::cout << tree.height() << '\n';
 }
 
-bool BST::is_balanced (BTNode *node , BTNode *prev )
+bool BST::is_balanced(BTNode *node, BTNode *prev)
 {
   int l, r;
 
@@ -292,7 +295,7 @@ bool BST::is_balanced (BTNode *node , BTNode *prev )
   }
 }
 
-unsigned isBalancedTest ()
+unsigned isBalancedTest()
 {
   BST tree;
   tree.add(5);
@@ -302,7 +305,7 @@ unsigned isBalancedTest ()
   std::cout << tree.is_balanced() << '\n';
 }
 
-BST BST::array_to_bst (const std::vector<int> &collection )
+BST BST::array_to_bst(const std::vector<int> &collection)
 {
   BST tree;
   int lpos, rpos;
@@ -313,7 +316,7 @@ BST BST::array_to_bst (const std::vector<int> &collection )
   while (1)
   {
 
-    if (lpos >=0)
+    if (lpos >= 0)
     {
       tree.add(collection[lpos--]);
     }
@@ -343,31 +346,31 @@ void array_to_bst_test()
   tree.display();
 }
 
-  int BST::common_ancestor(int a, int b, BTNode *node)
+int BST::common_ancestor(int a, int b, BTNode *node)
+{
+  if (node == NULL)
   {
-    if (node == NULL)
-    {
-      node = root;
-    }
-
-    if (a < node->value && b < node->value && node->left)
-    {
-      if (node->left->value != a && node->left->value != b)
-      {
-        return common_ancestor(a,b, node->left);
-      }
-    }
-
-    if (a > node->value && b > node->value && node->right)
-    {
-      if (node->right->value != a && node->right->value != b)
-      {
-        return common_ancestor(a,b, node->right);
-      }
-    }
-
-    return node->value;
+    node = root;
   }
+
+  if (a < node->value && b < node->value && node->left)
+  {
+    if (node->left->value != a && node->left->value != b)
+    {
+      return common_ancestor(a, b, node->left);
+    }
+  }
+
+  if (a > node->value && b > node->value && node->right)
+  {
+    if (node->right->value != a && node->right->value != b)
+    {
+      return common_ancestor(a, b, node->right);
+    }
+  }
+
+  return node->value;
+}
 
 void common_ancestor_test()
 {
@@ -378,7 +381,7 @@ void common_ancestor_test()
   tree.add(1);
   tree.add(0);
 
-  std::cout << tree.common_ancestor(1,0) << '\n';
+  std::cout << tree.common_ancestor(1, 0) << '\n';
 }
 
 void BST::preOrder(BTNode *node)
@@ -437,10 +440,8 @@ void BST::postOrder(BTNode *node)
     }
 
     printf("[%d]", node->value);
-
   }
 }
-
 
 void BST::inOrder(BTNode *node)
 {
@@ -463,8 +464,6 @@ void BST::inOrder(BTNode *node)
     {
       postOrder(node->right);
     }
-
-
   }
 }
 
@@ -530,23 +529,23 @@ void bst_to_array_test()
 
   tree.bst_to_array(array);
 
-  for (auto ele: array)
+  for (auto ele : array)
   {
     std::cout << '\t' << ele << '\n';
   }
 }
 
-BST_LL *allocate_bst_ll (int value)
+BST_LL *allocate_bst_ll(int value)
 {
-  BST_LL *node =  (struct BST_LL*)  malloc(sizeof(struct BST_LL));
+  BST_LL *node = (struct BST_LL *)malloc(sizeof(struct BST_LL));
   node->value = value;
   node->next = NULL;
   return node;
 }
 
-void bst_ll_insert( BST_LL **llist, int data)
+void bst_ll_insert(BST_LL **llist, int data)
 {
-   BST_LL *runner;
+  BST_LL *runner;
 
   if (*llist == NULL)
   {
@@ -554,7 +553,7 @@ void bst_ll_insert( BST_LL **llist, int data)
   }
   else
   {
-    runner  = *llist;
+    runner = *llist;
     while (runner->next)
     {
       runner = runner->next;
@@ -562,12 +561,12 @@ void bst_ll_insert( BST_LL **llist, int data)
 
     if (runner->value != data)
     {
-      runner->next  =  allocate_bst_ll(data);
+      runner->next = allocate_bst_ll(data);
     }
   }
 }
 
-struct BST_LL * BST::bst_to_list(int mode)
+struct BST_LL *BST::bst_to_list(int mode)
 {
   BST_LL *llist = NULL;
   bst_to_list_helper(root, mode, &llist);
@@ -576,9 +575,9 @@ struct BST_LL * BST::bst_to_list(int mode)
 
 void BST::bst_to_list_helper(BTNode *node, int mode, BST_LL **llist)
 {
-  if (node )
+  if (node)
   {
-    if (mode == 1 ) //
+    if (mode == 1) //
     {
       bst_ll_insert(llist, node->value);
     }
@@ -588,7 +587,7 @@ void BST::bst_to_list_helper(BTNode *node, int mode, BST_LL **llist)
       bst_to_list_helper(node->left, mode, llist);
     }
 
-    if (mode == 0)  //
+    if (mode == 0) //
     {
       bst_ll_insert(llist, node->value);
     }
@@ -598,19 +597,19 @@ void BST::bst_to_list_helper(BTNode *node, int mode, BST_LL **llist)
       bst_to_list_helper(node->right, mode, llist);
     }
 
-     if (mode == 2)  //
+    if (mode == 2) //
     {
       bst_ll_insert(llist, node->value);
     }
   }
 }
 
-struct BST_LL * BST::bst_to_list_post(int mode )
+struct BST_LL *BST::bst_to_list_post(int mode)
 {
- return  bst_to_list(mode);
+  return bst_to_list(mode);
 }
 
-struct BST_LL * BST::bst_to_list_pre(int mode)
+struct BST_LL *BST::bst_to_list_pre(int mode)
 {
   return bst_to_list(mode);
 }
@@ -623,7 +622,7 @@ void bst_to_list_test()
   tree.add(2);
   tree.add(1);
   tree.add(0);
-  struct BST_LL *llist =  tree.bst_to_list();
+  struct BST_LL *llist = tree.bst_to_list();
   struct BST_LL *runner = llist;
 
   while (runner)
@@ -633,14 +632,14 @@ void bst_to_list_test()
   }
 }
 
-int BST::min_height ()
+int BST::min_height()
 {
   int min = 0;
   min_height_helper(min);
   return min;
 }
 
-int BST::min_height_helper ( int &min, BTNode *node , int depth )
+int BST::min_height_helper(int &min, BTNode *node, int depth)
 {
 
   if (node == NULL)
@@ -652,12 +651,12 @@ int BST::min_height_helper ( int &min, BTNode *node , int depth )
   {
     if (node->left)
     {
-      min_height_helper(min, node->left,  depth + 1 );
+      min_height_helper(min, node->left, depth + 1);
     }
 
     if (node->right)
     {
-      min_height_helper(min, node->right, depth  + 1 );
+      min_height_helper(min, node->right, depth + 1);
     }
 
     if (node->right == NULL && node->left == NULL)
@@ -678,12 +677,12 @@ void min_height_test()
   tree.add(2);
   tree.add(1);
   tree.add(0);
-  std::cout <<  tree.min_height() << '\n';
+  std::cout << tree.min_height() << '\n';
 }
 
 void BST::preOrderTraverselNoRecursion(BTNode *node)
 {
-  std::vector<BTNode*> collection;
+  std::vector<BTNode *> collection;
   if (node == NULL)
   {
     node = root;
@@ -724,7 +723,7 @@ void preOrderTraverselNoRecursion_test()
   tree.preOrderTraverselNoRecursion();
 }
 
-BTNode *BST::successor(BTNode * node)
+BTNode *BST::successor(BTNode *node)
 {
   BTNode *deleteNode = node;
   BTNode *prev = NULL;
@@ -754,8 +753,7 @@ BTNode *BST::successor(BTNode * node)
         prev->right = node->right;
       }
     }
-
-    delete(deleteNode);
+    delete (deleteNode);
   }
   return node;
 }
@@ -763,6 +761,7 @@ BTNode *BST::successor(BTNode * node)
 void BST::remove(const int &value, BTNode *node, BTNode *prev)
 {
   BTNode *tmp;
+
   if (node == NULL)
   {
     node = root;
@@ -772,12 +771,11 @@ void BST::remove(const int &value, BTNode *node, BTNode *prev)
   {
     if (node->value == value)
     {
-      delete(node);
+      delete (node);
 
-      if (node->left != NULL && node->right != NULL)  /* MAX CHILDREN */
+      if (node->left != NULL && node->right != NULL) /* MAX CHILDREN */
       {
         tmp = successor(node);
-
         tmp->left = node->left;
         tmp->right = node->right;
 
@@ -789,13 +787,13 @@ void BST::remove(const int &value, BTNode *node, BTNode *prev)
         {
           prev->left = tmp;
         }
-        else
+        else if (prev->right == node)
         {
           prev->right = tmp;
         }
+        tmp->parent = prev;
       }
-
-      else if (node->left == NULL ^ node->right == NULL)  /* 1 CHILD */
+      else if (node->left == NULL ^ node->right == NULL) /* 1 CHILD */
       {
         if (prev == NULL)
         {
@@ -807,6 +805,7 @@ void BST::remove(const int &value, BTNode *node, BTNode *prev)
           {
             root = node->left;
           }
+          root->parent = NULL;
         }
         else if (prev->left == node)
         {
@@ -818,6 +817,7 @@ void BST::remove(const int &value, BTNode *node, BTNode *prev)
           {
             prev->left = node->left;
           }
+          prev->left->parent = prev;
         }
         else if (prev->right == node)
         {
@@ -829,11 +829,11 @@ void BST::remove(const int &value, BTNode *node, BTNode *prev)
           {
             prev->right = node->left;
           }
+          prev->right->parent = prev;
         }
-
       }
 
-      else if (node->left == NULL && node->right == NULL)  /* NO CHILDREN */
+      else if (node->left == NULL && node->right == NULL) /* NO CHILDREN */
       {
         if (prev == NULL)
         {
@@ -845,19 +845,19 @@ void BST::remove(const int &value, BTNode *node, BTNode *prev)
         }
         else if (prev->right == node)
         {
-          prev -> right = NULL;
+          prev->right = NULL;
         }
       }
     }
 
     if (node->left)
     {
-      remove(value ,node->left, node);
+      remove(value, node->left, node);
     }
 
     if (node->right)
     {
-      remove (value, node->right, node);
+      remove(value, node->right, node);
     }
   }
 }
@@ -905,7 +905,7 @@ void BST::removeAll(BTNode *node, BTNode *prev)
         prev->right = NULL;
       }
 
-      delete(node);
+      delete (node);
     }
     else
     {
@@ -914,7 +914,7 @@ void BST::removeAll(BTNode *node, BTNode *prev)
   }
 }
 
-void removeAllTest ()
+void removeAllTest()
 {
   BST tree = BST();
   tree.add(5);
@@ -934,7 +934,7 @@ bool BST::isValid(BTNode *node)
     node = root;
   }
 
-  if (node )
+  if (node)
   {
     if (node->left)
     {
@@ -958,7 +958,6 @@ bool BST::isValid(BTNode *node)
       {
         result &= false;
       }
-
     }
   }
 
@@ -1000,9 +999,10 @@ void BST::add_no_dupes(const int &value, BTNode *node)
     else
     {
       node->left = btnodeAllocate(value);
+      node->left->parent = node;
     }
   }
-  else if(value > node->value)
+  else if (value > node->value)
   {
     if (node->right)
     {
@@ -1011,6 +1011,7 @@ void BST::add_no_dupes(const int &value, BTNode *node)
     else
     {
       node->right = btnodeAllocate(value);
+      node->right->parent = node;
     }
   }
 }
@@ -1049,8 +1050,292 @@ void BST::bst_reverse_order(BTNode *node)
   }
 }
 
+int BST::valBefore(const int &before, BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
 
+  if (node)
+  {
+    if (before < node->value && node->left)
+    {
+      return valBefore(before, node->left);
+    }
+    else if (before >= node->value && node->right)
+    {
+      return valBefore(before, node->right);
+    }
+    else if (node->value == before)
+    {
+      return node->parent->value;
+    }
+    else
+    {
+      if (node->left)
+      {
+        return node->value;
+      }
+      return 0;
+    }
+  }
+}
+
+void valBefore_test()
+{
+  BST tree = BST();
+  tree.add_no_dupes(5);
+  tree.add_no_dupes(2);
+  tree.add_no_dupes(8);
+  std::cout << tree.valBefore(8) << '\n';
+}
+
+int BST::valAfter(const int &after, BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (after < node->value && node->left)
+    {
+      return valAfter(after, node->left);
+    }
+    else if (after >= node->value && node->right)
+    {
+      return valAfter(after, node->right);
+    }
+    else if (after == node->value)
+    {
+      if (node->right)
+      {
+        return node->right->value;
+      }
+      else
+      {
+        return 0;
+      }
+    }
+    else
+    {
+      if (node->parent)
+      {
+        return node->parent->value;
+      }
+      else
+      {
+        return 0;
+      }
+    }
+  }
+}
+
+void valAfter_test()
+{
+  BST tree = BST();
+  tree.add_no_dupes(5);
+  tree.add_no_dupes(2);
+  tree.add_no_dupes(8);
+  std::cout << tree.valAfter(8) << '\n';
+}
+
+BTNode *BST::before(BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+  if (node)
+  {
+    if (node->parent)
+    {
+      if (node->parent->value < node->value)
+      {
+        return node->parent;
+      }
+    }
+    else if (node->left)
+    {
+      return node->left;
+    }
+  }
+  return NULL;
+}
+
+BTNode *BST::after(BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+  if (node)
+  {
+    if (node->parent)
+    {
+      if (node->parent->value > node->value)
+      {
+        return node->parent;
+      }
+    }
+    else if (node->right)
+    {
+      return node->right;
+    }
+  }
+  return NULL;
+}
+
+int BST::closest(const int &value, BTNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (value < node->value && node->left)
+    {
+      return closest(value, node->left);
+    }
+    else if (value >= node->value && node->right)
+    {
+      return closest(value, node->right);
+    }
+    else
+    {
+      return node->value;
+    }
+  }
+  return 0xDEADBEEF; //
+}
+
+bool BST::tree_path_contains_sum(const int &target, BTNode *node, int acc)
+{
+  bool state = false;
+
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      state |= tree_path_contains_sum(target, node->left, acc + node->value);
+    }
+    if (node->right)
+    {
+      state |= tree_path_contains_sum(target, node->right, acc + node->value);
+    }
+    if (node->right == NULL && node->left == NULL)
+    {
+      acc += node->value;
+      state = (acc == target);
+    }
+  }
+  return state;
+}
+
+void tree_path_contains_sum_test()
+{
+  BST tree = BST();
+  tree.add_no_dupes(5);
+  tree.add_no_dupes(2);
+  tree.add_no_dupes(8);
+  std::cout << tree.tree_path_contains_sum(7) << '\n'; // TRUE
+  std::cout << tree.tree_path_contains_sum(8) << '\n'; // FALSE
+}
+
+void BST::root_leaf_numbers(BTNode *node, int depth, int acc)
+{
+
+  if (node == NULL)
+  {
+    node = root;
+  }
+  if (node)
+  {
+    acc = acc * 10 + node->value;
+    if (node->left)
+    {
+      root_leaf_numbers(node->left, depth + 1, acc);
+    }
+
+    if (node->right)
+    {
+      root_leaf_numbers(node->right, depth + 1, acc);
+    }
+
+    if (node->right == NULL && node->left == NULL)
+    {
+      std::cout << "\t-->" << acc << '\n';
+    }
+  }
+}
+
+void root_leaf_numbers_test()
+{
+  BST tree = BST();
+  tree.add_no_dupes(5);
+  tree.add_no_dupes(2);
+  tree.add_no_dupes(8);
+  tree.root_leaf_numbers();
+}
+
+std::vector<int> BST::left_side_binary()
+{
+  std::vector<int> collection;
+  int depth_dynamic = -1;
+  left_side_binary_helper(depth_dynamic, collection);
+  for (int ele : collection)
+  {
+    std::cout << ele << '\n';
+  }
+  return collection;
+}
+
+void BST::left_side_binary_helper(int &maxDepth, std::vector<int> &collection, BTNode *node, int depth)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (maxDepth < depth)
+  {
+    collection.push_back(node->value);
+    maxDepth++;
+  }
+
+  if (node->left)
+  {
+    left_side_binary_helper(maxDepth, collection, node->left, depth + 1);
+  }
+
+  if (node->right)
+  {
+    left_side_binary_helper(maxDepth, collection, node->right, depth + 1);
+  }
+}
+
+void left_side_binary_test()
+{
+  BST tree = BST();
+  tree.add_no_dupes(4);
+  tree.add_no_dupes(5);
+  tree.add_no_dupes(2);
+  tree.add_no_dupes(3);
+  tree.add_no_dupes(1);
+  tree.add_no_dupes(6);
+  tree.add_no_dupes(7);
+  tree.left_side_binary();
+}
 int main()
 {
-  add_no_dupes_test();
+  left_side_binary_test();
 }
