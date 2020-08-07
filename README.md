@@ -12,7 +12,7 @@
 8. Linked List, Part II (***C***, ***C++***, ***Python***)
 9. Recursion (***C***, ***C++***, ***Python***)
 10. Strings, Part II (***C++***, ***C***, ***Python***)
-11. Trees (***C++***)
+11. Trees (***C++***, ***C***, ***Python***)
 12. Sorts (***C++***)
 13. Sets And Priority Queues (***C++***)
 14. Hashes (***C++***)
