@@ -132,6 +132,53 @@ var bubbleSort_list = function (llist)
     end = k;
     curr = curr.next;
   }
+}
+
+var selectionSort_list = function (llist)
+{
+  let curr, k, kprev, curr_prev, selection_prev, selection;
+
+  curr = k = kprev = curr_prev = selection_prev = selection = null;
+
+  curr = llist.head
+
+  while (curr)
+  {
+    k = selection = curr;
+    while (k.next)
+    {
+      if (k.next.value < selection.value)
+      {
+        selection = k.next;
+        selection_prev = k;
+      }
+      k = k.next;
+    }
+
+    if (curr != selection)
+    {
+      selection_prev.next = selection_prev.next.next;
+
+      selection.next = curr.next;
+
+      if (curr == llist.head)
+      {
+        llist.head = selection ;
+      }
+      else
+      {
+        curr_prev.next = selection;
+      }
+
+      curr.next = selection_prev.next;
+      selection_prev.next = curr;
+
+      curr = selection;
+    }
+
+    curr_prev = curr;
+    curr = curr_prev.next;
+  }
 
 }
 
@@ -151,7 +198,7 @@ function test2 ()
   list.add(2);
   list.add(1);
 
-  bubbleSort_list(list);
+  selectionSort_list(list);
   list.display();
 }
 

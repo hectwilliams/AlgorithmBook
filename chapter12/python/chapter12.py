@@ -73,6 +73,44 @@ def bubbleSort_list(llist):
     end = k
     curr = curr.next
 
+def selectionSort_list(llist):
+  curr = None
+  k = None
+  kprev = None
+  curr_prev = None
+  selection_prev = None
+  selection = None
+
+  curr = llist.head
+
+  while curr:
+
+    k = curr
+    selection = curr
+
+    while k.next :
+      if k.next.value < selection.value :
+        selection = k.next
+        selection_prev = k
+      k = k.next
+
+    if curr != selection:
+      selection_prev.next = selection_prev.next.next
+
+      selection.next = curr.next
+
+      if curr == llist.head:
+        llist.head = selection
+      else:
+        curr_prev.next = selection
+
+      curr.next = selection_prev.next
+      selection_prev.next = curr
+
+      curr = selection
+
+    curr_prev = curr
+    curr = curr_prev.next
 
 def test():
   collection = [5,4,3,2,1]
@@ -84,7 +122,7 @@ def test2():
   ll = SList()
   for ele in collection:
     ll.add(ele)
-  bubbleSort_list(ll)
+  selectionSort_list(ll)
   ll.display()
 
 test2()

@@ -172,7 +172,62 @@ void bubbleSort_list(struct SList ** head)
   }
 }
 
-void bubbleSort_list_test()
+
+
+void selectionSort_list(struct SList **head)
+{
+  struct SList *curr, *k, *kprev;
+  struct SList *curr_prev = NULL;
+  struct SList *selection_prev, *selection;
+
+  curr = *head;
+
+  while (curr)
+  {
+    k = curr;
+    selection = curr;
+
+    while (k->next)
+    {
+      if (k->next->value < selection->value )
+      {
+        selection = k->next;
+        selection_prev = k;
+      }
+      k = k->next;
+    }
+
+    if (curr != selection)
+    {
+      selection_prev->next = selection_prev->next->next;
+
+
+       if (curr == *head)
+      {
+        selection->next = curr->next;
+        *head = selection;
+        curr->next = selection_prev->next;
+        selection_prev->next = curr;
+      }
+      else
+      {
+        selection->next = curr->next;
+        curr_prev->next = selection;
+
+        curr->next = selection_prev->next;
+        selection_prev->next = curr;
+      }
+
+      curr = selection; // update curr pointer
+    }
+
+    curr_prev = curr;
+    curr = curr->next;
+  }
+}
+
+
+void selectionSort_list_test()
 {
   struct SList *list = NULL;
   SList_add(5, &list);
@@ -180,11 +235,11 @@ void bubbleSort_list_test()
   SList_add(3, &list);
   SList_add(2, &list);
   SList_add(1, &list);
-  bubbleSort_list(&list);
+  selectionSort_list(&list);
   SList_display(&list);
 }
 
 int main()
 {
-  bubbleSort_list_test();
+  selectionSort_list_test();
 }

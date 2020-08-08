@@ -122,6 +122,54 @@ void bubble_sort_list(SList &list )
   }
 }
 
+void selection_sort_list(SList &list)
+{
+  SLNode *curr, *k, *kprev, *curr_prev, *selection, *selection_prev;
+
+  curr = list.head;
+  while (curr)
+  {
+    k = curr;
+    selection = curr;
+
+    while (k->next)
+    {
+      if (k->next->value < selection->value)
+      {
+        selection = k->next;
+        selection_prev = k;
+      }
+      k = k->next;
+    }
+
+    if (curr != selection)
+    {
+      selection_prev->next = selection_prev->next->next;
+
+      /* front insert*/
+      if (curr == list.head)
+      {
+        selection->next = curr->next;
+        list.head = selection;
+      }
+      else
+      {
+        selection->next = curr->next;
+        curr_prev->next = selection;
+      }
+
+      /*back insert*/
+      curr->next = selection_prev->next;
+      selection_prev->next = curr;
+
+      curr = selection;
+    }
+
+    curr_prev = curr;
+    curr = curr->next;
+  }
+}
+
 
 void test()
 {
@@ -153,7 +201,7 @@ void test2 ()
   list.add(3);
   list.add(2);
   list.add(1);
-  bubble_sort_list(list);
+  selection_sort_list(list);
   list.display();
 }
 

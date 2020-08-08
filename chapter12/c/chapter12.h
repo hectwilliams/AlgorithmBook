@@ -17,8 +17,18 @@ void bubbleSort_array(int *array, int size);
 void selectionSort_array(int *array, int size);
 void bubbleSort_list(struct SList ** head);
 
+
 /*
-  5   4   3    2    1
+
+      curr             sel
+  5    4    3     2    1
+
+
+
+  b = 1
+  a = 5
+
+
 
   i
 
