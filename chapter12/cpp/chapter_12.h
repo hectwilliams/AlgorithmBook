@@ -23,3 +23,5 @@ class SList
 };
 
 void bubbleSort(std::vector<int> &collection);
+void selectionSort(std::vector<int> &collection);
+void bubbleSort(SList &list);

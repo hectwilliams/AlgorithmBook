@@ -46,7 +46,24 @@ void SList_display(struct SList **node)
   }
 }
 
+
 /* LIST COMPONENTS ABOVE */
+void array_display(int *array, int length)
+{
+  /*print array data*/
+  for (int i = 0; i < length; i++)
+  {
+    printf("[%d]", array[i]);
+  }
+  printf("\n");
+}
+
+void swap(int *array, int i, int k)
+{
+  int tmp = array[k];
+  array[k] = array[i];
+  array[i] = tmp;
+}
 
 void bubble_sort_array(int *array, int size)
 {
@@ -58,9 +75,7 @@ void bubble_sort_array(int *array, int size)
     {
       if (array[k]  > array[k + 1])
       {
-        tmp = array[k];
-        array[k] = array[k + 1];
-        array[k + 1] = tmp;
+        swap(array, i, k);
       }
     }
   }
@@ -71,16 +86,105 @@ void bubble_sort_array_test()
   int array[] = {4,3,2,1,0};
   int length = sizeof(array)/sizeof(array[0]) ;
   bubble_sort_array(array, length);
+  array_display(array, length);
+}
 
-  /*print array data*/
-  for (int i = 0; i < length; i++)
+void selectionSort_array(int *array, int size)
+{
+  int sel_index;
+  for (int i = 0; i < size - 1 ; i ++)
   {
-    printf("[%d]", array[i]);
+    sel_index = i;
+    for (int k = sel_index + 1; k < size; k++)
+    {
+      if (array[k] < array[sel_index])
+      {
+        sel_index = k;
+      }
+    }
+
+    if (sel_index != i)
+    {
+      swap(array, i, sel_index);
+    }
   }
-  printf("\n");
+}
+
+void selectionSort_array_test()
+{
+  int array[] = {4,3,2,1,0};
+  int length = sizeof(array)/sizeof(array[0]) ;
+  selectionSort_array(array, length);
+  array_display(array, length);
+}
+
+void bubbleSort_list(struct SList ** head)
+{
+  struct SList *curr = *head;
+  struct SList *k = NULL, *kprev = NULL;
+  struct SList *buffer = NULL;
+  struct SList *end = NULL;
+
+  while (curr != end)
+  {
+    k =  *head;
+    kprev = NULL;
+
+    while(k->next != end)
+    {
+      if (k->value > k->next->value)
+      {
+
+        buffer = k->next;
+        k->next = k->next->next;
+
+        if (curr == k) // curr pointer updated
+        {
+          curr = buffer;
+        }
+
+        if (k == *head)
+        {
+          buffer->next = *head;
+          *head = buffer;
+        }
+        else if (kprev)
+        {
+          kprev->next = buffer;
+          buffer->next = k;
+        }
+
+        kprev = buffer;
+        k = kprev->next;
+      }
+
+      else
+      {
+        kprev = k;
+        k = k->next;
+      }
+    }
+
+    end = k; /* updated tail is ordered */
+
+    curr = curr->next;
+
+  }
+}
+
+void bubbleSort_list_test()
+{
+  struct SList *list = NULL;
+  SList_add(5, &list);
+  SList_add(4, &list);
+  SList_add(3, &list);
+  SList_add(2, &list);
+  SList_add(1, &list);
+  bubbleSort_list(&list);
+  SList_display(&list);
 }
 
 int main()
 {
-  bubble_sort_array_test();
+  bubbleSort_list_test();
 }
