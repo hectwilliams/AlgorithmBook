@@ -105,24 +105,74 @@ def selectionSort_list(llist):
         curr_prev.next = selection
 
       curr.next = selection_prev.next
-      selection_prev.next = curr
+
+      if curr != selection_prev:
+        selection_prev.next = curr
+      else:
+        selection.next = curr
 
       curr = selection
 
     curr_prev = curr
     curr = curr_prev.next
 
-def test():
-  collection = [5,4,3,2,1]
-  selectionSort(collection)
-  print(collection)
+
+
+
+def multiSort(llist , prio = 0) :
+  curr = None
+  k = None
+  curr_prev = None
+  selection_prev = None
+  selection = None
+
+  if prio >= 2:
+    return
+
+  curr = llist.head
+
+  while curr:
+    k = curr
+    selection = curr
+
+    while k.next:
+      if  (prio == 0 and k.next.value['last'] < selection.value['last'] ) or  (prio == 1 and k.next.value['first'] < selection.value['first'] and  k.next.value['last'] == selection.value['last']   ):
+        selection = k.next
+        selection_prev = k
+      k = k.next
+
+    if curr != selection:
+      selection_prev.next = selection_prev.next.next
+      selection.next = curr.next
+
+      if curr == llist.head :
+        llist.head = selection
+      else:
+        curr_prev.next = selection
+
+      curr.next = selection_prev.next
+
+      if curr != selection_prev:
+        selection_prev.next = curr
+      else:
+        selection.next = curr
+
+      curr = selection
+
+    curr_prev = curr
+    curr = curr.next
+  return multiSort(llist, prio + 1)
+
 
 def test2():
-  collection = [5,4,3,2,1]
+
   ll = SList()
-  for ele in collection:
-    ll.add(ele)
-  selectionSort_list(ll)
+
+  ll.add({ 'first': "Aaron", 'last': "Carnevale"})
+  ll.add({ 'first': "Lee", 'last': "Abbey"})
+  ll.add({ 'first': "Giorgio", 'last': "Carnevale"})
+
+  multiSort(ll)
   ll.display()
 
 test2()

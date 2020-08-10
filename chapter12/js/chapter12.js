@@ -149,7 +149,8 @@ var selectionSort_list = function (llist)
     {
       if (k.next.value < selection.value)
       {
-        selection = k.next;
+        selection = k.next
+;
         selection_prev = k;
       }
       k = k.next;
@@ -171,7 +172,15 @@ var selectionSort_list = function (llist)
       }
 
       curr.next = selection_prev.next;
-      selection_prev.next = curr;
+
+      if (curr != selection_prev)
+      {
+        selection_prev.next = curr;
+      }
+      else
+      {
+        selection.next = curr;
+      }
 
       curr = selection;
     }
@@ -182,23 +191,71 @@ var selectionSort_list = function (llist)
 
 }
 
-function test()
+var multiSort = function (llist, prio = 0)
 {
-  let collection  = [5, 4,3,2,1];
-  selectionSort(collection);
-  console.log(collection);
-};
+
+  let curr, k, k_prev, curr_prev, selection_prev, selection;
+
+  curr = k = kprev = curr_prev = selection_prev = selection = null;
+
+  if (prio == 2)
+  {
+    return;
+  }
+
+  curr = llist.head;
+
+  while (curr)
+  {
+     k = selection = curr;
+     while (k.next)
+     {
+      if ( (prio == 0 && k.next.value.last < selection.value.last ) || (prio == 1 && k.next.value.first < selection.value.first && k.next.value.last == selection.value.last)     )
+      {
+        selection_prev = k;
+        selection = k.next;
+      }
+      k = k.next;
+     }
+
+     if (curr != selection)
+     {
+       selection_prev.next = selection_prev.next.next;
+       selection.next = curr.next;
+
+       if (curr == llist.head)
+       {
+         llist.head = selection;
+       }
+       else
+       {
+         curr_prev.next = selection;
+       }
+       curr.next = selection_prev.next;
+       if (curr != selection_prev)
+       {
+         selection_prev.next = curr;
+       }
+       else
+       {
+         selection.next = curr;
+       }
+       curr = selection
+     }
+     curr_prev = curr;
+     curr =  curr.next;
+  }
+
+}
 
 function test2 ()
 {
   let list = SList()
-  list.add(5);
-  list.add(4);
-  list.add(3);
-  list.add(2);
-  list.add(1);
+  list.add({first: 'Aaron', last: 'Carnevale' });
+  list.add({first: 'Lee', last: 'Abbey' });
+  list.add({first: 'Giorgio', last: 'Carnevale' });
 
-  selectionSort_list(list);
+  multiSort(list);
   list.display();
 }
 

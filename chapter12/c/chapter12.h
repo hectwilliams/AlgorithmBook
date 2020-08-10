@@ -17,23 +17,15 @@ void bubbleSort_array(int *array, int size);
 void selectionSort_array(int *array, int size);
 void bubbleSort_list(struct SList ** head);
 
+struct NameList
+{
+  const char * firstName;
+  const char * lastName;
+  struct NameList *next;
+};
 
-/*
+void multikey_sort (struct NameList **head);
+void NameList_display(struct NameList **node);
+void NameList_add(const char *firstName, const char *lastName, struct NameList **node);
+struct NameList *allocate_namelist(const char *firstName, const char *lastName);
 
-      curr             sel
-  5    4    3     2    1
-
-
-
-  b = 1
-  a = 5
-
-
-
-  i
-
-  s   sn
-
-  4  5   3 2 1
-        sn
-*/

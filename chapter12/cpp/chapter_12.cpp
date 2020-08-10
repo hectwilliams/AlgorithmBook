@@ -149,18 +149,25 @@ void selection_sort_list(SList &list)
       /* front insert*/
       if (curr == list.head)
       {
-        selection->next = curr->next;
         list.head = selection;
       }
       else
       {
-        selection->next = curr->next;
         curr_prev->next = selection;
       }
 
       /*back insert*/
       curr->next = selection_prev->next;
-      selection_prev->next = curr;
+
+      /*handle adjacent nodes*/
+      if (curr != selection_prev)
+      {
+        selection_prev->next = curr;
+      }
+      else
+      {
+        selection->next = curr;
+      }
 
       curr = selection;
     }
@@ -169,7 +176,6 @@ void selection_sort_list(SList &list)
     curr = curr->next;
   }
 }
-
 
 void test()
 {
@@ -193,16 +199,116 @@ void test()
 }
 
 
+
+NameList & NameList::add (std::string first_name, std::string last_name)
+{
+  NameNode *runner;
+
+  if (head == NULL)
+  {
+    head = new NameNode(first_name, last_name);
+  }
+  else
+  {
+    runner = head;
+    while(runner->next)
+    {
+      runner = runner->next;
+    }
+    runner->next = new NameNode(first_name, last_name);
+  }
+
+  return *this;
+
+}
+
+
+void NameList::display()
+{
+  NameNode *runner = head;
+  while (runner)
+  {
+    std::cout << runner->first_name << ' ' << runner->last_name << '\n';
+    runner = runner->next;
+  }
+}
+
+
+void NameList::multiSort(unsigned prio)
+{
+  NameNode *curr, *curr_prev, *k, *k_prev, *selection, *selection_prev;
+
+  if (prio >= 2)
+  {
+    return;
+  }
+
+  curr = head;
+  curr_prev = NULL;
+
+  while (curr)
+  {
+
+    k = curr;
+    selection = curr;
+
+    while(k->next )
+    {
+      if ((prio == 0 && k->next->last_name.compare(selection->last_name) < 0 )  || (prio == 1 && k->next->last_name.compare(selection->last_name) < 0 && k->next->first_name.compare(selection->first_name) == 0) )
+      {
+        selection_prev = k;
+        selection = k->next;
+      }
+      k  = k->next;
+    }
+
+    if (curr != selection)
+    {
+      selection_prev->next = selection_prev->next->next;
+      selection->next = curr->next;
+
+      if (curr == head )
+      {
+        head = selection;
+      }
+      else
+      {
+        curr_prev->next = selection;
+      }
+
+      curr->next = selection_prev->next;
+
+      if (curr != selection_prev)
+      {
+        selection_prev->next = curr;
+      }
+      else
+      {
+        selection->next = curr;
+      }
+      curr = selection ;
+    }
+    curr_prev = curr;
+    curr = curr->next;
+  }
+
+  return multiSort(prio + 1);
+
+}
+
+
+
 void test2 ()
 {
-  SList list;
-  list.add(5);
-  list.add(4);
-  list.add(3);
-  list.add(2);
-  list.add(1);
-  selection_sort_list(list);
+  NameList list;
+  list.add("Aaron", "Carnevale");
+  list.add("Lee", "Abbey");
+  list.add ("Giorgio", "Carnevale");
   list.display();
+  std::cout << "   ****\n " << '\n';
+  list.multiSort();
+  list.display();
+
 }
 
 int main()

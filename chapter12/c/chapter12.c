@@ -200,22 +200,27 @@ void selectionSort_list(struct SList **head)
     if (curr != selection)
     {
       selection_prev->next = selection_prev->next->next;
+      selection->next = curr->next;
 
 
        if (curr == *head)
       {
-        selection->next = curr->next;
         *head = selection;
-        curr->next = selection_prev->next;
+      }
+      else
+      {
+        curr_prev->next = selection;
+
+      }
+      curr->next = selection_prev->next;
+
+      if (curr != selection_prev)
+      {
         selection_prev->next = curr;
       }
       else
       {
-        selection->next = curr->next;
-        curr_prev->next = selection;
-
-        curr->next = selection_prev->next;
-        selection_prev->next = curr;
+        selection->next = curr;
       }
 
       curr = selection; // update curr pointer
@@ -239,7 +244,148 @@ void selectionSort_list_test()
   SList_display(&list);
 }
 
+
+
+/* names */
+void multikey_sort (struct NameList **head)
+{
+  struct NameList *curr, *curr_prev = NULL, *k, *kprev, *selection_prev, *selection;
+
+  for (int i = 0; i < 2; i++)
+  {
+    curr = *head;
+    curr_prev = NULL;
+
+    while(curr)
+    {
+      k = curr;
+      selection = curr;
+
+      while (k->next)
+      {
+
+        if (i == 1)
+        {
+          if ( (strcmp(k->next->firstName, selection->firstName) < 0) &&  (strcmp(k->next->lastName, selection->lastName) == 0)  )
+          {
+            selection_prev = k;
+            selection = k->next;
+          }
+        }
+        else if (i == 0)
+        {
+          if ( strcmp(k->next->lastName, selection->lastName) < 0 )
+          {
+            selection_prev = k;
+            selection = k->next;
+          }
+        }
+
+
+        k = k->next;
+      }
+
+
+
+      if (curr != selection)
+      {
+
+        selection_prev->next = selection_prev->next->next;
+        selection->next = curr->next;
+
+        if (curr == *head)
+        {
+          *head = selection;
+        }
+        else
+        {
+          curr_prev->next = selection;
+        }
+
+        curr->next = selection_prev->next;
+
+
+        if (curr != selection_prev)
+        {
+          selection_prev->next = curr;
+        }
+        else
+        {
+          selection->next = curr;
+        }
+
+
+        curr = selection; // update curr pointer
+      }
+
+      curr_prev = curr;
+      curr = curr->next;
+    }
+
+  }
+}
+
+
+struct NameList *allocate_namelist(const char *firstName, const char *lastName)
+{
+  struct NameList *node = (struct NameList*) malloc(sizeof(struct NameList));
+  node->firstName = firstName;
+  node->lastName = lastName;
+  node->next = NULL;
+  return node;
+}
+
+
+void NameList_add(const char *firstName, const char *lastName, struct NameList **node)
+{
+  struct NameList *runner = NULL;
+
+  if (*node == NULL)
+  {
+    *node = allocate_namelist(firstName, lastName);
+  }
+  else
+  {
+    runner = *node;
+    while(runner->next)
+    {
+      runner = runner->next;
+    }
+    runner->next = allocate_namelist(firstName, lastName);
+  }
+}
+
+
+void NameList_display(struct NameList **node)
+{
+  struct NameList *runner;
+
+  if (*node )
+  {
+    runner = *node;
+    while (runner)
+    {
+      printf(" [ %s  %s  ] \n", runner->firstName, runner->lastName);
+      runner = runner->next;
+    }
+  }
+}
+
+
+void multikey_sort_test()
+{
+  struct NameList *list = NULL;
+
+  NameList_add("Aaron", "Carnevale", &list);
+  NameList_add("Lee", "Abbey", &list);
+  NameList_add("Giorgio", "Carnevale", &list);
+  multikey_sort(&list);
+  NameList_display(&list);
+}
+
+
+
 int main()
 {
-  selectionSort_list_test();
+  multikey_sort_test();
 }
