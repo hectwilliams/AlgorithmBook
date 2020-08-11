@@ -296,19 +296,127 @@ void NameList::multiSort(unsigned prio)
 
 }
 
+void insertionSort(std::vector<int> &collection)
+{
+  int size = collection.size();
+  for (int i = 0; i < size; i++)
+  {
+    for (int k = i - 1; k >= 0; k--)
+    {
+      if (collection[k] > collection[k + 1])
+      {
+        std::swap(collection[k] , collection[k + 1]);
+      }
+    }
+  }
+}
 
+void insertionSort_list (SList &list)
+{
+  SLNode *buffer = NULL, *curr =  list.head;
+  while (curr->next)
+  {
+    if (curr->next->value < list.head->value)
+    {
+      buffer = curr->next;
+      curr->next = curr->next->next;
+      buffer->next = list.head;
+      list.head = buffer;
+    }
+    else
+    {
+      curr = curr->next;
+    }
+  }
+}
+
+std::vector<int>  combine(std::vector<int> a, std::vector<int> b)
+{
+  int ptrA, ptrB;
+  std::vector<int> collection;
+
+  ptrA = ptrB = 0;
+
+  while (ptrA < a.size() || ptrB < b.size())
+  {
+    if (ptrA < a.size() && ptrB < b.size())
+    {
+      if (a[ptrA] == b[ptrB])
+      {
+        collection.push_back(a[ptrA++]);
+        collection.push_back(b[ptrB++]);
+      }
+      else if (a[ptrA] < b[ptrB])
+      {
+        collection.push_back(a[ptrA++]);
+      }
+      else
+      {
+        collection.push_back(b[ptrB++]);
+      }
+    }
+    else if (ptrA < a.size())
+    {
+      collection.push_back(a[ptrA++]);
+    }
+    else if (ptrB < b.size())
+    {
+      collection.push_back(b[ptrB++]);
+    }
+  }
+}
+
+SLNode *combine (SLNode *a, SLNode *b)
+{
+  SLNode *head = new SLNode(-1);
+  SLNode *node = head;
+  node->next = NULL;
+
+  while (a && b)
+  {
+    if (a->value <= b->value)
+    {
+      node->next = a;
+      a = a->next;
+    }
+    else
+    {
+      node->next = b;
+      b = b->next;
+    }
+    node = node->next;
+  }
+
+  if (a != NULL)
+  {
+    node->next = a;
+  }
+
+  if (b != NULL)
+  {
+    node->next = b;
+  }
+
+  node = head->next;
+  delete(head);
+  return node;
+}
 
 void test2 ()
 {
-  NameList list;
-  list.add("Aaron", "Carnevale");
-  list.add("Lee", "Abbey");
-  list.add ("Giorgio", "Carnevale");
-  list.display();
-  std::cout << "   ****\n " << '\n';
-  list.multiSort();
-  list.display();
+  SList list;
+  list.add(4).add(5).add(6).add(7);
+  SList list2;
+  list2.add(5).add(5).add(6).add(7);
 
+  SLNode *tmp = combine(list.head, list2.head);
+  SLNode *runner = tmp;
+
+  while (runner)
+  {
+    std::cout << '\t' << runner->value << '\n';
+    runner = runner->next;
+  }
 }
 
 int main()

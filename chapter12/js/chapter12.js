@@ -32,6 +32,7 @@ var SList = function()
       }
       runner.next = SLNode(data);
     }
+    return this;
   };
 
   this.display = () => {
@@ -245,18 +246,169 @@ var multiSort = function (llist, prio = 0)
      curr_prev = curr;
      curr =  curr.next;
   }
-
 }
+
+var insertionSort = function (collection)
+{
+  let size = collection.length;
+
+  for (let i = 1; i < size; i++)
+  {
+    for (let k = i - 1; k >= 0; k++)
+    {
+      if (collection[k] > collection[k + 1])
+      {
+        swap(collection, k, k + 1);
+      }
+    }
+  }
+}
+
+var insertionSort_list = function(list)
+{
+  let curr = list.head, buffer = null;
+
+  while(curr.next)
+  {
+    if (curr.next.value < list.head.value)
+    {
+      buffer = curr.next;
+      curr.next = curr.next.next;
+      buffer.next = list.head;
+      list.head = buffer;
+    }
+    else
+    {
+      curr = curr.next;
+    }
+  }
+}
+
+var combine = function (a, b)
+{
+  let ptrA, ptrB;
+  let collection = [];
+
+  ptrA = ptrB = 0;
+
+  while (ptrA < a.length || ptrB < b.length)
+  {
+    if (ptrA  < a.length && ptrB < b.length)
+    {
+      if (a[ptrA] == b[ptrB])
+      {
+        collection.push(a[ptrA++]);
+        collection.push(b[ptrB++]);
+      }
+      else if (a[ptrA] < b[ptrB])
+      {
+        collection.push(a[ptrA++]);
+      }
+      else
+      {
+        collection.push(b[ptrB++]);
+      }
+    }
+    else if (ptrA < a.length)
+    {
+      collection.push(a[ptrA++]);
+    }
+    else
+    {
+      collection.push(b[ptrB++]);
+    }
+  }
+  return collection;
+}
+
+
+var combine_in_place = function (a, b)
+{
+  let ptrA = 0;
+  let ptrB = 0;
+
+  while (ptrA < a.length)
+  {
+    ptrB = -1;
+
+    while (ptrB + 1 < b.length)
+    {
+      if (b[ptrB + 1] < a[ptrA])
+      {
+        ++ptrB;
+      }
+      else
+      {
+        break;
+      }
+    }
+
+    if (ptrB >= 0 && ptrB < b.length)
+    {
+      let tmp = a[ptrA];
+      a[ptrA] = b[ptrB];
+      b[ptrB] = tmp;
+    }
+    else
+    {
+      ++ptrA;
+    }
+  }
+
+  while (b.length)   // flush b array
+  {
+    a.push(b.shift());
+  }
+}
+
+var combine_list = function (list_a, list_b)
+{
+  let head = SLNode(undefined);
+  let node = head;
+  node.next = null;
+
+  while (list_a && list_b)
+  {
+    if (list_a.value <= list_b.value)
+    {
+      node.next = list_a;
+      list_a = list_a.next;
+    }
+    else
+    {
+      node.next = list_b;
+      list_b = list_b.next;
+    }
+    node = node.next;
+  }
+
+  if (list_a)
+  {
+    node.next = list_a;
+  }
+
+  if (list_b)
+  {
+    node.next = list_b;
+  }
+
+  node = head.next;
+  delete head;
+  return node;
+}
+
 
 function test2 ()
 {
-  let list = SList()
-  list.add({first: 'Aaron', last: 'Carnevale' });
-  list.add({first: 'Lee', last: 'Abbey' });
-  list.add({first: 'Giorgio', last: 'Carnevale' });
+  let list1 = SList();
+  list1.add(2).add(3).add(4);
 
-  multiSort(list);
-  list.display();
+  let list2= SList();
+  list2.add(2).add(3).add(4);
+
+  let x = combine_list(list1.head, list2.head);
+  console.log(x);
 }
 
 test2();
+

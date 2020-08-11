@@ -54,3 +54,8 @@ class NameList
     void display();
     void multiSort(unsigned prio = 0);
 };
+
+void insertionSort(std::vector<int> &collection);
+std::vector<int>  combine(std::vector<int> a, std::vector<int> b);
+
+SLNode *combine (SLNode *a, SLNode *b);

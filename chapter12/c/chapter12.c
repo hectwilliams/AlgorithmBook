@@ -232,18 +232,6 @@ void selectionSort_list(struct SList **head)
 }
 
 
-void selectionSort_list_test()
-{
-  struct SList *list = NULL;
-  SList_add(5, &list);
-  SList_add(4, &list);
-  SList_add(3, &list);
-  SList_add(2, &list);
-  SList_add(1, &list);
-  selectionSort_list(&list);
-  SList_display(&list);
-}
-
 
 
 /* names */
@@ -372,20 +360,159 @@ void NameList_display(struct NameList **node)
 }
 
 
-void multikey_sort_test()
+void insertionSort_array (int * array, unsigned size)
 {
-  struct NameList *list = NULL;
-
-  NameList_add("Aaron", "Carnevale", &list);
-  NameList_add("Lee", "Abbey", &list);
-  NameList_add("Giorgio", "Carnevale", &list);
-  multikey_sort(&list);
-  NameList_display(&list);
+  for (int i = 1; i < size; i++)
+  {
+    for (int k = i - 1; k >=0; k--)
+    {
+      if (array[k]  > array[k + 1])
+      {
+        swap(array, k, k + 1);
+      }
+    }
+   }
 }
 
+
+void insertionSort_list(struct SList **head)
+{
+  struct SList *curr, *curr_prev, *k, *k_prev, *buffer;
+
+  curr = *head;
+
+  while (curr->next)  // O(N)
+  {
+    if ((*head)->value > curr->value && curr_prev)       // 0(1)
+    {
+      buffer = curr;
+      curr_prev->next = curr_prev->next->next;
+
+      buffer->next = (*head);
+      (*head) = buffer;
+
+      curr = curr_prev;
+    }
+    curr_prev = curr;
+    curr = curr->next;
+  }
+}
+
+struct array_obj  combine_array(int * a, int a_size, int *b, int b_size)
+{
+  struct array_obj obj;
+  int ptr_a = 0, ptr_b = 0, index = 0;
+  int * collection = (int *) malloc(sizeof(int)  * (b_size + a_size));
+
+  while (1)
+  {
+    if (ptr_a  < a_size && ptr_b < b_size)
+    {
+      if (a[ptr_a] == b[ptr_b])
+      {
+        collection[index++] = a[ptr_a++];
+        collection[index++] = b[ptr_b++];
+      }
+      else if (a[ptr_a] < b[ptr_b])
+      {
+        collection[index++] = a[ptr_a++];
+      }
+      else
+      {
+        collection[index++] = b[ptr_b++];
+      }
+    }
+    else if (ptr_a < a_size)
+    {
+      collection[index++] = a[ptr_a++];
+    }
+    else if (ptr_b < b_size)
+    {
+      collection[index++] = b[ptr_b++];
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  obj.array = collection;
+  obj.size = index;
+
+  return obj;
+}
+
+struct SList *combine_list  (struct SList *a, struct SList *b)
+{
+  struct SList *node;
+  struct SList *head = (struct SList *) malloc( sizeof(struct SList) );
+
+  head->next = NULL;
+  node = head;
+
+  while (a && b)
+  {
+    if (a->value <= b->value)
+    {
+      node->next = a;
+      a = a->next;
+    }
+    else
+    {
+      node->next = b;
+      b = b->next;
+    }
+    node = node->next;
+  }
+
+  if (a != NULL)
+  {
+    node->next = a;
+  }
+
+  if (b != NULL)
+  {
+    node->next = b;
+  }
+
+  node = head->next;
+
+  free(head);
+
+  return node;
+
+ }
+
+void test()
+{
+  int arr [] = {5, 3, 1, 6};
+  int len  = sizeof(arr) / sizeof(arr[0]);
+  struct array_obj data = combine_array( arr, len, arr, len );
+  array_display(data.array, data.size);
+}
+
+
+void test2()
+{
+  struct SList *list = NULL;
+  SList_add (5, &list);
+  SList_add(6, &list);
+  SList_add(7, &list);
+  SList_add(8, &list);
+
+  struct SList *list_two = NULL;
+  SList_add (2, &list_two);
+  SList_add(5, &list_two);
+  SList_add(8, &list_two);
+  SList_add(9, &list_two);
+
+  struct SList *data = combine_list(list, list_two);
+
+  SList_display(&data);
+}
 
 
 int main()
 {
-  multikey_sort_test();
+  test2();
 }

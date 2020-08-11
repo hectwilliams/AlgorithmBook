@@ -29,3 +29,16 @@ void NameList_display(struct NameList **node);
 void NameList_add(const char *firstName, const char *lastName, struct NameList **node);
 struct NameList *allocate_namelist(const char *firstName, const char *lastName);
 
+
+
+void insertionSort_array (int * array, unsigned size);
+struct array_obj  combine_array(int * a, int a_size, int *b, int b_size);
+
+struct array_obj
+{
+  int *array;
+  int size ;
+};
+
+
+struct SList *combine_list  (struct SList *a, struct SList *b);

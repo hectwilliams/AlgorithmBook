@@ -15,6 +15,7 @@ class SList:
       while runner.next:
         runner = runner.next
       runner.next = SLNode(value)
+    return self
   def display(self):
     runner = self.head
     while runner:
@@ -163,16 +164,105 @@ def multiSort(llist , prio = 0) :
     curr = curr.next
   return multiSort(llist, prio + 1)
 
+def insertionSort_array(collection):
+  size = len(collection)
+
+  for i in range(1, size):
+    for k in range(i - 1, -1, -1):
+      if collection[k] > collection[ k + 1]:
+        collection[k] , collection[k + 1] = collection[k + 1] , collection[k]
+
+def insertionSort_list(llist):
+  curr = llist.head
+  buffer = None
+
+  while curr.next:
+    if curr.next.value < llist.head.value:
+      buffer = curr.next
+      curr.next = curr.next.next
+      buffer.next = llist.head
+      llist.head = buffer
+    else :
+      curr = curr.next
+
+def combine(a, b):
+  ptrA = 0
+  ptrB  =  0
+  collection = []
+  while ptrA < len(a) or ptrB < len(b):
+    if ptrA < len(a) and ptrB < len(b):
+      if a[ptrA] == b[ptrB]:
+        collection.append(a[ptrA])
+        collection.append(b[ptrB])
+        ptrA += 1
+        ptrB += 1
+      elif a[ptrA] < b[ptrB]:
+        collection.append(a[ptrA])
+        ptrA += 1
+      else:
+        collection.append(b[ptrB])
+        ptrB += 1
+    elif ptrA < len(a) :
+      collection.append(a[ptrA])
+      ptrA += 1
+    elif ptrB < len(b) :
+      collection.append(b[ptrB] )
+      ptrB += 1
+
+  return collection
+
+def combine_in_place(a, b) :
+  ptrA = 0
+  ptrB = 0
+
+  while ptrA < len(a):
+
+    ptrB = -1
+    while ptrB + 1< len(b):
+      if b[ptrB + 1] < a[ptrA]:
+        ptrB += 1
+      else:
+        break
+
+    if ptrB >= 0 and ptrB < len(b):
+      a[ptrA], b[ptrB] = b[ptrB], a[ptrA]
+    else:
+      ptrA += 1
+
+  a += b
+
+def combine_list(listA, listB):
+  head  = SLNode(None)
+  node = head
+
+  node.next = None
+
+  while listA and listB:
+    if listA.value <= listB.value:
+      node.next = listA
+      listA = listA.next
+    else:
+      node.next = listB
+      listB = listB.next
+    node = node.next
+
+  if listA != None:
+    node.next = listA
+
+  if listB != None:
+    node.next = listB
+
+  node = head.next
+  del(head)
+  return node
 
 def test2():
-
-  ll = SList()
-
-  ll.add({ 'first': "Aaron", 'last': "Carnevale"})
-  ll.add({ 'first': "Lee", 'last': "Abbey"})
-  ll.add({ 'first': "Giorgio", 'last': "Carnevale"})
-
-  multiSort(ll)
-  ll.display()
-
+  list1 = SList()
+  list2 = SList()
+  list1.add(2).add(3).add(4)
+  list2.add(2).add(3).add(4)
+  x = combine_list(list1.head, list2.head)
+  while x:
+    print(x.value)
+    x = x.next
 test2()
