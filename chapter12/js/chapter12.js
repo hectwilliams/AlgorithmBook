@@ -397,6 +397,43 @@ var combine_list = function (list_a, list_b)
   return node;
 }
 
+var mergeSort_list = function(llist)
+{
+  let counter = 0;
+  let left, right, right_prev;
+
+  right = left = right_prev = llist;
+
+  while(llist.next)
+  {
+    ++counter;
+    if (counter % 2 == 0 && counter > 0)
+    {
+      right_prev = right;
+      right = right.next;
+    }
+    llist = llist.next;
+  }
+
+  if (counter <= 1)
+  {
+    return llist;
+  }
+  else if (counter == 2 )
+  {
+    right = left.next;
+    left.next =  null;
+    return combine_list(left, right);
+  }
+  else
+  {
+    right_prev.next = null;
+    left = mergeSort_list(left);
+    right = mergeSort_list(right);
+  }
+
+  return combine_list(left, right);
+}
 
 function test2 ()
 {
@@ -406,7 +443,7 @@ function test2 ()
   let list2= SList();
   list2.add(2).add(3).add(4);
 
-  let x = combine_list(list1.head, list2.head);
+  let x = mergeSort_list(list1.head);
   console.log(x);
 }
 

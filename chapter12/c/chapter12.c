@@ -35,14 +35,18 @@ void SList_display(struct SList **node)
 {
   struct SList *runner;
 
+
   if (*node )
   {
     runner = *node;
+    printf("[");;
     while (runner)
     {
-      printf(" %d\n", runner->value);
+      printf(" %d ,", runner->value);
       runner = runner->next;
     }
+    printf("]\n");
+
   }
 }
 
@@ -480,8 +484,52 @@ struct SList *combine_list  (struct SList *a, struct SList *b)
   free(head);
 
   return node;
+}
 
- }
+/*
+  SPACE_TIME  N*LOG(N)
+  RUN TIME  N*LOG(N)
+*/
+struct SList *mergeSort_list(struct SList *llist)
+{
+  struct SList  *left, *right_prev, *right;
+  unsigned counter = 0;
+
+  left = right = right_prev= llist;
+
+  while (llist->next)
+  {
+    ++counter;
+    if (counter % 2 == 0 && counter > 0)
+    {
+      right_prev = right;
+      right = right->next;
+    }
+    llist = llist->next;
+  }
+
+  if (counter <= 1)
+  {
+    return llist;
+  }
+
+  else if (counter == 2)
+  {
+    /* split nodes*/
+    right = left->next;
+    left->next = NULL;
+    return combine_list(left, right);
+  }
+
+  else
+  {
+    right_prev->next = NULL;
+    left = mergeSort_list(left);
+    right = mergeSort_list(right);
+  }
+
+  return combine_list(left, right);
+}
 
 void test()
 {
@@ -491,24 +539,18 @@ void test()
   array_display(data.array, data.size);
 }
 
-
 void test2()
 {
-  struct SList *list = NULL;
+  struct SList *list = NULL, *test;
   SList_add (5, &list);
   SList_add(6, &list);
-  SList_add(7, &list);
-  SList_add(8, &list);
-
-  struct SList *list_two = NULL;
-  SList_add (2, &list_two);
-  SList_add(5, &list_two);
-  SList_add(8, &list_two);
-  SList_add(9, &list_two);
-
-  struct SList *data = combine_list(list, list_two);
-
-  SList_display(&data);
+  SList_add(9, &list);
+  SList_add(2, &list);
+  SList_add(0, &list);
+  SList_add(2, &list);
+  SList_add(11, &list);
+  test = mergeSort_list(list);
+  SList_display(&test);
 }
 
 

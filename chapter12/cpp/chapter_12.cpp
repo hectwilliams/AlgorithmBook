@@ -368,7 +368,7 @@ std::vector<int>  combine(std::vector<int> a, std::vector<int> b)
 
 SLNode *combine (SLNode *a, SLNode *b)
 {
-  SLNode *head = new SLNode(-1);
+  SLNode *head = new SLNode(-1);  // dummy node s
   SLNode *node = head;
   node->next = NULL;
 
@@ -402,14 +402,50 @@ SLNode *combine (SLNode *a, SLNode *b)
   return node;
 }
 
+SLNode *mergeSort(SLNode *llist)
+{
+  SLNode *left, *right, *right_prev;
+  unsigned counter = 0;
+
+  left = right = right_prev = llist;
+  while (llist->next)
+  {
+    ++counter;
+    if (counter % 2 == 0 && counter > 0)
+    {
+      right_prev = right;
+      right = right->next;
+    }
+    llist = llist->next;
+  }
+
+  if (counter <= 1)
+  {
+    return llist;
+  }
+  else if (counter == 2)
+  {
+    right = left->next;
+    left->next = NULL;
+    return combine(left, right);
+  }
+  else
+  {
+    right_prev->next = NULL;
+    left = mergeSort(left);
+    right = mergeSort(right);
+  }
+  return combine(left, right);
+}
+
 void test2 ()
 {
   SList list;
-  list.add(4).add(5).add(6).add(7);
-  SList list2;
-  list2.add(5).add(5).add(6).add(7);
+  list.add(23).add(100).add(4).add(5).add(6).add(7);
+  // SList list2;
+  // list2.add(5).add(5).add(6).add(7);
 
-  SLNode *tmp = combine(list.head, list2.head);
+  SLNode *tmp = mergeSort(list.head);
   SLNode *runner = tmp;
 
   while (runner)

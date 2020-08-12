@@ -256,12 +256,40 @@ def combine_list(listA, listB):
   del(head)
   return node
 
+def mergeSort_list (llist):
+  counter = 0
+  left = llist
+  right_prev = llist
+  right = llist
+
+  while llist.next:
+    counter += 1
+    if counter % 2  == 0 and counter > 0:
+      right_prev = right
+      right = right.next
+    llist = llist.next
+
+  if counter <= 1:
+    return llist
+
+  elif counter == 2:
+    right = left.next
+    left.next = None
+    return combine_list(left, right)
+
+  else:
+    right_prev.next = None
+    left = mergeSort_list(left)
+    right = mergeSort_list(right)
+
+  return combine_list(left, right)
+
 def test2():
   list1 = SList()
-  list2 = SList()
-  list1.add(2).add(3).add(4)
-  list2.add(2).add(3).add(4)
-  x = combine_list(list1.head, list2.head)
+  # list2 = SList()
+  list1.add(45).add(20).add(2).add(3).add(4)
+  # list2.add(2).add(3).add(4)
+  x = mergeSort_list(list1.head)
   while x:
     print(x.value)
     x = x.next
