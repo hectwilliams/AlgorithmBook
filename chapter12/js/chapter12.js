@@ -435,16 +435,121 @@ var mergeSort_list = function(llist)
   return combine_list(left, right);
 }
 
+const partition_list = function(llist)
+{
+  let curr, pivot, head, pivot_prev, buffer;
+
+  curr = pivot = head = llist;
+  pivot_prev = buffer = null;
+
+  while (curr.next)
+  {
+    if (curr.next.value < pivot.value)
+    {
+      buffer = curr.next;
+      curr.next = curr.next.next;
+      if (head == curr)
+      {
+        head = buffer;
+        buffer.next = pivot;
+      }
+      else
+      {
+        buffer.next = pivot;
+        pivot_prev.next = buffer;
+      }
+    }
+    else
+    {
+      curr = curr.next;
+    }
+  }
+  return head;
+}
+
+const partition_array = function (collection)
+{
+  let k = 0;
+
+  for (let i = 0; i < collection.length; i++)
+  {
+    if (collection[i] < collection[k])
+    {
+      swap(collection, i, k);
+      k++;
+    }
+  }
+  return k;
+}
+
+const partition_array_second = function(collection)
+{
+  let size = collection.length;
+  let median = [null, null, null];
+  let pivot = null;
+  let k = 0;
+
+  if (collection.length)
+  {
+    median[0] = collection[0];
+    median[1] = collection[Math.floor(size / 2)];
+    median[2] = collection[collection.length - 1];
+    pivot = median[1];
+    for (let i = 0; i < collection.length; i++)
+    {
+      if (collection[i] < pivot)
+      {
+        swap(collection, i, k);
+        k++;
+      }
+    }
+  }
+  return k;
+}
+
+const partition_array_third = function(arr, start = 0, end = 0)
+{
+  let k = -1;
+  end = arr.length;
+
+  for (let i = start; i < end; i++)
+  {
+    if (k == -1)
+    {
+      k = start;
+    }
+    if (arr[i] < arr[k])
+    {
+      swap(arr, i, k);
+      k++;
+    }
+  }
+  return k;
+}
+
+const quickSort = function(arr,  start = 0,  end = -1)
+{
+  let pivot = null;
+  if (end == -1)
+  {
+    end = arr.length;
+  }
+  if (end - start > 0)
+  {
+    pivot = partition_array_third(arr, start, end);
+    if (pivot >= 0)
+    {
+      quickSort(arr, 0, pivot);
+      quickSort(arr, pivot + 1, end)
+    }
+  }
+}
+
 function test2 ()
 {
-  let list1 = SList();
-  list1.add(2).add(3).add(4);
-
-  let list2= SList();
-  list2.add(2).add(3).add(4);
-
-  let x = mergeSort_list(list1.head);
-  console.log(x);
+  let dem = [ 2, 4, 6, 2, 10, 1];
+  quickSort(dem);
+  console.log(dem);
 }
 
 test2();

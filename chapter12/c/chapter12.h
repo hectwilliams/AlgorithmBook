@@ -13,7 +13,7 @@ void SList_display(struct SList **node);
 
 void swap(int *array, int i, int k);
 void array_display(int *array, int size) ;
-void bubbleSort_array(int *array, int size);
+void bubble_sort_array(int *array, int size);
 void selectionSort_array(int *array, int size);
 void bubbleSort_list(struct SList ** head);
 
@@ -42,3 +42,12 @@ struct array_obj
 
 struct SList *combine_list  (struct SList *a, struct SList *b);
 struct SList *mergeSort_list(struct SList *llist);
+struct SList *partition_list(struct SList *llist);
+
+int partition_array(int *collection, int size);
+int partition_array_second(int *collection, int size);
+int partition_array_third(int *collection, int size);
+int partition_array_third_helper(*collection,int start, int  end);
+
+void quickSort(int *collection, int size);
+void quickSort_helper(int *collection, int start, int end);

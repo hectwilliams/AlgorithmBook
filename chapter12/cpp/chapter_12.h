@@ -59,4 +59,8 @@ void insertionSort(std::vector<int> &collection);
 std::vector<int>  combine(std::vector<int> a, std::vector<int> b);
 
 SLNode *combine (SLNode *a, SLNode *b);
-SLNode *mergeSort(SLNode *llist);
+SLNode *mergeSort_list(SLNode *llist);
+SLNode *partition(SLNode *llist);
+int partition(std::vector<int> &arr);
+int partition_second(std::vector<int> &arr);
+int partition_third(std::vector<int> &arr, int start = 0, int end = 0);

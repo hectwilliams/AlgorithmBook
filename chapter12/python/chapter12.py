@@ -1,3 +1,5 @@
+import random
+
 class SLNode:
   def __init__(self, value):
     self.value = value
@@ -284,13 +286,86 @@ def mergeSort_list (llist):
 
   return combine_list(left, right)
 
+def partition_list(llist):
+  curr = llist
+  pivot = llist
+  head = llist
+  pivot_prev  = None
+  buffer = None
+
+  while curr.next:
+    if curr.next.value < pivot.value:
+      buffer = curr.next
+      curr.next = curr.next.next
+      if head == curr:
+        head = buffer
+        buffer.next = pivot
+      else:
+        buffer.next = pivot
+        pivot_prev.next = buffer
+      pivot_prev = buffer
+    else:
+      curr = curr.next
+  return head
+
+
+def partition_array(collection):
+  size = len(collection)
+  k = 0
+  for i in range(0, size):
+    if (collection[i] < collection[k]):
+      collection[i], collection[k] = collection[k] , collection[i]
+      k += 1
+  return k
+def partition_array_second(collection):
+  size = len(collection)
+  median = [None, None, None]
+  k = 0
+
+  if collection:
+    median[0] = collection[0]
+    median[1] = collection[ int(size / 2) ]
+    median[2] = collection[size - 1]
+
+    pivot = median[1]
+    for i in range(0, size):
+      if collection[i] < pivot:
+        collection[i], collection[k] = collection[k] , collection[i]
+        k += 1
+  return k
+
+def partition_array_third(collection, start = 0, end = None):
+  k = -1
+
+  if end == None:
+    end = len(collection)
+
+  for i in range(start, end):
+    if k == -1:
+      k = start
+    if collection[i] < collection[k]:
+      collection[i], collection[k] = collection[k] , collection[i]
+      k += 1
+
+  return k
+
+def quickSort(collection, start = 0, end = None):
+  pivot = None
+
+  if end == None:
+    end = len(collection)
+
+  if end - start > 0:
+    pivot = partition_array_third(collection, start, end)
+
+    if pivot >= 0:
+      quickSort(collection, 0, pivot)
+      quickSort(collection, pivot + 1, end)   #right
+
 def test2():
-  list1 = SList()
-  # list2 = SList()
-  list1.add(45).add(20).add(2).add(3).add(4)
-  # list2.add(2).add(3).add(4)
-  x = mergeSort_list(list1.head)
-  while x:
-    print(x.value)
-    x = x.next
+  arr = [100, 5, 3, 1, 9, 10]
+  for i in range(0, 10):
+    arr.append( int (random.uniform(1, 100) ) )
+  quickSort(arr)
+  print(arr)
 test2()

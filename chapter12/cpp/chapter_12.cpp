@@ -2,8 +2,9 @@
 #include <string>
 #include <stdio.h>
 #include <algorithm>
-
+#include <math.h>
 #include "chapter_12.h"
+#include <stdlib.h>     /* srand, rand */
 
 SList &SList::add(int value)
 {
@@ -438,20 +439,138 @@ SLNode *mergeSort(SLNode *llist)
   return combine(left, right);
 }
 
+ SLNode *partition(SLNode *llist)
+{
+  SLNode *curr, *pivot, *pivot_prev, *head, *buffer;
+  head = curr = pivot = llist;
+  buffer = pivot_prev = NULL;
+
+  while (curr->next)
+  {
+    if (curr->next->value < pivot->value)
+    {
+      buffer = curr->next;
+      curr->next = curr->next->next;
+      if (head == curr)
+      {
+        head = buffer;
+        buffer->next = pivot;
+      }
+      else
+      {
+        buffer->next = pivot;
+        pivot_prev->next = buffer;
+      }
+      pivot_prev = buffer;
+    }
+    else
+    {
+      curr = curr->next;
+    }
+  }
+  return head;
+}
+
+int partition(std::vector<int> &arr)
+{
+  int size = arr.size();
+  int k = 0;
+  int tmp;
+
+  for (int i = 0; i < size; i++)
+  {
+    if (arr[i] < arr[k])
+    {
+      tmp = arr[i];
+      arr[i] = arr[k];
+      arr[k] = tmp;
+      ++k;
+    }
+  }
+  return k;
+}
+
+int partition_second(std::vector<int> &arr)
+{
+  int median_array[3];
+  int pivot = 0;
+  int k = 0;
+
+  if (arr.empty())
+  {
+    return - 1;
+  }
+
+  median_array[0] = arr[0];
+  median_array[1] = arr[arr.size() / 2];
+  median_array[2] = arr[arr.size() - 1];
+
+  pivot = median_array[1];
+
+  for (int i = 0; i < arr.size(); i++)
+  {
+    if ( arr[i] < pivot )
+    {
+      std::swap(arr[i], arr[k]);
+      k++;
+    }
+  }
+
+  return k;
+}
+
+int partition_third(std::vector<int> &arr, int start, int end)
+{
+  int k = -1;
+  end = arr.size();
+
+  for (int i = start; i < end; i++)
+  {
+    if (k == -1)
+    {
+      k = start;
+    }
+    if (arr[i]  < arr[k])
+    {
+      std::swap(arr[i], arr[k]);
+      k++;
+    }
+  }
+  return k;
+}
+
+void quickSort(std::vector<int> &arr, int start = 0, int end = -1)
+{
+  int pivot;
+
+  if (end == -1)
+  {
+    end = arr.size();
+  }
+
+  if (end - start > 0)
+  {
+    pivot = partition_third(arr, start, end);
+    if (pivot >= 0)
+    {
+      quickSort(arr, 0, pivot);
+      quickSort(arr, pivot + 1, end );
+    }
+  }
+}
+
 void test2 ()
 {
-  SList list;
-  list.add(23).add(100).add(4).add(5).add(6).add(7);
-  // SList list2;
-  // list2.add(5).add(5).add(6).add(7);
-
-  SLNode *tmp = mergeSort(list.head);
-  SLNode *runner = tmp;
-
-  while (runner)
+  std::vector<int> data;
+  for (int i = 0; i < 10; i++)
   {
-    std::cout << '\t' << runner->value << '\n';
-    runner = runner->next;
+    data.push_back(rand() % 100);
+  }
+  quickSort(data);
+
+  for (auto ele: data)
+  {
+    std::cout << ele << '|';
   }
 }
 

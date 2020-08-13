@@ -512,7 +512,6 @@ struct SList *mergeSort_list(struct SList *llist)
   {
     return llist;
   }
-
   else if (counter == 2)
   {
     /* split nodes*/
@@ -520,7 +519,6 @@ struct SList *mergeSort_list(struct SList *llist)
     left->next = NULL;
     return combine_list(left, right);
   }
-
   else
   {
     right_prev->next = NULL;
@@ -531,30 +529,156 @@ struct SList *mergeSort_list(struct SList *llist)
   return combine_list(left, right);
 }
 
+struct SList *partition_list(struct SList *llist)
+{
+  struct SList *curr, *pivot, *pivot_prev, *head, *buffer;
+  head = curr = pivot = llist;
+  buffer = pivot_prev= NULL;
+
+  while (curr->next)
+  {
+    if (curr->next->value < pivot->value)
+    {
+      buffer = curr->next;
+      curr->next = curr->next->next;
+      if (head == curr)
+      {
+        head = buffer;
+        buffer->next = pivot;
+      }
+      else
+      {
+        buffer->next = pivot;
+        pivot_prev->next = buffer;
+      }
+      pivot_prev = buffer;
+    }
+    else
+    {
+      curr = curr->next;
+    }
+  }
+  return head;
+}
+
+int partition_array(int *collection, int size)
+{
+  int ptr = 0;
+  int tmp = 0;
+  for (int i = 0; i < size; i++)
+  {
+    if (collection[i] < collection[ptr])
+    {
+      /* update ptr */
+      tmp = collection[i];
+      collection[i] = collection[ptr];
+      collection[ptr] = tmp;
+      ptr++;
+    }
+  }
+  return ptr;
+}
+
+
+int partition_array_second(int *collection, int size)
+{
+  int array[3];
+  int pivot = 0;
+  int k = 0;
+
+  if (size <= 0)
+  {
+    return -1;
+  }
+
+  array[0] = collection[0];
+  array[1] = collection[size / 2];
+  array[2] = collection[size - 1];
+
+  pivot = collection[1];
+
+  for (int i = 0; i < size; i++)
+  {
+    if (collection[i] < pivot )
+    {
+      swap(collection, i, k);
+      k++;
+    }
+  }
+  return k;
+}
+
+int partition_array_third(int *collection, int size)
+{
+  int start = 0;
+  int end  = size;
+  return partition_array_third_helper(collection, start, end);
+}
+
+int  partition_array_third_helper(*collection,int start, int end)
+{
+  int k = -1;
+  for (int i = start; i < end; i++)
+  {
+    if (k == -1  )
+    {
+      k = start;
+    }
+    if (collection[i] < collection[k])
+    {
+      swap(collection, i, k);
+      k++;
+    }
+  }
+  return k;
+}
+
+void quickSort(int *collection, int size)
+{
+  return quickSort_helper(collection, 0, size);
+}
+
+void quickSort_helper(int *collection, int start, int end)
+{
+  int pivot ;
+
+  if (end - start > 0)
+  {
+    pivot = partition_array_third_helper(collection, start, end);
+    if (pivot >= 0)
+    {
+      quickSort_helper(collection, 0, pivot); // left
+      quickSort_helper(collection, pivot + 1, end); // right
+    }
+  }
+}
+
 void test()
 {
-  int arr [] = {5, 3, 1, 6};
+  int arr [] = {100, 5, 3, 1, 9, 10};
   int len  = sizeof(arr) / sizeof(arr[0]);
-  struct array_obj data = combine_array( arr, len, arr, len );
-  array_display(data.array, data.size);
+  quickSort(arr, len);
+  array_display(arr, len);
+  // struct array_obj data = combine_array( arr, len, arr, len );
+  // array_display(data.array, data.size);
 }
 
 void test2()
 {
   struct SList *list = NULL, *test;
   SList_add (5, &list);
-  SList_add(6, &list);
+  SList_add(1, &list);
+  SList_add(8, &list);
+  SList_add(4, &list);
   SList_add(9, &list);
   SList_add(2, &list);
-  SList_add(0, &list);
-  SList_add(2, &list);
-  SList_add(11, &list);
-  test = mergeSort_list(list);
+  SList_add(5, &list);
+  SList_add(3, &list);
+  test = partition_list(list);
   SList_display(&test);
 }
 
-
 int main()
 {
-  test2();
+  test();
 }
