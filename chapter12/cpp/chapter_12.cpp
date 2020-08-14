@@ -5,6 +5,7 @@
 #include <math.h>
 #include "chapter_12.h"
 #include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 
 SList &SList::add(int value)
 {
@@ -559,19 +560,69 @@ void quickSort(std::vector<int> &arr, int start = 0, int end = -1)
   }
 }
 
+std::array<int, 2> partition3(std::vector<int> &arr)
+{
+  std::array<int , 2> result = {0 , 0};
+  int  k = 0;
+  int  pivot;
+  int size = arr.size();
+
+  if (size == 0)
+  {
+    return result;
+  }
+  pivot = arr[0];
+  for (int i = 0; i < size; i++)
+  {
+    if (arr[i] < pivot)
+    {
+      std::swap(arr[i], arr[k]);
+      k++;
+    }
+  }
+
+  result[0] = k;
+
+  k = size - 1;
+  for (int i = size; i-- ; )
+  {
+    if (arr[i] > pivot)
+    {
+      std::swap(arr[i], arr[k]);
+      k--;
+    }
+  }
+  result[1] = k;
+
+  return result;
+
+}
+
+
 void test2 ()
 {
+    srand (time(NULL));
+
   std::vector<int> data;
   for (int i = 0; i < 10; i++)
   {
     data.push_back(rand() % 100);
   }
-  quickSort(data);
+
+   for (auto ele: data)
+  {
+    std::cout << ele << '|';
+  }
+  std::cout << ""<< '\n';
+
+  partition3(data);
 
   for (auto ele: data)
   {
     std::cout << ele << '|';
   }
+  std::cout << ""<< '\n';
+
 }
 
 int main()

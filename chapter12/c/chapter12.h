@@ -47,7 +47,12 @@ struct SList *partition_list(struct SList *llist);
 int partition_array(int *collection, int size);
 int partition_array_second(int *collection, int size);
 int partition_array_third(int *collection, int size);
-int partition_array_third_helper(*collection,int start, int  end);
+int partition_array_third_helper(int *collection,int start, int  end);
 
 void quickSort(int *collection, int size);
 void quickSort_helper(int *collection, int start, int end);
+
+int*  partition_array_3 (int *collection, int size);
+
+
+

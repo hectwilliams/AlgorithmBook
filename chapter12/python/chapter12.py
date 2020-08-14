@@ -362,10 +362,33 @@ def quickSort(collection, start = 0, end = None):
       quickSort(collection, 0, pivot)
       quickSort(collection, pivot + 1, end)   #right
 
+def partition3(collection):
+  k = 0
+  result = [0, 0]
+  pivot = collection[0]
+  size = len(collection )
+
+
+  print(collection)
+
+  if pivot:
+    for i in range(0, size):
+      if collection[i] < pivot:
+        swap(collection, i ,k)
+        k+= 1
+    result[0] = k
+
+    k = size - 1
+    for i in range(size - 1, -1, -1) :
+      if collection[i] > pivot:
+        print(i)
+        swap(collection, i , k)
+        k += -1
+    result[1] = k
+  return result
+
 def test2():
-  arr = [100, 5, 3, 1, 9, 10]
-  for i in range(0, 10):
-    arr.append( int (random.uniform(1, 100) ) )
-  quickSort(arr)
+  arr = [100, 5, 3, 1,100, 9, 10]
+  partition3(arr)
   print(arr)
 test2()

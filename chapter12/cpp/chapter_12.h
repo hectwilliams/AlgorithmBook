@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <array>
 
 class SLNode
 {
@@ -64,3 +65,5 @@ SLNode *partition(SLNode *llist);
 int partition(std::vector<int> &arr);
 int partition_second(std::vector<int> &arr);
 int partition_third(std::vector<int> &arr, int start = 0, int end = 0);
+
+std::array<int,2> partition3(std::vector<int> &arr);

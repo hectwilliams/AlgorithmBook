@@ -47,9 +47,14 @@ var SList = function()
 
 var swap = function (collection, i, k)
 {
+
+  if (i != k)
+{
+
   let tmp = collection[k];
   collection[k] = collection[i];
   collection[i] = tmp;
+}
 };
 
 var bubbleSort = function(collection = [])
@@ -545,10 +550,45 @@ const quickSort = function(arr,  start = 0,  end = -1)
   }
 }
 
+const partition3  = function (arr)
+{
+  let result = [];
+  let k = 0;
+  let pivot = arr[0];
+
+
+  if (pivot)
+  {
+    //parition front
+    for (let i = 0;i < arr.length; i++)
+    {
+      if (arr[i] < pivot)
+      {
+        swap(arr, i, k);
+        k += 1;
+      }
+    }
+    result[0] = k;
+
+    // partition end
+    k = arr.length - 1;
+    for (let i = arr.length; i-- ; )
+    {
+      if (arr[i] > pivot)
+      {
+        swap(arr, i, k);
+        k--;
+      }
+    }
+    result[1] = k;
+  }
+  return result;
+}
+
 function test2 ()
 {
   let dem = [ 2, 4, 6, 2, 10, 1];
-  quickSort(dem);
+  partition3(dem);
   console.log(dem);
 }
 

@@ -653,12 +653,43 @@ void quickSort_helper(int *collection, int start, int end)
   }
 }
 
+int * partition_array_3 (int *collection, int size)
+{
+  static int result[2];
+  int k = 0;
+  int pivot = collection[0];
+
+  for (int i = 0; i < size; i++)
+  {
+    if ( collection[i] < pivot )
+    {
+      swap(collection, i, k);
+      k++;
+    }
+  }
+  result[0] = k;
+
+  k = size - 1;
+  for (int i = size; i-- ; )
+  {
+    if ( collection[i] > pivot )
+    {
+      swap(collection, i, k);
+      k--;
+    }
+  }
+  result[1] = k;
+
+  return result;
+}
+
 void test()
 {
-  int arr [] = {100, 5, 3, 1, 9, 10};
+  int arr [] = { 5,1,8,4,5,9,2,5,3, 5 };
   int len  = sizeof(arr) / sizeof(arr[0]);
-  quickSort(arr, len);
+  int *data = partition_array_3(arr, len);
   array_display(arr, len);
+  // printf(" %d %d \n",   data[0] , data[1] );
   // struct array_obj data = combine_array( arr, len, arr, len );
   // array_display(data.array, data.size);
 }
