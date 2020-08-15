@@ -683,15 +683,52 @@ int * partition_array_3 (int *collection, int size)
   return result;
 }
 
+void  mergeSort_array(int *collection, int size)
+{
+  int mid = size / 2;
+  int left_size;
+  int right_size;
+  int * clone_left;
+  int * clone_right;
+  struct array_obj combined = {.size = 0, .array = NULL};
+
+  if (size <= 1)
+  {
+    return ;
+  }
+
+  if (size % 2 == 1)
+  {
+    left_size = mid + 1;
+    right_size = mid;
+  }
+  else
+  {
+    left_size = right_size = mid;
+  }
+
+  clone_left = (int *) malloc(sizeof(int) * left_size);
+  clone_right = (int *) malloc(sizeof(int) * right_size);
+
+  memcpy(clone_left, collection, sizeof(int) * left_size);
+  memcpy(clone_right, collection + mid  + (size % 2 == 1 ? 1 : 0) , sizeof(int) * right_size);
+
+  mergeSort_array(clone_left, left_size);
+  mergeSort_array(clone_right, right_size);
+
+  if ( size > 1)
+  {
+    combined = combine_array(clone_left, left_size, clone_right, right_size);
+    memcpy(collection, combined.array, sizeof(int) * combined.size);
+  }
+}
+
 void test()
 {
-  int arr [] = { 5,1,8,4,5,9,2,5,3, 5 };
+  int arr [] = { 5,1,8,4,5,9,2,5,3,5};
   int len  = sizeof(arr) / sizeof(arr[0]);
-  int *data = partition_array_3(arr, len);
+  mergeSort_array(arr, len);
   array_display(arr, len);
-  // printf(" %d %d \n",   data[0] , data[1] );
-  // struct array_obj data = combine_array( arr, len, arr, len );
-  // array_display(data.array, data.size);
 }
 
 void test2()

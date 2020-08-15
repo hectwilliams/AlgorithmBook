@@ -366,6 +366,7 @@ std::vector<int>  combine(std::vector<int> a, std::vector<int> b)
       collection.push_back(b[ptrB++]);
     }
   }
+  return collection;
 }
 
 SLNode *combine (SLNode *a, SLNode *b)
@@ -595,9 +596,30 @@ std::array<int, 2> partition3(std::vector<int> &arr)
   result[1] = k;
 
   return result;
-
 }
 
+void mergeSort(std::vector<int> &collection)
+{
+  int mid = collection.size() / 2;
+  std::vector<int> left, right, collection_concat;
+
+  if (collection.size() <= 1)
+  {
+    return;
+  }
+
+  left = std::vector<int>(collection.begin(), collection.begin() + mid + +(collection.size() % 2) );
+  right = std::vector<int>(collection.begin() + mid + +(collection.size() % 2), collection.end());
+
+  mergeSort(left);
+  mergeSort(right);
+  collection_concat = combine(left, right);
+
+  for (int i = 0 ; i < collection_concat.size(); i++)
+  {
+    collection[i] = collection_concat[i];
+  }
+}
 
 void test2 ()
 {
@@ -615,7 +637,7 @@ void test2 ()
   }
   std::cout << ""<< '\n';
 
-  partition3(data);
+  mergeSort(data);
 
   for (auto ele: data)
   {

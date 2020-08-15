@@ -387,8 +387,27 @@ def partition3(collection):
     result[1] = k
   return result
 
+def mergeSort_array(collection):
+  size = len(collection)
+  mid = int(size / 2)
+  left = right = data_merge = []
+
+  if size <= 1:
+    return
+
+  left = collection[ 0 : mid + +(size % 2) ]
+  right = collection [mid + +(size %2): : ]
+
+  mergeSort_array(left)
+  mergeSort_array(right)
+
+  data_merge = combine(left, right)
+
+  for i in range(0, len(data_merge)):
+    collection[i] = data_merge[i]
+
 def test2():
   arr = [100, 5, 3, 1,100, 9, 10]
-  partition3(arr)
+  mergeSort_array(arr)
   print(arr)
 test2()

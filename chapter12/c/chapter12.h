@@ -54,5 +54,6 @@ void quickSort_helper(int *collection, int start, int end);
 
 int*  partition_array_3 (int *collection, int size);
 
+void mergeSort_array(int *collection, int size);
 
 

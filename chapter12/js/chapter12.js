@@ -585,10 +585,35 @@ const partition3  = function (arr)
   return result;
 }
 
+const mergeSort_array = function(collection)
+{
+  let size = collection.length;
+  let mid = Math.floor(size / 2);
+  let left, right, merged;
+
+  if (size <=1 )
+  {
+    return;
+  }
+
+  left = collection.slice(0, mid + +(size % 2));
+  right = collection.slice(mid + +(size % 2) , size );
+
+  mergeSort_array(left);
+  mergeSort_array(right);
+
+  merged = combine(left, right);
+
+  for (let i = 0; i < merged.length; i++)
+  {
+    collection[i] = merged[i];
+  }
+}
+
 function test2 ()
 {
   let dem = [ 2, 4, 6, 2, 10, 1];
-  partition3(dem);
+  mergeSort_array(dem);
   console.log(dem);
 }
 
