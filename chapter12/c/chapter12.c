@@ -656,29 +656,36 @@ void quickSort_helper(int *collection, int start, int end)
 int * partition_array_3 (int *collection, int size)
 {
   static int result[2];
-  int k = 0;
+  int k = 0, k_end = size - 1;
   int pivot = collection[0];
+  int count = 0;
 
   for (int i = 0; i < size; i++)
   {
+    count += +(collection[i] == pivot);
     if ( collection[i] < pivot )
     {
       swap(collection, i, k);
-      k++;
+      if (k < size)
+      {
+        k++;
+      }
     }
   }
-  result[0] = k;
 
-  k = size - 1;
-  for (int i = size; i-- ; )
+  result[0] = k;
+  result[1] = k + count - 1;
+
+  while (k + 1 < size)
   {
-    if ( collection[i] > pivot )
+    if ( collection[k + 1] > collection[k_end] && k_end > k + 1)
     {
-      swap(collection, i, k);
-      k--;
+      swap(collection, k + 1, k_end);
+      k_end--;
     }
+    k++;
   }
-  result[1] = k;
+
 
   return result;
 }

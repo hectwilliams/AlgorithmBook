@@ -516,7 +516,7 @@ const partition_array_third = function(arr, start = 0, end = 0)
 {
   let k = -1;
   end = arr.length;
-
+  console.log(arguments)
   for (let i = start; i < end; i++)
   {
     if (k == -1)
@@ -553,35 +553,41 @@ const quickSort = function(arr,  start = 0,  end = -1)
 const partition3  = function (arr)
 {
   let result = [];
-  let k = 0;
+  let k_front = 0;
+  let k_end = arr.length - 1;
   let pivot = arr[0];
-
+  let count = 0;
 
   if (pivot)
   {
     //parition front
     for (let i = 0;i < arr.length; i++)
     {
-      if (arr[i] < pivot)
+      count += +(arr[i] == pivot)
+      if (arr[i] < arr[k_front] && i != k_front )
       {
-        swap(arr, i, k);
-        k += 1;
-      }
+        swap(arr, i, k_front);
+        if (k_front < arr.length)
+        {
+          k_front++;
+        }
+       }
     }
-    result[0] = k;
 
-    // partition end
-    k = arr.length - 1;
-    for (let i = arr.length; i-- ; )
+    result = [k_front, k_front + count - 1];
+
+    while (k_front + 1 < arr.length)
     {
-      if (arr[i] > pivot)
+      if (arr[k_front + 1]  >  arr[k_end]   && k_end > k_front + 1)
       {
-        swap(arr, i, k);
-        k--;
+        swap(arr, k_front + 1, k_end);
+        k_end--;
       }
+      k_front++;
     }
-    result[1] = k;
+
   }
+
   return result;
 }
 
@@ -612,10 +618,11 @@ const mergeSort_array = function(collection)
 
 function test2 ()
 {
+
   let dem = [ 2, 4, 6, 2, 10, 1];
-  mergeSort_array(dem);
+  dem  = [5,1,8,5, 4,9,2,5,3]
+  partition3(dem);
   console.log(dem);
 }
 
 test2();
-

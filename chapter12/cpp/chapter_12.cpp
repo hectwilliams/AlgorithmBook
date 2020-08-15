@@ -563,37 +563,49 @@ void quickSort(std::vector<int> &arr, int start = 0, int end = -1)
 
 std::array<int, 2> partition3(std::vector<int> &arr)
 {
+
   std::array<int , 2> result = {0 , 0};
   int  k = 0;
   int  pivot;
   int size = arr.size();
+  int k_end = size - 1;
+  int count = 0;
 
   if (size == 0)
   {
     return result;
   }
+
   pivot = arr[0];
+
   for (int i = 0; i < size; i++)
   {
+    count += +(arr[i] == pivot);
     if (arr[i] < pivot)
     {
-      std::swap(arr[i], arr[k]);
-      k++;
+      std::swap(arr[i], arr[k] );
+      if (k < size)
+      {
+        k++;
+      }
     }
   }
 
   result[0] = k;
+  result[1] = k + count - 1;
 
-  k = size - 1;
-  for (int i = size; i-- ; )
+  while (k + 1 < size)
   {
-    if (arr[i] > pivot)
+    if ( arr[k + 1] > arr[k_end] && k_end > k + 1)
     {
-      std::swap(arr[i], arr[k]);
-      k--;
+      std::swap(arr[k + 1], arr[k_end]);
+      k_end--;
     }
+    k++;
   }
-  result[1] = k;
+
+  std::cout << "[ " << result[0] << "-" << result[1] << "]" << '\n';
+
 
   return result;
 }
@@ -637,7 +649,7 @@ void test2 ()
   }
   std::cout << ""<< '\n';
 
-  mergeSort(data);
+  partition3(data);
 
   for (auto ele: data)
   {

@@ -367,24 +367,26 @@ def partition3(collection):
   result = [0, 0]
   pivot = collection[0]
   size = len(collection )
-
-
-  print(collection)
+  count = 0
+  k_end = size - 1
 
   if pivot:
+
     for i in range(0, size):
+      count += +(collection[i] == pivot)
       if collection[i] < pivot:
         swap(collection, i ,k)
-        k+= 1
-    result[0] = k
+        if k < size:
+          k += 1
 
-    k = size - 1
-    for i in range(size - 1, -1, -1) :
-      if collection[i] > pivot:
-        print(i)
-        swap(collection, i , k)
-        k += -1
-    result[1] = k
+    result = [k, k + count - 1]
+
+    while k + 1 < size:
+      if collection[k + 1] < collection[k_end] and k + 1 > k_end:
+        swap(collection, k+ 1, k_end)
+        k_end += -1
+      k += 1
+
   return result
 
 def mergeSort_array(collection):
@@ -408,6 +410,6 @@ def mergeSort_array(collection):
 
 def test2():
   arr = [100, 5, 3, 1,100, 9, 10]
-  mergeSort_array(arr)
+  print (partition3(arr))
   print(arr)
 test2()
