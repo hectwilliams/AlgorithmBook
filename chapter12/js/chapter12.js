@@ -653,13 +653,71 @@ const quickSort3 = function(collection, start = 0, end = -1)
   }
 }
 
+
+const urbanDictionaryDailyAdd = function()
+{
+  /*
+    Use quickSort instead of selectionSort. Selection Sort would work if the new valuess were greater than
+    the largest value in list.
+
+    Model:
+    1) insert 1 of remaining new values to end of list  (remove from new data list)
+    2) partition using the most recent added value
+    3) Order should still be retained '
+    4)continue step 1 until 'new data list' array is empty
+  */
+}
+
+
+const pankcakeSort = function (collection)
+{
+  let k;
+  let info = {max : 0, max_index : 0};
+  let tmp = [];
+
+  k = collection.length - 1;
+
+  while (k >  0)
+  {
+    info.max = collection[0];
+    info.max_index = 0;
+
+    for (let i = 0; i <= k; i++)
+    {
+      if (collection[i] >= info.max)
+      {
+        info.max = collection[i];
+        info.max_index = i;
+      }
+    }
+
+    tmp = collection.slice(0, info.max_index + 1).reverse();
+
+    //move max to top
+    for (let i  = 0; i < tmp.length; i++)
+    {
+      collection[i] = tmp[i];
+    }
+
+    // move top to bottom
+    tmp = (collection.slice(0 , k + 1).slice()).reverse() ;
+
+    for (let i  = 0; i < k + 1; i++)
+    {
+      collection[i] = tmp[i];
+    }
+
+    --k;
+  }
+
+}
+
 function test2 ()
 {
-
   let dem = [ 2, 4, 6, 2, 10, 1];
   dem  = [  5,1,8,5, 4,9,2,5,3 ]
   console.log(dem);
-  quickSort3(dem);
+  pankcakeSort(dem);
   console.log(dem);
 }
 

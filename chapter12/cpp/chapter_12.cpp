@@ -666,6 +666,59 @@ void quickSort3(std::vector<int> &arr, const int &start, const int &end)
   }
 }
 
+void urbanDictionaryDailyAdd()
+{
+  /*
+    Use quickSort instead of selectionSort. Selection Sort would work if the new valuess were greater than
+    the largest value in list.
+
+    Model:
+    1) insert 1 of remaining new values to end of list  (remove from new data list)
+    2) partition using the most recent added value
+    3) Order should still be retained '
+    4)continue step 1 until 'new data list' array is empty
+  */
+}
+
+
+void pancakeSort_flip(std::vector<int>  &collection, int end_pos)
+{
+  for (int i = 0; i < (end_pos + 1) / 2; i++)
+  {
+    std::swap(collection[i] ,collection[end_pos - i]);
+  }
+}
+
+void pancakeSort(std::vector<int>  &collection, int size)
+{
+
+  int k;
+  int max;
+  int max_index;
+
+  size = collection.size();
+  k = size - 1;
+
+  while (k > 0)
+  {
+    max = collection[0];
+    max_index = 0;
+
+    for (int i = 0; i <= k ; i++)
+    {
+      if (collection[i] >= max)
+      {
+        max = collection[i];
+        max_index = i;
+      }
+    }
+
+    pancakeSort_flip(collection, max_index);  // move max to top
+    pancakeSort_flip(collection, k);  // move max to bottom
+    k--;  // reduce active elements
+  }
+}
+
 void test2 ()
 {
     srand (time(NULL));
@@ -682,7 +735,7 @@ void test2 ()
   }
   std::cout << ""<< '\n';
 
-  quickSort3(data);
+  pancakeSort(data);
 
   for (auto ele: data)
   {

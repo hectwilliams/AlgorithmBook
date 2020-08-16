@@ -871,6 +871,54 @@ void quickSort3_helper(int *collection, int size, int start, int end)
   }
 }
 
+void urbanDictionaryDailyAdd()
+{
+  /*
+    Use quickSort instead of selectionSort. Selection Sort would work if the new valuess were greater than
+    the largest value in list.
+
+    Model:
+    1) insert 1 of remaining new values to end of list  (remove from new data list)
+    2) partition using the most recent added value
+    3) Order should still be retained '
+    4)continue step 1 until 'new data list' array is empty
+  */
+}
+
+void pancakeSort_flip(int *collection, int end_pos)
+{
+  for (int i = 0; i < (end_pos + 1) / 2; i++)
+  {
+    swap(collection, i , end_pos - i);
+  }
+}
+
+void pancakeSort(int *collection, int size)
+{
+  int k = size - 1;
+  int max;
+  int max_index = 0;
+
+  while (k > 0)
+  {
+    max = collection[0];
+    max_index = 0;
+
+    for (int i = 0; i <= k ; i++)
+    {
+      if (collection[i] >= max)
+      {
+        max = collection[i];
+        max_index = i;
+      }
+    }
+
+    pancakeSort_flip(collection, max_index);  // move max to top
+    pancakeSort_flip(collection, k);  // move max to bottom
+    k--;  // reduce active elements
+  }
+}
+
 void test()
 {
   int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
@@ -879,7 +927,7 @@ void test()
   int len  = sizeof(arr) / sizeof(arr[0]);
 
 
-  quickSort3(arr, len);
+  pancakeSort(arr, len);
 
 
   // int *rsult = partition_array_3_third(arr, len, 0 , 4);

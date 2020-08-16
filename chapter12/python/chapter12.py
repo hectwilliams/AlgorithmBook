@@ -429,9 +429,48 @@ def quickSort3(collection, start = 0, end = -1) :
       quickSort3(collection, 0, pivot_arr[0])
       quickSort3(collection, pivot_arr[1] + 1, end)
 
+def urbanDictionaryDailyAdd():
+  """
+    Use quickSort instead of selectionSort. Selection Sort would work if the new valuess were greater than
+    the largest value in list.
+
+    Model:
+    1) insert 1 of remaining new values to end of list  (remove from new data list)
+    2) partition using the most recent added value
+    3) Order should still be retained '
+    4)continue step 1 until 'new data list' array is empty
+  """
+  pass
+
+def pancakeSort(collection):
+  info = {'min': 0, 'index': 0}
+  tmp = []
+  k = len(collection) - 1
+
+  while k > 0:
+    info['min'] = collection[0]
+    info['index'] = 0
+
+    for i in range(0, k + 1):
+      if collection[i] >= info['min']:
+        info['min'] = collection[i]
+        info['index'] = i
+
+    tmp = (collection[0 : info['index'] + 1])
+    tmp.reverse()
+    for i in range(0, len(tmp)):
+      collection[i] = tmp[i]
+
+    tmp = collection[0 : k + 1]
+    tmp.reverse()
+    for i in range(0, len(tmp)):
+      collection[i] = tmp[i]
+    k += -1
+
+
 def test2():
   arr = [100, 5, 3, 1,100, 9, 10]
   arr= [2, 2, 4, 6, 2, 10, 2, 1]
-  quickSort3(arr)
+  pancakeSort(arr)
   print(arr)
 test2()

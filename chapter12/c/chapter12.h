@@ -67,3 +67,7 @@ struct quicksort3_pivot
   int start_index;
   int end_index;
 };
+
+void urbanDictionaryDailyAdd();
+void pancakeSort(int *collection, int size);
+void pancakeSort_flip(int *collection, int end_pos);

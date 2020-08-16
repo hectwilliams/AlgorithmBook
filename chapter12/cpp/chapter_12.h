@@ -69,3 +69,6 @@ int partition_third(std::vector<int> &arr, int start = 0, int end = 0);
 std::array<int, 2> partition3(std::vector<int> &arr, int start  = 0, int end =  -1 );
 void mergeSort(std::vector<int> &collection);
 void quickSort3(std::vector<int> &arr, const int &start = 0, const int &end = -1);
+void urbanDictionaryDailyAdd();
+void pancakeSort( std::vector<int>  &collection, int size = 0);
+void pancakeSort_flip(std::vector<int>  &collection, int end_pos = 0);
