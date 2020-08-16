@@ -552,10 +552,10 @@ const quickSort = function(arr,  start = 0,  end = -1)
 
 const partition3  = function (arr, start = 0, end = - 1)
 {
-  let result = [];
+  let result = [-1,-1];
   let pivot;
   let count = 0;
-  let k = 0;
+  let k = start;
   let a,b,c;
 
   end = (end == -1) ? arr.length : end;
@@ -578,9 +578,8 @@ const partition3  = function (arr, start = 0, end = - 1)
     pivot = c;
   }
 
-  if (pivot)
+  size = end - start;
   {
-    size = end - start;
     for (let i  = start; i < start + size; i++ )
     {
       count += +(arr[i] == pivot);
@@ -605,11 +604,11 @@ const partition3  = function (arr, start = 0, end = - 1)
         }
       }
     }
-  }
-  result[0] = k - (count - 1 );
 
-  result[1] = k ;
-  console.log(result);
+    result[0] = k - (count - 1 );
+    result[1] = k ;
+  }
+
   return result;
 }
 
@@ -638,13 +637,29 @@ const mergeSort_array = function(collection)
   }
 }
 
+const quickSort3 = function(collection, start = 0, end = -1)
+{
+  let pivot = null;
+  end = (end == -1) ? collection.length : end;
+
+  if (end - start > 0)
+  {
+    pivot = partition3(collection, start, end);
+    if (pivot[0] >= 0)
+    {
+      quickSort3(collection, 0, pivot[0]);
+      quickSort3(collection, pivot[1] + 1, end);
+    }
+  }
+}
+
 function test2 ()
 {
 
   let dem = [ 2, 4, 6, 2, 10, 1];
   dem  = [  5,1,8,5, 4,9,2,5,3 ]
   console.log(dem);
-  partition3(dem);
+  quickSort3(dem);
   console.log(dem);
 }
 

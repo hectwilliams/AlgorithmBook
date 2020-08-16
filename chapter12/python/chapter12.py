@@ -363,7 +363,7 @@ def quickSort(collection, start = 0, end = None):
       quickSort(collection, pivot + 1, end)   #right
 
 def partition3(collection, start = 0, end = -1):
-  result = [0, 0]
+  result = [None, None]
   pivot = None
   size = len(collection )
   count = 0
@@ -420,8 +420,18 @@ def mergeSort_array(collection):
   for i in range(0, len(data_merge)):
     collection[i] = data_merge[i]
 
+def quickSort3(collection, start = 0, end = -1) :
+  end  = len(collection) if end == -1 else end
+  pivot_arr = None
+  if end - start > 0:
+    pivot_arr = partition3(collection, start, end)
+    if pivot_arr[0] != None:
+      quickSort3(collection, 0, pivot_arr[0])
+      quickSort3(collection, pivot_arr[1] + 1, end)
+
 def test2():
   arr = [100, 5, 3, 1,100, 9, 10]
-  print (partition3(arr))
+  arr= [2, 2, 4, 6, 2, 10, 2, 1]
+  quickSort3(arr)
   print(arr)
 test2()

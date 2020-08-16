@@ -615,7 +615,7 @@ int partition_array_third(int *collection, int size)
   return partition_array_third_helper(collection, start, end);
 }
 
-int  partition_array_third_helper(*collection,int start, int end)
+int  partition_array_third_helper(int *collection,int start, int end)
 {
   int k = -1;
   for (int i = start; i < end; i++)
@@ -746,9 +746,9 @@ int * partition_array_3_second (int *collection, int size)
 
 
 
-int * partition_array_3_third (int *collection, int size, int start, int end)
+struct quicksort3_pivot partition_array_3_third (int *collection, int size, int start, int end)
 {
-  static int result[2];
+  struct quicksort3_pivot result = {.start_index = -1, .end_index = -1};
   int k = start;
   int pivot;
   int count = 0;
@@ -802,9 +802,8 @@ int * partition_array_3_third (int *collection, int size, int start, int end)
 
   }
 
-  result[0] = k - (count - 1 );
-
-  result[1] = k ;
+  result.start_index = k - (count - 1 );
+  result.end_index =  k ;
 
   return result;
 }
@@ -851,14 +850,40 @@ void  mergeSort_array(int *collection, int size)
   }
 }
 
+void quickSort3(int *collection, int size)
+{
+ quickSort3_helper(collection, size, 0, size);
+}
+
+void quickSort3_helper(int *collection, int size, int start, int end)
+{
+  struct quicksort3_pivot piv;
+
+  if (end - start  > 0)
+  {
+    piv = partition_array_3_third(collection, size, start, end);
+
+    if (piv.start_index >= 0)
+    {
+      quickSort3_helper(collection, size, 0,  piv.start_index);
+      quickSort3_helper(collection, size, piv.end_index + 1, end );
+    }
+  }
+}
+
 void test()
 {
-  // int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
+  int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
 
-  int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
+  // int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
   int len  = sizeof(arr) / sizeof(arr[0]);
-  int *rsult = partition_array_3_third(arr, len, 0 , 4);
-  printf( "-->    %d  %d   <---" ,rsult[0], rsult[1]);
+
+
+  quickSort3(arr, len);
+
+
+  // int *rsult = partition_array_3_third(arr, len, 0 , 4);
+  // printf( "-->    %d  %d   <---" ,rsult[0], rsult[1]);
   array_display(arr, len);
 }
 

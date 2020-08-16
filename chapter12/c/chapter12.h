@@ -57,5 +57,13 @@ int*  partition_array_3 (int *collection, int size);
 void mergeSort_array(int *collection, int size);
 
 
-int * partition_array_3_third (int *collection, int size, int start, int end);
+struct quicksort3_pivot  partition_array_3_third (int *collection, int size, int start, int end);
 int * partition_array_3_second (int *collection, int size);
+
+void quickSort3(int *collection, int size);
+void quickSort3_helper(int *collection, int size, int start, int end);
+struct quicksort3_pivot
+{
+  int start_index;
+  int end_index;
+};

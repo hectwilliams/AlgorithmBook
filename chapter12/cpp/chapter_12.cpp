@@ -564,7 +564,7 @@ void quickSort(std::vector<int> &arr, int start = 0, int end = -1)
 std::array<int, 2> partition3(std::vector<int> &arr, int start , int end  )
 {
 
-  std::array<int , 2> result = {0 , 0};
+  std::array<int , 2> result = {-1 , -1};
   int  k = 0;
   int  pivot;
   int size;
@@ -624,7 +624,6 @@ std::array<int, 2> partition3(std::vector<int> &arr, int start , int end  )
 
   result[0] = k - (count - 1 );
   result[1] = k ;
-  std::cout << "pivot" <<   " " << pivot<<"\t" <<  result[0]  << " | " << result[1] << '\n';
 
   return result;
 }
@@ -652,6 +651,21 @@ void mergeSort(std::vector<int> &collection)
   }
 }
 
+void quickSort3(std::vector<int> &arr, const int &start, const int &end)
+{
+  std::array<int, 2> pivot;
+
+  if (end - arr.size() > 0)
+  {
+    pivot = partition3(arr, start, end);
+    if (pivot[0] >= 0)
+    {
+      quickSort3(arr, 0, pivot[0]);
+      quickSort3(arr, pivot[1] + 1, end);
+    }
+  }
+}
+
 void test2 ()
 {
     srand (time(NULL));
@@ -668,7 +682,7 @@ void test2 ()
   }
   std::cout << ""<< '\n';
 
-  partition3(data);
+  quickSort3(data);
 
   for (auto ele: data)
   {
