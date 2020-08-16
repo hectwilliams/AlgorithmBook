@@ -685,10 +685,131 @@ int * partition_array_3 (int *collection, int size)
     }
     k++;
   }
+  return result;
+}
 
+
+int * partition_array_3_second (int *collection, int size)
+{
+  static int result[2];
+  int k = 0, k_end = size - 1;
+  int pivot;
+  int count = 0;
+
+  {
+    int a,b,c;
+    a = collection[0];
+    b = collection[size / 2];
+    c = collection[size - 1];
+
+    if ( (a > b) != ( a > c) )
+    {
+      pivot = a;
+    }
+    else if ( (b > a ) !=  (b > c ))
+    {
+      pivot = b;
+    }
+    else
+    {
+      pivot = c;
+    }
+
+    for (int i = 0; i < size; i++)
+    {
+      if ( collection[i] < pivot )
+      {
+        swap(collection, i, k);
+        if (k < size)
+        {
+          k++;
+        }
+      }
+    }
+
+  }
+
+  result[0] = k;
+  result[1] = k + count - 1;
+
+  while (k + 1 < size)
+  {
+    if ( collection[k + 1] > pivot && k_end > k + 1)
+    {
+      swap(collection, k + 1, k_end);
+      k_end--;
+    }
+    k++;
+  }
+  return result;
+}
+
+
+
+int * partition_array_3_third (int *collection, int size, int start, int end)
+{
+  static int result[2];
+  int k = start;
+  int pivot;
+  int count = 0;
+
+  {
+    int a,b,c;
+    a = collection[start];
+    b = collection[ (start + end) / 2];
+    c = collection[end - 1];
+
+    if ( (a > b) != ( a > c) )
+    {
+      pivot = a;
+    }
+    else if ( (b > a ) !=  (b > c ))
+    {
+      pivot = b;
+
+    }
+    else
+    {
+      pivot = c;
+    }
+
+    size = end - start;
+
+    for (int i = start; i < start + size; i++)
+    {
+      count += +(collection[i] == pivot );
+      if ( collection[i] < pivot)
+      {
+        swap(collection, i, k);
+        if (k < start + size)
+        {
+          k++;
+        }
+      }
+    }
+
+    k = start + size - 1;
+    for (int i = start +size - 1; i >= 0; i--)
+    {
+      if ( collection[i] > pivot )
+      {
+        swap(collection, i, k);
+        {
+          k--;
+        }
+      }
+    }
+
+  }
+
+  result[0] = k - (count - 1 );
+
+  result[1] = k ;
 
   return result;
 }
+
+
 
 void  mergeSort_array(int *collection, int size)
 {
@@ -732,9 +853,12 @@ void  mergeSort_array(int *collection, int size)
 
 void test()
 {
-  int arr [] = { 5,1,8,4,5,9,2,5,3,5};
+  // int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
+
+  int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
   int len  = sizeof(arr) / sizeof(arr[0]);
-  mergeSort_array(arr, len);
+  int *rsult = partition_array_3_third(arr, len, 0 , 4);
+  printf( "-->    %d  %d   <---" ,rsult[0], rsult[1]);
   array_display(arr, len);
 }
 

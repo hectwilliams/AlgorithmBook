@@ -561,51 +561,70 @@ void quickSort(std::vector<int> &arr, int start = 0, int end = -1)
   }
 }
 
-std::array<int, 2> partition3(std::vector<int> &arr)
+std::array<int, 2> partition3(std::vector<int> &arr, int start , int end  )
 {
 
   std::array<int , 2> result = {0 , 0};
   int  k = 0;
   int  pivot;
-  int size = arr.size();
-  int k_end = size - 1;
+  int size;
+  int a,b,c;
   int count = 0;
 
-  if (size == 0)
+  end = (end  <= -1) ? arr.size() : end;
+
+  size = end - start;
+
+  a = arr[start];
+  b =  arr[  (start + size) / 2];
+  c = arr[ start + size - 1];
+
+  if (size  <= 0)
   {
     return result;
   }
 
-  pivot = arr[0];
-
-  for (int i = 0; i < size; i++)
+  if ( (a > b) != ( a > c) )
   {
-    count += +(arr[i] == pivot);
-    if (arr[i] < pivot)
+    pivot = a;
+  }
+  else if ( (b > a ) !=  (b > c ))
+  {
+    pivot = b;
+  }
+  else
+  {
+    pivot = c;
+  }
+
+ for (int i = start; i < start + size; i++)
+  {
+    count += +(arr[i] == pivot );
+    if ( arr[i] < pivot)
     {
-      std::swap(arr[i], arr[k] );
-      if (k < size)
+      std::swap(arr[i] , arr[k]);
+      if (k < start + size)
       {
         k++;
       }
     }
   }
 
-  result[0] = k;
-  result[1] = k + count - 1;
-
-  while (k + 1 < size)
+  k = start + size - 1;
+  for (int i = start + size - 1; i >= 0; i--)
   {
-    if ( arr[k + 1] > arr[k_end] && k_end > k + 1)
+    if ( arr[i] > pivot )
     {
-      std::swap(arr[k + 1], arr[k_end]);
-      k_end--;
+      std::swap(arr[i] , arr[k]);
+      {
+        k--;
+      }
     }
-    k++;
   }
 
-  std::cout << "[ " << result[0] << "-" << result[1] << "]" << '\n';
-
+  result[0] = k - (count - 1 );
+  result[1] = k ;
+  std::cout << "pivot" <<   " " << pivot<<"\t" <<  result[0]  << " | " << result[1] << '\n';
 
   return result;
 }

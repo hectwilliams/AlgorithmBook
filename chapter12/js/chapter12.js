@@ -550,44 +550,66 @@ const quickSort = function(arr,  start = 0,  end = -1)
   }
 }
 
-const partition3  = function (arr)
+const partition3  = function (arr, start = 0, end = - 1)
 {
   let result = [];
-  let k_front = 0;
-  let k_end = arr.length - 1;
-  let pivot = arr[0];
+  let pivot;
   let count = 0;
+  let k = 0;
+  let a,b,c;
+
+  end = (end == -1) ? arr.length : end;
+
+  a = arr[start];
+  b = arr[ (start + end) / 2 ];
+  c = arr[end - 1];
+
+  if ( (a > b) != ( a > c) )
+  {
+    pivot = a;
+  }
+  else if ( (b > a ) !=  (b > c ))
+  {
+    pivot = b;
+
+  }
+  else
+  {
+    pivot = c;
+  }
 
   if (pivot)
   {
-    //parition front
-    for (let i = 0;i < arr.length; i++)
+    size = end - start;
+    for (let i  = start; i < start + size; i++ )
     {
-      count += +(arr[i] == pivot)
-      if (arr[i] < arr[k_front] && i != k_front )
+      count += +(arr[i] == pivot);
+      if (arr[i] < pivot)
       {
-        swap(arr, i, k_front);
-        if (k_front < arr.length)
+        swap(arr, i, k);
+        if (k < start + size)
         {
-          k_front++;
+          k++;
         }
-       }
-    }
-
-    result = [k_front, k_front + count - 1];
-
-    while (k_front + 1 < arr.length)
-    {
-      if (arr[k_front + 1]  >  arr[k_end]   && k_end > k_front + 1)
-      {
-        swap(arr, k_front + 1, k_end);
-        k_end--;
       }
-      k_front++;
     }
 
+    k = start + size - 1;
+    for (let i = start +size - 1; i >= 0; i--)
+    {
+      if ( arr[i] > pivot )
+      {
+        swap(arr, i, k);
+        {
+          k--;
+        }
+      }
+    }
   }
+  result[0] = k - (count - 1 );
 
+  result[1] = k ;
+  console.log(result);
   return result;
 }
 
@@ -620,7 +642,8 @@ function test2 ()
 {
 
   let dem = [ 2, 4, 6, 2, 10, 1];
-  dem  = [5,1,8,5, 4,9,2,5,3]
+  dem  = [  5,1,8,5, 4,9,2,5,3 ]
+  console.log(dem);
   partition3(dem);
   console.log(dem);
 }

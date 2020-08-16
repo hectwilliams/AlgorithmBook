@@ -362,31 +362,43 @@ def quickSort(collection, start = 0, end = None):
       quickSort(collection, 0, pivot)
       quickSort(collection, pivot + 1, end)   #right
 
-def partition3(collection):
-  k = 0
+def partition3(collection, start = 0, end = -1):
   result = [0, 0]
-  pivot = collection[0]
+  pivot = None
   size = len(collection )
   count = 0
-  k_end = size - 1
+  k = 0
+  a = b = c = None
+
+  end = len(collection) if end == -1 else end
+
+  a = collection[start]
+  b = collection [ (start + end) / 2]
+  c = collection[end - 1]
+
+  if (a > b ) != ( a > c) :
+    pivot = a
+  elif (b > a) != (b > c) :
+    pivot = b
+  else:
+    pivot = c
 
   if pivot:
-
-    for i in range(0, size):
-      count += +(collection[i] == pivot)
+    size = end - start
+    for i in range(start, start + size):
+      count += +(collection[i] == pivot )
       if collection[i] < pivot:
-        swap(collection, i ,k)
-        if k < size:
+        collection[i] , collection[k] = collection[k] , collection[i]
+        if k < start + size:
           k += 1
+    k = start + size - 1
+    for i in range(start + size - 1, -1, -1) :
+      if collection[i] > pivot:
+        collection[i] , collection[k] = collection[k] , collection[i]
+        k += -1
 
-    result = [k, k + count - 1]
-
-    while k + 1 < size:
-      if collection[k + 1] < collection[k_end] and k + 1 > k_end:
-        swap(collection, k+ 1, k_end)
-        k_end += -1
-      k += 1
-
+  result[0] = k - (count - 1)
+  result[1] = k
   return result
 
 def mergeSort_array(collection):
