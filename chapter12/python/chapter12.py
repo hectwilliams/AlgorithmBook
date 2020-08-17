@@ -467,10 +467,33 @@ def pancakeSort(collection):
       collection[i] = tmp[i]
     k += -1
 
+def radixSort(collection, maxValue = 9):
+  k = 0
+  curr = None
+  factor = 1
+  counter = 0
+  complete = False
+
+  while not complete:
+    k = 0
+    for i in range(0, maxValue + 1):
+      if complete:
+        break
+      counter = 0
+      for j in range(0, len(collection)):
+        if complete:
+          break
+        curr = int(collection[j] / factor) % 10
+        counter += +(curr == 0 )
+        if curr == i:
+          collection[k], collection[j] = collection[j] , collection[k]
+          k+= 1
+      complete = counter == len(collection) and i == 0
+    factor *= 10
 
 def test2():
   arr = [100, 5, 3, 1,100, 9, 10]
   arr= [2, 2, 4, 6, 2, 10, 2, 1]
-  pancakeSort(arr)
+  radixSort(arr)
   print(arr)
 test2()

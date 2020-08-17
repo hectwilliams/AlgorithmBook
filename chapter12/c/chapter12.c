@@ -919,15 +919,46 @@ void pancakeSort(int *collection, int size)
   }
 }
 
+void radixSort(int *collection, int size)
+{
+  int k = 0;
+  int curr;
+  int factor = 1;
+  int zero_count = 0;
+  int complete = 0;
+
+  while (!complete)
+  {
+    k = 0;
+    for (int i = 0; i <= 9 && !complete; i++)
+    {
+
+      zero_count = 0;
+      for (int j = 0; j < size && ! complete; j++)
+      {
+        curr = (collection[j] / factor ) % 10;
+        zero_count += (curr == 0);
+        if (curr == i )
+        {
+          swap( collection , k, j ) ;
+          k++;
+        }
+      }
+      complete = zero_count == size && i == 0;
+    }
+    factor *= 10;
+  }
+}
+
 void test()
 {
-  int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
+  // int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
 
-  // int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
+  int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
   int len  = sizeof(arr) / sizeof(arr[0]);
 
 
-  pancakeSort(arr, len);
+  radixSort(arr, len);
 
 
   // int *rsult = partition_array_3_third(arr, len, 0 , 4);

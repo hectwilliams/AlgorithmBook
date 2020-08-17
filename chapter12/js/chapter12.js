@@ -709,7 +709,35 @@ const pankcakeSort = function (collection)
 
     --k;
   }
+}
 
+const radixSort = function(collection, maxValue = 9)
+{
+  let k, curr, factor, counter, complete;
+
+  factor = 1;
+  counter = 0;
+  complete  = 0;
+
+  while (!complete)
+  {
+     k = 0;
+     for (let i =  0; i < maxValue + 1 && !complete; i++)
+     {
+      counter = 0;
+      for (let j = 0; j < collection.length && !complete; j++)
+      {
+        curr = Math.floor( collection[j] / factor)  % 10;
+        counter += +(curr == 0);
+        if (curr == i)
+        {
+          swap(collection, j , k++);
+        }
+      }
+      complete = counter == collection.length && i == 0;
+     }
+     factor *= 10;
+  }
 }
 
 function test2 ()
@@ -717,7 +745,7 @@ function test2 ()
   let dem = [ 2, 4, 6, 2, 10, 1];
   dem  = [  5,1,8,5, 4,9,2,5,3 ]
   console.log(dem);
-  pankcakeSort(dem);
+  radixSort(dem);
   console.log(dem);
 }
 

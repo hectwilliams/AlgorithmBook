@@ -72,3 +72,4 @@ void quickSort3(std::vector<int> &arr, const int &start = 0, const int &end = -1
 void urbanDictionaryDailyAdd();
 void pancakeSort( std::vector<int>  &collection, int size = 0);
 void pancakeSort_flip(std::vector<int>  &collection, int end_pos = 0);
+void radixSort(std::vector<int> &collection, int maxValue = 9);

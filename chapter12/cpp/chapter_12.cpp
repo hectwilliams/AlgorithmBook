@@ -719,6 +719,36 @@ void pancakeSort(std::vector<int>  &collection, int size)
   }
 }
 
+void radixSort(std::vector<int> &collection, int maxValue)
+{
+  int k = 0;
+  int curr;
+  int factor = 1;
+  int counter = 0;
+  bool complete = false;
+
+  while (!complete)
+  {
+    k = 0;
+    for (int i = 0; i < maxValue + 1  && !complete ; i++)
+    {
+      counter = 0;
+      for (int j = 0; j < collection.size() && !complete; j++)
+      {
+        curr = (collection[j] / factor ) % 10;
+        counter += +(curr == 0);
+        if (curr == i)
+        {
+          std::swap(collection[k++] , collection[j]);
+        }
+      }
+      complete = counter == collection.size() && i == 0;
+    }
+
+    factor *= 10;
+  }
+}
+
 void test2 ()
 {
     srand (time(NULL));
@@ -735,7 +765,7 @@ void test2 ()
   }
   std::cout << ""<< '\n';
 
-  pancakeSort(data);
+  radixSort(data);
 
   for (auto ele: data)
   {
