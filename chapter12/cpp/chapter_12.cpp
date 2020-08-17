@@ -749,6 +749,27 @@ void radixSort(std::vector<int> &collection, int maxValue)
   }
 }
 
+void beltSort(std::vector<Belt> &collection)
+{
+  int curr_index;
+
+  for (int i = 0; i < collection.size(); i++)
+  {
+    curr_index = i;
+    for (int j = i; j < collection.size(); j++)
+    {
+      if (collection[j].belt < collection[curr_index].belt)
+      {
+        curr_index = j;
+      }
+    }
+    if (curr_index != i)
+    {
+      std::swap(collection[curr_index], collection[i]);
+    }
+  }
+}
+
 void test2 ()
 {
     srand (time(NULL));

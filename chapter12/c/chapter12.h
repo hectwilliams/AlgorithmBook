@@ -71,5 +71,21 @@ struct quicksort3_pivot
 void urbanDictionaryDailyAdd();
 void pancakeSort(int *collection, int size);
 void pancakeSort_flip(int *collection, int end_pos);
-
 void radixSort(int *collection, int size);
+
+enum BELTS
+{
+  NONE,
+  YELLOW,
+  RED,
+  BLACK,
+  DOUBLE_BLACK,
+  TRIPLE_BLACK,
+  TRIPLE_BLACK_BLUE
+};
+
+struct belt
+{
+  const char *name;
+  enum BELTS belt;
+};

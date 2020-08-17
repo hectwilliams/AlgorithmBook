@@ -950,13 +950,39 @@ void radixSort(int *collection, int size)
   }
 }
 
+
+void  beltSort (struct belt *collection, int size)   // rudimentary selection  sort
+{
+  struct belt curr_belt;
+  int curr_index;
+
+  for (int i = 0; i < size; i++)
+  {
+
+    curr_belt = collection[i];
+    curr_index = i;
+
+    for (int j = i; j < size; j++)
+    {
+      if (collection[j].belt < collection[curr_index].belt )
+      {
+        curr_index = j;
+      }
+    }
+
+    if (curr_index != i)
+    {
+      swap(collection, i, curr_index);
+    }
+  }
+}
+
 void test()
 {
   // int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
 
   int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
   int len  = sizeof(arr) / sizeof(arr[0]);
-
 
   radixSort(arr, len);
 

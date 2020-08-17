@@ -740,6 +740,34 @@ const radixSort = function(collection, maxValue = 9)
   }
 }
 
+const beltSort = function (collection)
+{
+  let beltData;
+  let currIndex;
+
+  for (let i = 0; i < collection.length; i++)
+  {
+
+    beltData = collection[i];
+    currIndex = i;
+
+    for (let j = i; j < collection.length; j++)
+    {
+      if (collection[j].belt < collection[currIndex].belt)
+      {
+        currIndex = j;
+      }
+    }
+
+    if (currIndex != i)
+    {
+      swap(collection, i, currIndex);
+    }
+
+  }
+
+}
+
 function test2 ()
 {
   let dem = [ 2, 4, 6, 2, 10, 1];

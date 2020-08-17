@@ -491,6 +491,17 @@ def radixSort(collection, maxValue = 9):
       complete = counter == len(collection) and i == 0
     factor *= 10
 
+def beltSort(collection) :
+  curr_index = None
+  for i in range(0, len(collection)):
+    curr_index = i
+    for j in range(i, len(collection)):
+      if collection[j].belt < collection[curr_index].belt:
+        curr_index = j
+    if curr_index != i:
+      collection[i] , collection[curr_index] = collection[curr_index], collection[i]
+
+
 def test2():
   arr = [100, 5, 3, 1,100, 9, 10]
   arr= [2, 2, 4, 6, 2, 10, 2, 1]

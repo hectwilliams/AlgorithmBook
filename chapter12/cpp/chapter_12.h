@@ -73,3 +73,27 @@ void urbanDictionaryDailyAdd();
 void pancakeSort( std::vector<int>  &collection, int size = 0);
 void pancakeSort_flip(std::vector<int>  &collection, int end_pos = 0);
 void radixSort(std::vector<int> &collection, int maxValue = 9);
+
+enum BELTS
+{
+  NONE,
+  YELLOW,
+  RED,
+  BLACK,
+  DOUBLE_BLACK,
+  TRIPLE_BLACK,
+  TRIPLE_BLACK_BLUE
+};
+
+class Belt
+{
+  public:
+    std::string name;
+    BELTS belt;
+    Belt(std::string name_data, BELTS your_belt)
+    {
+      name = name_data;
+      belt = your_belt;
+    }
+};
+void beltSort(std::vector<Belt> &collection);
