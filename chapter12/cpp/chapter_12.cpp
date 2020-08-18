@@ -654,8 +654,9 @@ void mergeSort(std::vector<int> &collection)
 void quickSort3(std::vector<int> &arr, const int &start, const int &end)
 {
   std::array<int, 2> pivot;
+  int size =  start - end;
 
-  if (end - arr.size() > 0)
+  if (end - start > 0)
   {
     pivot = partition3(arr, start, end);
     if (pivot[0] >= 0)
@@ -770,25 +771,70 @@ void beltSort(std::vector<Belt> &collection)
   }
 }
 
+
+void wiggleSort(std::vector<int> & collection)
+{
+  int mid = collection.size() / 2;
+  int pos, neg;
+
+  for (int i = 0; i < mid; i++)
+  {
+    pos = 2*i;
+    neg = 2*i + 1;
+
+    for (int j = i; j < mid; j++)
+    {
+       if (collection[j*2 ] < collection[pos])
+      {
+        pos = j*2;
+      }
+      if (collection[j*2+1] < collection[neg])
+      {
+        neg = 2*j + 1;
+      }
+    }
+
+    if (pos_index != i*2)
+    {
+      std::swap(collection[i*2], collection[pos]);
+    }
+
+    if (neg != i*2 + 1)
+    {
+      std::swap(collection[i*2 + 1], collection[neg]);
+    }
+
+  }
+
+}
+
 void test2 ()
 {
     srand (time(NULL));
 
-  std::vector<int> data;
-  for (int i = 0; i < 10; i++)
+  // std::vector<int> data;
+  // for (int i = 0; i < 10; i++)
+  // {
+  //   data.push_back(rand() % 100);
+  // }
+
+  //  for (auto ele: data)
+  // {
+  //   std::cout << ele << '|';
+  // }
+  // std::cout << ""<< '\n';
+
+  std::vector<int> testData;
+  int arr[] = {4, -1, 2, -4, 10, -2};
+  int len  = sizeof(arr) / sizeof(arr[0]);
+  for (int i = 0; i < len ; i++)
   {
-    data.push_back(rand() % 100);
+    testData.push_back(arr[i]);
   }
 
-   for (auto ele: data)
-  {
-    std::cout << ele << '|';
-  }
-  std::cout << ""<< '\n';
+  wiggleSort(testData);
 
-  radixSort(data);
-
-  for (auto ele: data)
+  for (auto ele: testData)
   {
     std::cout << ele << '|';
   }

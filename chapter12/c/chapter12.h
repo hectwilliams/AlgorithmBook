@@ -89,3 +89,5 @@ struct belt
   const char *name;
   enum BELTS belt;
 };
+
+void wiggleSort(int * collection, int size);

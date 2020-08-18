@@ -97,3 +97,4 @@ class Belt
     }
 };
 void beltSort(std::vector<Belt> &collection);
+void wiggleSort(std::vector<int> & collection);

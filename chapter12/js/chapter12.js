@@ -765,15 +765,47 @@ const beltSort = function (collection)
     }
 
   }
+}
 
+const wiggleSort = function(collection)
+{
+  let mid = Math.floor(collection.length / 2);
+  let pos, neg;
+
+  for (let i = 0; i < mid; i++)
+  {
+    pos = 2*i;
+    neg = 2*i + 1;
+    for (let j = i; j < mid; j++)
+    {
+      if (collection[j*2] < collection[pos])
+      {
+        pos = 2*j;
+      }
+      if (collection[j* 2 + 1] < collection[neg])
+      {
+        neg = 2*j + 1;
+      }
+    }
+
+    if (i*2 != pos)
+    {
+      swap(collection, i*2, pos);
+    }
+
+    if (i*2 + 1 != neg)
+    {
+      swap(collection, i*2 + 1, neg);
+    }
+  }
 }
 
 function test2 ()
 {
   let dem = [ 2, 4, 6, 2, 10, 1];
-  dem  = [  5,1,8,5, 4,9,2,5,3 ]
+  dem  = [  4, -1, 2, -4, 10, -2 ]
   console.log(dem);
-  radixSort(dem);
+  wiggleSort(dem);
   console.log(dem);
 }
 

@@ -977,14 +977,64 @@ void  beltSort (struct belt *collection, int size)   // rudimentary selection  s
   }
 }
 
+int wiggleSort_partition (int * collection, int start, int end)
+{
+  int k = 0;
+  int pivot = 0;
+  for (int i = start; i < end; i++)
+  {
+    if (collection[i] < pivot)
+    {
+      swap(collection, i, k);
+      k++;
+    }
+  }
+}
+
+void wiggleSort(int * collection, int size)
+{
+  int mid = size / 2;
+  int pos_index = 0, neg_index= 1;
+
+  for (int i = 0; i < mid; i++)
+  {
+    pos_index = i*2;
+    neg_index  =  2*i+ 1;
+    for (int j = i; j < mid; j++)
+    {
+      if (collection[j*2 ] < collection[pos_index])
+      {
+        pos_index = j*2;
+      }
+      if (collection[j*2+1] < collection[neg_index])
+      {
+        neg_index = 2*j + 1;
+      }
+    }
+
+    if (pos_index != i*2)
+    {
+        swap(collection, i*2, pos_index);
+    }
+
+    if (neg_index != i*2 + 1)
+    {
+        swap(collection, i*2  + 1, neg_index);
+    }
+
+  }
+
+}
+
 void test()
 {
   // int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
 
-  int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
+  // int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
+  int arr[] = {4, -1, 2, -4, 10, -2};
   int len  = sizeof(arr) / sizeof(arr[0]);
 
-  radixSort(arr, len);
+  wiggleSort(arr, len);
 
 
   // int *rsult = partition_array_3_third(arr, len, 0 , 4);

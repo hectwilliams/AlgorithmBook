@@ -501,10 +501,27 @@ def beltSort(collection) :
     if curr_index != i:
       collection[i] , collection[curr_index] = collection[curr_index], collection[i]
 
+def wiggleSort (collection):
+  mid = int(len(collection)/ 2)
+  pos = neg = None
+
+  for i in range(0, mid):
+    pos  = 2*i
+    neg = 2*i + 1
+    for j in range(i, mid):
+      if collection[j*2] < collection[pos]:
+        pos = 2*j
+      if collection[j*2 + 1 ] < collection[neg]:
+        neg = 2*j + 1
+    if i*2 != pos:
+      collection[i*2], collection[pos] = collection[pos] , collection[i*2]
+
+    if i*2 + 1 != neg:
+      collection[i*2 + 1], collection[neg] = collection[neg] , collection[i*2 + 1]
 
 def test2():
-  arr = [100, 5, 3, 1,100, 9, 10]
-  arr= [2, 2, 4, 6, 2, 10, 2, 1]
-  radixSort(arr)
+  # arr = [100, 5, 3, 1,100, 9, 10]
+  arr= [4, -1, 2, -4, 10, -2]
+  wiggleSort(arr)
   print(arr)
 test2()
