@@ -1,8 +1,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "math.h"
 #include "chapter12.h"
-
 struct SList *allocate_slist(int value)
 {
   struct SList *node = (struct SList*) malloc(sizeof(struct SList));
@@ -67,6 +67,13 @@ void swap(int *array, int i, int k)
   int tmp = array[k];
   array[k] = array[i];
   array[i] = tmp;
+}
+
+void swap_belt (struct belt *collection, int i, int k)
+{
+  struct belt  tmp = collection[k];
+  collection[k] = collection[i];
+  collection[i] = tmp;
 }
 
 void bubble_sort_array(int *array, int size)
@@ -972,7 +979,7 @@ void  beltSort (struct belt *collection, int size)   // rudimentary selection  s
 
     if (curr_index != i)
     {
-      swap(collection, i, curr_index);
+      swap_belt(collection, i, curr_index);
     }
   }
 }
@@ -1026,20 +1033,81 @@ void wiggleSort(int * collection, int size)
 
 }
 
+int median_unsorted_array_distance(int min, int max, int value)
+{
+  int d1 = abs(min) - abs(value);
+  int d2 = abs(max) - abs(value);
+
+  return abs(d2 + d1);
+
+}
+
+int median_unsorted_array(int * collection, int size)
+{
+  int min = collection[0];
+  int max = collection[size - 1];
+  int min_distance, max_distance, mid_distance;
+  int mid = size / 2;
+  int minValue;
+  int curr_dist_left, curr_dist_right;
+  int dist = 0, dist2 = 0;
+
+  for (int i = 0; i < mid + +(size % 2); i++)
+  {
+    if (collection[i] < min)
+    {
+      min = collection[i];
+    }
+
+    if (collection[size - 1 - i] < min)
+    {
+      min = collection[size - 1 - i];
+    }
+
+    if (collection[i] > max )
+    {
+      max = collection[i];
+    }
+
+    if (collection[size - 1 - i] > max)
+    {
+      max = collection[size - 1 -i];
+    }
+  }
+
+  for (int i = 0; i < mid + +(size % 2); i++)
+  {
+    curr_dist_left =  median_unsorted_array_distance(min, max, collection[i]);
+    curr_dist_right =  median_unsorted_array_distance(min, max, collection[size -1 - i]) ;
+
+    if ( curr_dist_left >= dist )
+    {
+      dist = curr_dist_left;
+      minValue = collection[i];
+    }
+
+    if ( curr_dist_right  > dist)
+    {
+      dist = curr_dist_right;
+      minValue = collection[size - 1 - i];
+    }
+  }
+
+  return minValue;
+}
+
 void test()
 {
   // int arr [] = {2, 2, 4, 6, 2, 10, 2, 1 };
 
   // int arr [] = {5,1,8,5, 4,9,2,5,3 , 5 };
-  int arr[] = {4, -1, 2, -4, 10, -2};
+  int arr[] = {-1 ,10, 4, 2, -4 , -2};
   int len  = sizeof(arr) / sizeof(arr[0]);
-
-  wiggleSort(arr, len);
-
+  median_unsorted_array(arr, len);
 
   // int *rsult = partition_array_3_third(arr, len, 0 , 4);
   // printf( "-->    %d  %d   <---" ,rsult[0], rsult[1]);
-  array_display(arr, len);
+  // array_display(arr, len);
 }
 
 void test2()

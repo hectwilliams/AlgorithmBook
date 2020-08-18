@@ -794,7 +794,7 @@ void wiggleSort(std::vector<int> & collection)
       }
     }
 
-    if (pos_index != i*2)
+    if (pos != i*2)
     {
       std::swap(collection[i*2], collection[pos]);
     }
@@ -805,6 +805,69 @@ void wiggleSort(std::vector<int> & collection)
     }
 
   }
+}
+
+int median_unsorted_array_distance(int min, int max, int value)
+{
+  int d1 = abs(min) - abs(value);
+  int d2 = abs(max) - abs(value);
+
+  return abs(d2 + d1);
+
+}
+
+
+int median_sorted_array(std::vector<int> collection)
+{
+  int min = collection[0];
+  int max = min;
+  int size = collection.size();
+  int median;
+  int distance[2] = {0,0};
+  int mid = size / 2;
+  int maxDistance =0;
+  for (int i = 0; i < mid + +(size % 2); i++)
+  {
+    if (collection[i] < min)
+    {
+      min = collection[i];
+    }
+
+    if (collection[size - 1 - i] < min)
+    {
+      min = collection[size - 1 - i];
+    }
+
+    if (collection[i] > max )
+    {
+      max = collection[i];
+    }
+
+    if (collection[size - 1 - i] > max)
+    {
+      max = collection[size - 1 -i];
+    }
+  }
+
+  for (int i = 0; i < mid + +(size % 2); i++)
+  {
+    distance[0] =  median_unsorted_array_distance(min, max, collection[i]);
+    distance[1] =  median_unsorted_array_distance(min, max, collection[size -1 - i]) ;
+
+    if (distance[0] > maxDistance )
+    {
+      maxDistance = distance[0];
+      median = collection[i];
+    }
+
+    if (distance[1] )
+    {
+      maxDistance = distance[1];
+      median = collection[size - 1- i];
+    }
+  }
+
+  return median;
 
 }
 
@@ -832,7 +895,8 @@ void test2 ()
     testData.push_back(arr[i]);
   }
 
-  wiggleSort(testData);
+  std::cout << median_sorted_array(testData);
+  return;
 
   for (auto ele: testData)
   {

@@ -800,12 +800,62 @@ const wiggleSort = function(collection)
   }
 }
 
+const median_sorted_array = function (collection)
+{
+  let min = collection[0];
+  let max = min;
+  let dis_array = [0,0];
+  let maxDistance = 0;
+  let size = collection.length;
+  let median;
+
+  for (let i = 0; i < Math.floor(size / 2) + +(size % 2) ; i++ )
+  {
+    if (collection[i] < min)
+    {
+      min = collection[i];
+    }
+
+    if (collection[size - 1 - i] < min)
+    {
+      min = collection[size - 1 - i];
+    }
+
+    if (collection[i] > max )
+    {
+      max = collection[i];
+    }
+
+    if (collection[size - 1 - i] > max)
+    {
+      max = collection[size - 1 -i];
+    }
+  }
+
+  for (let i = 0; i < Math.floor(size / 2) + +(size % 2) ; i++ )
+  {
+    dis_array[0] =  (Math.abs(min) - Math.abs(collection[i]))  +  (Math.abs(max) - Math.abs(collection[  i]));
+    dis_array[1] =  (Math.abs(min) - Math.abs(collection[size - 1 - i]))  +  (Math.abs(max) - Math.abs(collection[size - 1 - i]));
+
+    dis_array.forEach((d, index)=>{
+      if (d > maxDistance)
+      {
+        median  = ( (index == 0) && collection[i] ) || collection[size - 1 - i];
+        maxDistance = d;
+      }
+    });
+  }
+
+  return median;
+
+}
+
 function test2 ()
 {
   let dem = [ 2, 4, 6, 2, 10, 1];
   dem  = [  4, -1, 2, -4, 10, -2 ]
   console.log(dem);
-  wiggleSort(dem);
+  median_sorted_array(dem);
   console.log(dem);
 }
 

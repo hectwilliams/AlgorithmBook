@@ -519,9 +519,41 @@ def wiggleSort (collection):
     if i*2 + 1 != neg:
       collection[i*2 + 1], collection[neg] = collection[neg] , collection[i*2 + 1]
 
+def median_unsorted_array(collection):
+  min = max =collection[0]
+  size = len(collection)
+  median = None
+  distance = [None, None]
+  mid = int(size / 2)
+  maxDistance = 0
+
+  for i in range(0, mid + +(size % 2)):
+    if collection[i] < min:
+      min = collection[i]
+    if collection[size - 1 - i] < min:
+      min = collection[size - 1 -i]
+    if collection[i] > max:
+      max = collection[i]
+    if collection[size -1 -i] > max:
+      max = collection[size - 1- i]
+
+  for i in range(0, mid + +(size % 2) ):
+    distance[0] = (abs(min) - abs(collection[i])) +  (abs(max) - abs(collection[i]))
+    distance[1] = (abs(min) - abs(collection[size - 1 - i])) +  (abs(max) - abs(collection[size - 1 -i]))
+
+    if distance[0] > maxDistance:
+      maxDistance = distance[0]
+      median = collection[i]
+
+    if distance[1] > maxDistance:
+      maxDistance = distance[1]
+      median = collection[size -1 - i]
+
+  return median
+
 def test2():
   # arr = [100, 5, 3, 1,100, 9, 10]
   arr= [4, -1, 2, -4, 10, -2]
-  wiggleSort(arr)
+  median_unsorted_array(arr)
   print(arr)
 test2()

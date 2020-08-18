@@ -98,3 +98,4 @@ class Belt
 };
 void beltSort(std::vector<Belt> &collection);
 void wiggleSort(std::vector<int> & collection);
+int median_sorted_array(std::vector<int> collection);

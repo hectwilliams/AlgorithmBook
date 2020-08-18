@@ -91,3 +91,5 @@ struct belt
 };
 
 void wiggleSort(int * collection, int size);
+int median_unsorted_array(int * collection, int size);
+
