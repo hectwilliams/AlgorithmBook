@@ -153,11 +153,95 @@ const intersectSortedArrayDedupe = function(a,b)
   return intersectSortedArray(a, b, callback);
 }
 
+const unionSortedArray = function(a, b, callback = undefined)
+{
+  let result = [];
+  let aa = 0, bb = 0;
+
+  while (aa < a.length || bb < b.length)
+  {
+
+    if (result.length > 0 && callback)
+    {
+      let pos = callback(result[result.length - 1] , a,b, aa,bb );
+
+      console.log(pos);
+
+      if (pos == 0)
+      {
+        ++aa;
+        continue;
+      }
+      else if (pos == 1)
+      {
+        ++bb;
+        continue;
+      }
+    }
+
+    if (aa < a.length && bb < b.length)
+    {
+      if (a[aa] < b[bb])
+      {
+        result.push(a[aa++]);
+      }
+      else if (a[aa] > b[bb] )
+      {
+        result.push(b[bb++]);
+      }
+      else
+      {
+        result.push(a[aa]);
+        aa++;
+        bb++;
+      }
+    }
+    else if (aa < a.length)
+    {
+      result.push(a[aa++]);
+    }
+    else if (bb < b.length)
+    {
+      result.push(b[bb++]);
+    }
+    else
+    {
+      break;
+    }
+  }
+  return result;
+}
+
+const unionSortedArrayDedupe = function (a, b)
+{
+  function callback (target, a, b, aa,bb)
+  {
+    if (aa < a.length)
+    {
+      if (target == a[aa])
+      {
+        return 0;
+      }
+    }
+
+    if (bb < b.length)
+    {
+      if (target == b[bb])
+      {
+        return 1;
+      }
+    }
+
+    return -1;
+
+  }
+  return unionSortedArray(a,b,callback);
+}
 const test = function()
 {
   a = [1,2,2,2,7];
   b = [2,2,6,6,7];
-  x = intersectSortedArrayDedupe(a,b);
+  x = unionSortedArrayDedupe(a,b);
   console.log(x);
 }
 

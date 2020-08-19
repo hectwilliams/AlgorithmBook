@@ -104,9 +104,62 @@ def intersect_sorted_array_dedupe (a, b):
     else:
       break
   return result
+
+def union_sorted_array(a, b, callback = None):
+  result = []
+  aa = bb = 0
+
+  while aa < len(a) or bb < len(b) :
+
+    if result :
+      if callback:
+        index = callback( result[-1], a,b, aa, bb)
+        if index == -1:
+          pass
+        else:
+          if index == 0:
+            aa += 1
+          elif index == 1:
+            bb += 1
+          continue
+
+    if aa < len(a) and bb < len(b):
+      if a[aa] < b[bb] :
+        result.append(a[aa])
+        aa += 1
+      elif a[aa] > b[bb]:
+        result.append(b[bb])
+        bb += 1
+      else:
+        result.append(a[aa])
+        aa += 1
+        bb += 1
+
+    elif aa < len(a):
+      result.append(a[aa])
+      aa += 1
+
+    elif bb < len(b) :
+      result.append(b[bb])
+      bb += 1
+  return result
+
+def union_sorted_array_dedupe(a, b):
+  def callback(target, a, b, aa, bb):
+    if aa < len(a):
+      if target == a[aa] :
+        return 0
+    if bb < len(b) :
+      if target == b[bb] :
+        return 1
+    return -1
+  return union_sorted_array(a,b, callback)
+
+
+
 def test():
-  a = [1,2,3,4]
-  b = [4,6,7,8]
-  x = intersect_sorted_array_dedupe(a,b)
+  a = [1,2,2,2,7]
+  b = [ 2,2,6,6,7 ]
+  x = union_sorted_array_dedupe(a,b)
   print(x)
 test()

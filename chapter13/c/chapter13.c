@@ -146,7 +146,6 @@ struct array_obj intersect_sorted_arrays_dedupe(int *a, const int sizeA, int *b,
         result[result_size++] = a[index[0]];
         index[0]++;
         index[1]++;
-        result = realloc(result, sizeof(int) * (result_size +1 ) );
       }
     }
     else
@@ -157,7 +156,97 @@ struct array_obj intersect_sorted_arrays_dedupe(int *a, const int sizeA, int *b,
   output.data = result;
   output.size = result_size;
   return output;
+}
 
+int func_ptr(int target, int *a, int a_size, int *b, int b_size, int *pos )
+{
+  if ( pos[0] < a_size )
+  {
+    if (target == a[pos[0]])
+    {
+      pos[0]++;
+      return 1;
+    }
+  }
+
+  if ( pos[1] < b_size )
+  {
+    if (target == b[pos[1]])
+    {
+      pos[1]++;
+      return 1;
+    }
+  }
+  return -1;
+}
+
+struct array_obj union_sorted_array (int *a, const int sizeA, int *b, const int sizeB, int (*callback)(int, int*, int, int*, int, int* ) )
+{
+  struct array_obj output;
+  int pos[2] = {0, 0};
+  int * result = (int *) malloc(sizeof(int));
+  int result_size = 0;
+
+  while (1)
+  {
+    if (result_size > 0)
+    {
+      if ( callback( result[result_size - 1], a, sizeA, b,sizeB , pos)  >= 0)
+      {
+        continue;
+      }
+    }
+
+    if (pos[0] < sizeA && pos[1] < sizeB)
+    {
+      if (a[pos[0]] < b[pos[1]])
+      {
+        {
+          result[result_size++] = a[pos[0]++];
+          result = realloc(result, sizeof(int) * (result_size +1 ) );
+        }
+
+      }
+      else if (b[pos[1]] < a[pos[0]])
+      {
+        if (a[pos[0]] > b[pos[1]])
+        {
+            result[result_size++] = b[pos[1]++];
+            result = realloc(result, sizeof(int) * (result_size +1 ) );
+        }
+      }
+      else
+      {
+          result[result_size++] = a[pos[0]];
+          result = realloc(result, sizeof(int) * (result_size +1 ) );
+          pos[0]++;
+          pos[1]++;
+      }
+    }
+    else if (pos[0] < sizeA)
+    {
+      result[result_size++] = a[pos[0]++];
+      result = realloc(result, sizeof(int) * (result_size +1 ) );
+    }
+    else if (pos[1] < sizeB)
+    {
+      result[result_size++] = b[pos[1]++];
+      result = realloc(result, sizeof(int) * (result_size +1 ) );
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  output.data = result;
+  output.size = result_size;
+  return output;
+}
+
+struct array_obj union_sorted_array_dedupe (int *a, const int sizeA, int *b, const int sizeB)
+{
+  return union_sorted_array(a, sizeA, b, sizeB, func_ptr);
 }
 
 int main ()
@@ -168,15 +257,10 @@ int main ()
   int a_len = sizeof(a) / sizeof(a[0]);
   int b_len = sizeof(b) / sizeof(b[0]);
 
-  struct array_obj arr = intersect_sorted_arrays_dedupe(a, a_len, b, b_len);
+  struct array_obj arr = union_sorted_array_dedupe(a, a_len, b, b_len);
 
   for (int i = 0; i < arr.size; i++)
   {
     printf("[%d]", arr.data[i]);
   }
-  // int* x = merge_sorted_arrays(a, a_len, b, b_len);
-  // for (int i = 0; i < a_len + b_len; i++)
-  // {
-  //   printf(" %d \n", x[i]);
-  // }
 }

@@ -159,11 +159,97 @@ std::vector<int> intersect_sorted_arrays_dedupe(std::vector<int> a, std::vector<
   return result;
 }
 
+std::vector<int> union_sorted_array (std::vector<int> a, std::vector<int> b , bool (*cb)(int, std::vector<int>, std::vector<int>, int&, int&)  )
+{
+  std::vector<int> result;
+  int aa , bb;
+
+  aa = bb = 0;
+
+  while (aa < a.size() || bb < b.size())
+  {
+
+    if (cb)
+    {
+      if (! result.empty())
+      {
+
+        if (cb(result.back(), a,b,aa, bb))
+        {
+          continue;
+        }
+      }
+    }
+
+    if (aa < a.size() && bb < b.size())
+    {
+      if (a[aa] < b[bb])
+      {
+        result.push_back(a[aa++]);
+      }
+      else if(a[aa] > b[bb])
+      {
+        result.push_back(b[bb++]);
+      }
+      else
+      {
+        result.push_back(a[aa]);
+        aa++;
+        bb++;
+      }
+    }
+    else if (aa < a.size())
+    {
+      result.push_back(a[aa++]);
+    }
+    else if(bb < b.size())
+    {
+      result.push_back(b[bb++]);
+    }
+    else
+    {
+      break;
+    }
+  }
+  std::cout << result << '\n';
+  return result;
+}
+
+bool function_ptr (int target, std::vector<int> a, std::vector<int> b, int &aa, int &bb)
+{
+  if (aa < a.size())
+  {
+    if (target == a[aa])
+    {
+      aa++;
+      return true;
+    }
+  }
+
+  if (bb < b.size())
+  {
+    if (target == b[bb] )
+    {
+      bb++;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+std::vector<int> union_sorted_array_dedupe (std::vector<int> a, std::vector<int> b )
+{
+  return union_sorted_array(a, b, function_ptr);
+}
+
+
+
 int main()
 {
-  int arr[] = {1, 3, 5, 6};
-  int arr2[] = {6, 6,9, 10, 11};
+  int arr[] = {1,2,2,2,7};
+  int arr2[] = {2,2,6,6,7};
   std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
   std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
-  intersect_sorted_arrays_dedupe(v, v2);
+  union_sorted_array_dedupe(v, v2);
 }
