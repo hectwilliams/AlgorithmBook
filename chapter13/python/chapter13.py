@@ -42,10 +42,32 @@ def merge_sorted_arrays (a, b):
       result.append(b[currB])
       currB += 1
   return result
+
+def min_three_way_range(collection):
+  mins = [None, None, None]
+  result  = None
+  for i, arr in enumerate(collection):
+    for k in range(0, len(arr)):
+      if mins[i] == None or arr[k] < mins[i]:
+        mins[i] = arr[k]
+
+  for i in range(0, 3):
+    tmp = collection[i]
+    min_subset = mins[0: i] + mins[i + 1: :]
+    for curr in tmp:
+      if (curr > min_subset[0] and curr < min_subset[1]):
+        if result == None:
+          result = min_subset
+        if  min_subset[1] - min_subset[0] < result[1] - result[0]:
+          result = min_subset
+  return result
+
+
+
 def test():
   a = [1,2,3,4]
   b = [5,6,7,8]
-
-  x = merge_sorted_arrays(a ,b)
+  c =[ [1,2,4,15],[3,10,12],[5,10,13,17,23] ]
+  x = min_three_way_range(c)
   print(x)
 test()

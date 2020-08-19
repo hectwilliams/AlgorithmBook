@@ -53,11 +53,48 @@ const mergeSortedArrays = function (a, b)
   }
 }
 
+const minThreeWayRange = function(collection)
+{
+  let mins = [null, null, null];
+  let result = null;
+
+  for (let i = 0; i< collection.length; i++)
+  {
+    for (let k = 0; k < collection[i].length; k++)
+    {
+      if (mins[i] == null || collection[i][k] < mins[i])
+      {
+        mins[i] = collection[i][k]
+      }
+    }
+  }
+
+  for (let i = 0; i < 3; i++) {
+    let arr = collection[i];
+    let min_set = mins.slice(0, i).concat(mins.slice(i + 1))
+
+    arr.forEach( (num, index) =>{
+      if (num > min_set[0] && num < min_set[1])
+      {
+        if (result == null)
+        {
+          result = min_set;
+        }
+
+        if (min_set[1] - min_set[0] < result[1] - result[1])
+        {
+          result = min_set;
+        }
+      }
+    });
+  }
+  return result;
+}
+
 const test = function()
 {
-  a = [1,2,3,4];
-  b = [5,6,7,8];
-  mergeSortedArrays(a,b);
+  c =[ [1,2,4,15],[3,10,12],[5,10,13,17,23] ];
+  minThreeWayRange(c);
 }
 
 test();
