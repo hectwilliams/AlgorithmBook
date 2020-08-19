@@ -80,9 +80,33 @@ def intersect_sorted_array (a, b):
       break
   return result
 
+def intersect_sorted_array_dedupe (a, b):
+  result = []
+  pos = [0,0]
+
+  while 1:
+    if result:
+      if pos[0] < len(a) :
+        if result[-1] == a[pos[0]] :
+          pos[0] += 1
+      if pos[1] < len(b):
+        if result[-1] == b[pos[1]]:
+          pos[1] += 1
+    if pos[0] < len(a) and pos[1] < len(b):
+      if a[pos[0]] < b[pos[1]] :
+        pos[0] += 1
+      elif b[pos[1]] < a[pos[0]] :
+        pos[1] += 1
+      else :
+         result.append(a[pos[0]])
+         pos[0] += 1
+         pos[1] += 1
+    else:
+      break
+  return result
 def test():
   a = [1,2,3,4]
   b = [4,6,7,8]
-  x = intersect_sorted_array(a,b)
+  x = intersect_sorted_array_dedupe(a,b)
   print(x)
 test()

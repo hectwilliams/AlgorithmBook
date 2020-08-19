@@ -101,19 +101,78 @@ struct array_obj intersect_sorted_arrays(int *a, const int sizeA, int *b, const 
   return output;
 }
 
+struct array_obj intersect_sorted_arrays_dedupe(int *a, const int sizeA, int *b, const int sizeB)
+{
+  struct array_obj output;
+  int index[2] = {0, 0};
+  int * result = (int *) malloc(sizeof(int));
+  int result_size = 0;
+
+  while (1)
+  {
+    if (result_size > 0)
+    {
+
+      if (index[0] < sizeA)
+      {
+        if (result[result_size - 1] == a[index[0]] )
+        {
+          index[0]++;
+          continue;
+        }
+      }
+      if (index[0] < sizeA)
+      {
+        if (result[result_size - 1] == a[index[0]] )
+        {
+          index[1]++;
+          continue;
+        }
+      }
+    }
+
+    if (index[0] < sizeA && index[1] < sizeB)
+    {
+      if ( a[index[0]] < b[index[1]] )
+      {
+        index[0]++;
+      }
+      else if (b[index[1]] < a[index[0]])
+      {
+        index[1]++;
+      }
+      else
+      {
+        result[result_size++] = a[index[0]];
+        index[0]++;
+        index[1]++;
+        result = realloc(result, sizeof(int) * (result_size +1 ) );
+      }
+    }
+    else
+    {
+      break;
+    }
+  }
+  output.data = result;
+  output.size = result_size;
+  return output;
+
+}
+
 int main ()
 {
-  int a[] = {1,2,3,4};
-  int b[] = {4,6,7,8};
+  int a[] = {1,2,2,2,7};
+  int b[] = {2,2,6,6,7};
 
   int a_len = sizeof(a) / sizeof(a[0]);
   int b_len = sizeof(b) / sizeof(b[0]);
 
-  struct array_obj arr = intersect_sorted_arrays(a, a_len, b, b_len);
+  struct array_obj arr = intersect_sorted_arrays_dedupe(a, a_len, b, b_len);
 
   for (int i = 0; i < arr.size; i++)
   {
-    printf("[%d]\n", arr.data[i]);
+    printf("[%d]", arr.data[i]);
   }
   // int* x = merge_sorted_arrays(a, a_len, b, b_len);
   // for (int i = 0; i < a_len + b_len; i++)

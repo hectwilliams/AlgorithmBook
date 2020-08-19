@@ -91,13 +91,15 @@ const minThreeWayRange = function(collection)
   return result;
 }
 
-const intersectSortedArray = function(a,b)
+const intersectSortedArray = function(a,b, cb = ()=>{})
 {
   let result = [];
   let pos = [0, 0];
 
   while (1)
   {
+
+    cb (result, pos);
     if (pos[0] < a.length && pos[1] < b.length)
     {
       if ( a[pos[0]]  < b[pos[1]] )
@@ -122,14 +124,40 @@ const intersectSortedArray = function(a,b)
   }
 
   return result;
+}
 
+const intersectSortedArrayDedupe = function(a,b)
+{
+  function callback(arr, pos)
+  {
+    if (arr.length)
+    {
+      if (pos[0] < a.length)
+      {
+        if (arr[arr.length - 1] == a[pos[0]] )
+        {
+          pos[0]++;
+        }
+      }
+
+      if (pos[1] < b.length)
+      {
+        if (arr[arr.length - 1] == b[pos[1]] )
+        {
+          pos[1]++;
+        }
+      }
+    }
+  }
+
+  return intersectSortedArray(a, b, callback);
 }
 
 const test = function()
 {
-  a = [1,2,3,4]
-  b = [4,6,7,8]
-  x = intersectSortedArray(a,b)
+  a = [1,2,2,2,7];
+  b = [2,2,6,6,7];
+  x = intersectSortedArrayDedupe(a,b);
   console.log(x);
 }
 
