@@ -11,7 +11,7 @@ std::ostream& operator << (std::ostream &out, const std::vector<int> &vect)
   return out;
 }
 
-std::vector<int> interleave_arrays (std::vector<int> a, std::vector<int> b)
+std::vector<int> interleaveArrays (std::vector<int> a, std::vector<int> b)
 {
   int index[2] = {0,0};
   std::vector<int> result;
@@ -68,11 +68,46 @@ std::vector<int> merge_sorted_arrays(std::vector<int> a, std::vector<int> b)
   return result;
 }
 
+std::vector<int> intersect_sorted_arrays(std::vector<int> a, std::vector<int> b)
+{
+  std::vector<int> result;
+  int index[2] = {0,0};
+
+  while (1)
+  {
+    if (index[0] < a.size() && index[1] < b.size())
+    {
+      if (a[index[0]] < b[index[1]])
+      {
+        index[0]++;
+      }
+      else if(b[index[1]] < a[index[0]])
+      {
+        index[1]++;
+      }
+      else
+      {
+        result.push_back(a[index[0]]);
+        index[0]++;
+        index[1]++;
+      }
+    }
+    else
+    {
+      break;
+    }
+
+  }
+  std::cout << result;
+  return result;
+}
+
+
 int main()
 {
   int arr[] = {1, 3, 5, 6};
-  int arr2[] = {8, 9, 10, 11};
+  int arr2[] = {6, 9, 10, 11};
   std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
   std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
-  merge_sorted_arrays(v, v2);
+  intersect_sorted_arrays(v, v2);
 }
