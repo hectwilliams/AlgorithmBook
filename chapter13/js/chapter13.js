@@ -268,12 +268,38 @@ const interssectUnsortedArrayInPlace = function (a, b)
   return a.slice(0, k);
 }
 
+const interssectUnsortedArray = function (a ,b)
+{
+  let result = [];
+  let curr = null;
+  let left = null;
+  let right = null;
+
+  for (let aa = 0; aa < a.length; aa++)
+  {
+    curr = a[aa];
+    left = a.reduce( (acc, element, index )=>{
+      return acc + ( (index < aa + 1 ) &&  +(curr == element))  || 0 ;
+    }, 0 );
+
+    right = b.reduce( (acc, element, index )=>{
+      return acc +(curr == element)  ;
+    }, 0 );
+
+    if (!(right == 0 || right < left))
+    {
+      result.push(curr);
+    }
+  }
+  return result;
+
+}
 
 const test = function()
 {
-  a = [1,2,2,2,7];
-  b = [2,2,6,6,7];
-  x = interssectUnsortedArrayInPlace(a,b);
+  a = [ 6,7,2,7,6,2 ];
+  b = [ 2,7,2,1,2  ];
+  x = interssectUnsortedArray(a,b);
   console.log(x);
 }
 

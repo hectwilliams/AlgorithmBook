@@ -265,12 +265,34 @@ std::vector<int> intersect_unsorted_array_in_place(std::vector<int> a, std::vect
   return std::vector<int>(a.begin(), a.begin() + k);
 }
 
+std::vector<int> intersect_unsorted_array(std::vector<int> a, std::vector<int> b)
+{
+  std::vector<int> result;
+  int curr;
+  int left, right;
+
+  for (int aa = 0;  aa < a.size(); aa++)
+  {
+    curr = a[aa];
+
+    left = std::count(a.begin(), a.begin() + aa + 1 , curr);
+
+    right = std::count(b.begin(), b.end() , curr);
+
+    if (!(right == 0 || right < left))
+    {
+      result.push_back(curr);
+    }
+  }
+
+  return result;
+}
+
 int main()
 {
-  int arr[] = {1,2,2,2,7};
-  int arr2[] = {2,2,6,6,7};
+  int arr[] = {  6,7,2,7,6,2  };
+  int arr2[] = { 2,7,2,1,2 };
   std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
   std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
- auto x =  intersect_unsorted_array_in_place(v, v2);
- std::cout << x << '\n';
+ auto x =  intersect_unsorted_array(v, v2);
 }

@@ -295,15 +295,52 @@ struct array_obj intersect_unsorted_array_in_place (int *a, const int sizeA, int
   return output;
 }
 
+struct array_obj intersect_unsorted_array (int *a, const int sizeA, int *b, const int sizeB)
+{
+  struct array_obj output;
+  int * result = (int *) malloc(sizeof(int));
+  int result_size = 0;
+  int count_left = 0, count_right = 0;
+  int curr;
+
+  for (int aa = 0; aa < sizeA; aa++)
+  {
+    curr = a[aa];
+    count_left = 0, count_right = 0;
+
+    for (int i = 0; i < aa +1; i++)
+    {
+      count_left += (curr == a[i]);
+    }
+
+    for (int i = 0; i < sizeB; i++)
+    {
+      count_right += (b[i] == curr  );
+    }
+
+    if (!(count_right == 0 || count_right < count_left))
+    {
+      result[result_size++] = curr;
+      result = realloc(result, sizeof(int) * (result_size + 1) );
+    }
+
+  }
+
+  output.size = result_size;
+  output.data = result;
+  return output;
+}
+
+
 int main ()
 {
-  int a[] = {1,2,2,2,7};
-  int b[] = {2,2,6,6,7};
+  int a[] = { 6,7,2,7,6,2 } ;
+  int b[] = { 2,7,2,1,2  };
 
   int a_len = sizeof(a) / sizeof(a[0]);
   int b_len = sizeof(b) / sizeof(b[0]);
 
-  struct array_obj arr = intersect_unsorted_array_in_place(a, a_len, b, b_len);
+  struct array_obj arr = intersect_unsorted_array(a, a_len, b, b_len);
 
   for (int i = 0; i < arr.size; i++)
   {
