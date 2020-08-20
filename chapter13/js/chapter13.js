@@ -237,11 +237,43 @@ const unionSortedArrayDedupe = function (a, b)
   }
   return unionSortedArray(a,b,callback);
 }
+
+const swap = function(collection, i,j)
+{
+  let tmp = collection[i];
+  collection[i] = collection[j];
+  collection[j] = tmp;
+}
+
+const interssectUnsortedArrayInPlace = function (a, b)
+{
+  let aa  = 0;
+  let bb = 0;
+  let k = 0;
+
+  while (aa < a.length && bb < b.length)
+  {
+    for (let i = bb; i < b.length; i++)
+    {
+      if (a[aa] == b[i])
+      {
+
+        swap(b, i, bb++);
+        swap(a, aa, k++);
+        break;
+      }
+    }
+    aa++;
+  }
+  return a.slice(0, k);
+}
+
+
 const test = function()
 {
   a = [1,2,2,2,7];
   b = [2,2,6,6,7];
-  x = unionSortedArrayDedupe(a,b);
+  x = interssectUnsortedArrayInPlace(a,b);
   console.log(x);
 }
 

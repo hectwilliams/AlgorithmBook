@@ -243,7 +243,27 @@ std::vector<int> union_sorted_array_dedupe (std::vector<int> a, std::vector<int>
   return union_sorted_array(a, b, function_ptr);
 }
 
+std::vector<int> intersect_unsorted_array_in_place(std::vector<int> a, std::vector<int> b)
+{
+  int k = 0;
+  int aa = 0;
+  int bb = 0;
 
+  while (aa < a.size() && bb < b.size())
+  {
+    for (int i = bb; i < b.size(); i++)
+    {
+      if (a[aa] == b[i])
+      {
+        std::swap(b[i] , b[bb++]);
+        std::swap(a[aa], a[k++]);
+        break;
+      }
+    }
+    aa++;
+  }
+  return std::vector<int>(a.begin(), a.begin() + k);
+}
 
 int main()
 {
@@ -251,5 +271,6 @@ int main()
   int arr2[] = {2,2,6,6,7};
   std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
   std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
-  union_sorted_array_dedupe(v, v2);
+ auto x =  intersect_unsorted_array_in_place(v, v2);
+ std::cout << x << '\n';
 }

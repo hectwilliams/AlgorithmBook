@@ -155,11 +155,23 @@ def union_sorted_array_dedupe(a, b):
     return -1
   return union_sorted_array(a,b, callback)
 
-
+def intersect_unsorted_array(a,b):
+  aa = bb  = 0
+  k = 0
+  while aa < len(a) and bb < len(b):
+    for i in range(bb, len(b)) :
+      if a[aa] == b[i]:
+        b[i], b[bb] = b[bb] , b[i]
+        a[k], a[aa] = a[aa] , a[k]
+        bb += 1
+        k += 1
+        break
+    aa += 1
+  return a[0 : k]
 
 def test():
   a = [1,2,2,2,7]
   b = [ 2,2,6,6,7 ]
-  x = union_sorted_array_dedupe(a,b)
+  x = intersect_unsorted_array(a,b)
   print(x)
 test()

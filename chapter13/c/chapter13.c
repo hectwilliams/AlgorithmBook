@@ -244,9 +244,55 @@ struct array_obj union_sorted_array (int *a, const int sizeA, int *b, const int 
   return output;
 }
 
+void swap (int * collection, int i, int j)
+{
+  int tmp;
+
+  tmp = collection[i];
+  collection[i] = collection[j];
+  collection[j] = tmp;
+}
+
 struct array_obj union_sorted_array_dedupe (int *a, const int sizeA, int *b, const int sizeB)
 {
   return union_sorted_array(a, sizeA, b, sizeB, func_ptr);
+}
+
+int arr_print (int *arr, int size)
+{
+  for (int i = 0; i < size; i++)
+  {
+    printf("[%d]", arr[i]);
+  }
+  printf("\n");
+}
+
+struct array_obj intersect_unsorted_array_in_place (int *a, const int sizeA, int *b, const int sizeB)
+{
+  struct array_obj output;
+  int aa = 0;
+  int bb = 0;
+  int result_size = 0;
+  int k = 0;
+
+  while (aa < sizeA && bb < sizeB)
+  {
+    for (int i = bb; i < sizeB; i++)
+    {
+      if ( a[aa] == b[i] )
+      {
+        swap(b, i, bb++);
+        swap(a, k, aa);
+        k++;
+        break;
+      }
+    }
+    aa++;
+  }
+
+  output.data = a;
+  output.size = k;
+  return output;
 }
 
 int main ()
@@ -257,7 +303,7 @@ int main ()
   int a_len = sizeof(a) / sizeof(a[0]);
   int b_len = sizeof(b) / sizeof(b[0]);
 
-  struct array_obj arr = union_sorted_array_dedupe(a, a_len, b, b_len);
+  struct array_obj arr = intersect_unsorted_array_in_place(a, a_len, b, b_len);
 
   for (int i = 0; i < arr.size; i++)
   {
