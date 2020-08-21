@@ -410,11 +410,53 @@ const subsetSortedArray = function(a,b)
   return false;
 }
 
+const subset_unsorted_array = function(a ,b)
+{
+  let endA = a.length - 1;
+  let endB = b.length - 1;
+  let aa = 0;
+  let bb = 0;
+  let count = 0;
+
+  while (aa < a.length && bb < b.length )
+  {
+    if (a[aa] != b[bb])
+    {
+      if (a[aa] == b[endB])
+      {
+        swap(b, bb, endB--);
+      }
+      else if (b[bb] == a[endA])
+      {
+        swap(a, aa, endA--);
+      }
+      else
+      {
+        aa++;
+      }
+
+    }
+    else
+    {
+      count++;
+      bb++;
+      aa++;
+    }
+
+    if (count == b.length)
+    {
+      return true;
+    }
+  }
+  return false ;
+}
+
 const test = function()
 {
-  a = [ 6,7,2,7,6,2 ];
-  b = [ 2,7,2,1,2  ];
-  x = unionUnsortedArrayNoDupes(a,b);
+  a = [ 10, 5, 2, 23, 19 ];
+  b = [ 19, 5, 3 ];
+
+  x = subset_unsorted_array(a,b);
   console.log(x);
 }
 

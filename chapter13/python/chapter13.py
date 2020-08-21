@@ -264,9 +264,35 @@ def subset_sorted_array (a, b) :
       return True
   return False
 
+def subset_unsorted_array(a, b) :
+  endA = len(a) - 1
+  endB = len(b) - 1
+  aa = bb = 0
+  count = 0
+
+  while aa < len(a) and bb < len(b) :
+    if a[aa] != b[bb] :
+      if a[aa] == b[endB]:
+        b[bb] , b[endB] = b[endB], b[bb]
+        endB -= 1
+      elif b[bb] == a[endA]:
+        a[aa], a[endA] = a[endA] , a[aa]
+        endA -= 1
+      else :
+        aa += 1
+
+    else:
+      count += 1
+      aa += 1
+      bb += 1
+
+    if count == len(b) :
+      return True
+  return False
+
 def test():
-  a = [ 2,7,2,1 ]
-  b = [ 7,1, 2  ]
-  x = subset_sorted_array(a,b)
+  a = [ 10, 5, 2, 23, 19 ]
+  b = [ 19, 5, 2 ]
+  x = subset_unsorted_array(a,b)
   print(x)
 test()

@@ -398,15 +398,62 @@ int subset_sorted_array (int  *a, int sizeA, int *b, int sizeB)
   return 0;
 }
 
+int subset_unsorted_array (int  *a, int sizeA, int *b, int sizeB)
+{
+  int end_a = sizeA - 1;
+  int end_b = sizeB - 1;
+  int aa = 0;
+  int bb = 0;
+  int count = 0;
+
+  while (aa < sizeA && bb < sizeB)
+  {
+    if (a[aa] != b[bb])
+    {
+      if ( a[aa] == b[end_b] )
+      {
+        swap(b, end_b--, bb);
+      }
+      else if (b[bb] == a[end_a] )
+      {
+        swap(a, end_a--, aa);
+      }
+      else
+      {
+        aa++;
+      }
+    }
+
+    if (a[aa] == b[bb])
+    {
+      count++;
+      aa++;
+      bb++;
+    }
+
+    if (count == sizeB)
+    {
+      return 1;
+    }
+
+  }
+
+  return 0;
+}
+
 int main ()
 {
-  int a[] = { 6,7,2,2,7,6,2 } ;
-  int b[] = { 2,7  };
+  int a[] = {11, 1, 13, 21, 3, 7}, b[] = {11, 3, 7, 1};
+  // int a[] = { 11, 1, 13, 21, 3, 7 } ;
+  // int b[] = { 11, 3, 7, 1  };
+    // int a[] = {1, 2, 3, 4, 5, 6}, b[] = {1, 4,2, 4};
+
   int a_len = sizeof(a) / sizeof(a[0]);
   int b_len = sizeof(b) / sizeof(b[0]);
 
 
-  int x = subset_sorted_array(a, a_len, b, b_len);
+
+  int x = subset_unsorted_array(a, a_len, b, b_len);
   printf("[ %d] \n", x);
 
 }

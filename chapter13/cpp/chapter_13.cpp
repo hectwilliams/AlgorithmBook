@@ -415,13 +415,54 @@ bool subset_sorted_array (std::vector<int> a, std::vector<int> b)
   return false;
 }
 
+bool subset_unsorted_array (std::vector<int> a, std::vector<int> b)
+{
+  int endA = a.size() - 1;
+  int endB = b.size() - 1;
+  int aa = 0;
+  int bb = 0;
+  int count = 0;
+
+  while (aa < a.size() && bb < b.size() )
+  {
+    if (a[aa] != b[bb])
+    {
+      if (a[aa] == b[endB])
+      {
+        std::swap(b[bb] , b[endB--]);
+      }
+      else if (b[bb] == a[endA] )
+      {
+        std::swap(a[aa] , a[endA--]);
+      }
+      else
+      {
+        aa++;
+      }
+    }
+    else
+    {
+      count++;
+      aa++;
+      bb++;
+    }
+
+    if (count == b.size())
+    {
+      return true;
+    }
+
+  }
+  return false;
+}
 
 int main()
+
 {
-  int arr[] = {  2,2,7,7,2,1  };
-  int arr2[] = {7,2 };
+int arr[] = {10, 5, 2, 23, 19}, arr2[] = {19, 5, 3};  // int arr[] = {  2,2,7,7,2,1  };
+  // int arr2[] = {7,2 };
   std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
   std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
- auto x =  subset_sorted_array(v, v2);
+ auto x =  subset_unsorted_array(v, v2);
   std::cout << x << '\n';
 }
