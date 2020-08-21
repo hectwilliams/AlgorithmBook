@@ -184,10 +184,71 @@ def intersect_unsorted_array(a,b):
     if not (right == 0 or right < left):
       result.append(curr)
 
+def union_unsorted_arrays(a,b) :
+  result = []
+  count = None
+
+  for i in range(0, len(a)) :
+    result.append(a[i])
+
+  for i in range(0, len(b)) :
+    count = 0
+
+    for k in range(0, len(b)):
+      count += +(b[i] == b[k])
+
+    for j in range (0, len(result)) :
+      count -= +(b[i] == result[j])
+
+    if count > 0:
+      result.append(b[i])
+
+  return result
+
+def union_unsorted_arrays_in_place(a, b):
+  count = 0
+
+  for ele in b:
+
+    count = 0
+
+    for i in range(0, len(a)):
+      count += +(a[i] == ele)
+
+    for i in range(0, len(b)):
+      count -= +(ele == b[i])
+
+    print(ele, count)
+    if count < 0:
+      a.append(ele)
+  return a
+
+def union_unsorted_array_no_dupes (a, b):
+  result = []
+
+  def removeDupes(arr = [], target = None ):
+    k  = count = 0
+
+    for i in range(0, len(arr)) :
+
+      count += +(arr[i] == target)
+      if arr[i] != target:
+        arr[i], arr[k] = arr[k], arr[i]
+        k += 1
+    while count > 1:
+      arr.pop()
+      count -= 1
+
+  for array in [a,b]:
+    for ele in array:
+      result.append(ele)
+      removeDupes(result, ele)
+
+  return result
 
 def test():
-  a = [1,2,2,2,7]
-  b = [ 2,2,6,6,7 ]
-  x = intersect_unsorted_array_in_place(a,b)
+  a = [ 2,7,2,1 ]
+  b = [ 6,7,2,6  ]
+  x = union_unsorted_array_no_dupes(a,b)
   print(x)
 test()

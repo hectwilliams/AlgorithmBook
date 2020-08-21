@@ -292,14 +292,101 @@ const interssectUnsortedArray = function (a ,b)
     }
   }
   return result;
+}
 
+const unionUnsortedArray = function (a, b)
+{
+  let result = [];
+  let count = 0;
+
+  for (let i = 0; i < a.length; i++)
+  {
+    result.push(a[i]);
+  }
+  for (let i = 0; i < b.length ; i++ )
+  {
+    count = 0;
+    for (let k = 0; k < b.length; k++)
+    {
+      count += b[i] == b[k];
+    }
+    for (let j = 0; j < result.length; j++)
+    {
+      count -= b[i] == result[j];
+    }
+    if (count > 0)
+    {
+      result.push(b[i]);
+    }
+  }
+  return result;
+}
+
+const unionUnsortedArrayInPlace = function (  a, b )
+{
+  let count;
+  let size = a.length;
+  let ele;
+
+  for (let i = 0; i < size; i++ )
+  {
+    count = 0;
+    ele = b[i];
+
+    for (let i = 0; i < a.length; i++)
+    {
+      count += +(a[i] == ele);
+    }
+
+    for (let i = 0; i < b.length; i++)
+    {
+      count -= +(ele == b[i]);
+    }
+
+    if (count < 0)
+    {
+      a.push( ele );
+    }
+  }
+
+  return a;
+}
+
+const unionUnsortedArrayNoDupes = function (  a, b , cb = (arr = [], target) => {
+  let k = 0;
+  let count = 0;
+
+  for (let i = 0; i < arr.length; i++)
+  {
+    count += +(arr[i] == target);
+    if (arr[i] != target)
+    {
+      swap(arr, i , k++);
+    }
+  }
+  while (count > 1)
+  {
+    arr.pop();
+    count--;
+  }
+})
+{
+  let result = [];
+  [a, b].forEach((collection) => {
+    collection.forEach((ele) => {
+      result.push(ele);
+      cb(result, ele );
+    });
+  });
+
+  return result;
 }
 
 const test = function()
 {
   a = [ 6,7,2,7,6,2 ];
   b = [ 2,7,2,1,2  ];
-  x = interssectUnsortedArray(a,b);
+  x = unionUnsortedArrayNoDupes(a,b);
   console.log(x);
 }
 

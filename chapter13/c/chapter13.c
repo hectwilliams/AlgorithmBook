@@ -331,16 +331,54 @@ struct array_obj intersect_unsorted_array (int *a, const int sizeA, int *b, cons
   return output;
 }
 
+struct array_obj union_unsorted_arrays  (int *a, const int sizeA, int *b, const int sizeB)
+{
+  struct array_obj output;
+  int * result = (int *) malloc(sizeof(int));
+  int result_size = 0;
+  int count = 0;
+
+  for (int i = 0 ; i< sizeA ; i++)
+  {
+    result[result_size++] = a[i];
+    result = realloc(result, sizeof(int ) * (result_size + 1) );
+  }
+
+  for (int i = 0; i < sizeB ; i++)
+  {
+    count = 0;
+
+    for (int k = 0; k < sizeB; k++)
+    {
+      count += (b[i] == b[k]);
+    }
+
+    for (int j = 0; j < result_size; j++)
+    {
+      count -= (b[i] == result[j]);
+    }
+
+    if (count > 0)
+    {
+      result[result_size++] = b[i];
+      result = realloc(result, sizeof(int ) * (result_size + 1) );
+    }
+  }
+
+  output.data = result;
+  output.size = result_size;
+  return output;
+}
 
 int main ()
 {
   int a[] = { 6,7,2,7,6,2 } ;
-  int b[] = { 2,7,2,1,2  };
-
+  int b[] = {2,7,2,1,2  };
   int a_len = sizeof(a) / sizeof(a[0]);
   int b_len = sizeof(b) / sizeof(b[0]);
 
-  struct array_obj arr = intersect_unsorted_array(a, a_len, b, b_len);
+
+  struct array_obj arr = union_unsorted_arrays(a, a_len, b, b_len);
 
   for (int i = 0; i < arr.size; i++)
   {

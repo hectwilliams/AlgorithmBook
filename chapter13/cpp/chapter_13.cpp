@@ -288,11 +288,111 @@ std::vector<int> intersect_unsorted_array(std::vector<int> a, std::vector<int> b
   return result;
 }
 
+std::vector<int> union_unsorted_array(std::vector<int> a, std::vector<int> b)
+{
+  std::vector<int> result;
+  int count = 0;
+
+  for (int i = 0; i < a.size(); i++)
+  {
+    result.push_back(a[i]);
+  }
+  for (int i = 0; i < b.size(); i++)
+  {
+    count = 0;
+    for (int k = 0; k < b.size(); k++)
+    {
+      count += b[i] == b[k];
+    }
+    for (int j = 0; j < result.size(); j++)
+    {
+      count -= b[i] == result[j];
+    }
+    if (count > 0)
+    {
+      result.push_back(b[i]);
+    }
+  }
+  std::cout << result << '\n';
+  return result;
+
+}
+
+
+std::vector<int> union_unsorted_array_in_place(std::vector<int> &a, std::vector<int> b)
+{
+  int count;
+  for (auto ele: b)
+  {
+    count = 0;
+    for (int i = 0; i < a.size(); i++)
+    {
+      count += +(a[i] == ele);
+    }
+    for (int i = 0; i < b.size(); i++)
+    {
+      count -= +(ele == b[i]);
+    }
+    if (count < 0)
+    {
+      a.push_back(ele);
+    }
+  }
+  return a;
+}
+
+void union_unsorted_array_no_dupes_helper_remove(std::vector<int> &arr, int target)
+{
+  int k = 0;
+  int count = 0;
+
+
+    for (int j = 0; j < arr.size(); j++)
+    {
+      if (arr[j] != target )
+      {
+        std::swap(arr[k++] , arr[j]);
+      }
+      else
+      {
+        count++;
+      }
+    }
+
+    while (count > 1)
+    {
+      arr.pop_back();
+      count--;
+    }
+}
+std::vector<int> union_unsorted_array_no_dupes(std::vector<int> a, std::vector<int> b)
+{
+  std::vector<int> result;
+  int k = 0;
+  int curr;
+  int count = 0;
+
+  for (int i = 0; i < a.size(); i++)
+  {
+    result.push_back(a[i]);
+    union_unsorted_array_no_dupes_helper_remove(result, a[i]);
+  }
+
+  for (int i = 0; i < b.size(); i++)
+  {
+    result.push_back(b[i]);
+    union_unsorted_array_no_dupes_helper_remove(result, b[i]);
+  }
+  return result;
+
+}
+
 int main()
 {
-  int arr[] = {  6,7,2,7,6,2  };
-  int arr2[] = { 2,7,2,1,2 };
+  int arr[] = {  2,7,2,1  };
+  int arr2[] = { 6,7,2,6  };
   std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
   std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
- auto x =  intersect_unsorted_array(v, v2);
+ auto x =  union_unsorted_array_no_dupes(v, v2);
+  std::cout << x << '\n';
 }
