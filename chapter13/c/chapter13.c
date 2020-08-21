@@ -370,18 +370,43 @@ struct array_obj union_unsorted_arrays  (int *a, const int sizeA, int *b, const 
   return output;
 }
 
+int subset_sorted_array (int  *a, int sizeA, int *b, int sizeB)
+{
+  int count = 0;
+  int bb = 0;
+
+  for (int j = 0; j < sizeA; j++)
+  {
+    if (a[j] != b[bb])
+    {
+      count = 0;
+      bb = 0;
+    }
+
+    if (a[j] == b[bb])
+    {
+      count++;
+      bb++;
+    }
+
+    if (count ==sizeB)
+    {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 int main ()
 {
-  int a[] = { 6,7,2,7,6,2 } ;
-  int b[] = {2,7,2,1,2  };
+  int a[] = { 6,7,2,2,7,6,2 } ;
+  int b[] = { 2,7  };
   int a_len = sizeof(a) / sizeof(a[0]);
   int b_len = sizeof(b) / sizeof(b[0]);
 
 
-  struct array_obj arr = union_unsorted_arrays(a, a_len, b, b_len);
+  int x = subset_sorted_array(a, a_len, b, b_len);
+  printf("[ %d] \n", x);
 
-  for (int i = 0; i < arr.size; i++)
-  {
-    printf("[%d]", arr.data[i]);
-  }
 }

@@ -246,9 +246,27 @@ def union_unsorted_array_no_dupes (a, b):
 
   return result
 
+def subset_sorted_array (a, b) :
+  bb = 0
+  count = 0
+
+  for i in range(0, len(a)) :
+
+    if a[i] != b[bb] :
+      count = 0
+      bb = 0
+
+    if a[i] == b[bb] :
+      count += 1
+      bb += 1
+
+    if count == len(b) :
+      return True
+  return False
+
 def test():
   a = [ 2,7,2,1 ]
-  b = [ 6,7,2,6  ]
-  x = union_unsorted_array_no_dupes(a,b)
+  b = [ 7,1, 2  ]
+  x = subset_sorted_array(a,b)
   print(x)
 test()

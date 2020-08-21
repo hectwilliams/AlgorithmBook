@@ -387,12 +387,41 @@ std::vector<int> union_unsorted_array_no_dupes(std::vector<int> a, std::vector<i
 
 }
 
+bool subset_sorted_array (std::vector<int> a, std::vector<int> b)
+{
+  int count = 0;
+  int bb = 0;
+
+  for (int j = 0; j < a.size(); j++)
+  {
+    if (a[j] != b[bb])
+    {
+      count = 0;
+      bb = 0;
+    }
+
+    if (a[j] == b[bb])
+    {
+      count++;
+      bb++;
+    }
+
+    if (count == b.size())
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+
 int main()
 {
-  int arr[] = {  2,7,2,1  };
-  int arr2[] = { 6,7,2,6  };
+  int arr[] = {  2,2,7,7,2,1  };
+  int arr2[] = {7,2 };
   std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
   std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
- auto x =  union_unsorted_array_no_dupes(v, v2);
+ auto x =  subset_sorted_array(v, v2);
   std::cout << x << '\n';
 }

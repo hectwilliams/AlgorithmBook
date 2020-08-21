@@ -382,6 +382,34 @@ const unionUnsortedArrayNoDupes = function (  a, b , cb = (arr = [], target) => 
   return result;
 }
 
+const subsetSortedArray = function(a,b)
+{
+  let count = 0;
+  let bb = 0;
+
+  for (let i = 0; i < a.length; i++)
+  {
+    if (a[i] != b[bb])
+    {
+      count = 0;
+      bb = 0;
+    }
+
+    if (a[i] == b[bb])
+    {
+      count++;
+      bb++;
+    }
+
+    if (count == b.length )
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 const test = function()
 {
   a = [ 6,7,2,7,6,2 ];
