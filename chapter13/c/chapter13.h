@@ -20,3 +20,14 @@ struct array_obj intersect_unsorted_array (int *a, const int sizeA, int *b, cons
 struct array_obj union_unsorted_arrays  (int *a, const int sizeA, int *b, const int sizeB);
 
 struct array_obj union_unsorted_arrays_in_place  (int *a, const int sizeA, int *b, const int sizeB);
+
+struct PriQNode
+{
+  int value;
+  int pri;
+  struct PriQNode *next;
+};
+
+void PriQueue_display(struct  PriQNode **node);
+void PriQueue_push(struct  PriQNode **node, int priority, int value);
+struct  PriQNode *PriQueue_pop(struct  PriQNode **node);

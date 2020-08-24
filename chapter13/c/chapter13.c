@@ -441,19 +441,94 @@ int subset_unsorted_array (int  *a, int sizeA, int *b, int sizeB)
   return 0;
 }
 
+
+void PriQueue_push(struct  PriQNode **node, int priority, int value)
+{
+  struct PriQNode *runner;
+  struct PriQNode *runner_prev = NULL;
+  struct PriQNode *newNode = (struct PriQNode*) malloc(sizeof( struct PriQNode));
+
+  newNode->next = NULL;
+  newNode->pri = priority;
+  newNode->value = value;
+
+  if (*node == NULL)
+  {
+    *node = newNode;
+  }
+  else
+  {
+    runner = *node;
+    if (priority <= runner->pri)
+    {
+      newNode->next = *node;
+      *node = newNode;
+    }
+    else
+    {
+      while (runner->next )
+      {
+        if (priority <= runner->next->pri)
+        {
+          newNode->next = runner->next;
+          runner->next = newNode;
+          return;
+        }
+        runner = runner->next;
+      }
+      runner->next = newNode;
+    }
+
+  }
+}
+
+struct  PriQNode *PriQueue_pop(struct  PriQNode **node)
+{
+  struct PriQNode *output  = NULL;
+
+  if (*node)
+  {
+    output = *node;
+    (*node) = output->next;
+  }
+  return output;
+}
+
+void PriQueue_display(struct  PriQNode **node)
+{
+  struct PriQNode *runner = *node;
+  while (runner)
+  {
+    printf("%d -- %d\n", runner->pri, runner->value);
+    runner = runner->next;
+  }
+}
+
+void PriQueueTest()
+{
+  struct PriQNode *list = NULL;
+  PriQueue_push(&list, 0, 22);
+  PriQueue_push(&list, 0, 25);
+  PriQueue_push(&list, 2, 22);
+
+  PriQueue_display(&list);
+
+
+}
 int main ()
 {
-  int a[] = {11, 1, 13, 21, 3, 7}, b[] = {11, 3, 7, 1};
-  // int a[] = { 11, 1, 13, 21, 3, 7 } ;
-  // int b[] = { 11, 3, 7, 1  };
-    // int a[] = {1, 2, 3, 4, 5, 6}, b[] = {1, 4,2, 4};
+  PriQueueTest();
+  // int a[] = {11, 1, 13, 21, 3, 7}, b[] = {11, 3, 7, 1};
+  // // int a[] = { 11, 1, 13, 21, 3, 7 } ;
+  // // int b[] = { 11, 3, 7, 1  };
+  //   // int a[] = {1, 2, 3, 4, 5, 6}, b[] = {1, 4,2, 4};
 
-  int a_len = sizeof(a) / sizeof(a[0]);
-  int b_len = sizeof(b) / sizeof(b[0]);
+  // int a_len = sizeof(a) / sizeof(a[0]);
+  // int b_len = sizeof(b) / sizeof(b[0]);
 
 
 
-  int x = subset_unsorted_array(a, a_len, b, b_len);
-  printf("[ %d] \n", x);
+  // int x = subset_unsorted_array(a, a_len, b, b_len);
+  // printf("[ %d] \n", x);
 
 }
