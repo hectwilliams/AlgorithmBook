@@ -579,22 +579,23 @@ var MinHeap = function(arr = [])
   }
 }
 
-const heapifyMax = function(collection, length, currPos)
+const heapifyMax = function(collection, length, currPos, callback = (array, childIndex, parentIndex) => array[childIndex] > array[parentIndex] )
 {
   let left, right, pos;
+
   if (currPos < 0)
   {
     return
   }
   pos = currPos;
   left = pos* 2 + 1;
-  right = pos * 2 + 2
+  right = pos * 2 + 2;
 
-  if (left < length && collection[left] > collection[pos])
+  if (left < length && callback(collection, left, pos ))
   {
     pos = left;
   }
-  if (right < length && collection[right] > collection[pos])
+  if (right < length && callback(collection, right, pos) )
   {
     pos = right;
   }
@@ -602,7 +603,7 @@ const heapifyMax = function(collection, length, currPos)
   {
     swap(collection, pos, currPos);
   }
-  heapifyMax(collection, length, currPos - 1);
+  heapifyMax(collection, length, currPos - 1, callback);
 }
 
 const heapSort = function (collection)
@@ -615,18 +616,84 @@ const heapSort = function (collection)
   }
 }
 
+const median_data_stream = function ()
+{
+  let median  = 0;
+  let maxHeap = []
+  let minHeap = []
+
+
+  return  function (inData)
+  {
+
+    if (maxHeap.length == minHeap.length)
+    {
+      if (inData <= median)
+      {
+        maxHeap.push(inData);
+        heapifyMax(maxHeap, maxHeap.length, maxHeap.length - 1);
+        median = maxHeap[0];
+      }
+      else
+      {
+        minHeap.push(inData);
+        heapifyMax(minHeap, minHeap.length, minHeap.length - 1, (array, childIndex, parentIndex) => array[childIndex] <= array[parentIndex]);
+        median = minHeap[0];
+      }
+    }
+
+    else if (maxHeap.length > minHeap.length)
+    {
+      if (inData <= median)  // insert to maxheap (reduce size of maxHeap)
+      {
+        swap(maxHeap, 0, maxHeap.length - 1);
+        minHeap.push(maxHeap.pop());  // extract maxHeap top into minHeap
+        maxHeap.push(inData);
+      }
+      else
+      {
+        minHeap.push(inData);
+      }
+      heapifyMax(minHeap, minHeap.length, minHeap.length - 1, (array, childIndex, parentIndex) => array[childIndex] <= array[parentIndex]);
+      heapifyMax(maxHeap, maxHeap.length, maxHeap.length - 1);
+      median = (minHeap[0] + maxHeap[0]) / 2;
+    }
+
+    else if (minHeap.length > maxHeap.length)
+    {
+      if (inData > median)  // insert to minheap (reduce size of minHeap )
+      {
+        swap(minHeap, 0, minHeap.length - 1);
+        maxHeap.push(minHeap.pop()); // extract maxHeap top into minHeap
+        minHeap.push(inData);
+      }
+      else
+      {
+        maxHeap.push(inData);
+      }
+      heapifyMax(maxHeap, maxHeap.length, maxHeap.length - 1);
+      heapifyMax(minHeap, minHeap.length, minHeap.length - 1, (array, childIndex, parentIndex) => array[childIndex] <= array[parentIndex]);
+      median = (minHeap[0] + maxHeap[0]) / 2;
+    }
+    return median;
+  }
+
+}
+const median_data_stream_driver = median_data_stream();
+
 const test = function()
 {
   let heap ;
   let data = [] ;
-  for (let i = 0; i< 10 ; i++)
+  let data2 = [];
+  for (let i = 0; i< 9 ; i++)
   {
-    data.push(Math.floor(Math.random() * 100));
+    let dataIn = (Math.floor(Math.random() * 100));
+    data2.push(dataIn);
+    let x = median_data_stream_driver(dataIn);
   }
-  console.log(data)
-  // heap = new MinHeap(data);
-  heapSort(data);
-  console.log(data)
+  heapSort(data2)
+  console.log(data2)
 
 }
 
