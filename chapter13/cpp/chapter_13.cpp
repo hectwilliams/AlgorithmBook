@@ -456,13 +456,240 @@ bool subset_unsorted_array (std::vector<int> a, std::vector<int> b)
   return false;
 }
 
-int main()
 
+int MinHeap::top ()
 {
-int arr[] = {10, 5, 2, 23, 19}, arr2[] = {19, 5, 3};  // int arr[] = {  2,2,7,7,2,1  };
-  // int arr2[] = {7,2 };
-  std::vector<int> v(arr, arr + sizeof(arr)/sizeof(arr[0]));
-  std::vector<int> v2(arr2, arr2 + sizeof(arr2)/sizeof(arr2[0]));
- auto x =  subset_unsorted_array(v, v2);
-  std::cout << x << '\n';
+  if (size > 0)
+  {
+    return array[1];
+  }
+  return array[0];
+}
+
+bool MinHeap::empty ()
+{
+  return size == 0;
+}
+
+bool MinHeap::contains(const int &data)
+{
+  bool result = false;
+
+  for (int i = 1; i < array.size(); i++)
+  {
+    result |= ( data == array[i] );
+  }
+  return result;
+}
+
+void MinHeap::insert(const int &data)
+{
+  int parentNode, minNode;
+
+  array.push_back(data);
+  size++;
+
+  parentNode = size / 2;
+  minNode = parentNode;
+
+  /* promote */
+  while (parentNode > 0)
+  {
+    if (parentNode * 2  <= size)
+    {
+    if (array[parentNode * 2] <= array[minNode] )
+      {
+        minNode = parentNode * 2;
+      }
+    }
+
+    if (parentNode * 2 + 1 <= size)
+    {
+      if (array[parentNode * 2 + 1] <= array[minNode])
+      {
+        minNode = parentNode * 2 + 1;
+      }
+    }
+
+    if (minNode != parentNode)
+    {
+      std::swap(array[minNode] , array[parentNode]);
+      parentNode /= 2;
+      minNode = parentNode;
+    }
+    else
+    {
+      parentNode = 0;
+    }
+
+  }
+}
+ int MinHeap::extract()
+ {
+   int result = array[0];
+   int parentNode = 1;
+   int pos = parentNode;
+   int left, right;
+
+   if ( size > 0)
+   {
+     std::swap(array[1] , array[size  - 1]);
+     result = array[size - 1];
+
+     while (parentNode < size - 1)
+     {
+       left = parentNode*2;
+       right = left + 1;
+
+       if (array[left] <= array[pos] && left < size - 1)
+       {
+         pos = left;
+       }
+
+        if (array[right] <= array[pos] && right < size - 1)
+       {
+         pos = right;
+       }
+
+       if (pos != parentNode)
+       {
+         std::swap(array[pos] , array[parentNode]);
+         parentNode = pos;
+       }
+       else
+       {
+         break;
+       }
+     }
+
+     array.pop_back();
+     size--;
+   }
+
+   return result;
+ }
+
+ void MinHeap::heapify(std::vector<int> & collection, int maxLength)
+ {
+   int parentNode, left, right, pos;
+
+   if (maxLength == 0)
+   {
+     maxLength = size;
+   }
+
+   for (int i = maxLength; i > 1; i--)
+   {
+     parentNode = i / 2;
+     while (parentNode > 1)
+     {
+       pos = parentNode;
+       left = 2 * parentNode;
+       right = left + 1;
+
+       if (left <= maxLength )
+       {
+         if (collection[left] <= collection[pos])
+         {
+           pos = left;
+         }
+       }
+
+      if (right <= maxLength)
+      {
+        if ( collection[right] <= collection[pos])
+        {
+          pos = right;
+        }
+      }
+
+      if (pos != parentNode)
+      {
+        std::swap(collection[pos] , collection[parentNode]);
+        parentNode /=2;
+      }
+      else
+      {
+        break;
+      }
+     }
+
+   }
+ }
+
+  void heapifyMax(std::vector<int> &collection, int maxLength, int currPos)
+  {
+    if (currPos < 0)
+    {
+      return;
+    }
+    int left = (currPos * 2) + 1;
+    int right = (currPos * 2) + 2;
+    int pos = currPos;
+
+    if (left < maxLength)
+    {
+      if (collection[left] >  collection[pos])
+      {
+        pos = left;
+      }
+    }
+
+    if (right < maxLength )
+    {
+      if (collection[right] > collection[pos])
+      {
+        pos = right;
+      }
+    }
+
+    if ( pos != currPos)
+    {
+      std::swap(collection[pos] , collection[currPos]);
+    }
+
+    heapifyMax(collection, maxLength, currPos - 1);
+
+  }
+
+  void heapSort(std::vector<int> &collection)
+  {
+    int count = 0;
+    for (int i = collection.size() - 1; i >= 0; i--)
+    {
+      std::cout << collection << " " << i << '\n';
+
+      heapifyMax(collection, collection.size() -  count++, i);
+      std::swap(collection[0] , collection[i]);
+    }
+  }
+
+
+void MinHeap::display()
+{
+  std::cout << std::vector<int>(array.begin() + 1, array.end()) <<'\n';
+}
+
+int main()
+{
+  std::vector<int> data;
+
+  for (int i = 0 ; i < 10; i++)
+  {
+    data.push_back (  (rand() % 100) ) ;
+    // std::cout << "inserted  "  << data.back() << '\n';
+  }
+
+  heapSort(data);
+  // std::cout << data << '\n';
+  // std::cout << data << '\n';
+  // MinHeap heap(data);
+  // heap.display();
+
+  // while (heap.size > 0)
+  // {
+  //   heap.display();
+
+  //   printf("- %d -  \t size %d\n", heap.extract(), heap.size);
+  // }
 }

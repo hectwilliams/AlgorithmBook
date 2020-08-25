@@ -1,4 +1,6 @@
 
+import math
+import random
 def interleave_arrays(a, b):
   result =  []
   index = [0,0]
@@ -290,9 +292,134 @@ def subset_unsorted_array(a, b) :
       return True
   return False
 
+class MinHeap:
+  def __init__(self, array = []):
+     self.size = 0
+     self.array = [None]
+     self.array += array
+
+     self.size += len(array)
+     self.heapify()
+
+  @property
+  def top(self):
+    return self.array[1]
+  @property
+  def empty(self):
+    return self.size == 0
+  def contains(self, value):
+    return value in self.array
+
+  def insert(self, value) :
+    parentIndex = None
+    currPos = left = right = None
+    self.array.append(value)
+    self.size += 1
+
+    parentIndex = int(self.size / 2)
+
+    while parentIndex  > 0:
+      currPos = parentIndex
+      left = parentIndex * 2
+      right = left + 1
+
+      if left <= self.size and self.array[left] <= self.array[currPos]   :
+        currPos = left
+
+      if right <= self.size and self.array[right] <= self.array[currPos] :
+        currPos = right
+
+      if currPos != parentIndex:
+        self.array[currPos] , self.array[parentIndex]  = self.array[parentIndex] , self.array[currPos]
+        parentIndex =  int(parentIndex / 2)
+      else:
+        parentIndex = 0
+
+  def extract (self) :
+    result = None
+    parentIndex = pos = left = right = 1
+
+    if self.size > 0:
+      self.array[1] , self.array[self.size] = self.array[self.size] , self.array[1]
+      result = self.array.pop()
+      self.size -= 1
+
+      while parentIndex < self.size:
+        pos = parentIndex
+        left = parentIndex * 2
+        right = left + 1
+
+        if left <= self.size and self.array[left] <= self.array[pos] :
+          pos = left
+
+        if right <= self.size and self.array[right] <= self.array[pos] :
+          pos = right
+
+        if pos != parentIndex: #demote node
+          self.array[pos] , self.array[parentIndex]  = self.array[parentIndex] , self.array[pos]
+          parentIndex = pos
+        else :
+          break
+
+    return result
+
+  def  heapify (self) :
+    parentIndex = left = right = pos = 0
+
+    for i in range(self.size, 0 , -1) :
+      parentIndex = int(i / 2)
+      # demote
+      while (parentIndex > 0):
+        pos = parentIndex
+        left = pos * 2
+        right = left + 1
+        if left <= self.size  and self.array[left] <= self.array[pos] :
+          pos = left
+        if right <=  self.size  and self.array[right] <= self.array[pos] :
+          pos = right
+        if pos != parentIndex:
+          self.array[pos], self.array[parentIndex] = self.array[parentIndex] , self.array[pos]
+          parentIndex = int(parentIndex / 2)
+        else:
+          break
+  def display(self):
+    print(self.array)
+
+
+def heapifyMax(collection, length, currPos):
+  left = right = pos = 0
+
+  if currPos < 0:
+    return
+
+  pos = currPos
+  left = currPos * 2 + 1
+  right = currPos * 2 + 2
+
+  if left < length and collection[left] > collection[pos] :
+    pos = left
+  if right < length and collection[right] > collection[pos] :
+    pos = right
+  if pos != currPos:
+    collection[pos], collection[currPos] = collection[currPos], collection[pos]
+
+  heapifyMax(collection, length, pos - 1)
+
+def heapSort (collection):
+  count = 0
+  for i in range( len(collection)  - 1, 0, -1):
+    heapifyMax(collection, len(collection) - count , i)
+    collection[0] , collection[i] = collection[i] , collection[0]
+    count += 1
+
 def test():
-  a = [ 10, 5, 2, 23, 19 ]
-  b = [ 19, 5, 2 ]
-  x = subset_unsorted_array(a,b)
-  print(x)
+  data = []
+  for i in range(0, 10):
+    data.append( (random.randint(0, 200)))
+  print(data)
+  heapSort(data)
+  print(data)
+  # while heap.size:
+  #   print(heap.extract())
+
 test()

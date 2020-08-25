@@ -451,13 +451,183 @@ const subset_unsorted_array = function(a ,b)
   return false ;
 }
 
+
+var MinHeap = function(arr = [])
+{
+  this.size = 0;
+  this.array = [undefined]
+  this.array = this.array.concat(arr);
+  this.size += arr.length
+
+  this.heapify  = () => {
+    let parentIndex, left, right, pos;
+
+    for (let i = this.size; i > 0; i--)
+    {
+      parentIndex = Math.floor( i / 2);
+      while (parentIndex > 0)
+      {
+        pos = parentIndex;
+        left = pos * 2 ;
+        right = left + 1;
+        if (left <= this.size && this.array[left] <= this.array[pos])
+        {
+          pos = left;
+        }
+        if (right <= this.size && this.array[right] <= this.array[pos])
+        {
+          pos = right;
+        }
+        if (pos != parentIndex)
+        {
+          swap(this.array, pos, parentIndex) ;
+          parentIndex = Math.floor(parentIndex / 2);
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
+
+  }
+  this.heapify ();
+
+  console.log(this.array)
+  this.top = () => {
+    return this.array[1];
+  };
+
+  this.empty = () =>{
+    return this.size == 0;
+  }
+
+  this.insert = (value) => {
+    let parentIndex;
+    let right, left, currPos;
+
+    this.array.push(value);
+    this.size++;
+
+    parentIndex = Math.floor(this.size / 2);
+
+    while (parentIndex > 0)
+    {
+      currPos = parentIndex;
+      left = currPos * 2;
+      right  = left + 1;
+
+      if (left <= this.size && this.array[left] <= this.array[currPos])
+      {
+        currPos = left;
+      }
+      if (right <= this.size && this.array[right] <= this.array[currPos] )
+      {
+        currPos = right;
+      }
+      if (currPos != parentIndex)
+      {
+        swap(this.array, currPos, parentIndex);
+        parentIndex = Math.floor(parentIndex / 2);
+      }
+      else
+      {
+        parentIndex = 0;
+      }
+    }
+  }
+
+  this.extract  = () => {
+    let result = undefined;
+    let pos;
+    let right;
+    let left;
+    let parentIndex = 1;
+
+    if (this.size > 0)
+    {
+      swap(this.array, 1, this.size);
+      result = this.array.pop();
+      this.size--;
+      while (parentIndex < this.size)
+      {
+        pos = parentIndex;
+        left = pos * 2;
+        right = left + 1
+
+        if (left <= this.size && this.array[left] <= this.array[pos])
+        {
+          pos = left;
+        }
+        if (right <= this.size && this.array[right] <= this.array[pos])
+        {
+          pos = right;
+        }
+
+        if (pos != parentIndex)
+        {
+          swap(this.array, pos, parentIndex);
+          parentIndex = pos;
+        }
+        else
+        {
+          break;
+        }
+      }
+    }
+    return result;
+  }
+}
+
+const heapifyMax = function(collection, length, currPos)
+{
+  let left, right, pos;
+  if (currPos < 0)
+  {
+    return
+  }
+  pos = currPos;
+  left = pos* 2 + 1;
+  right = pos * 2 + 2
+
+  if (left < length && collection[left] > collection[pos])
+  {
+    pos = left;
+  }
+  if (right < length && collection[right] > collection[pos])
+  {
+    pos = right;
+  }
+  if (pos != currPos )
+  {
+    swap(collection, pos, currPos);
+  }
+  heapifyMax(collection, length, currPos - 1);
+}
+
+const heapSort = function (collection)
+{
+  let count = 0;
+  for (let i = collection.length - 1; i >= 0 ; i-- )
+  {
+    heapifyMax(collection, collection.length - count++, i);
+    swap(collection, i, 0);
+  }
+}
+
 const test = function()
 {
-  a = [ 10, 5, 2, 23, 19 ];
-  b = [ 19, 5, 3 ];
+  let heap ;
+  let data = [] ;
+  for (let i = 0; i< 10 ; i++)
+  {
+    data.push(Math.floor(Math.random() * 100));
+  }
+  console.log(data)
+  // heap = new MinHeap(data);
+  heapSort(data);
+  console.log(data)
 
-  x = subset_unsorted_array(a,b);
-  console.log(x);
 }
 
 test();
