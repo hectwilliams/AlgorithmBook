@@ -617,7 +617,7 @@ void MinHeap::insert(const int &data)
    }
  }
 
-  void heapifyMax(std::vector<int> &collection, int maxLength, int currPos)
+  void heapifyMax(std::vector<int> &collection, int maxLength, int currPos, bool (*callback) (std::vector<int>&, int childIndex, int parentIndex)  )
   {
     if (currPos < 0)
     {
@@ -629,7 +629,7 @@ void MinHeap::insert(const int &data)
 
     if (left < maxLength)
     {
-      if (collection[left] >  collection[pos])
+      if (callback(collection, left, pos))
       {
         pos = left;
       }
@@ -637,7 +637,7 @@ void MinHeap::insert(const int &data)
 
     if (right < maxLength )
     {
-      if (collection[right] > collection[pos])
+      if (callback(collection, right, pos))
       {
         pos = right;
       }
@@ -647,9 +647,7 @@ void MinHeap::insert(const int &data)
     {
       std::swap(collection[pos] , collection[currPos]);
     }
-
-    heapifyMax(collection, maxLength, currPos - 1);
-
+    heapifyMax(collection, maxLength, currPos - 1, callback);
   }
 
   void heapSort(std::vector<int> &collection)
@@ -658,11 +656,19 @@ void MinHeap::insert(const int &data)
     for (int i = collection.size() - 1; i >= 0; i--)
     {
       std::cout << collection << " " << i << '\n';
-
       heapifyMax(collection, collection.size() -  count++, i);
       std::swap(collection[0] , collection[i]);
     }
   }
+
+bool heapify_MaxHeap_cb (std::vector<int> &collection, int childIndex, int parentIndex)
+{
+  return collection[childIndex] > collection[parentIndex];
+}
+bool heapify_MinHeap_cb (std::vector<int> &collection, int childIndex, int parentIndex)
+{
+  return collection[childIndex] <= collection[parentIndex];
+}
 
 
 void MinHeap::display()
@@ -670,26 +676,9 @@ void MinHeap::display()
   std::cout << std::vector<int>(array.begin() + 1, array.end()) <<'\n';
 }
 
+
+
 int main()
 {
-  std::vector<int> data;
 
-  for (int i = 0 ; i < 10; i++)
-  {
-    data.push_back (  (rand() % 100) ) ;
-    // std::cout << "inserted  "  << data.back() << '\n';
-  }
-
-  heapSort(data);
-  // std::cout << data << '\n';
-  // std::cout << data << '\n';
-  // MinHeap heap(data);
-  // heap.display();
-
-  // while (heap.size > 0)
-  // {
-  //   heap.display();
-
-  //   printf("- %d -  \t size %d\n", heap.extract(), heap.size);
-  // }
 }

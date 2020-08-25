@@ -386,7 +386,7 @@ class MinHeap:
     print(self.array)
 
 
-def heapifyMax(collection, length, currPos):
+def heapifyMax(collection, length, currPos, callback =lambda array, childIndex, parentIndex, data = None: array[childIndex] > array[parentIndex] ):
   left = right = pos = 0
 
   if currPos < 0:
@@ -396,14 +396,14 @@ def heapifyMax(collection, length, currPos):
   left = currPos * 2 + 1
   right = currPos * 2 + 2
 
-  if left < length and collection[left] > collection[pos] :
+  if left < length and callback(collection,left, pos ):
     pos = left
-  if right < length and collection[right] > collection[pos] :
+  if right < length and callback(collection,right, pos ) :
     pos = right
   if pos != currPos:
     collection[pos], collection[currPos] = collection[currPos], collection[pos]
 
-  heapifyMax(collection, length, pos - 1)
+  heapifyMax(collection, length, pos - 1, callback)
 
 def heapSort (collection):
   count = 0
@@ -412,14 +412,8 @@ def heapSort (collection):
     collection[0] , collection[i] = collection[i] , collection[0]
     count += 1
 
-def test():
-  data = []
-  for i in range(0, 10):
-    data.append( (random.randint(0, 200)))
-  print(data)
-  heapSort(data)
-  print(data)
-  # while heap.size:
-  #   print(heap.extract())
 
+
+def test():
+  pass
 test()

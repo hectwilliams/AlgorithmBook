@@ -36,5 +36,8 @@ class MinHeap
   }
 };
 
+bool heapify_MaxHeap_cb (std::vector<int> &collection, int childIndex, int parentIndex);
+bool heapify_MinHeap_cb (std::vector<int> &collection, int childIndex, int parentIndex);
+
 void heapSort(std::vector<int> &collection);
-void heapifyMax(std::vector<int> &collection, int maxLength, int currPos);
+void heapifyMax(std::vector<int> &collection, int maxLength, int currPos, bool (*callback) (std::vector<int>&, int childIndex, int parentIndex)  = heapify_MaxHeap_cb );

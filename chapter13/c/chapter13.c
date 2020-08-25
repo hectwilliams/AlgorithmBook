@@ -510,24 +510,21 @@ void PriQueueTest()
   PriQueue_push(&list, 0, 22);
   PriQueue_push(&list, 0, 25);
   PriQueue_push(&list, 2, 22);
-
   PriQueue_display(&list);
-
-
 }
+
+
+
+
 int main ()
 {
   PriQueueTest();
   // int a[] = {11, 1, 13, 21, 3, 7}, b[] = {11, 3, 7, 1};
   // // int a[] = { 11, 1, 13, 21, 3, 7 } ;
   // // int b[] = { 11, 3, 7, 1  };
-  //   // int a[] = {1, 2, 3, 4, 5, 6}, b[] = {1, 4,2, 4};
-
+  // int a[] = {1, 2, 3, 4, 5, 6}, b[] = {1, 4,2, 4};
   // int a_len = sizeof(a) / sizeof(a[0]);
   // int b_len = sizeof(b) / sizeof(b[0]);
-
-
-
   // int x = subset_unsorted_array(a, a_len, b, b_len);
   // printf("[ %d] \n", x);
 

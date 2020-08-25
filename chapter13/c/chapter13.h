@@ -31,3 +31,6 @@ struct PriQNode
 void PriQueue_display(struct  PriQNode **node);
 void PriQueue_push(struct  PriQNode **node, int priority, int value);
 struct  PriQNode *PriQueue_pop(struct  PriQNode **node);
+
+
+void median_data_stream (int * list, int size);
