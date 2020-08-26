@@ -127,6 +127,52 @@ class HashMap
         }
       }
     }
+  }
+
+  setSize (cap)
+  {
+    let pair;
+    let buckent_index;
+    let count ;
+    let code;
+
+    if (cap <= 0)
+    {
+      return;
+    }
+
+    if (cap > this.capacity)
+    {
+      count = cap - this.capacity;
+      for (let i = 0; i < count; i++)
+      {
+        this.table.push([]);
+      }
+    }
+    else
+    {
+      this.table = this.table.slice(0, cap);
+    }
+
+    this.capacity = cap;
+    for (let i = 0; i < this.capacity; i++)
+    {
+      buckent_index = 0;
+      while (buckent_index < this.table[i].length)
+      {
+        pair = this.table[i][buckent_index];
+        code = pair.key.hashCode();
+        if (code % this.capacity != i)
+        {
+          this.table[i].splice(buckent_index, 1);
+          this.add(pair.key, pair.value);
+        }
+        else
+        {
+          buckent_index++;
+        }
+      }
+    }
 
   }
 
@@ -135,7 +181,7 @@ class HashMap
 const testclass = new HashMap();
 testclass.add("hello", 21);
 testclass.add("pick", 25);
-console.log(testclass.table);
+console.log(testclass.table, testclass.table.length);
+testclass.setSize(6)
 console.log();
-testclass.grow();
-console.log(testclass.table);
+console.log(testclass.table, testclass.table.length);

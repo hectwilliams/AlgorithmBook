@@ -79,9 +79,39 @@ class HashMap :
         else :
           bucket_index += 1
 
-hash = HashMap()
-hash.add("hello", 222)
-print(hash.table)
+  def setSize (self, cap) :
+    pair = bucket_index = count = code = None
 
-hash.grow()
-print(hash.table)
+    if cap <= 0:
+      return
+
+    if cap > self.capacity:
+      count = cap - self.capacity
+      for i in range(0, count):
+        self.table.append([])
+    else :
+      self.table = self.table[0: cap]
+
+    self.capacity = cap
+
+    for i in range(0, self.capacity):
+      bucket_index = 0
+      while bucket_index < self.table[i].__len__():
+        pair = self.table[i][bucket_index]
+        code = hashCode(pair['key'])
+        if code % self.capacity != i:
+          self.table[i].pop(bucket_index)
+          self.add(pair['key'], pair['value'])
+        else:
+          bucket_index += 1
+
+hash = HashMap()
+
+hash.add("hello", 222)
+hash.add("pic22k", 21)
+
+print(hash.table, hash.table.__len__())
+
+hash.setSize(11)
+print(hash.table, hash.table.__len__())
+
