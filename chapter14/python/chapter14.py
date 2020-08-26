@@ -37,6 +37,7 @@ class HashMap :
     for obj in collection:
       result.append(obj['value' ])
     return result
+
   def remove(self, key) :
     index = hashCode(key) % self.capacity
     collection = self.table[index]
@@ -48,7 +49,39 @@ class HashMap :
         break
       pos += 1
     if pos < collection.__len__():
+      self.size -= 1
       collection.pop(pos)
     return result
+
+  def loadFactor(self, key):
+    return self.size / self.capacity
+
+  def grow (self):
+    increase = self.capacity - int(self.capacity * 0.50)
+    bucket_index = None
+    code = None
+    obj = None
+
+    self.capacity += increase
+
+    while increase:
+      self.table.append([])
+      increase -= 1
+
+    for i in range (0, self.capacity):
+      bucket_index = 0
+      while bucket_index < self.table[i].__len__():
+        obj = self.table[i][bucket_index]
+        code  = hashCode(obj['key'])
+        if code % self.capacity != i:
+          self.table[i].pop(bucket_index)
+          self.add(obj['key'] , obj['value'])
+        else :
+          bucket_index += 1
+
 hash = HashMap()
 hash.add("hello", 222)
+print(hash.table)
+
+hash.grow()
+print(hash.table)

@@ -4,6 +4,7 @@
 #include <string>
 
 std::ostream &operator << (std::ostream &out, const std::vector<int> &vect );
+std::ostream &operator << (std::ostream &out, const std::vector<std::pair<std::string, int> > &vect );
 
 class HashMap
 {
@@ -25,5 +26,8 @@ class HashMap
     bool empty();
     std::vector<int> find(std::string key);
     int remove(std::string key);
+    double load_factor();
+    void grow();
+    void display();
 };
 
