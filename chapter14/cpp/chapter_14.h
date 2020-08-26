@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 
+std::ostream &operator << (std::ostream &out, const std::vector<int> &vect );
+
 class HashMap
 {
   public:
@@ -22,4 +24,6 @@ class HashMap
     void add(std::string key, int value);
     bool empty();
     std::vector<int> find(std::string key);
+    int remove(std::string key);
 };
+

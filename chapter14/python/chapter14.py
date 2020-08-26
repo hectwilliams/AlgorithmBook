@@ -37,6 +37,18 @@ class HashMap :
     for obj in collection:
       result.append(obj['value' ])
     return result
-
+  def remove(self, key) :
+    index = hashCode(key) % self.capacity
+    collection = self.table[index]
+    pos = 0
+    result = None
+    while pos < collection.__len__():
+      if collection[pos]['key'] == key:
+        result = collection[pos]['value']
+        break
+      pos += 1
+    if pos < collection.__len__():
+      collection.pop(pos)
+    return result
 hash = HashMap()
 hash.add("hello", 222)

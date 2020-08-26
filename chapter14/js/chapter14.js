@@ -63,8 +63,32 @@ class HashMap
     return result;
   }
 
+  remove (key)
+  {
+    let index = key.hashCode() % this.capacity;
+    let collection = this.table[index];
+    let pos = 0;
+    let result = null;
+
+    for (; pos < collection.length ; pos++)
+    {
+      if (collection[pos].key == key)
+      {
+        result = collection[pos].value;
+        break;
+      }
+    }
+
+    if (pos < collection.length)
+    {
+      collection.splice(pos,1)
+    }
+    return result;
+  }
+
 }
 
 const testclass = new HashMap();
 testclass.add("hello", 21);
 testclass.add("pick", 25);
+testclass.remove("hello");
