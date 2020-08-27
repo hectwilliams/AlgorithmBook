@@ -105,13 +105,65 @@ class HashMap :
         else:
           bucket_index += 1
 
-hash = HashMap()
+  def addMap(self, hash_map_obj):
+    index = 0
 
-hash.add("hello", 222)
-hash.add("pic22k", 21)
+    # iterate argument (i.e hashMap) arrays
+    for i in range(0, hash_map_obj.table.__len__()) :
+      hash_map_obj_collection = hash_map_obj.table[i]
 
-print(hash.table, hash.table.__len__())
+      # iterate  array elements(i.e. obj)
+      for obj in hash_map_obj_collection:
+        index = hashCode(obj['key']) % self.capacity
 
-hash.setSize(11)
-print(hash.table, hash.table.__len__())
+        # search for duplicare key
+        j = 0
+        while j < self.table[index].__len__():
+          if self.table[index][j]['key'] == obj['key']:
+            self.table[index][j]['value'] = obj['value']
+            break
+          j += 1
+
+        # append new key/value
+        if j >= self.table[index].__len__():
+          self.table[index].append(obj)
+
+  def selectKeys (self, key_array) :
+    pair = None
+    j = k = 0
+
+    for i in range(0, self.table.__len__()) :
+      j = 0
+      while j < self.table[i].__len__():
+        pair = self.table[i][j]
+        k = 0
+        while k < key_array.__len__() :
+          if key_array[k]['key'] == pair['key']:
+            break
+          k += 1
+        if k>= key_array.__len__():
+          self.table[i].pop(j)
+        else:
+          j += 1
+
+class HashMultiMap (HashMap) :  # unordered
+  def __init__(self, cap):
+    HashMap.__init__(cap)
+
+  def add (self, key, value) :
+    index = hashCode(key) % self.capacity
+    pair = {'key': key, 'value': value}
+    self.table[index].append(pair)
+
+
+# hash = HashMap()
+
+# hash.add("hello", 222)
+# hash.add("pic22k", 21)
+
+# print(hash.table, hash.table.__len__())
+
+# hash.setSize(11)
+# print(hash.table, hash.table.__len__())
+
 

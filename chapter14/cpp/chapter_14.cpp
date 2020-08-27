@@ -170,18 +170,148 @@ void HashMap::grow ()
 
 }
 
+void HashMap::set_size (const int &newCap)
+{
+  std::pair<std::string, int> pair;
+  int bucket_index;
+  int count;
+  int code;
+
+  if (newCap <= 0)
+  {
+    return;
+  }
+
+  if (newCap > capacity)
+  {
+    count = newCap - capacity;
+    for (int i = 0; i < count; i++)
+    {
+      table.push_back(std::vector<std::pair<std::string, int> >());
+    }
+  }
+  else
+  {
+    table = std::vector<std::vector <std::pair<std::string, int> > >(table.begin(), table.begin() + newCap);
+  }
+
+  capacity = newCap;
+
+  // rehash
+  for (int i = 0; i < capacity; i++)
+  {
+    bucket_index = 0;
+    while (bucket_index < table[i].size())
+    {
+      pair = table[i][bucket_index];
+      code = hashCode(pair.first);
+      if (code % capacity != i )
+      {
+        table[i].erase(table[i].begin() + bucket_index);
+        add(pair.first, pair.second);
+      }
+      else
+      {
+        bucket_index++;
+      }
+    }
+  }
+}
+
+void HashMap::addMap( HashMap &obj)
+{
+  int index;
+  int j = -1;
+
+  for (int i = 0; i < obj.table.size(); i++)
+  {
+    std::vector<std::pair<std::string, int> > &obj_collection = obj.table[i];
+    for (std::pair<std::string, int> pair: obj_collection)
+    {
+      index = hashCode( pair.first) % capacity;
+
+      // check THIS BUCKET for duplicate key
+      for ( j = 0; j < table[index].size(); j++)
+      {
+        if (table[index][j].first == pair.first)
+        {
+          table[index][j].second = pair.second;
+          break;
+        }
+      }
+
+      if (j >= table[index].size())
+      {
+        table[index].push_back(pair);
+      }
+    }
+  }
+}
+
+void HashMap::select_keys( std::vector<std::pair<std::string, int> > keys )
+{
+  std::pair<std::string, int> pair;
+  int j, k;
+
+  // iterate buckets
+  for (int i = 0; i < table.size(); i++)
+  {
+    // bucket - iterate elements
+    j = 0;
+    while ( j < table[i].size() )
+    {
+      pair = table[i][j];
+      for (k = 0; k < keys.size(); k++)
+      {
+        if (keys[k].first == pair.first ) // equal keys found
+        {
+          break;
+        }
+      }
+
+      if (k >= keys.size() ) // pair key not found in keys list
+      {
+        table[i].erase(table[i].begin() + j);
+      }
+      else
+      {
+        ++j;
+      }
+    }
+  }
+}
+
+void HashMultiMap::add(std::string key, int value)
+{
+  int index = this->hashCode(key) % capacity;
+  std::vector<std::pair<std::string, int> > &collection = table[index];
+  std::pair<std::string, int> pair = std::make_pair(key, value);;
+
+  if (collection.empty())
+  {
+    collection.push_back(pair);
+  }
+  else
+  {
+    collection.push_back(pair);
+  }
+  size++;
+}
+
 
 int main()
 {
-  HashMap hasher;
+  HashMultiMap hasher;
   hasher.add("hector", 21);
-  hasher.add("picnic", 21);
+  hasher.add("hector",300);
 
   hasher.display();
-  hasher.grow();
-  std::cout << '\n';
-  hasher.display();
+  // hasher.grow();
+  // std::cout << '\n';
+  // hasher.set_size(11);
+  // hasher.display();
 
   auto x = hasher.find("hector");
 }
+
 

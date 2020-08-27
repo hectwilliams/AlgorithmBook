@@ -21,13 +21,22 @@ class HashMap
         table.push_back(std::vector <std::pair<std::string , int> >());
       }
     }
+    void display();
     int hashCode (std::string str);
-    void add(std::string key, int value);
+    virtual void add(std::string key, int value);
     bool empty();
     std::vector<int> find(std::string key);
     int remove(std::string key);
     double load_factor();
     void grow();
-    void display();
+    void set_size(const int &newCap);
+    void addMap( HashMap &obj);
+    void select_keys(std::vector<std::pair<std::string, int> > keys);
+};
+
+class HashMultiMap : public HashMap // unordered
+{
+  public:
+  virtual void add(std::string key, int value);
 };
 

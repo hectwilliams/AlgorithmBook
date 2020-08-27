@@ -176,12 +176,109 @@ class HashMap
 
   }
 
+  addMap (objHashMap)
+  {
+    let index;
+    let j;
+
+    for (let i = 0; i < objHashMap.table.length; i++)
+    {
+      let collection = objHashMap[i];
+      for (let pair of collection)
+      {
+        index = pair.key.hashCode() % this.capacity;
+
+        for (let j = 0; j < this.table[index].length; j++)
+        {
+          if (this.table[index][j].key == pair.key)
+          {
+            this.table[index][j].value = pair.value;
+            break;
+          }
+        }
+
+        if (j >= this.table[index].length)
+        {
+          table[index].push(pair);
+        }
+
+      }
+    }
+  }
+
+  selectKeys (keyArray)
+  {
+    let pair = null;
+    let j, k;
+
+    for (let i = 0; i < this.table.length; i++)
+    {
+      j = 0;
+      while ( j < this.table[i].length )
+      {
+        pair = this.table[i][j];
+
+        for (k = 0; k < keyArray.length; k++)
+        {
+          if (keyArray[k].key == pair.key)
+          {
+            break;
+          }
+        }
+
+        if (k >= keyArray.length)
+        {
+          this.table[i].splice(j, 1);
+        }
+        else
+        {
+          j++;
+        }
+
+      }
+
+    }
+
+  }
 }
 
-const testclass = new HashMap();
+
+class HashMultiMap extends HashMap  // unordered
+{
+  constructor(cap)
+  {
+    super(cap);
+  }
+
+  add(key, value)
+  {
+    let index = key.hashCode() % this.capacity;
+    let collection = this.table[index];
+    let pair = {key, value};
+
+    if (!collection)
+    {
+      this.table[index] = [];
+      this.table[index].push(pair);
+    }
+    else
+    {
+      collection.push(pair)
+    }
+  }
+}
+
+
+
+
+const testclass = new HashMultiMap();
 testclass.add("hello", 21);
-testclass.add("pick", 25);
+testclass.add("hello", 25);
 console.log(testclass.table, testclass.table.length);
 testclass.setSize(6)
 console.log();
+console.log(testclass.table, testclass.table.length);
+
+testclass.selectKeys([ {key: 'hello', value:  22} ]);
+
 console.log(testclass.table, testclass.table.length);
