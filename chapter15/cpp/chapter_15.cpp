@@ -199,6 +199,60 @@ void BST::remove(int value, BSTNode *node,  BSTNode *prev)
 
 }
 
+bool BST::is_full_tree(BSTNode *node = NULL)
+{
+  bool isFull = false;
+  node = !node ? root : node;
+
+  if (node)
+  {
+    isFull = (node->right && node->left) ^ (!node->left && node->right);
+
+    if (node->left)
+    {
+      isFull &= is_full_tree(node->left);
+    }
+    if (node->right)
+    {
+      isFull &= is_full_tree(node->right);
+    }
+  }
+  return isFull;
+}
+
+bool BST::is_complete_tree(BSTNode *node = NULL)
+{
+  bool isComplete = false;
+  int left = 0, right= 0;
+
+  if (node)
+  {
+    if (node->left)
+    {
+      left = height(node->left);
+    }
+    if (node->right )
+    {
+      right = height(node->right);
+    }
+
+    isComplete = left >= right;
+
+    if (node->left)
+    {
+      isComplete &= is_complete_tree(node->left);
+    }
+
+    if (node->right)
+    {
+      isComplete &= is_complete_tree(node->right);
+    }
+  }
+
+  return isComplete;
+}
+
+
 int main()
 {
 

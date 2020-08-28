@@ -33,4 +33,7 @@ class BST
   static BSTNode * remove_successor (BSTNode *node);
   void remove(int value, BSTNode *node = NULL,  BSTNode *prev = NULL);
   int height(BSTNode *node = NULL);
+  bool is_full_tree(BSTNode *node = NULL);
+  bool is_complete_tree(BSTNode *node = NULL);
+
 };

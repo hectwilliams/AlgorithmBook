@@ -97,4 +97,35 @@ class BST:
 
     return  (right if right > left else left)
 
+  def isFull (self, node= None):
+    isfull = False
+    node = self.root if not node else node
 
+    if node:
+      isfull = bool(node.right and node.left) ^ bool(not node.right and not node.left)
+      if node.left:
+        isfull &= self.isFull(node.left)
+      if node.right:
+        isfull &= self.isFull(node.right)
+    return isfull
+
+  def isComplete(self, node = None):
+    node = self.root if not node else node
+    left = right = 0
+    iscomplete = False
+
+    if node:
+      if node.left:
+        left = self.height(node.left)
+      if node.right:
+        right = self.height(node.right)
+
+      iscomplete = left >= right
+
+      if node.left:
+        iscomplete &= self.isComplete(node.left)
+
+      if node.right:
+        iscomplete &= self.isComplete(node.right)
+
+    return iscomplete

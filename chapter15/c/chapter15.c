@@ -237,18 +237,81 @@ void BST_remove(struct BST **tree, int value)
   prev = NULL;
 }
 
+
+enum boolean BST_Full(struct BST **tree)
+{
+  enum boolean isFull = false;
+
+  if ((*tree))
+  {
+    isFull = ( (*tree)->left && (*tree)->right ) ^ ((*tree)->left == NULL && (*tree)->right == NULL);
+    printf("\n[%d]\n", isFull);
+    if ((*tree)->left)
+    {
+      isFull &= BST_Full (&(*tree)->left);
+    }
+
+    if ((*tree)->right)
+    {
+     isFull &=  BST_Full (&(*tree)->right);
+    }
+  }
+  return isFull;
+}
+
+enum boolean BST_Complete(struct BST **tree)
+{
+
+  enum boolean isComplete = false ;
+  int left = 0, right = 0;
+  struct BST *node = *tree;
+
+  if (node)
+  {
+
+    if (node->left)
+    {
+      left = BST_height(&node->left);
+    }
+
+    if (node->right)
+    {
+      right = BST_height(&node->right) ;
+    }
+
+    isComplete = left >= right;
+
+    if (node->left)
+    {
+      isComplete &= BST_Complete(&node->left);
+    }
+
+    if (node->right)
+    {
+     isComplete &=  BST_Complete(&node->right);
+    }
+  }
+
+  return isComplete;
+
+}
+
 int main()
 {
   struct BST *bst = NULL;
   BST_add(&bst, 32);
   BST_add(&bst, 17);
+  BST_add(&bst, 28);
+  BST_add(&bst, 23);
+  BST_add(&bst, 29);
+
   BST_add(&bst, 49);
   BST_add(&bst, 2);
 
   BST_display(&bst);
-
-  BST_remove(&bst, 2);
+  // BST_remove(&bst, 2);
   printf("\n") ;
   BST_display(&bst);
 
+  printf(" \nis complete - %d \n ", BST_Complete(&bst) );
 }

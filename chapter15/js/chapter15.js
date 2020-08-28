@@ -213,6 +213,54 @@ class BST
     return left == right && right || left;
   }
 
+  isFull(node = null)
+  {
+    let isfull = false;
+    node = !node && this.root || node;
+    if (node)
+    {
+      isfull = (node.right && node.leeft) ^ (!node.right && !node.left) ;
+      if (node.left)
+      {
+        isfull &= this.height(node.left);
+      }
+      if (node.right)
+      {
+        isfull &= this.height(node.right);
+      }
+    }
+    return isfull;
+  }
+
+  isComplete (node = null)
+  {
+    let right = 0, left = 0;
+    let iscomplete = false;
+    node = !node && this.root || node;
+    if (node)
+    {
+      if (node.left)
+      {
+        left = this.height(node.left);
+      }
+      if (node.right)
+      {
+        right = this.height(node.right);
+      }
+      iscomplete = left >= right;
+
+      if (node.left)
+      {
+        iscomplete &= this.isComplete(node.left);
+      }
+      if (node.right)
+      {
+        iscomplete &= this.isComplete(node.right);
+      }
+    }
+    return iscomplete;
+  }
+
  }
 
 var bst = new BST();
@@ -225,4 +273,3 @@ bst.remove(68);
 
 console.log()
 
-bst.display();
