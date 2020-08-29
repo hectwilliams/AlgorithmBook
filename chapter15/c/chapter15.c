@@ -293,7 +293,118 @@ enum boolean BST_Complete(struct BST **tree)
   }
 
   return isComplete;
+}
 
+void BST_addNode (struct BST *node, struct BST **tree)
+{
+
+  if (node)
+  {
+
+    if (node->value < (*tree)->value)
+    {
+      if ((*tree)->left)
+      {
+        BST_addNode(node, & (*tree)->left);
+      }
+      else
+      {
+        (*tree)->left = node;
+      }
+    }
+
+    else
+    {
+      if ((*tree)->right)
+      {
+        BST_addNode(node, & (*tree)->right);
+      }
+      else
+      {
+        (*tree)->right = node;
+      }
+    }
+  }
+}
+
+void bstRepairReinsert(struct BST *src, struct BST **dest)
+{
+  /* pre traversal iterates each node */
+
+  struct BST *node = src, *reinsert  = NULL;
+
+  if (node)
+  {
+
+    if (node->left)
+    {
+      reinsert = node->left;
+      node->left = NULL;
+      bstRepairReinsert(reinsert, dest);
+    }
+
+    if (node->right)
+    {
+      reinsert = node->right;
+      node->right = NULL;
+      bstRepairReinsert( reinsert, dest);
+    }
+
+    BST_addNode(node, dest);
+  }
+}
+
+enum boolean bstRepair(struct BST **tree)
+{
+  static struct BST *root = NULL;
+  struct BST *node = *tree, *reinsertionNode = NULL;
+  enum boolean repaired =  false;
+
+  if (root == NULL)
+  {
+    root = *tree;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      if (node->left->value >= node->value)
+      {
+        repaired = true;
+        reinsertionNode = node->left;
+        node->left = NULL;
+        bstRepairReinsert(reinsertionNode, &root);
+      }
+    }
+
+    if (node->right)
+    {
+      if (node->right->value < node->value)
+      {
+        repaired = true;
+        reinsertionNode = node->right;
+        node->right = NULL;
+        bstRepairReinsert(reinsertionNode, &root);
+      }
+    }
+
+    if (node)
+    {
+      if (node->left)
+      {
+        repaired |= bstRepair (&node->left);
+      }
+
+      if (node->right)
+      {
+        repaired |= bstRepair (&node->right);
+      }
+    }
+  }
+
+  root = NULL;
+  return repaired;
 }
 
 int main()
@@ -309,9 +420,15 @@ int main()
   BST_add(&bst, 2);
 
   BST_display(&bst);
-  // BST_remove(&bst, 2);
   printf("\n") ;
   BST_display(&bst);
 
-  printf(" \nis complete - %d \n ", BST_Complete(&bst) );
+  bst->left->right->value = 1;
+
+
+  printf(" \nis complete - %d \n ", bstRepair(&bst) );
+
+  BST_display(&bst);
+  // printf("outcome %d" ,   bst->left->right->value );
+
 }

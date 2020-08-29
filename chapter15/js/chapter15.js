@@ -72,6 +72,42 @@ class BST
     }
   }
 
+  addNode(targetNode, node = null)
+  {
+    node = !node && this.root || node;
+
+    if (!node)
+    {
+      this.root = targetNode;
+    }
+    else
+    {
+      if (targetNode.value < node.value)
+      {
+        if (node.left)
+        {
+          this.addNode.call(this, targetNode, node.left);
+        }
+        else
+        {
+          node.left = targetNode;
+        }
+      }
+      else
+      {
+        if (node.right)
+        {
+          this.addNode.call(this, targetNode, node.right);
+        }
+        else
+        {
+          node.right = targetNode;
+        }
+      }
+    }
+
+  }
+
   static removeSuccessor (node = null)
   {
     let prev = node;
@@ -261,15 +297,93 @@ class BST
     return iscomplete;
   }
 
+
+  bstRepairReinsert (node = null)
+  {
+    let insertNode;
+
+    node = !node && this.root || node;
+
+    if (node)
+    {
+      if (node.left)
+      {
+        insertNode = node.left;
+        node.left = null;
+        this.bstRepairReinsert.call(this, insertNode);
+      }
+      if (node.right)
+      {
+        insertNode = node.right;
+        node.right = null;
+        this.bstRepairReinsert.call(this, insertNode);
+      }
+    }
+
+
+    this.addNode.call(this, node, this.root);
+  }
+
+  repair (node = null)
+  {
+    let repaired = false;
+    let subtree = null;
+
+    node = !node && this.root || node;
+
+    if (node)
+    {
+      if (node.left)
+      {
+        if (node.left.value >= node.value)
+        {
+          repaired = true;
+          subtree = node.left;
+          node.left = null;
+          this.bstRepairReinsert.call(this, subtree);
+        }
+      }
+
+      if (node.right)
+      {
+        if (node.right.value < node.value)
+        {
+          repaired = true;
+          subtree = node.right;
+          node.right = null;
+          this.bstRepairReinsert.call(this, subtree);
+        }
+      }
+
+      if (node.left)
+      {
+        repaired |= this.repair.call(this, node.left);
+      }
+      if (node.right)
+      {
+        repaired |= this.repair.call(this, node.right);
+      }
+    }
+    return repaired;
+  }
+
  }
 
-var bst = new BST();
-bst.add(30);
-bst.add(21);
-bst.add(17);
-bst.add(68);
-bst.display();
-bst.remove(68);
+let  tree = new BST();
+tree.add(32);
+tree.add(17);
+tree.add(28);
+tree.add(23);
+tree.add(29);
+tree.add(49);
+tree.add(2);
 
+tree.display();
+
+tree.root.left.right.value = 1;
+tree.repair()
 console.log()
+
+tree.display();
+
 

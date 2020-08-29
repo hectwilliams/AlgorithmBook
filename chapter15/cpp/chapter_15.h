@@ -20,6 +20,9 @@ class BSTNode
 
 class BST
 {
+  private:
+  bool bstRepairReinsert (BSTNode *node);
+
   public:
 
   BSTNode *root;
@@ -30,10 +33,13 @@ class BST
   }
   void display(BSTNode *node = NULL);
   void add (int value, BSTNode *node = NULL);
+void addNode(BSTNode *targetNode, BSTNode *node = NULL);
   static BSTNode * remove_successor (BSTNode *node);
   void remove(int value, BSTNode *node = NULL,  BSTNode *prev = NULL);
   int height(BSTNode *node = NULL);
   bool is_full_tree(BSTNode *node = NULL);
   bool is_complete_tree(BSTNode *node = NULL);
+  bool bstRepair (BSTNode *node = NULL);
+
 
 };

@@ -57,8 +57,43 @@ void BST::add (int value, BSTNode *node)
       }
     }
   }
-
 }
+
+void BST::addNode(BSTNode *targetNode, BSTNode *node)
+{
+  node = !node ? root : node;
+
+  if (!node)
+  {
+    root = targetNode;
+  }
+  else
+  {
+    if (targetNode->value < node->value)
+    {
+      if (node->left)
+      {
+        addNode(targetNode, node->left);
+      }
+      else
+      {
+        node->left = targetNode;
+      }
+    }
+    else
+    {
+      if (node->right)
+      {
+        addNode(targetNode, node->right);
+      }
+      else
+      {
+        node->right = targetNode;
+      }
+    }
+  }
+}
+
 
 BSTNode *BST::remove_successor (BSTNode *node)
 {
@@ -199,7 +234,7 @@ void BST::remove(int value, BSTNode *node,  BSTNode *prev)
 
 }
 
-bool BST::is_full_tree(BSTNode *node = NULL)
+bool BST::is_full_tree(BSTNode *node)
 {
   bool isFull = false;
   node = !node ? root : node;
@@ -220,7 +255,7 @@ bool BST::is_full_tree(BSTNode *node = NULL)
   return isFull;
 }
 
-bool BST::is_complete_tree(BSTNode *node = NULL)
+bool BST::is_complete_tree(BSTNode *node)
 {
   bool isComplete = false;
   int left = 0, right= 0;
@@ -253,16 +288,101 @@ bool BST::is_complete_tree(BSTNode *node = NULL)
 }
 
 
+bool BST::bstRepairReinsert (BSTNode *node)
+{
+ BSTNode *tmp_insertionNode;
+
+ node = !node? root : node;
+
+ if (node)
+ {
+   if (node->left)
+   {
+     tmp_insertionNode = node->left;
+     node->left = NULL;
+     bstRepairReinsert(tmp_insertionNode );
+   }
+
+   if (node->right )
+   {
+     tmp_insertionNode = node->right;
+     node->right = NULL;
+     bstRepairReinsert(tmp_insertionNode);
+   }
+  }
+
+  addNode(node, root);
+
+}
+
+bool BST::bstRepair (BSTNode *node)
+{
+
+  bool repaired = false;
+  BSTNode *subtree;
+
+  node = !node? root : node;
+
+  if (node)
+  {
+    if (node->left)
+    {
+      if (node->left->value >= node->value)
+      {
+        repaired  |=1;
+        subtree = node->left;
+        node->left = NULL;
+        bstRepairReinsert(subtree);
+      }
+    }
+
+    if (node->right)
+    {
+      if (node->right->value < node->value)
+      {
+        repaired |= 1;
+        subtree = node->right;
+        node->right = NULL;
+        bstRepairReinsert(subtree);
+      }
+    }
+
+    if (node)
+    {
+      if (node->left)
+      {
+        repaired |= bstRepair(node->left);
+      }
+    }
+
+    if (node->right)
+    {
+      repaired |= bstRepair(node->right);
+    }
+  }
+  return repaired;
+}
+
+
 int main()
 {
 
   BST tree;
-tree.add(30);
+tree.add(32);
 tree.add(17);
-tree.add(217);
-tree.add(3);
+tree.add(28);
+tree.add(23);
+tree.add(29);
+tree.add(49);
+tree.add(2);
 
 tree.display();
+
+tree.root->left->right->value = 1;
+tree.bstRepair();
+
+std::cout << '\n';
+
 tree.display();
 
 

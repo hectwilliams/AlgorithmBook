@@ -33,6 +33,22 @@ class BST:
         else:
           node.right = BSTNode(value)
 
+  def addNode (self,targetNode, node= None) :
+    node = self.root if not node else node
+
+    if not node:
+      self.root = targetNode
+    else:
+      if targetNode.value < node.value:
+        if node.left:
+          self.addNode(targetNode, node.left)
+        else:
+          node.left = targetNode
+      else:
+        if node.right:
+          self.addNode(targetNode, node.right)
+        else:
+          node.right = targetNode
   @staticmethod
   def remove_successor (node):
     prev = node
@@ -127,5 +143,63 @@ class BST:
 
       if node.right:
         iscomplete &= self.isComplete(node.right)
-
     return iscomplete
+
+  def bstRepairReinsert (self, node = None) :
+    insertNode = None
+    node = self.root if not node else node
+
+    if node:
+      if node.left:
+        insertNode = node.left
+        node.left = None
+        self.bstRepairReinsert(insertNode)
+
+      if node.right:
+        insertNode = node.right
+        node.right = None
+        self.bstRepairReinsert(insertNode)
+      self.addNode(node, self.root)
+
+  def repair(self, node = None) :
+    repaired = False
+    subtree = None
+
+    node = self.root if not node else node
+
+    if node:
+
+      if node.left:
+        if node.left.value >= node.value:
+          repaired = True
+          subtree = node.left
+          node.left = None
+          self.bstRepairReinsert(subtree)
+      if node.right:
+        if node.right.value < node.value:
+          repaired = True
+          subtree = node.right
+          node.right = None
+          self.bstRepairReinsert(subtree)
+
+      if node.left:
+        repaired |= self.repair(node.left)
+      if node.right:
+        repaired |= self.repair(node.right)
+
+    return repaired
+
+
+tree =  BST()
+tree.add(32)
+tree.add(17)
+tree.add(28)
+tree.add(23)
+tree.add(29)
+tree.add(49)
+tree.add(2)
+
+tree.display()
+tree.root.left.right.value = 1
+tree.repair()
+tree.display()

@@ -22,3 +22,7 @@ struct BST * BST_remove_successor(struct BST **tree);
 void BST_remove(struct BST **tree, int value);
 enum boolean BST_Full(struct BST **tree);
 enum boolean BST_Complete(struct BST **tree);
+
+enum boolean bstRepair(struct BST **tree);
+void bstRepairReinsert(struct BST *src, struct BST **dest);
+void BST_addNode (struct BST *node, struct BST **tree);
