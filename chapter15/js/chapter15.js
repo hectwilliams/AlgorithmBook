@@ -367,6 +367,39 @@ class BST
     return repaired;
   }
 
+  smallestDifference (node = null, min = [Number.MAX_SAFE_INTEGER])
+  {
+    let curr;
+    node = !node && this.root || node;
+
+    if (node.left) {
+      curr = Math.abs(node.left.value - node.value);
+      if (curr < min[0] )
+      {
+        min[0] = curr;
+      }
+    }
+    if (node.right)
+    {
+      curr = Math.abs(node.right.value - node.value);
+      if (curr < min[0])
+      {
+        min[0] = curr;
+      }
+    }
+    if (node.left)
+    {
+      this.smallestDifference.call(this, node.left, min);
+    }
+
+
+    if (node.right)
+    {
+      this.smallestDifference.call(this, node.right,  min);
+    }
+    return min[0];
+  }
+
  }
 
 let  tree = new BST();
@@ -386,4 +419,4 @@ console.log()
 
 tree.display();
 
-
+console.log(tree.smallestDifference())

@@ -26,3 +26,4 @@ enum boolean BST_Complete(struct BST **tree);
 enum boolean bstRepair(struct BST **tree);
 void bstRepairReinsert(struct BST *src, struct BST **dest);
 void BST_addNode (struct BST *node, struct BST **tree);
+BST_smallest_difference(struct BST **tree);

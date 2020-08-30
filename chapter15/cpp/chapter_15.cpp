@@ -363,6 +363,55 @@ bool BST::bstRepair (BSTNode *node)
   return repaired;
 }
 
+int BST::smallest_difference (BSTNode *node, int *min )
+
+{
+  int left = INT32_MAX, right = INT32_MAX;
+  int data;
+
+  node = !node ? root : node;
+
+  if (!min)
+  {
+    data = INT32_MAX;
+    min = &data;
+  }
+
+  if (node)
+  {
+
+    if (node->left)
+    {
+      left = std::abs(node->value - node->left->value);
+      if (*min > left)
+      {
+        *min = left;
+      }
+    }
+
+    if (node->right)
+    {
+      right = std::abs(node->value - node->right->value);
+      if (*min > right)
+      {
+        *min = right;
+      }
+    }
+
+   if (node->left)
+    {
+      smallest_difference(node->left, min);
+    }
+
+    if (node->right)
+    {
+      smallest_difference(node->right, min);
+    }
+  }
+
+  return  *min;
+}
+
 
 int main()
 {
@@ -383,7 +432,7 @@ tree.bstRepair();
 
 std::cout << '\n';
 
-tree.display();
+std::cout << tree.smallest_difference() << '\n';
 
 
 }

@@ -1,3 +1,5 @@
+import sys
+
 class BSTNode:
   def __init__(self, value):
     self.value = value
@@ -168,7 +170,6 @@ class BST:
     node = self.root if not node else node
 
     if node:
-
       if node.left:
         if node.left.value >= node.value:
           repaired = True
@@ -189,6 +190,25 @@ class BST:
 
     return repaired
 
+  def smallestDifference(self, node = None, minValue = [sys.maxsize] ):
+    curr = 0
+    node =  self.root if not node else node
+    if node:
+
+      if node.left:
+        curr = abs(node.left.value  - node.value)
+        minValue[0] = minValue[0] if curr > minValue[0] else curr
+
+      if node.right:
+        curr = abs(node.right.value - node.value)
+        minValue[0] = minValue[0] if curr > minValue[0] else curr
+
+      if node.left:
+        self.smallestDifference(node.left, minValue)
+      if node.right:
+        self.smallestDifference(node.right, minValue)
+
+    return minValue[0]
 
 tree =  BST()
 tree.add(32)
@@ -203,3 +223,4 @@ tree.display()
 tree.root.left.right.value = 1
 tree.repair()
 tree.display()
+print(tree.smallestDifference())

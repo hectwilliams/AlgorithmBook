@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <iostream>
-
+#include <math.h>
 class BSTNode
 {
   public:
@@ -40,6 +40,7 @@ void addNode(BSTNode *targetNode, BSTNode *node = NULL);
   bool is_full_tree(BSTNode *node = NULL);
   bool is_complete_tree(BSTNode *node = NULL);
   bool bstRepair (BSTNode *node = NULL);
+  int smallest_difference (BSTNode *node = NULL, int *min = NULL);
 
 
 };

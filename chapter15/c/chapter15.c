@@ -407,6 +407,33 @@ enum boolean bstRepair(struct BST **tree)
   return repaired;
 }
 
+BST_smallest_difference(struct BST **tree)
+{
+  struct BST *node = *tree;
+  static int currMin = __INT_MAX__;
+
+  if (node)
+  {
+    if (node->left)
+    {
+      if ( abs(node->value - node->left->value)  < currMin) {
+        currMin = abs(node->value - node->left->value);
+      }
+      BST_smallest_difference(&node->left);
+    }
+
+    if (node->right)
+    {
+      if ( abs(node->value - node->right->value)  < currMin) {
+        currMin = abs(node->value - node->right->value);
+      }
+      BST_smallest_difference(&node->right);
+    }
+  }
+  return currMin;
+}
+
+
 int main()
 {
   struct BST *bst = NULL;
@@ -415,20 +442,14 @@ int main()
   BST_add(&bst, 28);
   BST_add(&bst, 23);
   BST_add(&bst, 29);
-
   BST_add(&bst, 49);
   BST_add(&bst, 2);
 
   BST_display(&bst);
   printf("\n") ;
   BST_display(&bst);
-
   bst->left->right->value = 1;
-
-
   printf(" \nis complete - %d \n ", bstRepair(&bst) );
-
   BST_display(&bst);
-  // printf("outcome %d" ,   bst->left->right->value );
-
+  printf("outcome %d\n", BST_smallest_difference(&bst));
 }
