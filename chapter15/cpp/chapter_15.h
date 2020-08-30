@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <math.h>
+#include <array>
 class BSTNode
 {
   public:
@@ -41,6 +42,6 @@ void addNode(BSTNode *targetNode, BSTNode *node = NULL);
   bool is_complete_tree(BSTNode *node = NULL);
   bool bstRepair (BSTNode *node = NULL);
   int smallest_difference (BSTNode *node = NULL, int *min = NULL);
-
+  int closestValue (int value, BSTNode *node = NULL, std::array<int,1> closest = std::array<int , 1>() );
 
 };

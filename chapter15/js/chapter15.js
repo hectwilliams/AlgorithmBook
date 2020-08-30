@@ -400,7 +400,36 @@ class BST
     return min[0];
   }
 
- }
+
+  closestValue(value, node = null, closest = [0])
+  {
+
+    let diff;
+
+    node = !node && this.root || node;
+
+    if (node)
+    {
+      diff = Math.abs(value - node.value);
+
+      if (diff < Math.abs(closest[0] - value))
+      {
+        closest[0] = node.value;
+      }
+
+      if (node.left)
+      {
+        this.closestValue(value, node.left, closest);
+      }
+
+      if (node.right )
+      {
+        this.closestValue(value, node.right, closest);
+      }
+    }
+    return closest[0];
+  }
+}
 
 let  tree = new BST();
 tree.add(32);
@@ -419,4 +448,4 @@ console.log()
 
 tree.display();
 
-console.log(tree.smallestDifference())
+console.log(tree.closestValue(31))

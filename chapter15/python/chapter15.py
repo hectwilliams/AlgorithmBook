@@ -210,6 +210,25 @@ class BST:
 
     return minValue[0]
 
+  def closestValue(self, value, node = None, closest = [None]) :
+    diff = None
+    node = self.root if not node else node
+
+    if node:
+      diff = abs(node.value - value)
+      print(diff, node.value, closest)
+
+      if closest[0] == None or ( diff < abs(closest[0] - value) ):
+        closest[0] = node.value
+
+      if node.left:
+        self.closestValue(value, node.left, closest)
+
+      if node.right:
+        self.closestValue(value, node.right, closest)
+
+    return closest[0]
+
 tree =  BST()
 tree.add(32)
 tree.add(17)
@@ -223,4 +242,5 @@ tree.display()
 tree.root.left.right.value = 1
 tree.repair()
 tree.display()
-print(tree.smallestDifference())
+print()
+print(tree.closestValue(31))

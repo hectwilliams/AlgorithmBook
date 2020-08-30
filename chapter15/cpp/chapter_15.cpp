@@ -412,6 +412,38 @@ int BST::smallest_difference (BSTNode *node, int *min )
   return  *min;
 }
 
+int BST::closestValue (int value, BSTNode *node, std::array<int,1> closest)
+{
+  int diff;
+
+  if (node == NULL)
+  {
+    node = root;
+    closest[0] = 0;
+  }
+
+  if (node)
+  {
+    diff = std::abs(value - node->value);
+
+    if (diff < std::abs(value - closest[0]))
+    {
+      closest[0] = node->value;
+    }
+
+    if (node->left)
+    {
+      closestValue(value, node->left, closest);
+    }
+
+    if (node->right)
+    {
+      closestValue(value, node->right, closest);
+    }
+  }
+  return closest[0];
+}
+
 
 int main()
 {
@@ -432,7 +464,7 @@ tree.bstRepair();
 
 std::cout << '\n';
 
-std::cout << tree.smallest_difference() << '\n';
+std::cout << tree.closestValue(31) << '\n';
 
 
 }
