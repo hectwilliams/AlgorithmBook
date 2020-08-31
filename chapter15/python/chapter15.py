@@ -229,6 +229,37 @@ class BST:
 
     return closest[0]
 
+  def partitionAroundValue(self, value, node = None, prev = None) :
+    result = None
+    node = self.root if not node else node
+
+    if  node:
+
+      if value < node.value:
+        if node.left:
+          return self.partitionAroundValue(value, node.left, node)
+        else:
+          result = node
+
+      if value > node.value :
+        if node.right:
+          return self.partitionAroundValue(value, node.right, node)
+        else :
+          result = node
+    else:
+
+      if prev:
+        if prev.left == node:
+          result = node
+          prev.left = None
+        if prev.right == node:
+          result = node
+      else:
+        result = node
+        self.root = None
+
+    return result
+
 tree =  BST()
 tree.add(32)
 tree.add(17)

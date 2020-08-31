@@ -433,6 +433,69 @@ BST_smallest_difference(struct BST **tree)
   return currMin;
 }
 
+BST *partition_around_value(int value, BST **tree)
+{
+  static BST *prev = NULL;
+  BST *node = *tree;
+  BST *result = NULL;
+
+  if (node)
+  {
+    if (value < node->value)
+    {
+      if (node->left)
+      {
+        prev = node;
+        return partition_around_value(value, &node->left);
+      }
+      else
+      {
+        result = node;
+      }
+    }
+    else if (value > node->value)
+    {
+      if (node->right )
+      {
+        prev = node;
+        return partition_around_value(value, &node->right)
+      }
+      else
+      {
+        result = node;
+      }
+    }
+    else
+    {
+
+      // prev enabled
+      if (prev)
+      {
+        if (prev->left == node)
+        {
+          result = node;
+          prev->left = NULL;
+        }
+
+        if (prev->right == node)
+        {
+          result = node;
+          prev->right = NULL;
+        }
+        return result;
+      }
+      else
+      {
+        result = node;
+        *tree = NULL;
+      }
+    }
+
+  }
+
+  prev = NULL;
+  return result;
+}
 
 int main()
 {

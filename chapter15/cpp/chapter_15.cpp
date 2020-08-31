@@ -444,6 +444,62 @@ int BST::closestValue (int value, BSTNode *node, std::array<int,1> closest)
   return closest[0];
 }
 
+BSTNode * BST::partition_around_value(int value, BSTNode *node, BSTNode *prev)
+{
+  node = !node ? root : node;
+  BSTNode *result;
+
+  if (node)
+  {
+    if (value < node->value)
+    {
+      if (node->left )
+      {
+        return partition_around_value(value, node->left, node);
+      }
+      else
+      {
+        result = node;
+      }
+    }
+    else if (value > node->value)
+    {
+      if (node->right)
+      {
+        return partition_around_value(value, node->right, node);
+      }
+      else
+      {
+        result = node;
+      }
+    }
+    else
+    {
+      if (prev)
+
+      {
+        if (prev->left == node)
+        {
+          result = node;
+          prev->left = NULL;
+        }
+
+        if (prev->right == node)
+        {
+          result = node;
+          prev->right = NULL;
+        }
+      }
+      else
+      {
+        result = node;
+        root= NULL;
+      }
+    }
+  }
+  return result;
+ }
+
 
 int main()
 {

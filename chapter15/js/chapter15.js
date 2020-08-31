@@ -429,6 +429,60 @@ class BST
     }
     return closest[0];
   }
+
+  partitionAroundValue (value, node = null , prev = null)
+  {
+    let result;
+    node = !node && this.root || node;
+    if (node)
+    {
+      if (value < node.value)
+      {
+        if (node.left)
+        {
+          return this.partitionAroundValue(value, node.left, node);
+        }
+        else
+        {
+          result = node;
+        }
+      }
+      else if (value > node.value)
+      {
+        if (node.right)
+        {
+          return this.partitionAroundValue(value, node.right, node);
+        }
+        else
+        {
+          result = node;
+        }
+      }
+      else
+      {
+        if (prev)
+        {
+          if (prev.left == node)
+          {
+            result = node;
+            prev.left = null;
+          }
+          if (prev.right == node)
+          {
+            result = node;
+            prev.right = null;
+          }
+        }
+        else
+        {
+          result = node;
+          this.root = NULL;
+        }
+      }
+    }
+    return result;
+  }
+
 }
 
 let  tree = new BST();

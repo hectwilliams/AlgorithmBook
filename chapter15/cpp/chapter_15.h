@@ -34,7 +34,7 @@ class BST
   }
   void display(BSTNode *node = NULL);
   void add (int value, BSTNode *node = NULL);
-void addNode(BSTNode *targetNode, BSTNode *node = NULL);
+  void addNode(BSTNode *targetNode, BSTNode *node = NULL);
   static BSTNode * remove_successor (BSTNode *node);
   void remove(int value, BSTNode *node = NULL,  BSTNode *prev = NULL);
   int height(BSTNode *node = NULL);
@@ -43,5 +43,7 @@ void addNode(BSTNode *targetNode, BSTNode *node = NULL);
   bool bstRepair (BSTNode *node = NULL);
   int smallest_difference (BSTNode *node = NULL, int *min = NULL);
   int closestValue (int value, BSTNode *node = NULL, std::array<int,1> closest = std::array<int , 1>() );
+
+  BSTNode * partition_around_value( int value, BSTNode *node = NULL, BSTNode *prev = NULL );
 
 };
