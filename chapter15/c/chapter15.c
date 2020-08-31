@@ -297,8 +297,11 @@ enum boolean BST_Complete(struct BST **tree)
 
 void BST_addNode (struct BST *node, struct BST **tree)
 {
-
-  if (node)
+  if (*tree == NULL)
+  {
+    *tree = node;
+  }
+  else if (node)
   {
 
     if (node->value < (*tree)->value)
@@ -407,7 +410,7 @@ enum boolean bstRepair(struct BST **tree)
   return repaired;
 }
 
-BST_smallest_difference(struct BST **tree)
+int BST_smallest_difference(struct BST **tree)
 {
   struct BST *node = *tree;
   static int currMin = __INT_MAX__;
@@ -433,11 +436,11 @@ BST_smallest_difference(struct BST **tree)
   return currMin;
 }
 
-BST *partition_around_value(int value, BST **tree)
+struct BST *partition_around_value(int value, struct BST **tree)
 {
-  static BST *prev = NULL;
-  BST *node = *tree;
-  BST *result = NULL;
+  static struct BST *prev = NULL;
+  struct BST *node = *tree;
+  struct BST *result = NULL;
 
   if (node)
   {
@@ -458,7 +461,7 @@ BST *partition_around_value(int value, BST **tree)
       if (node->right )
       {
         prev = node;
-        return partition_around_value(value, &node->right)
+        return partition_around_value(value, &node->right);
       }
       else
       {
@@ -497,6 +500,56 @@ BST *partition_around_value(int value, BST **tree)
   return result;
 }
 
+struct BST *partition_evenly (struct BST **tree)
+{
+  struct BST *result = NULL;
+  static struct BST *head = NULL;
+  static struct BST *buffer0 = NULL;
+  static struct BST *buffer1 = NULL;
+  struct BST *node = *tree;
+  static int count = 0;
+
+  if (!head)
+  {
+    head = *tree;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      partition_evenly(&node->left);
+      node->left = NULL;
+      count = !count;
+    }
+    if (node->right)
+    {
+      partition_evenly(&node->right);
+      node->right = NULL;
+      count = !count;
+    }
+    if (count % 2 == 0)
+    {
+      BST_addNode(node, &buffer0);
+    }
+    else
+    {
+      BST_addNode(node, &buffer1);
+    }
+  }
+
+  if (*tree == head)
+  {
+    result = buffer0;
+    *tree = buffer1;
+    head = NULL;
+    buffer0 = NULL;
+    buffer1 = NULL;
+  }
+
+  return result;
+}
+
 int main()
 {
   struct BST *bst = NULL;
@@ -515,4 +568,11 @@ int main()
   printf(" \nis complete - %d \n ", bstRepair(&bst) );
   BST_display(&bst);
   printf("outcome %d\n", BST_smallest_difference(&bst));
+  printf("\n\n\n\n");
+
+
+
+
+
+
 }

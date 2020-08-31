@@ -45,5 +45,6 @@ class BST
   int closestValue (int value, BSTNode *node = NULL, std::array<int,1> closest = std::array<int , 1>() );
 
   BSTNode * partition_around_value( int value, BSTNode *node = NULL, BSTNode *prev = NULL );
+  BST * partition_evenly(BSTNode *node = nullptr, BST *partitionA = nullptr, BST *partitionB = nullptr , int count = 0);
 
 };

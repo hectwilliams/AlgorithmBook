@@ -260,6 +260,29 @@ class BST:
 
     return result
 
+  def partitionEvenly (self, node = None, partitionA = None, partitionB = None, count = 0):
+    node = self.root if not node else node
+    if not partitionA:
+      partitionA = BST()
+      partitionB = BST()
+    if node:
+      if node.left:
+        self.partitionEvenly(node.left, partitionA, partitionB, count + 1)
+        node.left = None
+      if node.right:
+        self.partitionEvenly(node.right , partitionA, partitionB, count + 1)
+        node.right = None
+      if count % 2 == 0:
+        partitionA.addNode(node)
+      else:
+        partitionB.addNode(node)
+
+    if node == self.root:
+      self.root = partitionA.root
+
+    return partitionB
+
+
 tree =  BST()
 tree.add(32)
 tree.add(17)
@@ -274,4 +297,5 @@ tree.root.left.right.value = 1
 tree.repair()
 tree.display()
 print()
-print(tree.closestValue(31))
+# print(tree.closestValue(31))
+tree.partitionEvenly().display()

@@ -59,7 +59,7 @@ void BST::add (int value, BSTNode *node)
   }
 }
 
-void BST::addNode(BSTNode *targetNode, BSTNode *node)
+ void BST::addNode(BSTNode *targetNode, BSTNode *node)
 {
   node = !node ? root : node;
 
@@ -499,6 +499,50 @@ BSTNode * BST::partition_around_value(int value, BSTNode *node, BSTNode *prev)
   }
   return result;
  }
+
+BST * BST::partition_evenly(BSTNode *node, BST *partitionA , BST *partitionB , int count )
+{
+  node = !node ? root : node;
+
+  if (!partitionA)
+  {
+    partitionA = new BST();
+    partitionB = new BST();
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      partition_evenly(node->left, partitionA, partitionB, ++count);
+      node->left = NULL;
+    }
+
+    if (node->right)
+    {
+      partition_evenly(node->right, partitionA, partitionB, ++count);
+      node->right = NULL;
+    }
+
+    if (count % 2 == 0)
+    {
+      partitionA->addNode(node);
+    }
+    else
+    {
+      partitionB->addNode(node);
+    }
+  }
+
+  if (node == this->root)
+  {
+    this->root = partitionA->root;
+  }
+
+  return partitionB;
+
+}
+
 
 
 int main()

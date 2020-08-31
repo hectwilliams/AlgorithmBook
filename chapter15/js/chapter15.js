@@ -483,6 +483,47 @@ class BST
     return result;
   }
 
+  partitionEvenly(node = null, partitionA = null, partitionB = null, count = 0)
+  {
+    node = !node ? this.root : node;
+
+    if (!partitionA)
+    {
+      partitionA = new BST();
+      partitionB = new BST();
+    }
+
+    if (node)
+    {
+      if (node.left)
+      {
+        this.partitionEvenly(node.left, partitionA, partitionB, ++count);
+        node.left = null;
+      }
+      if (node.right)
+      {
+        this.partitionEvenly(node.right, partitionA, partitionB, ++count);
+        node.right = null;
+      }
+
+      if (count % 2 == 0)
+      {
+        partitionA.addNode(node);
+      }
+      else
+      {
+        partitionB.addNode(node);
+      }
+    }
+
+    if (node == this.root)
+    {
+      this.root = partitionA.root;
+    }
+
+    return partitionB;
+  }
+
 }
 
 let  tree = new BST();
@@ -499,7 +540,7 @@ tree.display();
 tree.root.left.right.value = 1;
 tree.repair()
 console.log()
+// tree.display();
+console.log();
 
-tree.display();
-
-console.log(tree.closestValue(31))
+tree.partitionEvenly().display();
