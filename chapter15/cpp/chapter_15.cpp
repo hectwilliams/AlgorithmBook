@@ -543,6 +543,31 @@ BST * BST::partition_evenly(BSTNode *node, BST *partitionA , BST *partitionB , i
 
 }
 
+void BST::reverse(BSTNode *node)
+{
+  BSTNode left, right;
+  node = !node ? root : node;
+
+  if (node )
+  {
+    left = node->left;
+    right = node->right;
+
+    node->left = right;
+    node->right = left;
+
+    if (node->left)
+    {
+      reverse(node->left);
+    }
+
+    if (node->right)
+    {
+      reverse(node->right);
+    }
+  }
+}
+
 
 
 int main()

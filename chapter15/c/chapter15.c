@@ -550,6 +550,31 @@ struct BST *partition_evenly (struct BST **tree)
   return result;
 }
 
+void BST_reverse (struct BST **tree)
+{
+  struct BST *node = *tree;
+  struct BST *left, *right;
+
+  if (node)
+  {
+    left = (node->left);
+    right = (node->right);
+
+    node->left = right;
+    node->right = left;
+
+    if (node->left)
+    {
+      BST_reverse(&node->left);
+    }
+
+    if (node->right)
+    {
+      BST_reverse(&node->right);
+    }
+  }
+}
+
 int main()
 {
   struct BST *bst = NULL;
@@ -570,9 +595,8 @@ int main()
   printf("outcome %d\n", BST_smallest_difference(&bst));
   printf("\n\n\n\n");
 
-
-
-
-
-
+  BST_display(&bst);
+  printf("\n");
+  BST_reverse(&bst);
+  BST_display(&bst);
 }

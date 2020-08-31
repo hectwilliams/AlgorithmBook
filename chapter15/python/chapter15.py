@@ -282,6 +282,22 @@ class BST:
 
     return partitionB
 
+  def reverse (self, node = None):
+    left = right = None
+    node = self.root if not node else node
+
+    if node:
+
+      left = node.left
+      right = node.right
+
+      node.left = right
+      node.right = left
+
+      if node.left:
+        self.reverse(node.left)
+      if node.right:
+        self.reverse(node.right)
 
 tree =  BST()
 tree.add(32)

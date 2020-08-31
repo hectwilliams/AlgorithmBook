@@ -524,6 +524,28 @@ class BST
     return partitionB;
   }
 
+  reverse(node = null)
+  {
+    let left, right;
+    node = !node ? this.root : node;
+    if (node)
+    {
+      left = node.left;
+      right = node.right
+      node.left = right;
+      node.right = left;
+
+      if (node.left )
+      {
+        this.reverse(node.left);
+      }
+      if (node.right)
+      {
+        this.reverse(node.right);
+      }
+    }
+  }
+
 }
 
 let  tree = new BST();

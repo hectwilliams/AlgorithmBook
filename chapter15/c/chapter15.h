@@ -28,3 +28,4 @@ void bstRepairReinsert(struct BST *src, struct BST **dest);
 void BST_addNode (struct BST *node, struct BST **tree);
 int BST_smallest_difference(struct BST **tree);
 struct BST *partition_evenly (struct BST **tree);
+void BST_reverse (struct BST **tree);

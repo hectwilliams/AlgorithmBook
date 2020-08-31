@@ -46,5 +46,5 @@ class BST
 
   BSTNode * partition_around_value( int value, BSTNode *node = NULL, BSTNode *prev = NULL );
   BST * partition_evenly(BSTNode *node = nullptr, BST *partitionA = nullptr, BST *partitionB = nullptr , int count = 0);
-
+  void reverse(BSTNode *node = NULL);
 };
