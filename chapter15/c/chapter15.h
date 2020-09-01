@@ -4,6 +4,13 @@
   true
 } boolean;
 
+struct LL
+{
+  int depth;
+  void *node;
+  struct LL *next;
+};
+
 struct BST
 {
   int value;
@@ -30,3 +37,4 @@ int BST_smallest_difference(struct BST **tree);
 struct BST *partition_evenly (struct BST **tree);
 void BST_reverse (struct BST **tree);
 int BST_kthBiggest(struct BST **tree, int k);
+void BST_print_value_for_layer(struct BST **tree,int layer);

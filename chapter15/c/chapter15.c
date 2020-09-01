@@ -605,6 +605,54 @@ int BST_kthBiggest(struct BST **tree, int k)
   return result;
 }
 
+void BST_print_value_for_layer(struct BST **tree, int layer)
+{
+  struct LL *llist = (struct LL *) malloc(sizeof(struct LL));
+  struct LL *runner;
+  int currDepth;
+
+  llist->node = (struct BST *) *tree;
+  llist->next = NULL;
+  llist->depth = 0;
+
+  while (llist)
+  {
+    currDepth =llist->depth ;
+
+    if (llist->depth == layer)
+    {
+      printf(" [%d] \n",  ((struct BST *)llist->node)->value );
+    }
+
+    if ( ((struct BST *) llist->node)->left )
+    {
+      runner = llist;
+      while(runner->next)
+      {
+        runner = runner->next;
+      }
+      runner->next = (struct LL *) malloc(sizeof(struct LL));
+      runner->next->node = ((struct BST *) llist->node)->left;
+      runner->next->next = NULL;
+      runner->next->depth = currDepth + 1;
+    }
+
+    if ( ((struct BST *) llist->node)->right )
+    {
+      runner = llist;
+      while(runner->next)
+      {
+        runner = runner->next;
+      }
+      runner->next = (struct LL *) malloc(sizeof(struct LL));
+      runner->next->node = ((struct BST *) llist->node)->right;
+      runner->next->next = NULL;
+      runner->next->depth = currDepth+ 1;
+    }
+    llist = llist->next;
+  }
+}
+
 int main()
 {
   struct BST *bst = NULL;
@@ -616,17 +664,19 @@ int main()
   BST_add(&bst, 49);
   BST_add(&bst, 2);
 
-  BST_display(&bst);
-  printf("\n") ;
-  BST_display(&bst);
-  bst->left->right->value = 1;
-  printf(" \nis complete - %d \n ", bstRepair(&bst) );
-  BST_display(&bst);
-  printf("outcome %d\n", BST_smallest_difference(&bst));
-  printf("\n\n\n\n");
+  // BST_display(&bst);
+  // printf("\n") ;
+  // BST_display(&bst);
+  // bst->left->right->value = 1;
+  // printf(" \nis complete - %d \n ", bstRepair(&bst) );
+  // BST_display(&bst);
+  // printf("outcome %d\n", BST_smallest_difference(&bst));
+  // printf("\n\n\n\n");
 
-  BST_display(&bst);
-  printf("\n");
-  BST_reverse(&bst);
-  BST_kthBiggest(&bst, 3);
+  // BST_display(&bst);
+  // printf("\n");
+  // BST_reverse(&bst);
+  // BST_kthBiggest(&bst, 3);
+  printf("\n\n");
+  BST_print_value_for_layer(&bst, 1);
 }

@@ -587,7 +587,7 @@ int BST::kthBiggest(int k, BSTNode *node  , int *currCount  )
 
     if (k == *currCount)
     {
-      
+
       result |= node->value;
     }
 
@@ -597,6 +597,34 @@ int BST::kthBiggest(int k, BSTNode *node  , int *currCount  )
     }
   }
   return result;
+}
+
+std::vector<int> BST::value_for_layer(int layer, BSTNode *node )
+{
+  std::vector<std::pair<BSTNode *, int> > queue_model;
+  std::vector<int> result;
+
+  node = !node ? root : node;
+
+  queue_model.push_back( std::make_pair(node, 0));
+
+  while (!queue_model.empty())
+  {
+    if (queue_model.front().second == layer)
+    {
+      result.push_back(queue_model.front().first->value);
+    }
+    if (queue_model.front().first->left)
+    {
+      queue_model.push_back(  std::make_pair(queue_model.front().first->left, queue_model.front().second + 1));
+    }
+    if (queue_model.front().first->right)
+    {
+      queue_model.push_back(  std::make_pair(queue_model.front().first->right, queue_model.front().second + 1));
+    }
+    queue_model.erase(queue_model.begin());
+  }
+
 }
 
 int main()

@@ -573,6 +573,38 @@ class BST
 
   }
 
+  valueForLayer(layer, node)
+  {
+    let result = [];
+    let queueModel = [];
+    let curr, depth;
+
+    node = !node && this.root || node;
+    queueModel.push( [  node, 0] );
+
+    while (queueModel.length )
+    {
+      curr = queueModel[0][0] ;
+      depth = queueModel[0][1];
+
+      if (depth == layer)
+      {
+        result.push(curr.value);
+      }
+
+      if (curr.left)
+      {
+        queueModel.push([curr.left, depth + 1]);
+      }
+      if (curr.right)
+      {
+        queueModel.push([curr.right , depth + 1]);
+      }
+      queueModel.shift();
+    }
+    return result;
+  }
+
 }
 
 let  tree = new BST();
@@ -594,4 +626,4 @@ console.log();
 
 // tree.partitionEvenly().display();
 let ll= tree.kthBiggest(3);
-console.log(ll);
+console.log(tree.valueForLayer(2));

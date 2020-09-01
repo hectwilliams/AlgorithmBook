@@ -49,4 +49,5 @@ class BST
   BST * partition_evenly(BSTNode *node = nullptr, BST *partitionA = nullptr, BST *partitionB = nullptr , int count = 0);
   void reverse(BSTNode *node = NULL);
   int kthBiggest(int k, BSTNode *node = NULL , int *currCount = NULL );
+  std::vector<int> value_for_layer(int layer, BSTNode *node = NULL);
 };

@@ -315,7 +315,25 @@ class BST:
         result|= self.kthBiggest(k, node.left, count)
 
     return result
+  def valueForLayer(self, layer, node = None):
+    res  = []
+    queueModel = []
+    curr = depth = None
 
+    node = self.root if not node else node
+    queueModel.append([node, 0])
+
+    while queueModel:
+      curr = queueModel[0][0]
+      depth = queueModel[0][1]
+      if depth == layer:
+        res.append(curr.value)
+      if curr.left:
+        queueModel.append([curr.left, depth + 1])
+      if curr.right:
+        queueModel.append([curr.right, depth + 1])
+      queueModel.pop(0)
+    return res
 tree = BST()
 tree.add(32)
 tree.add(17)
@@ -331,4 +349,4 @@ tree.repair()
 tree.display()
 print()
 # print(tree.closestValue(31))
-print(tree.kthBiggest(3))
+print(tree.valueForLayer(1))
