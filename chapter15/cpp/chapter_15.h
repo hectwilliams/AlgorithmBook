@@ -2,6 +2,7 @@
 #include <iostream>
 #include <math.h>
 #include <array>
+#include <vector>
 class BSTNode
 {
   public:
@@ -47,4 +48,5 @@ class BST
   BSTNode * partition_around_value( int value, BSTNode *node = NULL, BSTNode *prev = NULL );
   BST * partition_evenly(BSTNode *node = nullptr, BST *partitionA = nullptr, BST *partitionB = nullptr , int count = 0);
   void reverse(BSTNode *node = NULL);
+  int kthBiggest(int k, BSTNode *node = NULL , int *currCount = NULL );
 };

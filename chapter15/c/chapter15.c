@@ -575,6 +575,36 @@ void BST_reverse (struct BST **tree)
   }
 }
 
+int BST_kthBiggest(struct BST **tree, int k)
+{
+  struct BST *node = *tree;
+  static int count = 0;
+  int result = 0;
+
+  if (node)
+  {
+    if (node->right)
+    {
+      result |= BST_kthBiggest(&node->right, k);
+    }
+
+    count++;
+
+    if (k == count)
+    {
+      printf("[%d]", node->value);
+      result |= node->value;
+    }
+
+    if (node->left)
+    {
+      result |= BST_kthBiggest(&node->left, k);
+    }
+  }
+  count = 0;
+  return result;
+}
+
 int main()
 {
   struct BST *bst = NULL;
@@ -598,5 +628,5 @@ int main()
   BST_display(&bst);
   printf("\n");
   BST_reverse(&bst);
-  BST_display(&bst);
+  BST_kthBiggest(&bst, 3);
 }

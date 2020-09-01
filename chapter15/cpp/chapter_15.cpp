@@ -545,7 +545,7 @@ BST * BST::partition_evenly(BSTNode *node, BST *partitionA , BST *partitionB , i
 
 void BST::reverse(BSTNode *node)
 {
-  BSTNode left, right;
+  BSTNode *left, *right;
   node = !node ? root : node;
 
   if (node )
@@ -569,6 +569,35 @@ void BST::reverse(BSTNode *node)
 }
 
 
+int BST::kthBiggest(int k, BSTNode *node  , int *currCount  )
+{
+  int result = 0;
+
+  currCount = !currCount ? (int*) malloc(sizeof(int)) : currCount;
+  node = !node ? root : node;
+
+  if (node)
+  {
+    if (node->right)
+    {
+      result |= kthBiggest(k, node->right, currCount);
+    }
+
+    (*currCount)++;
+
+    if (k == *currCount)
+    {
+      
+      result |= node->value;
+    }
+
+    if (node->left)
+    {
+      result |= kthBiggest(k, node->left, currCount);
+    }
+  }
+  return result;
+}
 
 int main()
 {
@@ -584,12 +613,12 @@ tree.add(2);
 
 tree.display();
 
-tree.root->left->right->value = 1;
+// tree.root->left->right->value = 1;
 tree.bstRepair();
 
 std::cout << '\n';
 
-std::cout << tree.closestValue(31) << '\n';
+std::cout << tree.kthBiggest(3) << '\n';
 
 
 }

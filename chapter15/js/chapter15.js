@@ -546,6 +546,33 @@ class BST
     }
   }
 
+  kthBiggest(k, node = null, count = [0], result = [null])
+  {
+    node = !node ? this.root: node;
+
+    if (node)
+    {
+      if (node.right)
+      {
+        this.kthBiggest(k, node.right, count, result);
+      }
+
+      count[0]++;
+      if (count[0] == k)
+      {
+        result[0] = node.value;
+      }
+
+      if (node.left)
+      {
+        this.kthBiggest(k, node.left, count, result);
+      }
+    }
+
+    return result;
+
+  }
+
 }
 
 let  tree = new BST();
@@ -559,10 +586,12 @@ tree.add(2);
 
 tree.display();
 
-tree.root.left.right.value = 1;
-tree.repair()
-console.log()
+// tree.root.left.right.value = 1;
+// tree.repair()
+// console.log()
 // tree.display();
 console.log();
 
-tree.partitionEvenly().display();
+// tree.partitionEvenly().display();
+let ll= tree.kthBiggest(3);
+console.log(ll);

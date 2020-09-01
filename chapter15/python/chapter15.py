@@ -299,7 +299,24 @@ class BST:
       if node.right:
         self.reverse(node.right)
 
-tree =  BST()
+  def kthBiggest(self, k, node = None, count = [0]):
+    result = 0
+    node = self.root if not node else node
+
+    if node:
+      if node.right:
+        result |= self.kthBiggest(k, node.right, count)
+      count[0] += 1
+
+      if k == count[0]:
+        result |=  node.value
+
+      if node.left:
+        result|= self.kthBiggest(k, node.left, count)
+
+    return result
+
+tree = BST()
 tree.add(32)
 tree.add(17)
 tree.add(28)
@@ -314,4 +331,4 @@ tree.repair()
 tree.display()
 print()
 # print(tree.closestValue(31))
-tree.partitionEvenly().display()
+print(tree.kthBiggest(3))
