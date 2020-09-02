@@ -605,6 +605,41 @@ class BST
     return result;
   }
 
+  layerArrays (node = null)
+  {
+    let result = [[]];
+    let queueModel = [];
+    let curr = 0;
+    let depth = 0;
+
+    node = !node && this.root || node;
+    queueModel.push([node , 0]);
+
+    while (queueModel.length)
+    {
+      curr = queueModel[0][0];
+      depth = queueModel[0][1];
+
+      if (depth > result.length)
+      {
+        result.push([]);
+      }
+
+      result[depth - 1 < 0 ? 0 : depth - 1].push(curr.value);
+
+      if (curr.left)
+      {
+        queueModel.push([curr.left, depth + 1]);
+      }
+      if (curr.right)
+      {
+        queueModel.push([curr.right, depth  + 1]);
+      }
+      queueModel.shift();
+    }
+    return result;
+  }
+
 }
 
 let  tree = new BST();
@@ -626,4 +661,4 @@ console.log();
 
 // tree.partitionEvenly().display();
 let ll= tree.kthBiggest(3);
-console.log(tree.valueForLayer(2));
+console.log(tree.layerArrays());

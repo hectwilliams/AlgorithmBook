@@ -624,6 +624,42 @@ std::vector<int> BST::value_for_layer(int layer, BSTNode *node )
     }
     queue_model.erase(queue_model.begin());
   }
+}
+
+std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
+{
+  std::vector<std::vector<int> > result;
+  std::vector<std::pair<BSTNode*, int> > queue_model;
+  BSTNode *curr;
+  int depth;
+
+  node = !node ? root : node;
+  queue_model.push_back(std::make_pair(node, 0));
+  result.push_back(std::vector<int>());
+
+  while (!queue_model.empty())
+  {
+    curr = queue_model.front().first;
+    depth = queue_model.front().second;
+
+    if (depth > result.size())
+    {
+      result.push_back(std::vector<int>());
+    }
+    result [(depth - 1 < 0)? 0 : depth - 1 ].push_back(curr->value);
+
+    if (curr->left)
+    {
+      queue_model.push_back(std::make_pair(curr->left, depth + 1));
+    }
+    if (curr->right)
+    {
+      queue_model.push_back(std::make_pair(curr->right, depth + 1));
+    }
+
+    queue_model.erase(queue_model.begin());
+  }
+  return result;
 
 }
 
@@ -631,22 +667,21 @@ int main()
 {
 
   BST tree;
-tree.add(32);
-tree.add(17);
-tree.add(28);
-tree.add(23);
-tree.add(29);
-tree.add(49);
-tree.add(2);
+  tree.add(32);
+  tree.add(17);
+  tree.add(28);
+  tree.add(23);
+  tree.add(29);
+  tree.add(49);
+  tree.add(2);
 
-tree.display();
+  tree.display();
 
-// tree.root->left->right->value = 1;
-tree.bstRepair();
+  // tree.root->left->right->value = 1;
+  tree.bstRepair();
 
-std::cout << '\n';
+  std::cout << '\n';
 
-std::cout << tree.kthBiggest(3) << '\n';
-
+  std::cout << tree.kthBiggest(3) << '\n';
 
 }

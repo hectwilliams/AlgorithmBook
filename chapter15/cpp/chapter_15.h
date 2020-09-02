@@ -50,4 +50,5 @@ class BST
   void reverse(BSTNode *node = NULL);
   int kthBiggest(int k, BSTNode *node = NULL , int *currCount = NULL );
   std::vector<int> value_for_layer(int layer, BSTNode *node = NULL);
+  std::vector<std::vector<int> > layersArrays( BSTNode *node= NULL);
 };
