@@ -38,3 +38,17 @@ struct BST *partition_evenly (struct BST **tree);
 void BST_reverse (struct BST **tree);
 int BST_kthBiggest(struct BST **tree, int k);
 void BST_print_value_for_layer(struct BST **tree,int layer);
+
+struct Trie
+{
+  const char *string;
+  struct Trie **children;
+  int children_size;
+};
+
+struct Trie * trie_allocate (const char *string, int size);
+int Trie_add (struct Trie **tree, const char *str);
+int Trie_contains(const char *str, const struct Trie **trie);
+const char * Trie_first(const struct Trie **trie);
+const char * Trie_last(const struct Trie **trie);
+

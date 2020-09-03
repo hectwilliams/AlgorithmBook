@@ -51,4 +51,35 @@ class BST
   int kthBiggest(int k, BSTNode *node = NULL , int *currCount = NULL );
   std::vector<int> value_for_layer(int layer, BSTNode *node = NULL);
   std::vector<std::vector<int> > layersArrays( BSTNode *node= NULL);
+
 };
+
+
+  class TrieNode
+  {
+    public:
+    std::string str;
+    std::vector<TrieNode *> children;
+
+    TrieNode(const std::string &str_data)
+    {
+      str = str_data;
+    }
+  };
+
+  class Trie
+  {
+    public:
+    TrieNode *root;
+
+    Trie ()
+    {
+      this->root = new TrieNode("");
+    }
+    bool add(const std::string &str);
+    bool contains(const std::string &str);
+    std::string first(TrieNode *node = NULL);
+    std::string last(TrieNode *node = NULL);
+
+  };
+

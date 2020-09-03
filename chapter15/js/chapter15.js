@@ -642,23 +642,133 @@ class BST
 
 }
 
-let  tree = new BST();
-tree.add(32);
-tree.add(17);
-tree.add(28);
-tree.add(23);
-tree.add(29);
-tree.add(49);
-tree.add(2);
+class TrieNode
+{
+  constructor(value)
+  {
+    this.string = value;
+    this.children = [];
+  }
+}
 
-tree.display();
+class Trie
+{
 
-// tree.root.left.right.value = 1;
-// tree.repair()
-// console.log()
+  constructor()
+  {
+    this.root = new TrieNode("");
+  }
+
+  add (str)
+  {
+    let pos = 0;
+    let node = this.root;
+    let curr;
+    let inserted = 0;
+
+    while (node.string.length != str.length)
+    {
+      curr = node;
+      pos++;
+
+      node.children.forEach((child) => {
+        if (child.string == str.slice(0, pos))
+        {
+          inserted |= 1;
+          node = child;
+        }
+      });
+
+      if (curr == node)
+      {
+        node.children.push( new TrieNode( (str.slice(0, pos)).toLowerCase()  ) );
+        node = node.children[node.children.length - 1];
+      }
+
+    }
+    return inserted == 0;
+  }
+  contains (str)
+  {
+    let node = this.root;
+    let curr;
+    let pos = 0;
+
+    while (curr != node)
+    {
+      curr = node;
+      node.children.forEach((child) => {
+        if (child.string == str.slice(0, pos + 1))
+        {
+          pos++;
+          node = child;
+        }
+      });
+    }
+    return pos == str.length;
+  }
+
+  first()
+  {
+    let curr, node = this.root;
+    let minChar = '', currChar;
+    let pos = 0;
+    while (node != curr)
+    {
+      curr = node;
+      node.children.forEach((elementNode) => {
+        currChar = elementNode.string[pos];
+        if (minChar == '' || currChar <= minChar)
+        {
+          minChar = currChar;
+          node = elementNode;
+        }
+      });
+      pos++;
+    }
+    return node.string;
+  }
+  last ()
+  {
+    let curr, node = this.root;
+    let maxString, currString;
+    let pos = 0;
+    while (node!= curr)
+    {
+      curr = node;
+      pos++;
+      node.children.forEach((elementNode)=> {
+        currString = elementNode.string;
+        if (maxString == undefined || currString >= maxString)
+        {
+          node = elementNode;
+          maxString = node.string;
+        }
+      });
+    }
+    return node.string;
+  }
+}
+
+
+// let tree = new BST();
+// tree.add(32);
+// tree.add(17);
+// tree.add(28);
+// tree.add(23);
+// tree.add(29);
+// tree.add(49);
+// tree.add(2);
 // tree.display();
-console.log();
+// console.log();
 
-// tree.partitionEvenly().display();
-let ll= tree.kthBiggest(3);
-console.log(tree.layerArrays());
+// // tree.partitionEvenly().display();
+// let ll= tree.kthBiggest(3);
+// console.log(tree.layerArrays());
+{
+  let trie = new Trie();
+  trie.add("hello");
+  trie.add("hellor");
+  console.log(trie.last());
+
+}

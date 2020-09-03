@@ -663,25 +663,113 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
 
 }
 
+  bool Trie::add(const std::string &str)
+  {
+    int pos = 0;
+    TrieNode *node, *curr;
+    bool inserted = false;
+
+    node = root;
+
+    while (node->str.length() != str.length())
+    {
+      curr = node;
+      pos++;
+      for (TrieNode* child: node->children)
+      {
+        if (child->str.compare(str.substr(0, pos)) == 0 )
+        {
+          inserted |= true;
+          node = child;
+        }
+      }
+
+      if (curr == node)
+      {
+        node->children.push_back( new TrieNode(str.substr(0, pos))  );
+        node = node->children.back();
+      }
+    }
+    return inserted == 0;
+  }
+
+  bool Trie::contains(const std::string &str)
+  {
+    TrieNode *curr, *node = this->root;
+    int pos = 0;
+
+
+    while (curr != node )
+    {
+      curr = node;
+      for (TrieNode* child: node->children)
+      {
+        if (child->str.compare(str.substr(0, pos + 1)) == 0)
+        {
+          std::cout << child->str << '\n';
+          pos++;
+          node = child;
+        }
+      }
+    }
+    return pos == str.length();
+  }
+
+  std::string Trie::first(TrieNode *node)
+  {
+    TrieNode *curr;
+    char minChar= '\0', currChar= '\0';
+    int pos = 0;
+
+    node = !node ? root : node;
+
+    while (node != curr)
+    {
+      curr = node;
+      for (TrieNode *element: node->children)
+      {
+        currChar = element->str[pos];
+        if (minChar == '\0' || currChar <= minChar)
+        {
+          node = element;
+          minChar = currChar;
+        }
+      }
+      pos++;
+    }
+    return node->str;
+  }
+
+  std::string Trie::last(TrieNode *node )
+  {
+    TrieNode *curr;
+    std::string maxString = "", currString = "";
+    int pos = 0;
+
+    node = !node ? root : node;
+
+    while (node != curr)
+    {
+      curr = node;
+      pos++;
+      for (TrieNode *element: node->children)
+      {
+        currString = element->str;
+        if (maxString == "" || currString.compare(maxString) > 0)
+        {
+          node = element;
+          maxString = node->str;
+        }
+      }
+    }
+    return node->str;
+  }
+
 int main()
 {
-
-  BST tree;
-  tree.add(32);
-  tree.add(17);
-  tree.add(28);
-  tree.add(23);
-  tree.add(29);
-  tree.add(49);
-  tree.add(2);
-
-  tree.display();
-
-  // tree.root->left->right->value = 1;
-  tree.bstRepair();
-
-  std::cout << '\n';
-
-  std::cout << tree.kthBiggest(3) << '\n';
+  Trie trie;
+  trie.add("hello");
+  trie.add("hellor");
+  std::cout << trie.first();
 
 }

@@ -364,20 +364,96 @@ class BST:
       queueModel.pop(0)
 
     return result
+class TrieNode:
+  def __init__(self, value):
+    self.string = value
+    self.children = []
 
-tree = BST()
-tree.add(32)
-tree.add(17)
-tree.add(28)
-tree.add(23)
-tree.add(29)
-tree.add(49)
-tree.add(2)
+class Trie:
+  def __init__(self):
+    self.root = TrieNode("")
+  def add(self, strData):
+    pos = inserted = 0
+    curr = None
+    node = self.root
 
-tree.display()
-tree.root.left.right.value = 1
-tree.repair()
-tree.display()
-print()
-# print(tree.closestValue(31))
-print(tree.layerArrays())
+    while node.string.__len__() != strData.__len__():
+      curr = node
+      pos += 1
+      for child in node.children:
+        if child.string == strData[0 : pos] :
+          inserted |= 1
+          node = child
+      if curr == node:
+        node.children.append( TrieNode(strData[0 :pos]) )
+        node = node.children[node.children.__len__() - 1]
+    return inserted == 0
+
+  def contains (self, strData):
+    node = self.root
+    curr = None
+    pos = 0
+
+    while curr != node :
+      curr = node
+      for child in node.children:
+        if child.string == strData[0 : pos + 1]:
+          pos += 1
+          node  = child
+
+    return pos == strData.__len__()
+
+  def first (self, node= None):
+    curr = None
+    minChar = currChar = None
+    pos = 0
+    node = self.root if not node else node
+
+    while node != curr:
+      curr = node
+      for child in node.children:
+        currChar =  child.string[pos]
+        if minChar == None or currChar <= minChar:
+          node = child
+          minChar = node.string
+      pos += 1
+    return node.string
+
+  def last (self, node = None ):
+    curr = None
+    maxString  = currString = None
+    pos = 0
+
+    node = self.root if not node  else node
+
+    while node !=  curr:
+      curr = node
+      pos += 1
+      for child in node.children:
+        currString = child.string
+        if maxString == None or currString >= maxString:
+          node = child
+          maxString = node.string
+    return node.string
+
+trie = Trie()
+
+x = trie.add("hello")
+p = trie.add("hellor")
+print(trie.last())
+# tree = BST()
+# tree.add(32)
+# tree.add(17)
+# tree.add(28)
+# tree.add(23)
+# tree.add(29)
+# tree.add(49)
+# tree.add(2)
+
+# tree.display()
+# tree.root.left.right.value = 1
+# tree.repair()
+# tree.display()
+# print()
+# # print(tree.closestValue(31))
+# print(tree.layerArrays())

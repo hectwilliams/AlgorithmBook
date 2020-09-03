@@ -653,30 +653,196 @@ void BST_print_value_for_layer(struct BST **tree, int layer)
   }
 }
 
+struct Trie * trie_allocate (const char *string, int size)
+{
+  struct Trie *node =  (struct Trie *) malloc( sizeof(struct Trie) );
+  char *buffer = (char *) malloc(sizeof(char) * size + 1);
+
+  // printf("[%s]  [%d]\n", string, size);
+
+  strncpy(buffer, string, size);
+  // lowercase
+  for (int i = 0 ; i < size; i++)
+  {
+    buffer[i] = tolower(buffer[i]);
+  }
+  node->string = buffer;
+  node->children_size = 0;
+  node->children = (struct Trie **) malloc( sizeof(struct Trie *) * node->children_size  );
+  return node;
+}
+
+int Trie_add (struct Trie **tree, const char *str)
+{
+  struct Trie *node, *curr;
+  int pos = 0;
+  int result = 0;
+
+  if (*tree == NULL)
+  {
+    *tree = trie_allocate("", 1);
+  }
+
+  node = *tree;
+
+  while (str[pos])
+  {
+    pos++;
+    curr = node;
+
+    for (int i = 0; i < node->children_size; i++)
+    // iterate children
+    {
+      if ( strncmp(  node->children[i]->string, str , pos) == 0 )
+      // enter new node
+      {
+        node = node->children[i];
+        break;
+      }
+    }
+
+    if (curr == node)
+    // insert trie node
+    {
+      result = result || 1;
+      node->children_size++;
+      node->children = realloc(node->children, sizeof(struct Trie *) * node->children_size  );
+      node->children [ node->children_size - 1 ] = trie_allocate(str, pos);
+      node =  node->children [ node->children_size - 1 ];
+    }
+  }
+  return result;
+}
+
+int Trie_contains(const char *str, const struct Trie **trie)
+{
+  const struct Trie *node, *curr ;
+  int pos = 0;
+
+  if (*trie == NULL)
+  {
+    return 0;
+  }
+
+  node = *trie;
+
+  while (node != curr)
+  {
+    curr = node;
+    for (int i  = 0; i < node->children_size; i++)
+    {
+      if ( strncmp(node->children[i]->string , str, pos + 1 )  == 0)
+      {
+        node = node->children[i];
+        pos++;
+        break;
+      }
+    }
+  }
+  return pos == strlen(str);
+}
+
+const char * Trie_first(const struct Trie **trie)
+{
+  const struct Trie *node = *trie, *curr;
+  static char buffer[50] = "";
+  int pos = 0;
+  char curr_char, prev_char = '\0', min_char = '\0';
+
+  if (node == NULL)
+  {
+    return "";
+  }
+
+  while (node != curr)
+  {
+    curr = node;
+    for (int i = 0; i < curr->children_size; i++)
+    {
+      curr_char = curr->children[i]->string[pos];
+      if (min_char == '\0' || curr_char <= min_char)
+      {
+        node  = curr->children[i];
+        min_char = curr_char;
+      }
+    }
+    pos++;
+  }
+  memset(buffer, '\0', 50);
+  memcpy(buffer, node->string, strlen(node->string));
+  return buffer;
+}
+
+
+const char * Trie_last(const struct Trie **trie)
+{
+  const struct Trie *node = *trie, *curr;
+  static char buffer[50] = "";
+  int pos = 0;
+  char * curr_string = "", *max_string = "";
+
+  if (node == NULL)
+  {
+    return "";
+  }
+
+  while (node != curr)
+  {
+    curr = node;
+    pos++;
+
+    for (int i = 0; i < curr->children_size; i++)
+    {
+      curr_string = curr->children[i]->string;
+
+      if (max_string == "" || strncmp(curr_string, max_string, pos) >= 0)
+      {
+        node  = curr->children[i];
+        max_string = curr_string;
+      }
+    }
+  }
+  memset(buffer, '\0', 50);
+  memcpy(buffer, node->string, strlen(node->string));
+  return buffer;
+}
+
 int main()
 {
-  struct BST *bst = NULL;
-  BST_add(&bst, 32);
-  BST_add(&bst, 17);
-  BST_add(&bst, 28);
-  BST_add(&bst, 23);
-  BST_add(&bst, 29);
-  BST_add(&bst, 49);
-  BST_add(&bst, 2);
+  // struct BST *bst = NULL;
+  // BST_add(&bst, 32);
+  // BST_add(&bst, 17);
+  // BST_add(&bst, 28);
+  // BST_add(&bst, 23);
+  // BST_add(&bst, 29);
+  // BST_add(&bst, 49);
+  // BST_add(&bst, 2);
 
-  // BST_display(&bst);
-  // printf("\n") ;
-  // BST_display(&bst);
-  // bst->left->right->value = 1;
-  // printf(" \nis complete - %d \n ", bstRepair(&bst) );
-  // BST_display(&bst);
-  // printf("outcome %d\n", BST_smallest_difference(&bst));
-  // printf("\n\n\n\n");
+  // // BST_display(&bst);
+  // // printf("\n") ;
+  // // BST_display(&bst);
+  // // bst->left->right->value = 1;
+  // // printf(" \nis complete - %d \n ", bstRepair(&bst) );
+  // // BST_display(&bst);
+  // // printf("outcome %d\n", BST_smallest_difference(&bst));
+  // // printf("\n\n\n\n");
 
-  // BST_display(&bst);
-  // printf("\n");
-  // BST_reverse(&bst);
-  // BST_kthBiggest(&bst, 3);
-  printf("\n\n");
-  BST_print_value_for_layer(&bst, 1);
+  // // BST_display(&bst);
+  // // printf("\n");
+  // // BST_reverse(&bst);
+  // // BST_kthBiggest(&bst, 3);
+  // printf("\n\n");
+  // BST_print_value_for_layer(&bst, 1);
+
+    struct Trie *trie = NULL;
+
+    // Trie_add(&trie, "hello");
+    // Trie_add(&trie, "hellor");
+        Trie_add(&trie, "Todd");
+        Trie_add(&trie, "Toddy");
+
+    // printf("%d\n", Trie_contains("hellor", &trie));
+
+    char * data = Trie_first(&trie);
+    printf("data = %s\n", data);
 }
