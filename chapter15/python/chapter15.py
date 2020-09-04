@@ -366,7 +366,7 @@ class BST:
     return result
 class TrieNode:
   def __init__(self, value):
-    self.string = value
+    self.string = value.lower()
     self.children = []
 
 class Trie:
@@ -436,11 +436,37 @@ class Trie:
           maxString = node.string
     return node.string
 
+  def remove (self, word = "", node = None ):
+    found = False
+    node = self.root if not node else node
+
+    if node == None :
+      return False
+
+    if word  == node.string:
+      return True
+
+    for i in range(0, node.children.__len__()):
+      if word.find(node.children[i].string ) == 0:
+        found = self.remove(word, node.children[i])
+        if found:
+          if node.children[i].string == word:
+            node.children.pop(i)
+          elif node.children.__len__() == 1 :
+            if node.children[0].children.__len__() == 0:
+              node.children = []
+          break
+    return found
+
 trie = Trie()
 
-x = trie.add("hello")
-p = trie.add("hellor")
-print(trie.last())
+trie.add("hello")
+trie.add("hellor")
+trie.add("hellw")
+print(trie.remove('hello'))
+print(trie.remove('hellw'))
+print(trie.remove('hellw'))
+
 # tree = BST()
 # tree.add(32)
 # tree.add(17)

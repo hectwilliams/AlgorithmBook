@@ -51,4 +51,5 @@ int Trie_add (struct Trie **tree, const char *str);
 int Trie_contains(const char *str, const struct Trie **trie);
 const char * Trie_first(const struct Trie **trie);
 const char * Trie_last(const struct Trie **trie);
-
+int Trie_remove(struct Trie *node, const char *word);
+void Trie_remove_child(struct Trie *node, int index);

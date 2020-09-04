@@ -672,7 +672,7 @@ class Trie
       pos++;
 
       node.children.forEach((child) => {
-        if (child.string == str.slice(0, pos))
+        if (child.string == str.slice(0, pos).toLowerCase())
         {
           inserted |= 1;
           node = child;
@@ -698,7 +698,7 @@ class Trie
     {
       curr = node;
       node.children.forEach((child) => {
-        if (child.string == str.slice(0, pos + 1))
+        if (child.string == str.slice(0, pos + 1).toLowerCase() )
         {
           pos++;
           node = child;
@@ -728,6 +728,7 @@ class Trie
     }
     return node.string;
   }
+
   last ()
   {
     let curr, node = this.root;
@@ -748,6 +749,61 @@ class Trie
     }
     return node.string;
   }
+
+  removeAllChildNodes(node) {
+    let queueModel = [node];
+
+    while (queueModel.length)
+    {
+      // concat children to queue (nodes persist )
+      queueModel = queueModel.concat(queueModel[0].children );
+      // clear children array
+      queueModel[0].children = [];
+      // pop
+      queueModel.shift();
+    }
+  }
+
+  remove(word , node = null)
+  {
+    let found = 0;
+
+    node = !node && this.root || node;
+
+    if (!node)
+    {
+      return 0;
+    }
+
+    if (word == node.string)
+    {
+      return 1;
+    }
+
+    for (let i = 0; i < node.children.length && !found ; i++)
+    {
+      if (word.indexOf(node.children[i].string) == 0)
+      {
+        found = this.remove(word, node.children[i]);
+
+        if (found)
+        {
+          if (node.children[i].string == word)  // remove target node
+          {
+
+            node.children.splice(i, 1);
+          }
+          else if (node.children.length == 1 && node.children[0].children.length == 0) // single child + zero nephews
+          {
+            node.children = [];
+          }
+        }
+      }
+    }
+
+    return found;
+  }
+
 }
 
 
@@ -769,6 +825,9 @@ class Trie
   let trie = new Trie();
   trie.add("hello");
   trie.add("hellor");
-  console.log(trie.last());
+  trie.add("hellw");
+  console.log(trie.remove('hello'));
+  console.log(trie.remove('hellw'));
+  console.log(trie.remove('hellw'));
 
 }

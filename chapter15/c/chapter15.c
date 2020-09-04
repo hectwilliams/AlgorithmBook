@@ -677,10 +677,17 @@ int Trie_add (struct Trie **tree, const char *str)
   struct Trie *node, *curr;
   int pos = 0;
   int result = 0;
+  char lower_str[50] = "";
 
   if (*tree == NULL)
   {
     *tree = trie_allocate("", 1);
+  }
+
+  // lowercase input string
+  for (int i = 0; *(str + i); i++)
+  {
+    lower_str[i] = tolower( *(str + i ) );
   }
 
   node = *tree;
@@ -693,7 +700,7 @@ int Trie_add (struct Trie **tree, const char *str)
     for (int i = 0; i < node->children_size; i++)
     // iterate children
     {
-      if ( strncmp(  node->children[i]->string, str , pos) == 0 )
+      if ( strncmp(  node->children[i]->string, lower_str , pos) == 0 )
       // enter new node
       {
         node = node->children[i];
@@ -718,6 +725,7 @@ int Trie_contains(const char *str, const struct Trie **trie)
 {
   const struct Trie *node, *curr ;
   int pos = 0;
+  char lower_str[50] = "";
 
   if (*trie == NULL)
   {
@@ -726,12 +734,17 @@ int Trie_contains(const char *str, const struct Trie **trie)
 
   node = *trie;
 
+  for (int i = 0; *(str + i); i++)
+  {
+    lower_str[i] = tolower(*(str++));
+  }
+
   while (node != curr)
   {
     curr = node;
     for (int i  = 0; i < node->children_size; i++)
     {
-      if ( strncmp(node->children[i]->string , str, pos + 1 )  == 0)
+      if ( strncmp(node->children[i]->string , lower_str, pos + 1 )  == 0)
       {
         node = node->children[i];
         pos++;
@@ -773,7 +786,6 @@ const char * Trie_first(const struct Trie **trie)
   return buffer;
 }
 
-
 const char * Trie_last(const struct Trie **trie)
 {
   const struct Trie *node = *trie, *curr;
@@ -807,6 +819,62 @@ const char * Trie_last(const struct Trie **trie)
   return buffer;
 }
 
+void Trie_remove_child(struct Trie *node, int index)
+{
+  node->children[index] = NULL;
+  for (int j = index; j < node->children_size - 1; j++)
+  {
+    node->children[j] = node->children[j + 1];
+  }
+  --node->children_size;
+}
+
+int Trie_remove(struct Trie *node, const char *word)
+{
+  int found = 0;
+
+  if (node == NULL)
+  {
+    return 0 ;
+  }
+
+  if (strncmp(word, node->string, strlen(word)) == 0)
+  {
+    return 1;
+  }
+
+  for (int i = 0; i < node->children_size && !found; i++)
+  {
+    if (strstr(word, node->children[i]->string) == word)
+    {
+      found |= Trie_remove( node->children[i] , word);
+
+      if (found == 1)
+      {
+        /* delete node */
+        if (strncmp(word, node->children[i]->string, strlen(word)) == 0)
+        {
+            printf("\t[%s]\n", node->string);
+
+          Trie_remove_child(node, i);
+        }
+
+        else if (node->children_size == 1)
+        {
+          if (node->children[0]->children_size == 0 )
+          {
+            printf("\t[%s]\n", node->string);
+            Trie_remove_child(node, 0);
+            node->children = NULL;
+          }
+        }
+      }
+    }
+  }
+
+  return found;
+}
+
 int main()
 {
   // struct BST *bst = NULL;
@@ -838,11 +906,22 @@ int main()
 
     // Trie_add(&trie, "hello");
     // Trie_add(&trie, "hellor");
-        Trie_add(&trie, "Todd");
-        Trie_add(&trie, "Toddy");
+        Trie_add(&trie, "hello");
+        Trie_add(&trie, "hellor");
+        Trie_add(&trie, "hellw");
 
     // printf("%d\n", Trie_contains("hellor", &trie));
 
     char * data = Trie_first(&trie);
-    printf("data = %s\n", data);
+    // printf("data = %s\n", data);
+  int t;
+
+    t = Trie_remove(trie, "hello");
+    printf("ANSWER %d\n", t);
+
+    t = Trie_remove(trie, "hellw");
+    printf("ANSWER %d\n", t);
+
+        t = Trie_remove(trie, "hellw");
+    printf("ANSWER %d\n", t);
 }

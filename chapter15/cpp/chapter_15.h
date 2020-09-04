@@ -1,8 +1,10 @@
+#include <algorithm>
 #include <stdlib.h>
 #include <iostream>
 #include <math.h>
 #include <array>
 #include <vector>
+
 class BSTNode
 {
   public:
@@ -63,12 +65,17 @@ class BST
 
     TrieNode(const std::string &str_data)
     {
-      str = str_data;
+      for (auto c :str_data)
+      {
+        str += tolower(c);
+      }
     }
   };
 
   class Trie
   {
+    private :
+    void removeAllChildren(TrieNode *node = NULL);
     public:
     TrieNode *root;
 
@@ -80,6 +87,7 @@ class BST
     bool contains(const std::string &str);
     std::string first(TrieNode *node = NULL);
     std::string last(TrieNode *node = NULL);
+    bool remove(std::string value, TrieNode *node = NULL);
 
   };
 

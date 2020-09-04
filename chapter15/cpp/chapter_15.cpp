@@ -765,11 +765,56 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
     return node->str;
   }
 
+  bool Trie::remove(std::string word, TrieNode *node)
+  {
+    int found = 0;
+
+    node = !node ? root : node;
+
+    if (!node)
+    {
+      return 0;
+    }
+
+    if (word == node->str)
+    {
+      return 1;
+    }
+
+    for (int i = 0; i < node->children.size(); i++)
+    {
+      if ( word.find(node->children[i]->str) == 0 )
+      {
+        found = remove(word,node->children[i] );
+        if (found)
+        {
+          if (node->children[i]->str == word )
+          {
+            node->children.erase(node->children.begin() + i);
+          }
+          else if (node->children.size() == 1)
+          {
+            if (node->children.front()->children.size() == 0)
+            {
+              node->children.clear();
+            }
+          }
+        }
+      }
+    }
+
+    return found;
+  }
+
+
 int main()
 {
   Trie trie;
   trie.add("hello");
   trie.add("hellor");
-  std::cout << trie.first();
+  trie.add("hellw");
+  std::cout << trie.remove("hello") << '\n';
+  std::cout << trie.remove("hellw") << '\n';
+  std::cout << trie.remove("hellw") << '\n';
 
 }
