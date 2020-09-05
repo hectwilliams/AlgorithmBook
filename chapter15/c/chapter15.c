@@ -854,16 +854,12 @@ int Trie_remove(struct Trie *node, const char *word)
         /* delete node */
         if (strncmp(word, node->children[i]->string, strlen(word)) == 0)
         {
-            printf("\t[%s]\n", node->string);
-
           Trie_remove_child(node, i);
         }
-
         else if (node->children_size == 1)
         {
           if (node->children[0]->children_size == 0 )
           {
-            printf("\t[%s]\n", node->string);
             Trie_remove_child(node, 0);
             node->children = NULL;
           }
@@ -873,6 +869,116 @@ int Trie_remove(struct Trie *node, const char *word)
   }
 
   return found;
+}
+
+int Trie_size(struct Trie *node)
+{
+
+  int count = 0;
+
+  if (node->children_size == 0)
+  {
+    return 0;
+  }
+
+  if (node)
+  {
+    for (int i = 0; i < node->children_size; i++)
+    {
+      count +=  +(strlen(node->string) > 0) + Trie_size(node->children[i]);
+    }
+  }
+  return count;
+}
+
+const char * Trie_next (const char * str, struct Trie *node )
+{
+   const char *next =  NULL;
+
+  for (int i = 0; i < node->children_size ; i++)
+  {
+    if (strstr(str, node->children[i]->string ) )
+    {
+      return Trie_next(str, node->children[i]);
+    }
+  }
+
+  // find min char
+  for (int i = 0; i < node->children_size; i++)
+  {
+    if (next == NULL || strcmp(node->children[i]->string, next) < 0)
+    {
+      next = node->children[i]->string;
+    }
+  }
+      printf("[%s]\n" , next);
+
+  return next;
+}
+
+struct TrieMulti * trie_multi_allocate (const char *string, int size)
+{
+  struct TrieMulti *node = (struct TrieMulti *) malloc(sizeof(struct TrieMulti));
+  node->string = (char *) malloc (sizeof(char) * (size + 1) );
+
+  for (int i = 0; i < size ; i++)
+  {
+    node->string[i] = tolower(string[i]);
+  }
+  printf(" write [%s] write  %d\n", node->string, size);
+  // init vars
+  node->count = 0;
+  node->children_size = 0;
+  node->children = (struct TrieMulti **) malloc( sizeof(struct TrieMulti *) * node->children_size  );
+  return node;
+}
+
+void TrieMulti_add (struct TrieMulti **tree, const char *str)
+{
+  struct TrieMulti *node , *curr;
+  int pos = 0;
+
+  if (*tree == NULL)
+  {
+    *tree = trie_multi_allocate("", 1);
+  }
+
+  node = *tree;
+
+  if (node == NULL)
+  {
+    return;
+  }
+
+  while ( str[pos] )
+  {
+    pos++;
+    curr = node;
+
+
+    for (int i = 0; i < node->children_size; i++)
+    {
+      if ( strncmp(node->children[i]->string, str,  pos) == 0  )
+      // substring found  (increment node)
+      {
+        node = node->children[i];
+        node->count++;
+        break;
+      }
+    }
+
+    if (curr == node)
+    // new entry
+    {
+      node->children_size++;
+      node->children = realloc(node->children, sizeof(struct TrieMulti *) * node->children_size  );
+      node->children [ node->children_size - 1 ] = trie_multi_allocate(str, pos);
+      node =  node->children [ node->children_size - 1 ];
+      node->count++;
+    }
+
+  }
+
 }
 
 int main()
@@ -902,26 +1008,19 @@ int main()
   // printf("\n\n");
   // BST_print_value_for_layer(&bst, 1);
 
-    struct Trie *trie = NULL;
+    struct TrieMulti *trie = NULL;
 
     // Trie_add(&trie, "hello");
     // Trie_add(&trie, "hellor");
-        Trie_add(&trie, "hello");
-        Trie_add(&trie, "hellor");
-        Trie_add(&trie, "hellw");
+    TrieMulti_add(&trie, "hello");
+    TrieMulti_add(&trie, "hello");
+    TrieMulti_add(&trie, "hellor");
+
+
 
     // printf("%d\n", Trie_contains("hellor", &trie));
 
-    char * data = Trie_first(&trie);
+
     // printf("data = %s\n", data);
-  int t;
 
-    t = Trie_remove(trie, "hello");
-    printf("ANSWER %d\n", t);
-
-    t = Trie_remove(trie, "hellw");
-    printf("ANSWER %d\n", t);
-
-        t = Trie_remove(trie, "hellw");
-    printf("ANSWER %d\n", t);
 }

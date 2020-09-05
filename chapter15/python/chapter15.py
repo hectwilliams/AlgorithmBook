@@ -76,7 +76,6 @@ class BST:
         successor = BST.remove_successor(node)
         successor.left = node.left
         successor.right = node.right
-
         if prev == None:
           self.root = successor
         else:
@@ -364,10 +363,12 @@ class BST:
       queueModel.pop(0)
 
     return result
+
 class TrieNode:
   def __init__(self, value):
     self.string = value.lower()
     self.children = []
+    self.count = 0
 
 class Trie:
   def __init__(self):
@@ -458,14 +459,65 @@ class Trie:
           break
     return found
 
-trie = Trie()
+  def size (self, node = None):
+    node = self.root if not node else node
+    count = 0
 
+    if node.children.__len__() == 0:
+      return  0
+
+    for i in range(0, node.children.__len__()):
+      count += +(node.string.__len__() > 0)  + self.size(node.children[i])
+
+    return count
+
+  def next (self,string, node = None) :
+    result = None
+    node = self.root if not node else node
+
+    if node:
+      for i in range(0, node.children.__len__()):
+        if string.find(node.children[i].string) == 0:
+          return self.next(string, node.children[i])
+      for i in range(0, node.children.__len__()) :
+        if result == None or node.children[i].string < result :
+          result = node.children[i].string
+    return result
+
+
+    # pos = inserted = 0
+    # curr = None
+    # node = self.root
+
+
+
+class TrieMulti(Trie):
+  def add(self, data, node = None ):
+    node = self.root if not node else node
+    pos = 0
+
+    if node:
+      while node.string.__len__() != data.__len__():
+        curr = node
+        pos += 1
+        for child in node.children:
+          if child.string == data[0 : pos] :
+            node = child
+            node.count += 1
+            print(node.string, node.count)
+        if curr == node:
+          node.children.append( TrieNode(data[0 :pos]) )
+          node = node.children[node.children.__len__() - 1]
+          node.count += 1
+    return True
+
+trie = TrieMulti()
 trie.add("hello")
-trie.add("hellor")
-trie.add("hellw")
-print(trie.remove('hello'))
-print(trie.remove('hellw'))
-print(trie.remove('hellw'))
+trie.add("hello")
+
+# trie.add("hellor")
+# trie.add("hellw")
+# print(trie.next("hello"))
 
 # tree = BST()
 # tree.add(32)

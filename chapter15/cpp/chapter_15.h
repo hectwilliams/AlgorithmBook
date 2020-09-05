@@ -60,8 +60,9 @@ class BST
   class TrieNode
   {
     public:
-    std::string str;
-    std::vector<TrieNode *> children;
+      std::string str;
+      std::vector<TrieNode *> children;
+      int count;
 
     TrieNode(const std::string &str_data)
     {
@@ -69,25 +70,34 @@ class BST
       {
         str += tolower(c);
       }
+      count = 0;
     }
   };
 
   class Trie
   {
     private :
-    void removeAllChildren(TrieNode *node = NULL);
+    // void removeAllChildren(TrieNode *node = NULL);
+
     public:
     TrieNode *root;
-
     Trie ()
     {
       this->root = new TrieNode("");
     }
-    bool add(const std::string &str);
-    bool contains(const std::string &str);
     std::string first(TrieNode *node = NULL);
     std::string last(TrieNode *node = NULL);
-    bool remove(std::string value, TrieNode *node = NULL);
+    std::string next (std::string str, TrieNode *node = NULL);
 
+    protected:
+    virtual bool add(const std::string &str);
+    virtual bool contains(const std::string &str);
+    virtual bool remove(std::string value, TrieNode *node = NULL);
+    virtual int size (TrieNode *node = NULL );
   };
 
+  class TrieMulti : public Trie
+  {
+    public:
+      virtual bool add(const std::string &str);
+  };

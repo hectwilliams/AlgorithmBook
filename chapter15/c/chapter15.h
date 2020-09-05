@@ -53,3 +53,17 @@ const char * Trie_first(const struct Trie **trie);
 const char * Trie_last(const struct Trie **trie);
 int Trie_remove(struct Trie *node, const char *word);
 void Trie_remove_child(struct Trie *node, int index);
+int Trie_size(struct Trie *node);
+const char * Trie_next (const char * str, struct Trie *node );
+
+struct TrieMulti
+{
+  int count;
+  char *string;
+  struct TrieMulti **children;
+  int children_size;
+};
+
+struct TrieMulti * trie_multi_allocate (const char *string, int size);
+void TrieMulti_add (struct TrieMulti **tree, const char *str);
+

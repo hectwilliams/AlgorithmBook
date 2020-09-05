@@ -806,15 +806,101 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
     return found;
   }
 
+  int Trie::size (TrieNode *node)
+  {
+    int count = 0;
+
+    node = !node ? root : node;
+
+    if (node->children.size() == 0)
+    {
+      return  0;
+    }
+
+    for (int i = 0; i < node->children.size(); i++)
+    {
+      count += +(node->str.length() > 0) + size(node->children[i]);
+    }
+    return count;
+  }
+
+  std::string Trie::next (std::string str, TrieNode *node)
+  {
+    std::string result;
+
+    node = !node ? root : node;
+
+    if (node)
+    {
+      for (int i = 0; i < node->children.size(); i++)
+      {
+        if (str.find(node->children[i]->str) == 0)
+        {
+          return next(str, node->children[i]);
+        }
+      }
+
+      for (int i = 0; i < node->children.size(); i++)
+      {
+        if (result.length() == 0 || node->children[i]->str.compare(result) <= 0)
+        {
+          result = node->children[i]->str;
+        }
+      }
+
+    }
+    return result;
+  }
+
+  bool TrieMulti::add(const std::string &str)
+  {
+    TrieNode *curr = NULL, *node = NULL;
+    int pos = 0;
+
+    if (this->root == NULL)
+    {
+      this->root = new TrieNode("");
+    }
+
+    node = this->root;
+
+    if (!node)
+    {
+      return false;
+    }
+
+    while (str[pos])
+    {
+      curr = node;
+      pos++;
+
+      for (int i = 0; i < node->children.size(); i++)
+      {
+        if (   node->children[i]->str.find ( str.substr(0, pos)   ) == 0  )
+        {
+          node->count++;
+          node = node->children[i];
+          break;
+        }
+      }
+
+      if (curr == node)
+      {
+        node->children.push_back(new TrieNode(str.substr(0, pos)));
+        node->count = 1;
+      }
+      std::cout << node->str << '\n';
+    }
+
+    return true;
+  }
+
+
 
 int main()
 {
-  Trie trie;
+  TrieMulti trie;
   trie.add("hello");
-  trie.add("hellor");
-  trie.add("hellw");
-  std::cout << trie.remove("hello") << '\n';
-  std::cout << trie.remove("hellw") << '\n';
-  std::cout << trie.remove("hellw") << '\n';
-
+  // TrieMulti.add("hellor");
+  // TrieMulti.add("hellw");
 }

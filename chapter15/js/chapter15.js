@@ -648,6 +648,7 @@ class TrieNode
   {
     this.string = value;
     this.children = [];
+    this.count = 0;
   }
 }
 
@@ -804,6 +805,93 @@ class Trie
     return found;
   }
 
+  size (node = null)
+  {
+    let count = 0;
+
+    node = !node && this.root || node;
+
+    if (node.children.length == 0)
+    {
+      return 0;
+    }
+
+    for (let i = 0; i < node.children.length; i++)
+    {
+      count += +(node.string.length > 0) + this.size(node.children[i]);
+    }
+    return count;
+  }
+
+  next (string, node = null)
+  {
+    let next;
+
+    node = !node && this.root || node;
+
+    for (let i = 0; i < node.children.length; i++)
+    {
+      if ( string.indexOf(node.children[i].string)  == 0)
+      {
+        return this.next(string, node.children[i]);
+      }
+    }
+
+    for (let i = 0; i < node.children.length; i++)
+    {
+      if (next == undefined || node.children[i].string < next )
+      {
+        next = node.children[i].string;
+      }
+    }
+
+    return next;
+  }
+
+}
+
+
+class TrieMulti extends Trie
+{
+  constructor()
+  {
+    super();
+  }
+  add(string)
+  {
+    let node = this.root;
+    let curr;
+    let pos = 0;
+
+    if (node )
+    {
+      while (string[pos])
+      {
+        curr = node;
+        pos++;
+
+        node.children.forEach( (elementNode) => {
+
+          if (elementNode.string == string.slice(0, pos))
+          {
+            node = elementNode;
+            node.count++;
+          }
+
+        });
+
+        if(curr == node)
+        {
+          node.children.push(new TrieNode(string.slice(0, pos)));
+          node = node.children[node.children.length - 1];
+          node.count++;
+        }
+
+        console.log(node.string, node.count);
+      }
+    }
+  }
+
 }
 
 
@@ -822,12 +910,12 @@ class Trie
 // let ll= tree.kthBiggest(3);
 // console.log(tree.layerArrays());
 {
-  let trie = new Trie();
+  let trie = new TrieMulti();
   trie.add("hello");
-  trie.add("hellor");
-  trie.add("hellw");
-  console.log(trie.remove('hello'));
-  console.log(trie.remove('hellw'));
-  console.log(trie.remove('hellw'));
+  trie.add("hello");
+
+  // console.log(trie.remove('hello'));
+  // console.log(trie.remove('hellw'));
+  // console.log(trie.remove('hellw'));
 
 }
