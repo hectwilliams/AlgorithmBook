@@ -872,11 +872,11 @@ class TrieMulti extends Trie
 
         node.children.forEach( (elementNode) => {
 
-          if (elementNode.string == string.slice(0, pos))
-          {
-            node = elementNode;
-            node.count++;
-          }
+        if (elementNode.string == string.slice(0, pos))
+        {
+          node = elementNode;
+          node.count++;
+        }
 
         });
 
@@ -887,7 +887,6 @@ class TrieMulti extends Trie
           node.count++;
         }
 
-        console.log(node.string, node.count);
       }
     }
   }
@@ -940,6 +939,51 @@ class TrieMulti extends Trie
     return valueFound;
   }
 
+  size(node = null)
+  {
+    let count = 0;
+
+    node = !node && this.root || node;
+
+    if (!node)
+    {
+      return 0;
+    }
+
+    if (node)
+    {
+      count += node.count;
+    }
+
+    for (let i = 0; i < node.children.length; i++)
+    {
+      count += this.size(node.children[i]);
+    }
+
+    return count;
+  }
+
+  contains(string, node = null)
+  {
+    node = !node ? this.root : node;
+
+    if (node)
+    {
+      if (node.string == string)
+      {
+        return node.count;
+      }
+      for (let i = 0; i < node.children.length; i++)
+      {
+        if (string.indexOf(node.children[i].string ) == 0 )
+        {
+          return this.contains(string, node.children[i]);
+        }
+      }
+    }
+    return 0;
+  }
+
 }
 
 
@@ -961,9 +1005,7 @@ class TrieMulti extends Trie
   let trie = new TrieMulti();
   trie.add("hello");
   trie.add("hello");
-  trie.remove("hello");
-  trie.remove("hello");
-  trie.remove("hello");
+  console.log( trie.contains("he") )
 
   // console.log(trie.remove('hello'));
   // console.log(trie.remove('hellw'));

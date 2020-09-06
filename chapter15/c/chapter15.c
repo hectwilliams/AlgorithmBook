@@ -911,8 +911,6 @@ const char * Trie_next (const char * str, struct Trie *node )
       next = node->children[i]->string;
     }
   }
-      printf("[%s]\n" , next);
-
   return next;
 }
 
@@ -925,7 +923,6 @@ struct TrieMulti * trie_multi_allocate (const char *string, int size)
   {
     node->string[i] = tolower(string[i]);
   }
-  printf(" write [%s] write  %d\n", node->string, size);
   // init vars
   node->count = 0;
   node->children_size = 0;
@@ -1043,6 +1040,48 @@ int TrieMulti_remove(struct TrieMulti *node, const char *str)
   return found;
 }
 
+int TrieMulti_size(struct TrieMulti *node)
+{
+  int count = 0;
+
+  if (!node)
+  {
+    return 0;
+  }
+
+  if (node)
+  {
+    count += node->count;
+  }
+
+  for (int i = 0; i < node->children_size; i++)
+  {
+    count +=  TrieMulti_size(node->children[i]);
+  }
+
+  return count;
+}
+
+int contains (const char * string, struct TrieMulti *node)
+{
+    if (node)
+  {
+    if ( strncmp(string, node->string, strlen(string))  == 0)
+    {
+      return node->count;
+    }
+
+    for (int i = 0; i < node->children_size; i++)
+    {
+      if ( strstr (string, node->children[i]->string) == string )
+      {
+        return contains(string, node->children[i]);
+      }
+    }
+  }
+  return 0;
+}
+
 int main()
 {
   // struct BST *bst = NULL;
@@ -1071,15 +1110,15 @@ int main()
   // BST_print_value_for_layer(&bst, 1);
 
     struct TrieMulti *trie = NULL;
-
     // Trie_add(&trie, "hello");
     // Trie_add(&trie, "hellor");
+
     TrieMulti_add(&trie, "hello");
     TrieMulti_add(&trie, "hello");
     TrieMulti_add(&trie, "hellor");
-    TrieMulti_remove(trie, "hellor");
-    TrieMulti_remove(trie, "hellor");
 
+    printf("[%d]\n", TrieMulti_size(trie));
+    printf(" \n contains %d \n", contains("hello", trie));
 
     // printf("%d\n", Trie_contains("hellor", &trie));
 

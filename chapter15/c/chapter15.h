@@ -68,4 +68,5 @@ struct TrieMulti * trie_multi_allocate (const char *string, int size);
 void TrieMulti_add (struct TrieMulti **tree, const char *str);
 
 int TrieMulti_remove(struct TrieMulti *node, const char *str);
-
+int TrieMulti_size(struct TrieMulti *node);
+int contains (const char * string, struct TrieMulti *node);

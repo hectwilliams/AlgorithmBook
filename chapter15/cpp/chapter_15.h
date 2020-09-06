@@ -101,5 +101,7 @@ class BST
     public:
       virtual bool add(const std::string &str);
       virtual bool remove(const std::string &str, TrieNode *node = NULL);
+      virtual int size (TrieNode *node = NULL);
+      virtual int contains (std::string string, TrieNode *node = NULL);
 
   };

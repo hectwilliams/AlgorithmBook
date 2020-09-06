@@ -887,6 +887,7 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
       if (curr == node)
       {
         node->children.push_back(new TrieNode(str.substr(0, pos)));
+        node= node->children.back();
         node->count = 1;
       }
     }
@@ -947,16 +948,64 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
     return valueFound;
   }
 
+  int TrieMulti::size (TrieNode *node)
+  {
+    int count = 0;
+
+    node = !node ? this->root : node;
+
+    if (!node)
+    {
+      return 0;
+    }
+    else
+    {
+      count += node->count;
+    }
+
+    for (int i = 0; i < node->children.size(); i++)
+    {
+      count += size(node->children[i]);
+    }
+
+    return count;
+  }
+
+
+  int TrieMulti::contains (std::string string, TrieNode *node)
+  {
+    node = !node ? this->root : node;
+
+    if (node)
+    {
+      if (node->str == string)
+      {
+        return node->count;
+      }
+
+      for (int i = 0; i < node->children.size(); i++)
+      {
+        if (string.find(node->children[i]->str) == 0)
+        {
+          return contains(string, node->children[i]);
+        }
+      }
+    }
+    return 0;
+  }
 
 int main()
 {
   TrieMulti trie;
+
   trie.add("hello");
-    trie.add("hello");
 
-  trie.remove("hello");
+  trie.add("hello");
 
-  trie.remove("hello");
+
+  // trie.remove("hello");
+
+  std::cout << trie.contains("meow") << '\n';
   // TrieMulti.add("hellor");
   // TrieMulti.add("hellw");
 }

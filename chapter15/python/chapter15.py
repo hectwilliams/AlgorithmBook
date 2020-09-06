@@ -538,11 +538,35 @@ class TrieMulti(Trie):
 
     return stringFound
 
+  def size (self, node = None):
+    count = 0
+    node = self.root if not node else node
 
+    if not node:
+      return 0
 
-# trie.add("hellor")
-# trie.add("hellw")
-# print(trie.next("hello"))
+    if node:
+      count += node.count
+
+    for i in range(0, node.children.__len__()):
+      count += self.size(node.children[i])
+
+    return count
+
+  def contains(self,string, node = None):
+    node = self.root if not node else node
+    if node:
+      if string == node.string:
+        return node.count
+      for i in range(0, node.children.__len__()) :
+        if string.find(node.children[i].string ) == 0:
+          return self.contains(string, node.children[i])
+    return 0
+
+trie = TrieMulti()
+trie.add("hellor")
+trie.add("hellw")
+print(trie.contains("hell"))
 
 # tree = BST()
 # tree.add(32)
