@@ -978,7 +978,69 @@ void TrieMulti_add (struct TrieMulti **tree, const char *str)
     }
 
   }
+}
 
+void TrieMulti_remove_child (struct TrieMulti *node, int index)
+{
+  if (node->children[index])
+  {
+    node->children[index] = NULL;
+    for (int j = index; j < node->children_size - 1; j++)
+    {
+      node->children[j] = node->children[j + 1];
+      node->children[j + 1] = NULL;
+    }
+    --node->children_size;
+  }
+}
+
+int TrieMulti_remove(struct TrieMulti *node, const char *str)
+{
+  int pos = 0;
+  int  found = 0;
+  struct TrieMulti *curr;
+
+  if (!node)
+  {
+    return false;
+  }
+
+  if (strncmp(node->string, str, strlen(str)) == 0)
+  {
+    return 1;
+  }
+
+  for (int i = 0 ; i < node->children_size && !found; i++)
+  {
+    if (strstr (str, node->children[i]->string ) == str )
+    {
+      found =  TrieMulti_remove(node->children[i], str);
+
+      if (found == 1)
+      {
+        if (node->count > 1)
+        {
+          node->count--;
+        }
+        else if (node->count == 1)
+        {
+          if (strncmp(str, node->children[i]->string, strlen(str)) == 0)
+          {
+            TrieMulti_remove_child(node, i);
+          } else if (node->children_size == 1)
+          {
+            if (node->children[0]->children_size == 0 )
+            {
+              TrieMulti_remove_child(node, 0);
+              node->children = NULL;
+            }
+
+          }
+        }
+      }
+    }
+  }
+  return found;
 }
 
 int main()
@@ -1015,7 +1077,8 @@ int main()
     TrieMulti_add(&trie, "hello");
     TrieMulti_add(&trie, "hello");
     TrieMulti_add(&trie, "hellor");
-
+    TrieMulti_remove(trie, "hellor");
+    TrieMulti_remove(trie, "hellor");
 
 
     // printf("%d\n", Trie_contains("hellor", &trie));

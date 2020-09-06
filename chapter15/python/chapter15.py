@@ -511,9 +511,34 @@ class TrieMulti(Trie):
           node.count += 1
     return True
 
-trie = TrieMulti()
-trie.add("hello")
-trie.add("hello")
+  def remove(self, targetString, node = None):
+    node = self.root if not node else node
+    stringFound  = False
+
+    if not node:
+      return False
+
+    if node.string == targetString:
+      return True
+
+    for i in range(0, node.children.__len__()):
+
+      if targetString.find(node.children[i].string) == 0 :
+        stringFound = self.remove(targetString, node.children[i])
+        print(stringFound, node.string)
+        if stringFound:
+          if node.count > 1:
+            node.count -= 1
+          elif node.count == 1:
+            if targetString.find(node.children[i].string) == 0:
+              node.children.pop(i)
+            elif node.children[0].children.__len__() == 0 :
+              node.children.pop(0)
+              node.children = []
+
+    return stringFound
+
+
 
 # trie.add("hellor")
 # trie.add("hellw")

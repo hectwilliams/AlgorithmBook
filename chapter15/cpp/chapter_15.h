@@ -100,4 +100,6 @@ class BST
   {
     public:
       virtual bool add(const std::string &str);
+      virtual bool remove(const std::string &str, TrieNode *node = NULL);
+
   };

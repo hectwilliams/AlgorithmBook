@@ -891,6 +891,54 @@ class TrieMulti extends Trie
       }
     }
   }
+  remove (strData, node = null)
+  {
+    let valueFound = false;
+
+    node = !node && this.root || node;
+
+    if (!node)
+    {
+      return;
+    }
+
+    if (node.string == strData)
+    {
+      return true;
+    }
+
+    for (let i = 0; i < node.children.length; i++)
+    {
+      if (strData.indexOf(node.children[i].string) == 0)
+      {
+        valueFound = this.remove(strData, node.children[i]);
+
+        if (valueFound)
+        {
+          if (node.count > 1)
+          {
+            --node.count;
+          }
+          else  if (node.count == 1)
+          {
+            if (strData.indexOf(node.children[i])  == 0)
+            {
+              node.children.splice(i,1)
+            }
+            else if (node.children.length == 1)
+            {
+              if (node.children[0].children.length == 0)
+              {
+                node.children.splice(0,1)
+                node.children = [];
+              }
+            }
+          }
+        }
+      }
+    }
+    return valueFound;
+  }
 
 }
 
@@ -913,6 +961,9 @@ class TrieMulti extends Trie
   let trie = new TrieMulti();
   trie.add("hello");
   trie.add("hello");
+  trie.remove("hello");
+  trie.remove("hello");
+  trie.remove("hello");
 
   // console.log(trie.remove('hello'));
   // console.log(trie.remove('hellw'));

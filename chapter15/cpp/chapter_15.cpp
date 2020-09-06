@@ -889,18 +889,74 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
         node->children.push_back(new TrieNode(str.substr(0, pos)));
         node->count = 1;
       }
-      std::cout << node->str << '\n';
     }
 
     return true;
   }
 
+  bool TrieMulti::remove(const std::string &str ,TrieNode *node)
+  {
+    bool valueFound = 0;
+
+    node = !node ? this->root :  node;
+
+    if (!node)
+    {
+      return false;
+    }
+
+    if (str.compare (node->str) == 0 )
+    {
+      return true;
+    }
+
+    for (int i = 0; i < node->children.size(); i++)
+    {
+      if (str.find(node->children[i]->str ) == 0 )
+      {
+
+        valueFound = remove(str, node->children[i]);
+
+        if (valueFound)
+        {
+          if (node->count > 1)
+          {
+            node->count--;
+          }
+          else if (node->count == 1)
+          {
+            if (str.find(node->children[i]->str) == 0)
+            {
+              // TODO free and delete all children subtree (create remveChildren method)...alo delete node at index i
+              node->children.erase(node->children.begin() + i);
+            }
+            else if (node->children.size() == 1)
+            {
+              // TODO free and delete all children subtree (create remveChildren method)
+
+              if (node->children[0]->children.empty())
+              {
+                node->children.clear();
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return valueFound;
+  }
 
 
 int main()
 {
   TrieMulti trie;
   trie.add("hello");
+    trie.add("hello");
+
+  trie.remove("hello");
+
+  trie.remove("hello");
   // TrieMulti.add("hellor");
   // TrieMulti.add("hellw");
 }
