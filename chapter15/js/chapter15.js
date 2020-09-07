@@ -986,6 +986,62 @@ class TrieMulti extends Trie
 
 }
 
+class TrieMapNode extends TrieNode
+{
+  constructor(key, value)
+  {
+    super(value);
+    this.key = key;
+  }
+}
+
+class TrieMap
+{
+  constructor()
+  {
+    this.root = new TrieMapNode("", "");
+  }
+
+  add(key, value)
+  {
+    let curr, node = this.root;
+    let pos = 0;
+
+    while (pos <  key.length)
+    {
+      curr = node;
+      pos++;
+
+      for (let i = 0; i < node.children.length; i++)
+      {
+        if (node.children[i].key == key)
+        {
+          return node.children[i].value
+        }
+        if (key.indexOf(node.children[i].key.slice(0, pos) ) == 0 )
+        {
+          node = node.children[i];
+          break;
+        }
+      }
+
+      if (curr == node)
+      {
+        node.children.push(new TrieMapNode(key.slice(0, pos) , "") ) ;
+        node = node.children[node.children.length - 1];
+        if (node.key == key)
+        {
+          node.value = value;
+        }
+      }
+    }
+    return null;
+  }
+}
+
+let trie = new TrieMap();
+trie.add("hello");
+trie.add("hello");
 
 // let tree = new BST();
 // tree.add(32);
@@ -1002,10 +1058,7 @@ class TrieMulti extends Trie
 // let ll= tree.kthBiggest(3);
 // console.log(tree.layerArrays());
 {
-  let trie = new TrieMulti();
-  trie.add("hello");
-  trie.add("hello");
-  console.log( trie.contains("he") )
+
 
   // console.log(trie.remove('hello'));
   // console.log(trie.remove('hellw'));

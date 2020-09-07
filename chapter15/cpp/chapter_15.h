@@ -103,5 +103,30 @@ class BST
       virtual bool remove(const std::string &str, TrieNode *node = NULL);
       virtual int size (TrieNode *node = NULL);
       virtual int contains (std::string string, TrieNode *node = NULL);
-
   };
+
+class TrieMapNode
+{
+  public:
+    std::string key;
+    std::string value;
+    std::vector<TrieMapNode *> children;
+
+    TrieMapNode(std::string key, std::string value)
+    {
+      this->key = key;
+      this->value = value;
+    }
+};
+
+class TrieMap
+{
+  public:
+    TrieMapNode *root;
+
+    TrieMap()
+    {
+      this->root = new TrieMapNode("", "");
+    }
+    std::string add(std::string key, std::string value);
+};

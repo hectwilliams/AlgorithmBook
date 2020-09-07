@@ -1082,6 +1082,75 @@ int contains (const char * string, struct TrieMulti *node)
   return 0;
 }
 
+struct TrieMap * trie_map_allocate (const char *key, int key_len, const char *value, int value_len )
+{
+  struct TrieMap *node = (struct TrieMap *) malloc( sizeof(struct TrieMap) );
+  int keySize = key_len + 1;
+  int valueSize = value_len + 1;
+
+  node->string = (char *) malloc(keySize + 1);
+  node->key = (char *) malloc(valueSize + 1);
+
+  //lower case string
+  for (int i = 0; i < key_len; i++)
+  {
+    node->key[i] = tolower(key[i]);
+  }
+  for (int i = 0; i < value_len; i++)
+  {
+    node->string[i] = tolower(value[i]);
+  }
+
+  //init remaining fields
+  node->children_size = 0;
+  node->children = (struct TrieMap **) malloc( sizeof(struct TrieMap *) * node->children_size);
+
+  return node;
+}
+
+char * TrieMap_add(const char *key, const char *value, struct TrieMap **trie)
+{
+  int pos = 0;
+  struct TrieMap *curr, *node = *trie;
+
+  if (*trie == NULL)
+  {
+    *trie = trie_map_allocate("", 0, "", 0);
+  }
+  node = *trie;
+
+  while (key[pos])
+  {
+    curr = node;
+    pos++;
+
+    for (int i = 0; i < node->children_size; i++)
+    {
+      if ( strncmp(key, node->children[i]->key, pos) == 0)
+      {
+        node = node->children[i];
+        break;
+      }
+    }
+
+    if (curr == node)
+    {
+      node->children_size++;
+      node->children = realloc(node->children, sizeof(struct TrieMap *) * node->children_size );
+      node->children[node->children_size - 1] = trie_map_allocate(key, pos, "", 0);
+      node = node->children[node->children_size - 1];
+      if (strncmp(key, node->key, strlen(key))  == 0)
+      {
+        node->string = value;
+      }
+      printf("[%s] [%s] \n", node->key, node->string);
+    }
+  }
+}
+
+
+
+
 int main()
 {
   // struct BST *bst = NULL;
@@ -1109,16 +1178,16 @@ int main()
   // printf("\n\n");
   // BST_print_value_for_layer(&bst, 1);
 
-    struct TrieMulti *trie = NULL;
+    struct TrieMap *trie = NULL;
     // Trie_add(&trie, "hello");
     // Trie_add(&trie, "hellor");
 
-    TrieMulti_add(&trie, "hello");
-    TrieMulti_add(&trie, "hello");
-    TrieMulti_add(&trie, "hellor");
+    TrieMap_add("first", "hello", &trie);
+    // TrieMulti_add(&trie, "hello");
+    // TrieMulti_add(&trie, "hellor");
 
-    printf("[%d]\n", TrieMulti_size(trie));
-    printf(" \n contains %d \n", contains("hello", trie));
+    // printf("[%d]\n", TrieMulti_size(trie));
+    // printf(" \n contains %d \n", contains("hello", trie));
 
     // printf("%d\n", Trie_contains("hellor", &trie));
 

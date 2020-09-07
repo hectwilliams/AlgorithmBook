@@ -563,10 +563,47 @@ class TrieMulti(Trie):
           return self.contains(string, node.children[i])
     return 0
 
-trie = TrieMulti()
-trie.add("hellor")
-trie.add("hellw")
-print(trie.contains("hell"))
+class TrieMapNode:
+  def __init__(self, key, value):
+    self.key = key
+    self.value = value
+    self.children = []
+
+class TrieMap:
+  def __init__(self):
+    self.root = TrieMapNode("","")
+
+  def add(self, key, value):
+    curr = None
+    node = self.root
+    pos = 0
+
+    while pos < key.__len__() :
+      curr = node
+      pos += 1
+
+      for i in range(0, node.children.__len__() ):
+
+        if node.children[i].key == key:
+          return node.children[i].value
+
+        if key.find(node.children[i].key[0 : pos]  ) == 0:
+          node = node.children[i]
+          break
+
+      if curr == node :
+        node.children.append( TrieMapNode( key[0 : pos] , "")  )
+        node = node.children[-1]
+
+        if node.key == key:
+          node.value = value
+    return None
+
+trie = TrieMap()
+x = trie.add( "start" , "hector")
+print(x)
+x = trie.add( "start" , "hector")
+print(x)
 
 # tree = BST()
 # tree.add(32)

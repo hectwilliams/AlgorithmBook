@@ -994,18 +994,57 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
     return 0;
   }
 
+  std::string TrieMap::add(std::string key, std::string value)
+  {
+    TrieMapNode *curr, *node = this->root;
+    std::string result;
+    int pos = 0;
+
+    if (!node)
+    {
+      return "";
+    }
+
+    while ( pos < key.length())
+    {
+      curr = node;
+      pos++;
+
+      for (int i = 0; i < node->children.size(); i++)
+      {
+        if (node->children[i]->key == key)
+        {
+          return node->children[i]->value;
+        }
+
+        if ( key.find(value.substr(0, pos)))
+        {
+          node = node->children[i];
+          break;
+        }
+
+      }
+
+      if (curr == node)
+      {
+        node->children.push_back(new TrieMapNode(key.substr(0, pos), ""));
+        node = node->children.back();
+        if (node->key == key)
+        {
+          node->value = value;
+        }
+      }
+    }
+    return "";
+  }
+
 int main()
 {
-  TrieMulti trie;
-
-  trie.add("hello");
-
-  trie.add("hello");
-
+  TrieMap trie;
+  std::cout << trie.add("name", "hello") << '\n';
+  std::cout << trie.add("name", "hello") << '\n';
 
   // trie.remove("hello");
-
-  std::cout << trie.contains("meow") << '\n';
   // TrieMulti.add("hellor");
   // TrieMulti.add("hellw");
 }
