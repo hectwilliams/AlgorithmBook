@@ -98,7 +98,7 @@ class Trie
       pos++;
       node.children.forEach((elementNode)=> {
         currString = elementNode.string;
-        if (maxString == undefined || currString >= maxString)
+        if (maxString == undefined || currString.localeCompare(maxString) >=0)
         {
           node = elementNode;
           maxString = node.string;
@@ -507,6 +507,33 @@ class TrieMap
     return result;
   }
 
+  last()
+  {
+    let node = this.root;
+    let currString, maxString;
+    let pos = 0;
+    let result = {key: null, value: null};
+    let curr = null;
+
+    while (node != curr)
+    {
+      curr = node;
+      pos++;
+      for (let child of node.children)
+      {
+        currString = child.key;
+        if (maxString == undefined || currString.localeCompare(maxString) >=0 )
+        {
+          maxString = currString;
+          node = child;
+        }
+      }
+    }
+    result.key = node.key;
+    result.string = node.string;
+    return result;
+  }
+
 }
 
 let trie = new TrieMap();
@@ -514,7 +541,7 @@ let trie = new TrieMap();
 console.log(trie.add("hello", 'world' ));
 console.log(trie.add("hello", 'world' ));
 console.log("");
-console.log(trie.first());
+console.log(trie.last());
 // console.log(trie.remove("hello"));
 
 // let tree = new BST();

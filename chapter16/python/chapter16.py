@@ -293,16 +293,34 @@ class TrieMap:
       pos += 1
       for child in node.children:
         currChar = child.value
+
         if minChar == None or currChar <= minChar:
           node = child
           minChar = currChar
 
     return {'key': node.key, 'value': node.value}
+
+  def last(self) :
+    node = self.root
+    curr = None
+    currString = maxString = None
+    pos = 0
+
+    while curr != node:
+      curr = node
+      pos += 1
+      for child in node.children:
+        currString = child.key
+        if maxString == None or currString >= maxString:
+          maxString = currString
+          node = child
+    return {'key' : node.key , 'value': node.value}
+
 trie = TrieMap()
 x = trie.add( "start" , "hector")
 x = trie.add( "start" , "hector")
 
-print(trie.first())
+print(trie.last())
 
 # tree = BST()
 # tree.add(32)

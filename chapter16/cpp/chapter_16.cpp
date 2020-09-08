@@ -497,6 +497,39 @@
     return std::make_pair("","");
   }
 
+  std::pair<std::string, std::string> TrieMap::last(const TrieMapNode *node )
+  {
+    const TrieMapNode *curr;
+    std::string currString, maxString = "";
+    std::pair<std::string, std::string> result;
+    int pos = 0;
+    node = !node ? root : node;
+
+    while (node != curr)
+    {
+      curr = node;
+      pos++;
+      for (int i = 0; i < curr->children.size(); i++)
+      {
+        currString = curr->children[i]->key;
+        if (maxString == "" || currString.compare(maxString) >=0 )
+        {
+          maxString = currString;
+          node = curr->children[i];
+        }
+      }
+    }
+
+    if (node)
+    {
+      result.first = node->key;
+      result.second = node->value;
+    }
+    return result;
+
+  }
+
+
 
 int main()
 {
@@ -506,7 +539,7 @@ int main()
   std::cout <<trie.add("nam", "down") << '\n';
 
 
-  auto obj  = trie.first();
+  auto obj  = trie.last();
   std::cout <<  obj.first << " " << obj.second << '\n';
   // TrieMulti.add("hellor");
   // TrieMulti.add("hellw");

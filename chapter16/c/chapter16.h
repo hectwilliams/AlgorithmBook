@@ -62,3 +62,4 @@ struct keyValue
 };
 
 struct keyValue TrieMap_first (const struct TrieMap *node);
+struct keyValue TrieMap_last (const struct TrieMap *node) ;
