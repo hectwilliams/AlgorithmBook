@@ -1259,9 +1259,17 @@ char *TrieMap_contains(const char *key , struct TrieMap *node)
   return "";
 }
 
+int TrieMap_size(struct TrieMap *node)
+{
+  int count = 0;
 
+  for (int i = 0; i < node->children_size; i++)
+  {
+    count += 1 +  TrieMap_size(node->children[i]);
+  }
+  return count;
 
-
+}
 
 int main()
 {
@@ -1295,11 +1303,11 @@ int main()
     // Trie_add(&trie, "hellor");
 
     TrieMap_add("first", "hello", &trie);
-    TrieMap_add("firs", "hell", &trie);
-    TrieMap_add("fir", "pick", &trie);
+    // TrieMap_add("firs", "hell", &trie);
+    // TrieMap_add("fir", "pick", &trie);
 
-    char *c = TrieMap_contains("fwirst", trie);
-    printf("message: %s\n", c);
+    int c= TrieMap_size( trie);
+    printf(" Size: %d\n", c);
     // TrieMulti_add(&trie, "hello");
     // TrieMulti_add(&trie, "hellor");
 
