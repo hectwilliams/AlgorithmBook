@@ -1012,17 +1012,18 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
 
       for (int i = 0; i < node->children.size(); i++)
       {
-        if (node->children[i]->key == key)
-        {
-          return node->children[i]->value;
-        }
-
         if ( key.find(value.substr(0, pos)))
         {
           node = node->children[i];
           break;
         }
+      }
 
+      if (key == node->key)
+      {
+        result = node->value;
+        node->value = value;
+        return result;
       }
 
       if (curr == node)
@@ -1038,13 +1039,73 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
     return "";
   }
 
+  void TrieMap::removeAllchildren (TrieMapNode *node)
+  {
+    if (!node)
+    {
+      return;
+    }
+
+    for (int i = 0; i < node->children.size() ; i++)
+    {
+      removeAllchildren(node->children[i]);
+      delete(node->children[i] );
+    }
+
+    node->children.clear();
+  }
+
+  bool TrieMap::remove(const std::string &key, TrieMapNode *node)
+  {
+    bool found = false;
+    TrieMapNode *child;
+
+    node = !node ? root : node;
+
+    if (key == node->key)
+    {
+      return true;
+    }
+
+    for (int i = 0; i < node->children.size() && !found; i++)
+    {
+      if ( key.find( node->children[i]->key ) == 0)
+      {
+        found |= remove(key, node->children[i]);
+
+        if (found)
+        {
+          if (node->children[i]->key == key)
+          {
+            removeAllchildren( node->children[i] );
+            delete(node->children[i]);
+            node->children.erase(node->children.begin() + i);
+          }
+          else if (node->children.size() == 1)
+          {
+            if (node->children[0]->children.size() == 0 && node->children[0]->value.length() == 0)
+            {
+              delete( node->children[0] ) ;
+              node->children.clear();
+            }
+          }
+        }
+      }
+    }
+    return found;
+  }
+
+
 int main()
 {
   TrieMap trie;
   std::cout << trie.add("name", "hello") << '\n';
   std::cout << trie.add("name", "hello") << '\n';
+  std::cout <<trie.add("nam", "down") << '\n';
 
-  // trie.remove("hello");
+  std::cout << trie.remove("name") << '\n';
+    std::cout << trie.remove("nam") << '\n';
+
   // TrieMulti.add("hellor");
   // TrieMulti.add("hellw");
 }

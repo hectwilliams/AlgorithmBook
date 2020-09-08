@@ -121,6 +121,9 @@ class TrieMapNode
 
 class TrieMap
 {
+
+  private:
+    static void removeAllchildren (TrieMapNode *node);
   public:
     TrieMapNode *root;
 
@@ -129,4 +132,5 @@ class TrieMap
       this->root = new TrieMapNode("", "");
     }
     std::string add(std::string key, std::string value);
+    bool remove(const std::string &key, TrieMapNode *node = NULL);
 };

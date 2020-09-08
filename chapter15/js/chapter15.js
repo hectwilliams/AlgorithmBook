@@ -1006,6 +1006,7 @@ class TrieMap
   {
     let curr, node = this.root;
     let pos = 0;
+    let result = null;
 
     while (pos <  key.length)
     {
@@ -1014,15 +1015,19 @@ class TrieMap
 
       for (let i = 0; i < node.children.length; i++)
       {
-        if (node.children[i].key == key)
-        {
-          return node.children[i].value
-        }
+
         if (key.indexOf(node.children[i].key.slice(0, pos) ) == 0 )
         {
           node = node.children[i];
           break;
         }
+      }
+
+      if (node.key == key)
+      {
+        result = node.string;
+        node.string = value;
+        return result;
       }
 
       if (curr == node)
@@ -1031,17 +1036,64 @@ class TrieMap
         node = node.children[node.children.length - 1];
         if (node.key == key)
         {
-          node.value = value;
+          node.string = value;
         }
       }
     }
-    return null;
+    return result;
+  }
+
+  remove(key, node = null)
+  {
+    let found = false;
+
+    node = !node && this.root || node;
+
+    if (!node)
+    {
+      return 0;
+    }
+
+    if (node.key == key)
+    {
+      return true;
+    }
+
+    for (let i = 0 ; i < node.children.length && !found; i++)
+    {
+      if ( key.indexOf(node.children[i].key) == 0 )
+      {
+        found |= this.remove(key, node.children[i]);
+
+        console.log( node.key, node.string   )
+
+        if (found)
+        {
+          if (node.children[i].key == key)
+          {
+            node.children.splice(i, 1);
+          }
+          else if (node.children.length == 1)
+          {
+            if (node.children[0].children.length == 0 && node.children[0].string.length == 0 )
+            {
+              node.children = [];
+            }
+          }
+        }
+      }
+    }
+    return found && true || false; ;
   }
 }
 
 let trie = new TrieMap();
-trie.add("hello");
-trie.add("hello");
+
+console.log(trie.add("hello", 'world' ));
+console.log(trie.add("hello", 'world' ));
+console.log("");
+console.log(trie.remove("hello"));
+console.log(trie.remove("hello"));
 
 // let tree = new BST();
 // tree.add(32);

@@ -1113,6 +1113,8 @@ char * TrieMap_add(const char *key, const char *value, struct TrieMap **trie)
   int pos = 0;
   struct TrieMap *curr, *node = *trie;
 
+  char * val = NULL;
+
   if (*trie == NULL)
   {
     *trie = trie_map_allocate("", 0, "", 0);
@@ -1133,6 +1135,13 @@ char * TrieMap_add(const char *key, const char *value, struct TrieMap **trie)
       }
     }
 
+    if (strncmp(key, node->key, strlen(key)) == 0)
+    {
+        val = node->string;
+        node->string = value;
+        return val;
+    }
+
     if (curr == node)
     {
       node->children_size++;
@@ -1143,9 +1152,89 @@ char * TrieMap_add(const char *key, const char *value, struct TrieMap **trie)
       {
         node->string = value;
       }
-      printf("[%s] [%s] \n", node->key, node->string);
     }
   }
+  return val;
+}
+
+void TrieMap_delete_children (struct TrieMap *node)
+{
+  for (int i = 0; i < node->children_size; i++)
+  {
+    TrieMap_delete_children(node->children[i]);
+    printf("delete children [ %s | %s ] ", node->key, node->string);
+    free(node->children[i]);
+  }
+
+  //remove subtree
+  if (node->children)
+  {
+    free(node->children );
+    node->children_size = 0;
+    node->children = NULL;
+  }
+}
+
+void TrieMap_remove_child(struct TrieMap *node, int index)
+{
+    printf("deleting child of  [ %s | %s  %d ] \n", node->key, node->string, node->children_size);
+
+    // deletes substree
+    if (node->children)
+    {
+
+      TrieMap_delete_children (node->children[index]);
+
+      // deletes node link to child
+      free (node->children[index]);
+      node->children[index] = NULL;
+      --node->children_size;
+
+      for (int j = index; j <  node->children_size; j++)
+      {
+        node->children[j] = node->children[j + 1];
+        node->children[j + 1] = NULL;
+      }
+    }
+}
+
+enum boolean TrieMap_remove(const char *key, struct TrieMap *node)
+{
+  int found = 0;
+  if (node == NULL)
+  {
+    return 0;
+  }
+
+  if (strncmp(key, node->key, strlen(key)) == 0)
+  {
+    return 1;
+  }
+
+  for (int i = 0; i < node->children_size; i++)
+  {
+    if (strstr(key, node->children[i]->key) == key)
+    {
+      found |= TrieMap_remove(key, node->children[i]);
+
+      if (found)
+      {
+        if (strncmp(key, node->children[i]->key, strlen(key)) == 0 )
+          // remove node
+        {
+          TrieMap_remove_child(node, i);
+        }
+        else if (node->children_size == 1)
+        {
+          if (node->children[0]->children_size == 0 && strlen(node->children[0]->string) == 0 )
+          {
+            TrieMap_remove_child(node, 0);
+          }
+        }
+      }
+    }
+  }
+  return found;
 }
 
 
@@ -1183,6 +1272,14 @@ int main()
     // Trie_add(&trie, "hellor");
 
     TrieMap_add("first", "hello", &trie);
+    TrieMap_add("firs", "hell", &trie);
+    TrieMap_add("fir", "pick", &trie);
+
+    TrieMap_remove("first", trie);
+
+    TrieMap_remove("firs", trie);
+    printf("\n\n");
+    printf("delete me  %d", x);
     // TrieMulti_add(&trie, "hello");
     // TrieMulti_add(&trie, "hellor");
 

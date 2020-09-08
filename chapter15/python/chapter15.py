@@ -577,19 +577,21 @@ class TrieMap:
     curr = None
     node = self.root
     pos = 0
+    result = None
 
     while pos < key.__len__() :
       curr = node
       pos += 1
 
       for i in range(0, node.children.__len__() ):
-
-        if node.children[i].key == key:
-          return node.children[i].value
-
         if key.find(node.children[i].key[0 : pos]  ) == 0:
           node = node.children[i]
           break
+
+      if node.key == key:
+        result = node.value
+        node.value = value
+        return result
 
       if curr == node :
         node.children.append( TrieMapNode( key[0 : pos] , "")  )
@@ -597,13 +599,39 @@ class TrieMap:
 
         if node.key == key:
           node.value = value
-    return None
+    return result
+
+  def remove(self, key, node = None):
+    found = False
+
+    node = self.root if not node else node
+
+    if not node:
+      return found
+
+    if node.key == key:
+      return True
+
+    for i in range(0, node.children.__len__()):
+      if key.find(node.children[i].key ) == 0:
+        found |= self.remove(key, node.children[i] )
+        if found :
+          if node.children[i].key == key:
+            node.children.pop(i)
+          elif node.children.__len__() == 1:
+            if node.children[0].children.__len__() == 0 and node.children[0].value.__len__() == 0:
+              node.children = []
+
+    return bool(found)
 
 trie = TrieMap()
 x = trie.add( "start" , "hector")
 print(x)
 x = trie.add( "start" , "hector")
 print(x)
+
+print(trie.remove("start"))
+print(trie.remove("start"))
 
 # tree = BST()
 # tree.add(32)
