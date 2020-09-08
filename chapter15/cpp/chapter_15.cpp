@@ -1095,6 +1095,27 @@ std::vector<std::vector<int> > BST::layersArrays (BSTNode *node)
     return found;
   }
 
+  std::string TrieMap::contains(const std::string &key, TrieMapNode *node)
+  {
+    node = !node ? root : node;
+
+    if (!node)
+    {
+      return "";
+    }
+    if (node->key == key)
+    {
+      return node->value;
+    }
+    for (int i = 0; i < node->children.size(); i++)
+    {
+      if (key.find(node->children[i]->key ) == 0 )
+      {
+        return contains(key, node->children[i]);
+      }
+    }
+    return  "";
+  }
 
 int main()
 {
@@ -1103,9 +1124,9 @@ int main()
   std::cout << trie.add("name", "hello") << '\n';
   std::cout <<trie.add("nam", "down") << '\n';
 
-  std::cout << trie.remove("name") << '\n';
-    std::cout << trie.remove("nam") << '\n';
 
+
+  std::cout << "* - \t"<< trie.contains("name") << '\n';
   // TrieMulti.add("hellor");
   // TrieMulti.add("hellw");
 }

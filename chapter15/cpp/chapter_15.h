@@ -133,4 +133,5 @@ class TrieMap
     }
     std::string add(std::string key, std::string value);
     bool remove(const std::string &key, TrieMapNode *node = NULL);
+    std::string contains(const std::string &key, TrieMapNode *node = NULL);
 };

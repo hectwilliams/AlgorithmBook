@@ -1085,6 +1085,32 @@ class TrieMap
     }
     return found && true || false; ;
   }
+
+  contains(key, node = null)
+  {
+    node = !node && this.root || node;
+
+    if (!node)
+    {
+      return null;
+    }
+
+    if (node.key == key)
+    {
+      return node.string;
+    }
+
+    for(let child of node.children)
+    {
+      if (key.indexOf(child.key) == 0)
+      {
+        return this.contains(key, child);
+      }
+    }
+
+    return null;
+  }
+
 }
 
 let trie = new TrieMap();
@@ -1092,8 +1118,8 @@ let trie = new TrieMap();
 console.log(trie.add("hello", 'world' ));
 console.log(trie.add("hello", 'world' ));
 console.log("");
-console.log(trie.remove("hello"));
-console.log(trie.remove("hello"));
+console.log(trie.contains("hello"));
+// console.log(trie.remove("hello"));
 
 // let tree = new BST();
 // tree.add(32);

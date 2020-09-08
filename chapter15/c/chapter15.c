@@ -1237,6 +1237,29 @@ enum boolean TrieMap_remove(const char *key, struct TrieMap *node)
   return found;
 }
 
+char *TrieMap_contains(const char *key , struct TrieMap *node)
+{
+  if (!node)
+  {
+    return "";
+  }
+
+  if (strncmp(key, node->key, strlen(key)) == 0 )
+  {
+    return node->string;
+  }
+
+  for (int i = 0; i < node->children_size; i++)
+  {
+    if (strstr(key, node->children[i]->key) ==  key)
+    {
+      return TrieMap_contains(key, node->children[i]);
+    }
+  }
+  return "";
+}
+
+
 
 
 
@@ -1275,11 +1298,8 @@ int main()
     TrieMap_add("firs", "hell", &trie);
     TrieMap_add("fir", "pick", &trie);
 
-    TrieMap_remove("first", trie);
-
-    TrieMap_remove("firs", trie);
-    printf("\n\n");
-    printf("delete me  %d", x);
+    char *c = TrieMap_contains("fwirst", trie);
+    printf("message: %s\n", c);
     // TrieMulti_add(&trie, "hello");
     // TrieMulti_add(&trie, "hellor");
 

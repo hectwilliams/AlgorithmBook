@@ -624,14 +624,26 @@ class TrieMap:
 
     return bool(found)
 
+  def contains (self, key, node = None ) :
+    node = self.root if not node else node
+
+    if not node:
+      return None
+
+    if node.key == key:
+      return node.value
+
+    for child in node.children:
+      if key.find(child.key) == 0:
+        return self.contains(key, child)
+
+    return None
+
 trie = TrieMap()
 x = trie.add( "start" , "hector")
-print(x)
 x = trie.add( "start" , "hector")
-print(x)
 
-print(trie.remove("start"))
-print(trie.remove("start"))
+print(trie.contains("sta"))
 
 # tree = BST()
 # tree.add(32)

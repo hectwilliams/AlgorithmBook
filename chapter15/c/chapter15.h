@@ -78,5 +78,9 @@ struct TrieMap
   struct TrieMap **children;
   int children_size;
 };
+void TrieMap_remove_child(struct TrieMap *node, int index);
+void TrieMap_delete_children (struct TrieMap *node);
 
 char * TrieMap_add(const char *key, const char *value, struct TrieMap **trie);
+enum boolean TrieMap_remove(const char *key, struct TrieMap *node);
+char *TrieMap_contains(const char *key , struct TrieMap *node);
