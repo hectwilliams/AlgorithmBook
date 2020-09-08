@@ -16,7 +16,7 @@
 12. Sorts (***C++***, ***C***, ***Python***)
 13. Sets And Priority Queues (***C++***, ***C***, ***Python***, ***Javascript***)
 14. Hashes (***C++***, ***Python***, ***Javascript***)
-15. Trees, Part II (***C++***)
+15. Trees, Part II (***C++***, ***C++***, ***Python***, ***Javascript***)
 16. Tries (***C++***)
 17. Graphs (***C+++***)
 18. Bit Arithmetic (***C++***)
