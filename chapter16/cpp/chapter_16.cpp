@@ -529,9 +529,45 @@
 
   }
 
+  std::pair<std::string, std::string> TrieMap::next(std::string key, const TrieMapNode *node)
+  {
+    std::pair<std::string, std::string> obj;
+    node = !node ? root : node;
+
+    if (node)
+    {
+      if (key.compare(node->key) == 0)
+      {
+        for (auto child: node->children)
+        {
+          if (obj.first.length() == 0 || child->key.compare(obj.first) <= 0)
+          {
+            obj.first = child->key;
+            obj.second = child->value;
+          }
+        }
+        return obj;
+      }
+      else
+      {
+        for (int i = 0; i<  node->children.size(); i++)
+        {
+          if (key.find(node->children[i]->key ) == 0)
+          {
+            return next(key, node->children[i]);
+          }
+        }
+      }
+    }
+
+    return obj;
+
+  }
+
 
 
 int main()
+
 {
   TrieMap trie;
   std::cout << trie.add("name", "hello") << '\n';
@@ -539,7 +575,7 @@ int main()
   std::cout <<trie.add("nam", "down") << '\n';
 
 
-  auto obj  = trie.last();
+  auto obj  = trie.next("nam");
   std::cout <<  obj.first << " " << obj.second << '\n';
   // TrieMulti.add("hellor");
   // TrieMulti.add("hellw");

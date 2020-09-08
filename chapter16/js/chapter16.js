@@ -534,6 +534,40 @@ class TrieMap
     return result;
   }
 
+  next (key, node=null)
+  {
+    let obj = {key: null, value: null}
+
+    node = !node ? this.root : node;
+
+    if (node)
+    {
+      if (key.localeCompare(node.key) == 0)
+      {
+
+        for (let child of node.children)
+        {
+          if (obj.key == null || child.key.localeCompare(obj.key))
+          {
+            obj.key = child.key;
+            obj.value = child.string;
+          }
+        }
+      }
+      else
+      {
+        for (let child of node.children )
+        {
+          if (key.indexOf(child.key) == 0)
+          {
+            return this.next(key, child);
+          }
+        }
+      }
+    }
+    return obj;
+  }
+
 }
 
 let trie = new TrieMap();
@@ -541,7 +575,7 @@ let trie = new TrieMap();
 console.log(trie.add("hello", 'world' ));
 console.log(trie.add("hello", 'world' ));
 console.log("");
-console.log(trie.last());
+console.log(trie.next('hello'));
 // console.log(trie.remove("hello"));
 
 // let tree = new BST();

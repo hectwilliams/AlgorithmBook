@@ -685,6 +685,41 @@ struct keyValue TrieMap_last (const struct TrieMap *node)
   return obj;
 }
 
+
+struct keyValue TrieMap_next (const char *key, const struct TrieMap *node)
+{
+  struct keyValue obj = {.key = "", .value = ""};
+
+  if (node)
+  {
+
+    if ( strncmp(key, node->key, strlen(key)) == 0 )
+    {
+      for (int i = 0; i < node->children_size; i++)
+      {
+        if ( obj.key == "" || strcmp(node->children[i]->key,  obj.key) <= 0 )
+        {
+          obj.key = node->children[i]->key;
+          obj.value = node->children[i]->string;
+        }
+      }
+      return obj;
+    }
+
+    for (int i = 0; i < node->children_size; i++)
+    {
+      if (strstr(key, node->children[i]->key ) == key )
+      {
+        return TrieMap_next(key, node->children[i]);
+      }
+    }
+  }
+
+  return obj;
+
+}
+
+
 int main()
 {
 
@@ -696,6 +731,6 @@ int main()
     // TrieMap_add("firs", "hell", &trie);
     // TrieMap_add("fir", "pick", &trie);
 
-   struct keyValue object = TrieMap_last( trie);
+   struct keyValue object = TrieMap_next( "firs", trie);
     printf(" Object : key : %s  value: %s \n", object.key, object.value);
 }

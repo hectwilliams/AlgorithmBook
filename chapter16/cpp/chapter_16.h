@@ -84,5 +84,6 @@ class TrieMap
     int size (const std::string &key, TrieMapNode *node = NULL);
     std::pair<std::string, std::string> first(const TrieMapNode *node = NULL);
     std::pair<std::string, std::string> last(const TrieMapNode *node = NULL);
+    std::pair<std::string, std::string> next(std::string key, const TrieMapNode *node = NULL);
 
 };

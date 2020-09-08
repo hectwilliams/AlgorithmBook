@@ -199,6 +199,7 @@ class TrieMulti(Trie):
           return self.contains(string, node.children[i])
     return 0
 
+
 class TrieMapNode:
   def __init__(self, key, value):
     self.key = key
@@ -316,11 +317,28 @@ class TrieMap:
           node = child
     return {'key' : node.key , 'value': node.value}
 
+  def next (self, key, node = None):
+    obj = {'key' : None, 'value': None}
+
+    node = self.root if not node else node
+
+    if node:
+      if key == node.key:
+        for child in node.children:
+          if obj['key'] == None or child.key <= obj['key']:
+            obj['key'] = child.key
+            obj['value'] = child.value
+      else:
+        for child in node.children:
+          if key.find(child.key) == 0:
+            return self.next(key, child)
+    return obj
+
 trie = TrieMap()
 x = trie.add( "start" , "hector")
 x = trie.add( "start" , "hector")
 
-print(trie.last())
+print(trie.next("star"))
 
 # tree = BST()
 # tree.add(32)
