@@ -67,8 +67,10 @@ bool ELGraph::setVertexValue(int id, int value)
     if (vertex->id == id)
     {
       vertex->value = value;
+      return true;
     }
   }
+  return false;
 }
 
 

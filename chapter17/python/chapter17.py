@@ -32,6 +32,8 @@ class ELGraph :
     for vertex in self.vertexList:
       if id == vertex.id :
         vertex.value = value
+        return True
+    return False
 
 graph = ELGraph()
 graph.addVertex(22)

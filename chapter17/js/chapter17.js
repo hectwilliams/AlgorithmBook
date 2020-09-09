@@ -60,8 +60,10 @@ class ELGraph
       if (vertex.id == id)
       {
         vertex.value = value;
+        return true;
       }
     }
+    return false;
   }
 
 };
