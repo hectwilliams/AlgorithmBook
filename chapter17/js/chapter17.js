@@ -154,6 +154,12 @@ class ELGraph
     return false;
   }
 
+  adjacent (id1, id2)
+  {
+    let index = this.edgeList.findIndex( (edge) => edge.vert_id1 == id1 && edge.vert_id2 == id2 )
+    return index != -1;
+  }
+
 
 
 };
@@ -162,9 +168,10 @@ class ELGraph
   let graph = new ELGraph ();
   graph.addVertex(200);
   graph.addVertex(2020);
+  graph.addEdge(0, 1, 223322)
   graph.setVertexValue(0, 232);
-  console.log(graph.addEdge(0, 1))
-  graph.removeEdges(1);
-  graph.display()
+  console.log(graph.adjacent(0, 1))
+  // graph.removeEdges(1);
+  // graph.display()
 
 }

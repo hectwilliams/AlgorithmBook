@@ -88,6 +88,13 @@ class ELGraph :
         return True
     return False
 
+  def adjacent(self, id1, id2):
+    for edge in self.edgeList:
+      if edge.id1 == id1 and edge.id2 == id2:
+        return True
+    return False
+
+
 graph = ELGraph()
 graph.addVertex(22)
 graph.addVertex(244)
@@ -97,4 +104,5 @@ print(graph.addEdge(0,1))
 # graph.removeEdge(0, 1)
 print(graph.getEdgeValue(0,1))
 print(graph.setEdgeValue(0,1 , 42928))
-graph.display()
+print(graph.adjacent(0, 2))
+# graph.display()

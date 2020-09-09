@@ -285,7 +285,7 @@ struct pair ELGraph_getEdgeValue(struct ELGraph *graph, int id1, int id2)
   return result;
 }
 
-enum boolean setEdgeValue(struct ELGraph *graph, int id1, int id2, int value)
+enum boolean ELGraph_setEdgeValue(struct ELGraph *graph, int id1, int id2, int value)
 {
   struct ELEdge *edge;
   enum boolean result = false;
@@ -295,19 +295,42 @@ enum boolean setEdgeValue(struct ELGraph *graph, int id1, int id2, int value)
     if (graph->edgeList)
     {
       edge = graph->edgeList;
-      while (edge)
+      while (edge && !result)
       {
         if (edge->src_id ==id1 && edge->dest_id == id2)
         {
           result = true;
           edge->value = value;
         }
+        edge = edge->next;
       }
     }
   }
   return result;
 }
 
+enum boolean ELGraph_adjacent (struct ELGraph *graph, int id1, int id2)
+{
+  struct ELEdge *edge;
+
+  if (graph )
+  {
+    if (graph->edgeList)
+    {
+      edge = graph->edgeList;
+
+      while (edge)
+      {
+        if (edge->src_id ==id1 && edge->dest_id == id2)
+        {
+          return true;
+        }
+        edge = edge->next;
+      }
+    }
+  }
+  return false;
+}
 
 int main()
 {

@@ -41,6 +41,7 @@ enum boolean ELGraph_addEdge (struct ELGraph *graph, int src_id, int dest_id, in
 void ELGraph_removeEdges(struct ELGraph *graph, int id);
 struct pair ELGraph_getEdgeValue(struct ELGraph *graph, int id1, int id2);
 enum boolean setEdgeValue(struct ELGraph *graph, int id1, int id2, int value);
+enum boolean ELGraph_adjacent (struct ELGraph *graph, int id1, int id2);
 
 struct pair
 {
