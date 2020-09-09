@@ -332,6 +332,34 @@ enum boolean ELGraph_adjacent (struct ELGraph *graph, int id1, int id2)
   return false;
 }
 
+struct list * ELGraph_neighbors(struct ELGraph *graph, int id)
+{
+  struct intlist *collection = NULL;
+  struct ELEdge *edge;
+  struct intlist  *tmp;
+
+  if (graph)
+  {
+    if (graph->edgeList)
+    {
+      edge = graph->edgeList;
+      while (edge)
+      {
+        if (edge->src_id == id)
+        {
+          tmp = (  struct intlist  *) malloc(sizeof(  struct intlist ));
+          tmp->value = edge->dest_id;
+          tmp->next = collection;
+          collection = tmp;
+        }
+        edge = edge->next;
+      }
+    }
+  }
+  return collection;
+}
+
+
 int main()
 {
   time_t t;

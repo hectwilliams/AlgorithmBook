@@ -160,7 +160,18 @@ class ELGraph
     return index != -1;
   }
 
-
+  neighbors (id)
+  {
+    let vertices  = [];
+    for (let edge of this.edgeList)
+    {
+      if (edge.vert_id1 == id)
+      {
+        vertices.push(edge.vert_id2);
+      }
+    }
+    return vertices;
+  }
 
 };
 

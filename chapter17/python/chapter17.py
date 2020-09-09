@@ -94,6 +94,12 @@ class ELGraph :
         return True
     return False
 
+  def neighbors (self, id) :
+    vertices = []
+    for  edge in self.edgeList:
+      if edge.id1 == id:
+        vertices.append(edge.id2)
+    return vertices
 
 graph = ELGraph()
 graph.addVertex(22)
@@ -106,3 +112,4 @@ print(graph.getEdgeValue(0,1))
 print(graph.setEdgeValue(0,1 , 42928))
 print(graph.adjacent(0, 2))
 # graph.display()
+print(graph.neighbors(0))

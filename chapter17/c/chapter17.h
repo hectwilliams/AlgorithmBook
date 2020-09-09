@@ -42,6 +42,13 @@ void ELGraph_removeEdges(struct ELGraph *graph, int id);
 struct pair ELGraph_getEdgeValue(struct ELGraph *graph, int id1, int id2);
 enum boolean setEdgeValue(struct ELGraph *graph, int id1, int id2, int value);
 enum boolean ELGraph_adjacent (struct ELGraph *graph, int id1, int id2);
+struct list * ELGraph_neighbors(struct ELGraph *graph, int id);
+
+struct intlist
+{
+  int *value;
+  struct intlist *next;
+};
 
 struct pair
 {

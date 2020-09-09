@@ -168,6 +168,20 @@ bool ELGraph::removeEdge(int id1, int id2)
 
   }
 
+  std::vector<int> ELGraph::neighbors(const int &id)
+  {
+    std::vector<int> vertices;
+    for (ELEdge *edge: edgeList )
+    {
+      if (id == edge->vert_id1)
+      {
+        vertices.push_back(edge->vert_id2);
+      }
+    }
+    return vertices;
+  }
+
+
 
 
 int main()

@@ -45,7 +45,7 @@ class ELGraph
     std::pair<std::string, int> getEdgeValue (const int &id1, const int &id2);
     bool setEdgeValue (const int &id1, const int &id2, int value);
     bool adjacent (const int &id1, const int &id2);
-
+    std::vector<int> neighbors(const int &id);
 };
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph);
