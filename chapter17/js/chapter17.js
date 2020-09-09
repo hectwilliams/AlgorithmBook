@@ -40,13 +40,26 @@ class ELGraph
     return index != -1;
   }
 
+  getVertexValue (id)
+  {
+    let result = null;
+    for (let vertex of  this.vertexList)
+    {
+      if (vertex.id == id)
+      {
+        result = vertex.value;
+      }
+    }
+    return result;
+  }
+
 };
 
 {
   let graph = new ELGraph ();
   graph.addVertex(200);
   graph.addVertex(2020);
-  console.log(graph.removeVertex(2))
+  console.log(graph.getVertexValue(0))
   // graph.display()
 
 }

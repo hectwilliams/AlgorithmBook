@@ -22,9 +22,15 @@ class ELGraph :
     if index != None:
       self.vertexList.pop(index)
     return index != None
+  def getVertexValue (self, id):
+    result = None
+    for vertex in self.vertexList:
+      if vertex.id == id:
+        result = vertex.value
+    return result
 
 graph = ELGraph()
 graph.addVertex(22)
 
-print(graph.removeVertex(0))
+print(graph.getVertexValue(0))
 graph.display()

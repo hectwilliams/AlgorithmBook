@@ -79,8 +79,27 @@ enum boolean ELGraph_remove_vertex(struct ELGraph **graph, int id)
     return (remove_node != NULL);
 
   // TODO REMOVE EDGES
-
 }
+
+struct pair getVertexValue (struct ELGraph *graph, int id)
+{
+  struct ELVertex *vertex_runner = graph->vertexList;
+  struct pair result = {.valid = false, .value = NULL};
+
+
+  while (vertex_runner)
+  {
+    if (vertex_runner->id == id)
+    {
+      result.value = vertex_runner->value;
+      result.valid = true;
+      break;
+    }
+    vertex_runner = vertex_runner->next;
+  }
+  return result;
+}
+
 
 void display_vertices (struct ELGraph *graph )
 {
@@ -99,7 +118,9 @@ int main()
   // srand((unsigned) time(&t));  // fixed pseudo random
   struct ELGraph *graph = NULL;
   ELGraph_add_vertex(&graph, rand() % 100);
-  ELGraph_remove_vertex(&graph, 1);
+  // ELGraph_remove_vertex(&graph, 1);
   display_vertices(graph);
+  struct pair pair =  getVertexValue(graph, 0);
+  printf("  %d   %d ", pair.valid, pair.value);
   // printf("[ vertex %d  %d]\n", graph->vertexList->value, graph->vertexList->id);
 }

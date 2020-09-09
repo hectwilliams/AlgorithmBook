@@ -28,6 +28,18 @@ struct ELGraph
   struct ELEdge *edgeList;
 };
 
+
+
 unsigned ELGraph_add_vertex( struct ELGraph **collection, int value);
 enum boolean ELGraph_remove_vertex(struct ELGraph **graph, int id);
 void display_vertices (struct ELGraph *graph ) ;
+struct pair getVertexValue (struct ELGraph *graph, int id);
+
+
+
+
+struct pair
+{
+  enum boolean valid;
+  int value;
+};

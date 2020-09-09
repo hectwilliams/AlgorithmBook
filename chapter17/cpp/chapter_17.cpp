@@ -45,9 +45,25 @@ bool ELGraph::removeVertex(const int &id)
   return index != -1;
 }
 
+std::pair<std::string, int> ELGraph::getVertexValue(const int &id)
+{
+  int result;
+
+  for (ELVertex *vertex: vertexList)
+  {
+    if (vertex->id == id)
+    {
+      result = vertex->value;
+      return std::make_pair( "valid", result);
+    }
+  }
+  return std::make_pair( "error", NULL);
+
+}
+
 int main()
 {
   ELGraph graph;
   graph.addVertex(100);
-  std::cout << graph.removeVertex(1) << '\n';
+  std::cout << graph.getVertexValue(0).first << '\n';
 }

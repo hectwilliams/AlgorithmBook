@@ -21,6 +21,7 @@ class ELGraph
     std::vector<std::pair<int, int> > edgeList;
     int addVertex(const int &value);
     bool removeVertex(const int &id);
+    std::pair<std::string, int> getVertexValue(const int &id);
 };
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph);
