@@ -68,6 +68,11 @@ class ELGraph :
         return True
     return False
 
+  def getEdgeValue(self, id1, id2) :
+    for edge in self.edgeList:
+      if edge.id1 == id1 and edge.id2 == id2:
+        return edge.value
+    return None
 
 graph = ELGraph()
 graph.addVertex(22)
@@ -75,5 +80,6 @@ graph.addVertex(244)
 
 graph.setVertexValue(0, 299)
 print(graph.addEdge(0,1))
-graph.removeEdge(0, 1)
-graph.display()
+# graph.removeEdge(0, 1)
+print(graph.getEdgeValue(0,1))
+# graph.display()\

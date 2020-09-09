@@ -127,6 +127,19 @@ bool ELGraph::removeEdge(int id1, int id2)
   return false;
 }
 
+  std::pair<std::string, int> ELGraph::getEdgeValue (const int &id1, const int &id2)
+  {
+    std::pair<std::string, int> result = std::make_pair("invalid", NULL );
+    for (int i = 0; i < edgeList.size() && result.first == "invalid"; i++ )
+    {
+      if (edgeList[i]->vert_id1== id1 && edgeList[i]->vert_id2 == id2)
+      {
+        result.first = "valid";
+        result.second = edgeList[i]->value;
+      }
+    }
+    return result;
+  }
 
 int main()
 {

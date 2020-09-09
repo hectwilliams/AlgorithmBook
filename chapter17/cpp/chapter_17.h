@@ -41,7 +41,8 @@ class ELGraph
     bool setVertexValue(int id, int value);
     bool addEdge(int vert_id1, int vert_id2, int value = 0);
     void removeEdges( int id);
-    bool removeEdge(int id1, int id2)
+    bool removeEdge(int id1, int id2);
+    std::pair<std::string, int> getEdgeValue (const int &id1, const int &id2);
 
 };
 

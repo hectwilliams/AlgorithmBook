@@ -261,6 +261,31 @@ enum boolean ELGraph_removeEdge(struct ELGraph *graph, int id1, int id2)
 }
 
 
+struct pair ELGraph_getEdgeValue(struct ELGraph *graph, int id1, int id2)
+{
+  struct pair result = {.value = -1, .valid = false};
+  struct ELEdge *edge;
+
+  if (graph)
+  {
+    if (graph->edgeList)
+    {
+      edge = graph->edgeList;
+      while (edge &&  !result.valid )
+      {
+        if (edge->dest_id == id2 && edge->src_id == id1)
+        {
+          result.value = edge->value;
+          result.valid = true;
+        }
+        edge = edge->next;
+      }
+    }
+  }
+  return result;
+}
+
+
 int main()
 {
   time_t t;
