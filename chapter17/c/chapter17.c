@@ -112,6 +112,22 @@ void display_vertices (struct ELGraph *graph )
   printf("\n");
 }
 
+enum boolean setVertexValue(struct ELGraph *graph, int id, int value)
+{
+  struct ELVertex *vertex = graph->vertexList;
+
+  while (vertex)
+  {
+    if (vertex->id == id)
+    {
+      vertex->value = value;
+      return true;
+    }
+    vertex = vertex->next;
+  }
+  return false;
+}
+
 int main()
 {
   time_t t;
@@ -119,8 +135,10 @@ int main()
   struct ELGraph *graph = NULL;
   ELGraph_add_vertex(&graph, rand() % 100);
   // ELGraph_remove_vertex(&graph, 1);
-  display_vertices(graph);
+
+  setVertexValue(graph, 0, 1000);
+
   struct pair pair =  getVertexValue(graph, 0);
-  printf("  %d   %d ", pair.valid, pair.value);
+  printf("  %d   %d \n", pair.valid, pair.value);
   // printf("[ vertex %d  %d]\n", graph->vertexList->value, graph->vertexList->id);
 }

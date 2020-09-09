@@ -58,8 +58,19 @@ std::pair<std::string, int> ELGraph::getVertexValue(const int &id)
     }
   }
   return std::make_pair( "error", NULL);
-
 }
+
+bool ELGraph::setVertexValue(int id, int value)
+{
+  for ( ELVertex *vertex: vertexList)
+  {
+    if (vertex->id == id)
+    {
+      vertex->value = value;
+    }
+  }
+}
+
 
 int main()
 {

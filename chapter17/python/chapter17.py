@@ -28,9 +28,13 @@ class ELGraph :
       if vertex.id == id:
         result = vertex.value
     return result
+  def setVertexValue(self, id, value):
+    for vertex in self.vertexList:
+      if id == vertex.id :
+        vertex.value = value
 
 graph = ELGraph()
 graph.addVertex(22)
-
+graph.setVertexValue(0, 299)
 print(graph.getVertexValue(0))
 graph.display()

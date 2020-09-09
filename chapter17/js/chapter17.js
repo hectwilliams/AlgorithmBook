@@ -53,12 +53,24 @@ class ELGraph
     return result;
   }
 
+  setVertexValue(id, value)
+  {
+    for (let vertex of this.vertexList)
+    {
+      if (vertex.id == id)
+      {
+        vertex.value = value;
+      }
+    }
+  }
+
 };
 
 {
   let graph = new ELGraph ();
   graph.addVertex(200);
   graph.addVertex(2020);
+  graph.setVertexValue(0, 232);
   console.log(graph.getVertexValue(0))
   // graph.display()
 
