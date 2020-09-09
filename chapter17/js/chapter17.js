@@ -141,6 +141,19 @@ class ELGraph
     return null;
   }
 
+  setEdgeValue (id1, id2, value)
+  {
+    for ( let edge of this.edgeList )
+    {
+      if (edge.vert_id1 == id1 && edge.vert_id2 == id2)
+      {
+        edge.value = value;
+        return true;
+      }
+    }
+    return false;
+  }
+
 
 
 };

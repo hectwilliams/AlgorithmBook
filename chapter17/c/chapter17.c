@@ -285,6 +285,29 @@ struct pair ELGraph_getEdgeValue(struct ELGraph *graph, int id1, int id2)
   return result;
 }
 
+enum boolean setEdgeValue(struct ELGraph *graph, int id1, int id2, int value)
+{
+  struct ELEdge *edge;
+  enum boolean result = false;
+
+  if (graph )
+  {
+    if (graph->edgeList)
+    {
+      edge = graph->edgeList;
+      while (edge)
+      {
+        if (edge->src_id ==id1 && edge->dest_id == id2)
+        {
+          result = true;
+          edge->value = value;
+        }
+      }
+    }
+  }
+  return result;
+}
+
 
 int main()
 {

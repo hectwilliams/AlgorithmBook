@@ -141,6 +141,20 @@ bool ELGraph::removeEdge(int id1, int id2)
     return result;
   }
 
+  bool ELGraph::setEdgeValue (const int &id1, const int &id2, int value)
+  {
+    for (ELEdge *edge: edgeList )
+    {
+      if (edge->vert_id1 == id1 && edge->vert_id2 == id2)
+      {
+        edge->value = value;
+        return true;
+      }
+    }
+    return false;
+  }
+
+
 int main()
 {
   ELGraph graph;

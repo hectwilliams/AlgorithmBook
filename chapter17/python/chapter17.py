@@ -16,10 +16,17 @@ class ELGraph :
     return self.vertexList.__len__() - 1
   def display(self):
     string = ""
+
     for vertex in self.vertexList:
       string += "{" + str(vertex.id) +"-" + str(vertex.value) + "}" + " , "
     print("vertex ", string )
-    print("edges " , self.edgeList)
+
+    string = ''
+    for edge in self.edgeList:
+      string += "{" + str(edge.id1) +"-" + str(edge.id2) + "-" + str(edge.value) +"}" + " , "
+
+    print("edges " , string)
+
   def removeVertex(self, id):
     index = None
     for  i, vert in enumerate(self.vertexList):
@@ -74,6 +81,13 @@ class ELGraph :
         return edge.value
     return None
 
+  def setEdgeValue(self, id1, id2, value ):
+    for edge in self.edgeList:
+      if edge.id1 ==id1 and edge.id2 == id2:
+        edge.value = value
+        return True
+    return False
+
 graph = ELGraph()
 graph.addVertex(22)
 graph.addVertex(244)
@@ -82,4 +96,5 @@ graph.setVertexValue(0, 299)
 print(graph.addEdge(0,1))
 # graph.removeEdge(0, 1)
 print(graph.getEdgeValue(0,1))
-# graph.display()\
+print(graph.setEdgeValue(0,1 , 42928))
+graph.display()

@@ -40,6 +40,8 @@ enum boolean ELGraph_setVertexValue(struct ELGraph *graph, int id, int value);
 enum boolean ELGraph_addEdge (struct ELGraph *graph, int src_id, int dest_id, int value);
 void ELGraph_removeEdges(struct ELGraph *graph, int id);
 struct pair ELGraph_getEdgeValue(struct ELGraph *graph, int id1, int id2);
+enum boolean setEdgeValue(struct ELGraph *graph, int id1, int id2, int value);
+
 struct pair
 {
   enum boolean valid;
