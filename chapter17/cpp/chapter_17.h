@@ -40,6 +40,9 @@ class ELGraph
     std::pair<std::string, int> getVertexValue(const int &id);
     bool setVertexValue(int id, int value);
     bool addEdge(int vert_id1, int vert_id2, int value = 0);
+    void removeEdges( int id);
+    bool removeEdge(int id1, int id2)
+
 };
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph);

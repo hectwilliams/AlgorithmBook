@@ -52,10 +52,28 @@ class ELGraph :
       return True
     return False
 
+  def removeEdges(self, id):
+    pos = 0
+
+    while pos < self.edgeList.__len__():
+      if self.edgeList[pos].id1 == id or self.edgeList[pos].id2 == id:
+        self.edgeList.pop(pos)
+      else :
+        pos += 1
+
+  def removeEdge(self, id1, id2) :
+    for i in range(0, self.edgeList.__len__()):
+      if self.edgeList[i].id1 == id1 and self.edgeList[i].id2 == id2:
+        self.edgeList.pop(i)
+        return True
+    return False
+
+
 graph = ELGraph()
 graph.addVertex(22)
 graph.addVertex(244)
 
 graph.setVertexValue(0, 299)
 print(graph.addEdge(0,1))
+graph.removeEdge(0, 1)
 graph.display()

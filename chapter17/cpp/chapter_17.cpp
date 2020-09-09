@@ -95,6 +95,37 @@ bool ELGraph::addEdge(int vert_id1, int vert_id2, int value)
   }
 }
 
+void ELGraph::removeEdges(int id)
+{
+  int pos = 0;
+
+  while (pos < edgeList.size())
+  {
+    if (edgeList[pos]->vert_id1 == id || edgeList[pos]->vert_id2 == id  )
+    {
+      free(edgeList[pos]);
+      edgeList.erase(edgeList.begin() + pos);
+    }
+    else
+    {
+      pos++;
+    }
+  }
+}
+
+bool ELGraph::removeEdge(int id1, int id2)
+{
+  for (int i = 0; i < edgeList.size(); i++)
+  {
+    if (edgeList[i]->vert_id1 == id1 && edgeList[i]->vert_id2 == id2 )
+    {
+      free(edgeList[i]);
+      edgeList.erase(edgeList.begin() + i);
+      return true;
+    }
+  }
+  return false;
+}
 
 
 int main()
@@ -104,6 +135,8 @@ int main()
   graph.addVertex(1001);
   graph.addEdge(0,1);
   std::cout << graph.getVertexValue(0).first << '\n';
+  // graph.removeEdges(1);
+
   std::cout << graph << '\n';
 
 }

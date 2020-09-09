@@ -75,6 +75,7 @@ class ELGraph
     }
     return false;
   }
+
   addEdge(srcId, destId, value)
   {
     let count = 0;
@@ -96,6 +97,39 @@ class ELGraph
     return count == 2;
   }
 
+  removeEdges(id)
+  {
+    let pos = 0;
+    let edge;
+
+    while (pos < this.edgeList.length)
+    {
+      edge = this.edgeList[pos];
+      if (edge.vert_id1 == id || edge.vert_id2 == id)
+      {
+        this.edgeList.splice(pos, 1);
+      }
+      else
+      {
+        pos++;
+      }
+    }
+  }
+
+  removeEdge (id1, id2)
+  {
+    for (let i = 0; i < this.edgeList.length; i++)
+    {
+      if (this.edgeList[i].vert_id1 == id1 && this.edgeList[i].vert_id2 == id2)
+      {
+        this.edgeList.splice(i, 1)
+        return true;
+      }
+    }
+    return false;
+  }
+
+
 };
 
 {
@@ -104,6 +138,7 @@ class ELGraph
   graph.addVertex(2020);
   graph.setVertexValue(0, 232);
   console.log(graph.addEdge(0, 1))
-  // graph.display()
+  graph.removeEdges(1);
+  graph.display()
 
 }

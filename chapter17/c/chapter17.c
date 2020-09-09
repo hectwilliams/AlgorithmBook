@@ -114,7 +114,20 @@ void display_vertices (struct ELGraph *graph )
 
 void display_edges(struct ELGraph *graph)
 {
-  struct ELEdge *edge = graph->edgeList;
+  struct ELEdge *edge ;
+
+  if (!graph)
+  {
+    return;
+  }
+
+  if (!graph->edgeList)
+  {
+    return;
+  }
+
+  edge = graph->edgeList;
+
   while (edge)
   {
     printf(" {src %d dest %d value %d}, ", edge->src_id, edge->dest_id, edge->value);
@@ -177,6 +190,76 @@ enum boolean ELGraph_addEdge (struct ELGraph *graph, int src_id, int dest_id, in
   return +(count == 2);
 }
 
+void ELGraph_removeEdges(struct ELGraph *graph, int id)
+{
+  struct ELEdge *edge;
+  struct ELEdge *release_edge;
+
+  if (graph)
+  {
+    if (graph->edgeList)
+    {
+      edge = graph->edgeList;
+      while (edge->next)
+      {
+        if (edge->next->src_id == id || edge->next->dest_id == id)
+        {
+          release_edge = edge->next;
+          edge->next = edge->next->next;
+          free(release_edge);
+        }
+        else
+        {
+          edge = edge->next;
+        }
+      }
+
+      if (graph->edgeList->src_id == id || graph->edgeList->dest_id == id)
+      {
+        release_edge = graph->edgeList;
+        graph->edgeList = graph->edgeList->next;
+        free(release_edge);
+      }
+    }
+  }
+}
+
+enum boolean ELGraph_removeEdge(struct ELGraph *graph, int id1, int id2)
+{
+  struct ELEdge *release_edge = NULL;
+  struct ELEdge *edge;
+
+  if (graph)
+  {
+    if (graph->edgeList)
+    {
+      edge = graph->edgeList;
+      while (edge->next)
+      {
+        if (edge->next->src_id == id1 && edge->next->dest_id == id2)
+        {
+          release_edge = edge->next;
+          edge->next = edge->next->next;
+          free(release_edge);
+        }
+        else
+        {
+          edge = edge->next;
+        }
+      }
+
+      if (graph->edgeList->src_id == id1 && graph->edgeList->dest_id == id2)
+      {
+        release_edge = graph->edgeList;
+        graph->edgeList = graph->edgeList->next;
+        free(release_edge);
+      }
+    }
+  }
+
+  return !!release_edge;
+}
+
 
 int main()
 {
@@ -190,6 +273,10 @@ int main()
   ELGraph_setVertexValue(graph, 0, 1000);
 
   ELGraph_addEdge(graph, 0, 1, 0);
+  ELGraph_addEdge(graph,1, 0, 0);
+
+
+  ELGraph_removeEdge(graph, 1, 0);
 
   display_edges(graph);
   // struct pair pair =  getVertexValue(graph, 0);
