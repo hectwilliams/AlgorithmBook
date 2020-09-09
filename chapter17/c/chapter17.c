@@ -11,7 +11,7 @@ struct ELEdge * el_edge ( int dest_id,  int src_id,  const int value)
   return edge;
 }
 
-struct ELVertex * el_vertex (int value, id)
+struct ELVertex * el_vertex (int value, int id)
 {
   struct ELVertex *vertex = (struct ELVertex *) malloc(sizeof(struct ELVertex));
   vertex->value = value;
@@ -81,7 +81,7 @@ enum boolean ELGraph_remove_vertex(struct ELGraph **graph, int id)
   // TODO REMOVE EDGES
 }
 
-struct pair getVertexValue (struct ELGraph *graph, int id)
+struct pair ELGraph_getVertexValue (struct ELGraph *graph, int id)
 {
   struct ELVertex *vertex_runner = graph->vertexList;
   struct pair result = {.valid = false, .value = NULL};
@@ -112,7 +112,18 @@ void display_vertices (struct ELGraph *graph )
   printf("\n");
 }
 
-enum boolean setVertexValue(struct ELGraph *graph, int id, int value)
+void display_edges(struct ELGraph *graph)
+{
+  struct ELEdge *edge = graph->edgeList;
+  while (edge)
+  {
+    printf(" {src %d dest %d value %d}, ", edge->src_id, edge->dest_id, edge->value);
+    edge = edge->next;
+  }
+  printf ("\n");
+}
+
+enum boolean ELGraph_setVertexValue(struct ELGraph *graph, int id, int value)
 {
   struct ELVertex *vertex = graph->vertexList;
 
@@ -128,6 +139,45 @@ enum boolean setVertexValue(struct ELGraph *graph, int id, int value)
   return false;
 }
 
+enum boolean ELGraph_addEdge (struct ELGraph *graph, int src_id, int dest_id, int value)
+{
+  int count = 0;
+  struct ELEdge *edge;
+  struct ELVertex *vertex_runner;
+  struct ELEdge *edge_runner;
+
+  vertex_runner = graph->vertexList;
+  edge_runner = graph->edgeList;
+
+  // do vertices exist ?
+  while (vertex_runner)
+  {
+    count += (src_id == vertex_runner->id || dest_id == vertex_runner->id);
+    vertex_runner = vertex_runner->next ;
+  }
+
+  // edge exist ?
+  while (edge_runner)
+  {
+    if (edge_runner->dest_id == dest_id && edge_runner->src_id == src_id)
+    {
+      printf("\nreturning\n");
+      return false;
+    }
+    edge_runner = edge_runner->next;
+  }
+
+  if (count == 2)
+  {
+    edge = el_edge(dest_id, src_id, value);
+    edge->next = graph->edgeList;
+    graph->edgeList = edge;
+  }
+
+  return +(count == 2);
+}
+
+
 int main()
 {
   time_t t;
@@ -135,10 +185,14 @@ int main()
   struct ELGraph *graph = NULL;
   ELGraph_add_vertex(&graph, rand() % 100);
   // ELGraph_remove_vertex(&graph, 1);
+  ELGraph_add_vertex(&graph, rand() % 100);
 
-  setVertexValue(graph, 0, 1000);
+  ELGraph_setVertexValue(graph, 0, 1000);
 
-  struct pair pair =  getVertexValue(graph, 0);
-  printf("  %d   %d \n", pair.valid, pair.value);
+  ELGraph_addEdge(graph, 0, 1, 0);
+
+  display_edges(graph);
+  // struct pair pair =  getVertexValue(graph, 0);
+  // printf("  %d   %d \n", pair.valid, pair.value);
   // printf("[ vertex %d  %d]\n", graph->vertexList->value, graph->vertexList->id);
 }

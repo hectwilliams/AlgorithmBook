@@ -14,7 +14,7 @@ std::ostream &operator << (std::ostream &stream, const ELGraph &graph)
     stream << " edges [ ";
   for (auto ele: graph.edgeList)
   {
-    std::cout <<  ele.first << " -> " << ele.second <<  " , " ;
+    std::cout <<  ele->vert_id1 << " -> " << ele->vert_id2 <<  " , " ;
   }
   stream << " ] \n";
 
@@ -73,10 +73,37 @@ bool ELGraph::setVertexValue(int id, int value)
   return false;
 }
 
+bool ELGraph::addEdge(int vert_id1, int vert_id2, int value)
+{
+  int count = 0;
+
+  for ( ELVertex *vertex : vertexList)
+  {
+    count += (vertex->id == vert_id1 || vertex->id == vert_id2);
+  }
+
+  for (ELEdge *edge: edgeList )
+  {
+    if (edge->vert_id1 == vert_id1 && edge->vert_id2 == vert_id2 )
+    {
+      return false;
+    }
+  }
+  if (count == 2)
+  {
+    edgeList.push_back(new ELEdge(vert_id1, vert_id2, 1) );
+  }
+}
+
+
 
 int main()
 {
   ELGraph graph;
   graph.addVertex(100);
+  graph.addVertex(1001);
+  graph.addEdge(0,1);
   std::cout << graph.getVertexValue(0).first << '\n';
+  std::cout << graph << '\n';
+
 }

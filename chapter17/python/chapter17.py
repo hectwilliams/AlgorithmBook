@@ -1,13 +1,18 @@
-class ELEdge :
+class ELVertex :
   def __init__(self, val, id) :
     self.value = val
     self.id = id
+class ELEdge:
+  def __init__(self, id1, id2, val = 0):
+    self.id1 = id1
+    self.id2 = id2
+    self.value = val
 class ELGraph :
   def __init__(self):
     self.vertexList = []
     self.edgeList = []
   def addVertex (self, value) :
-    self.vertexList.append(ELEdge(value, self.vertexList.__len__()))
+    self.vertexList.append(ELVertex(value, self.vertexList.__len__()))
     return self.vertexList.__len__() - 1
   def display(self):
     string = ""
@@ -35,8 +40,22 @@ class ELGraph :
         return True
     return False
 
+  def addEdge(self, id1, id2, value = 0) :
+    count = 0
+    for vertex in self.vertexList:
+      count += (vertex.id == id1 or vertex.id == id2)
+    for edge in self.edgeList:
+      if edge.id1 == id1 and edge.id2 == id2:
+        return None
+    if count == 2:
+      self.edgeList.append(ELEdge(id1, id2, value))
+      return True
+    return False
+
 graph = ELGraph()
 graph.addVertex(22)
+graph.addVertex(244)
+
 graph.setVertexValue(0, 299)
-print(graph.getVertexValue(0))
+print(graph.addEdge(0,1))
 graph.display()

@@ -7,6 +7,16 @@ class ELVertex
   }
 };
 
+class ELEdge
+{
+  constructor(id1, id2, val = 0)
+  {
+    this.vert_id1 = id1;
+    this.vert_id2 = id2;
+    this.value = val;
+  }
+}
+
 class ELGraph
 {
   constructor()
@@ -65,6 +75,26 @@ class ELGraph
     }
     return false;
   }
+  addEdge(srcId, destId, value)
+  {
+    let count = 0;
+    for (let vertex of this.vertexList)
+    {
+      count += (vertex.id == srcId || vertex.id == destId)
+    }
+    for (let edge of this.edgeList)
+    {
+      if (edge.vert_id1 == srcId && edge.vert_id2 == destId)
+      {
+        return null;
+      }
+    }
+    if (count == 2)
+    {
+      this.edgeList.push(new ELEdge(srcId, destId));
+    }
+    return count == 2;
+  }
 
 };
 
@@ -73,7 +103,7 @@ class ELGraph
   graph.addVertex(200);
   graph.addVertex(2020);
   graph.setVertexValue(0, 232);
-  console.log(graph.getVertexValue(0))
+  console.log(graph.addEdge(0, 1))
   // graph.display()
 
 }
