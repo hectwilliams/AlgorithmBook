@@ -332,7 +332,7 @@ enum boolean ELGraph_adjacent (struct ELGraph *graph, int id1, int id2)
   return false;
 }
 
-struct list * ELGraph_neighbors(struct ELGraph *graph, int id)
+struct intlist * ELGraph_neighbors(struct ELGraph *graph, int id)
 {
   struct intlist *collection = NULL;
   struct ELEdge *edge;
@@ -359,25 +359,65 @@ struct list * ELGraph_neighbors(struct ELGraph *graph, int id)
   return collection;
 }
 
+void AMGraph_display(struct AMGraph *graph)
+{
+  printf("---- start---\n");
+  for (int r = 0; r < graph->n; r++)
+  {
+    for (int c = 0; c < graph->n; c++)
+    {
+      printf("[%d]", graph->array[ r * graph->n + c]);
+    }
+    printf("\n");
+  }
+  printf("---- end---\n");
+}
+
+int AMGraph_addVertex (struct AMGraph ** graph)
+{
+  static int k = 0;
+  k++;
+
+  if (*graph == NULL)
+  {
+    *graph = malloc (sizeof (struct AMGraph *));
+    (*graph)->n = k * k ;
+    (*graph)->array = (malloc( sizeof(int *)  *  (*graph)->n));
+  }
+  else
+  {
+    (*graph)-> n = k;
+    (*graph) -> array = realloc( (*graph)->array , sizeof(int *) * sizeof(*graph) -> n );
+  }
+  return k;
+}
 
 int main()
 {
   time_t t;
+ // srand((unsigned) time(&t));  // fixed pseudo random
+
+  struct AMGraph *graph = NULL;
+
+  printf ( "[%d]\n", AMGraph_addVertex(&graph));
+    printf ( "[%d]\n", AMGraph_addVertex(&graph));
+
+  AMGraph_display(graph);
+  // struct ELGraph *graph = NULL;
+
   // srand((unsigned) time(&t));  // fixed pseudo random
-  struct ELGraph *graph = NULL;
-  ELGraph_add_vertex(&graph, rand() % 100);
-  // ELGraph_remove_vertex(&graph, 1);
-  ELGraph_add_vertex(&graph, rand() % 100);
+  // struct ELGraph *graph = NULL;
+  // ELGraph_add_vertex(&graph, rand() % 100);
+  // // ELGraph_remove_vertex(&graph, 1);
+  // ELGraph_add_vertex(&graph, rand() % 100);
 
-  ELGraph_setVertexValue(graph, 0, 1000);
+  // ELGraph_setVertexValue(graph, 0, 1000);
 
-  ELGraph_addEdge(graph, 0, 1, 0);
-  ELGraph_addEdge(graph,1, 0, 0);
+  // ELGraph_addEdge(graph, 0, 1, 0);
+  // ELGraph_addEdge(graph,1, 0, 0);
+  // ELGraph_removeEdge(graph, 1, 0);
 
-
-  ELGraph_removeEdge(graph, 1, 0);
-
-  display_edges(graph);
+  // display_edges(graph);
   // struct pair pair =  getVertexValue(graph, 0);
   // printf("  %d   %d \n", pair.valid, pair.value);
   // printf("[ vertex %d  %d]\n", graph->vertexList->value, graph->vertexList->id);

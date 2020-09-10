@@ -101,15 +101,26 @@ class ELGraph :
         vertices.append(edge.id2)
     return vertices
 
-graph = ELGraph()
-graph.addVertex(22)
-graph.addVertex(244)
+class AMGraph:
+  def __init__(self):
+    self.adjacentMap = []
+    self.n = 0
 
-graph.setVertexValue(0, 299)
-print(graph.addEdge(0,1))
-# graph.removeEdge(0, 1)
-print(graph.getEdgeValue(0,1))
-print(graph.setEdgeValue(0,1 , 42928))
-print(graph.adjacent(0, 2))
-# graph.display()
-print(graph.neighbors(0))
+  def addVertex(self):
+    self.n += 1
+
+    for arr in self.adjacentMap:
+      arr.append(0)
+
+    self.adjacentMap.append([])
+    for i in range(0, self.n):
+      self.adjacentMap[self.adjacentMap.__len__() - 1].append(0)
+
+  def display(self):
+    print(self.adjacentMap)
+
+graph = AMGraph()
+graph.addVertex()
+graph.addVertex()
+
+graph.display()

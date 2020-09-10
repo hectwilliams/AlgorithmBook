@@ -181,18 +181,54 @@ bool ELGraph::removeEdge(int id1, int id2)
     return vertices;
   }
 
+std::ostream &operator << (std::ostream &stream, const AMGraph &graph)
+{
+  stream << " start " << '\n';
+  for (std::vector<int> arr : graph.adjacentMap )
+  {
+    for (int element: arr)
+    {
+      stream << "[" << element << "]" << ',';
+    }
+   stream << '\n';
+  }
+    stream << " end " << '\n';
+
+  return stream;
+}
+
+int AMGraph::addVertex()
+{
+  n++;
+
+  for (std::vector<int> &arr: adjacentMap)
+  {
+    arr.push_back(0);
+  }
+
+  adjacentMap.push_back( std::vector<int> () );
+
+  for (int i = 0; i < n; i++)
+  {
+    adjacentMap[adjacentMap.size() - 1].push_back(0);
+  }
+
+}
 
 
 
 int main()
 {
-  ELGraph graph;
-  graph.addVertex(100);
-  graph.addVertex(1001);
-  graph.addEdge(0,1);
-  std::cout << graph.getVertexValue(0).first << '\n';
-  // graph.removeEdges(1);
-
+  AMGraph graph;
+  graph.addVertex();
+  graph.addVertex();
   std::cout << graph << '\n';
+  // graph.addVertex(100);
+  // graph.addVertex(1001);
+  // graph.addEdge(0,1);
+  // std::cout << graph.getVertexValue(0).first << '\n';
+  // // graph.removeEdges(1);
+
+  // std::cout << graph << '\n';
 
 }

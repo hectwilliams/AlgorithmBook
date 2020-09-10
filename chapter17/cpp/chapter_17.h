@@ -49,3 +49,19 @@ class ELGraph
 };
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph);
+
+
+class AMGraph
+{
+  public:
+    std::vector< std::vector<int> > adjacentMap;
+    int n;
+
+  AMGraph()
+  {
+    n = 0;
+  }
+  int addVertex();
+};
+
+std::ostream &operator << (std::ostream &stream, const AMGraph &graph);

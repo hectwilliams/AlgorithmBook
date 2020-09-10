@@ -175,13 +175,52 @@ class ELGraph
 
 };
 
+
+class AMGraph
 {
-  let graph = new ELGraph ();
-  graph.addVertex(200);
-  graph.addVertex(2020);
-  graph.addEdge(0, 1, 223322)
-  graph.setVertexValue(0, 232);
-  console.log(graph.adjacent(0, 1))
+  constructor()
+  {
+    this.adjacentMap = [];
+    this.n = 0;
+  }
+
+  addVertex()
+  {
+    this.n++;
+
+    for (let arr of this.adjacentMap)
+    {
+      arr.push(0);
+    }
+
+    // new entry
+    this.adjacentMap.push([]);
+
+    for (let i = 0; i < this.n; i++)
+    {
+      this.adjacentMap[this.adjacentMap.length - 1].push( 0 );
+    }
+
+  }
+
+  display()
+  {
+    console.log(this.adjacentMap)
+  }
+
+}
+
+{
+  let graph = new AMGraph ();
+  graph.addVertex();
+  graph.addVertex();
+
+  graph.display()
+  // graph.addVertex(200);
+  // graph.addVertex(2020);
+  // graph.addEdge(0, 1, 223322)
+  // graph.setVertexValue(0, 232);
+  // console.log(graph.adjacent(0, 1))
   // graph.removeEdges(1);
   // graph.display()
 
