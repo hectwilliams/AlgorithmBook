@@ -190,7 +190,10 @@ class AMGraph
 
     for (let arr of this.adjacentMap)
     {
-      arr.push(0);
+      if (arr)
+      {
+        arr.push(0);
+      }
     }
 
     // new entry
@@ -203,9 +206,36 @@ class AMGraph
 
   }
 
+  removeVertex(id)
+  {
+    if (id < this.adjacentMap.length && id >= 0)
+    {
+      this.adjacentMap[id] = null;
+      return true;
+    }
+    return false;
+  }
+
+  addEdge(id1, id2, value)
+  {
+    let arr = this.adjacentMap[id1];
+    if (arr)
+    {
+      if (id2 < this.n)
+      {
+        arr[id2] = value;
+        return true;
+      }
+    }
+    return false;
+  }
+
   display()
   {
-    console.log(this.adjacentMap)
+    for (let arr of this.adjacentMap)
+    {
+      console.log(arr)
+    }
   }
 
 }
@@ -214,7 +244,10 @@ class AMGraph
   let graph = new AMGraph ();
   graph.addVertex();
   graph.addVertex();
-
+  graph.addVertex();
+  graph.removeVertex(1)
+  graph.addVertex();
+  graph.addEdge(0, 1, 222);
   graph.display()
   // graph.addVertex(200);
   // graph.addVertex(2020);

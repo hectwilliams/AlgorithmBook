@@ -212,9 +212,33 @@ int AMGraph::addVertex()
   {
     adjacentMap[adjacentMap.size() - 1].push_back(0);
   }
-
 }
 
+bool AMGraph::removeVertex(const unsigned &id)
+{
+  std::vector<int> *array;
+
+  if (id < adjacentMap.size())
+  {
+    array = &adjacentMap[id];
+    for (int i = 0; i < n; i++)
+    {
+      array->at(i) = -2;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool AMGraph::addEdge (const unsigned &id1, const unsigned &id2, int value)
+{
+  if (id1 < n && id2 < n)
+  {
+    adjacentMap[id1][id2] = value;
+    return true;
+  }
+  return false;
+}
 
 
 int main()
@@ -222,6 +246,10 @@ int main()
   AMGraph graph;
   graph.addVertex();
   graph.addVertex();
+  graph.addVertex();
+
+  graph.removeVertex(1);
+  graph.addEdge(0, 1, 21);
   std::cout << graph << '\n';
   // graph.addVertex(100);
   // graph.addVertex(1001);

@@ -116,11 +116,27 @@ class AMGraph:
     for i in range(0, self.n):
       self.adjacentMap[self.adjacentMap.__len__() - 1].append(0)
 
+  def removeVertex(self, id):
+    if id >= 0 and id < self.adjacentMap.__len__():
+      self.adjacentMap[id] = None
+      return True
+    return False
+
+  def addEdge (self, id1, id2, value):
+    if id1 < self.n and id2 < self.n:
+      self.adjacentMap[id1][id2] = value
+      return True
+    return False
+
   def display(self):
-    print(self.adjacentMap)
+    for arr in self.adjacentMap:
+      print(arr)
 
 graph = AMGraph()
 graph.addVertex()
 graph.addVertex()
+graph.addVertex()
+graph.addEdge(0 ,1,  22)
+graph.removeVertex(1)
 
 graph.display()

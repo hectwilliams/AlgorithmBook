@@ -63,3 +63,5 @@ struct AMGraph
 };
 
 int AMGraph_addVertex (struct AMGraph ** graph);
+enum boolean AMGraph_removeVertex(struct AMGraph *graph, unsigned id );
+enum boolean AMGraph_addEdge(struct AMGraph *graph, const int id1, const int id2, const int value);

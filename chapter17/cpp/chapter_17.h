@@ -62,6 +62,9 @@ class AMGraph
     n = 0;
   }
   int addVertex();
+  bool removeVertex(const unsigned &id);
+  bool addEdge (const unsigned &id1, const unsigned &id2, int value);
+
 };
 
 std::ostream &operator << (std::ostream &stream, const AMGraph &graph);
