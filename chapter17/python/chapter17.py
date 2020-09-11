@@ -171,6 +171,13 @@ class AMGraph:
         return True
     return False
 
+  def neighbors(self, id):
+    ids = []
+    if id >= 0 and id < self.n:
+      for i in range(0, self.n):
+        if self.adjacentMap[id][i] > 0:
+          ids.append(i)
+    return ids
 
   def display(self):
     for arr in self.adjacentMap:

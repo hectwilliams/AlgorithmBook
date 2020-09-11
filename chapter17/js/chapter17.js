@@ -317,6 +317,23 @@ class AMGraph
     return false;
   }
 
+  neighbors (id)
+  {
+    let ids = [];
+
+    if (id >=0 && id < this.n)
+    {
+      for (let i = 0; i < this.n ; i++)
+      {
+        if (this.adjacentMap[id][i] > 0)
+        {
+          ids.push(i)
+        }
+      }
+    }
+    return ids;
+  }
+
   display()
   {
     for (let arr of this.adjacentMap)

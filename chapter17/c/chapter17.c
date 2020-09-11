@@ -552,7 +552,7 @@ enum boolean AMGraph_setEdgeValue (struct AMGraph *graph, const unsigned id1, co
 
 enum boolean AMGraph_adjacent(struct AMGraph *graph, const unsigned id1, const unsigned id2)
 {
-   if (graph)
+  if (graph)
   {
     if (id1 >=0 && id1 < graph->n && id2 >= 0 && id2 < graph->n )
     {
@@ -563,6 +563,29 @@ enum boolean AMGraph_adjacent(struct AMGraph *graph, const unsigned id1, const u
     }
   }
   return false;
+}
+
+struct llist * AMGraph_neighbors(struct AMGraph *graph, int id)
+{
+  struct llist *llist =  NULL, *tmp = NULL;
+
+  if (graph)
+  {
+    if (id >= 0 && id < graph->n)
+    {
+      for (int i = 0; i < graph->n ; i++)
+      {
+        if (graph->array[id * graph->n + i]  > 0)
+        {
+          tmp = malloc(sizeof(struct llist *) );
+          tmp->value = i;
+          tmp->next = llist;
+          llist =tmp;
+        }
+       }
+    }
+  }
+  return llist;
 }
 
 int main()

@@ -50,6 +50,13 @@ struct intlist
   struct intlist *next;
 };
 
+struct llist
+{
+  int value;
+  struct llist *next;
+};
+
+
 struct pair
 {
   enum boolean valid;
@@ -70,3 +77,4 @@ enum boolean AMGraph_removeEdge (struct AMGraph *graph, const int id1, const int
 struct pair AMGraph_getEdgeValue (struct AMGraph *graph, const unsigned id1, const unsigned id2);
 enum boolean AMGraph_setEdgeValue (struct AMGraph *graph, const unsigned id1, const unsigned id2, const int edgeValue);
 enum boolean AMGraph_adjacent(struct AMGraph *graph, const unsigned id1, const unsigned id2);
+struct llist * AMGraph_neighbors(struct AMGraph *graph, int id);

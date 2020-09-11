@@ -332,6 +332,23 @@ bool AMGraph::adjacent(const unsigned id1, const unsigned id2)
 }
 
 
+std::vector<int> AMGraph::neighbors (const unsigned id)
+{
+  std::vector<int> array;
+
+  if (id < n && id >= 0 )
+  {
+    for (int i = 0; i < n; i++ )
+    {
+      if (adjacentMap[id][i] > 0)
+      {
+        array.push_back(i);
+      }
+    }
+  }
+  return array;
+}
+
 int main()
 {
   AMGraph graph;
