@@ -361,33 +361,83 @@ struct intlist * ELGraph_neighbors(struct ELGraph *graph, int id)
 
 void AMGraph_display(struct AMGraph *graph)
 {
-  printf("---- start---\n");
-  for (int r = 0; r < graph->n; r++)
+  int row = -1;
+
+  printf("\n---- start  ---\n", graph->n);
+
+  for (int i = 0; i < graph->n * graph->n; i++)
   {
-    for (int c = 0; c < graph->n; c++)
+    if (i  % graph->n == 0)
     {
-      printf("[%d]", graph->array[ r * graph->n + c]);
+      row++;
+      printf("\n");
     }
-    printf("\n");
+    printf("[%d]", graph->array[ row * graph->n +  (i % graph->n) ] );
   }
-  printf("---- end---\n");
+
+  printf("\n---- end---\n");
+
 }
 
 int AMGraph_addVertex (struct AMGraph ** graph)
 {
   static int k = 0;
+  int *newArray ;
+
   k++;
 
   if (*graph == NULL)
   {
     *graph = malloc (sizeof (struct AMGraph *));
-    (*graph)->n = k * k ;
-    (*graph)->array = (malloc( sizeof(int *)  *  (*graph)->n));
+    (*graph)->n = 1;
+    (*graph)->array = (malloc( sizeof(int *)  *  1  ));
+    (*graph)->array[0] = 0;
   }
   else
   {
-    (*graph)-> n = k;
-    (*graph)-> array = realloc( (*graph)->array , sizeof(int *) * sizeof(*graph) -> n );
+    (*graph)->n = k ;
+    newArray =  malloc( sizeof(int *) * ( k * k) );
+
+    for (int r = 0; r  < k; r++)
+    {
+      for (int c = 0; c < k; c++)
+      {
+        if ( (r < k - 1)  &&  (c < k - 1 ) )
+        {
+          newArray[ r * (k) + c ] = (*graph)->array[r * (k - 1) + c];
+        }
+        else if ( newArray[ r * k + c] != -2)
+        {
+          newArray[ r * k + c] = -1;
+        }
+
+        if (r==c && newArray[ r * k + c]  != -2 )
+        {
+           newArray[ r * k + c] = 0;
+        }
+
+        // contingious nulls row/column
+        if (r == k - 1 && r > 0)
+        {
+          if (newArray[ (r - 1) * k + c ]  == -2 )
+          {
+            newArray[ (r ) * k + c ]  = -2;
+          }
+        }
+
+        if (c == k - 1 && c > 0 )
+        {
+          if (newArray[r * k + (c-1) ]  == -2 )
+          {
+            newArray[ r  * k + c ]  = -2;
+          }
+        }
+      }
+    }
+
+    free((*graph)->array);
+    (*graph)-> array = newArray;
+
   }
 
   return k;
@@ -395,15 +445,21 @@ int AMGraph_addVertex (struct AMGraph ** graph)
 
 enum boolean AMGraph_removeVertex (struct AMGraph *graph, unsigned id )
 {
-  if (id  < graph->n )
+  enum boolean result = false;
+
+  for (int r = 0; r < graph->n; r++)
   {
-    for (int i = 0; i < graph->n; i++)
+    for (int c = 0; c < graph->n; c++)
     {
-      graph->array[graph->n * id + i] = -2;
+      if (graph->array[ r * graph->n + c ] != -2 && (r == id || c == id) )
+      {
+        graph->array[ r * graph->n + c ]= -2;
+        result |= true;
+      }
+
     }
-    return true;
   }
-  return false;
+  return result;
 }
 
 enum boolean AMGraph_addEdge (struct AMGraph *graph, const int id1, const int id2, const int value)
@@ -415,11 +471,35 @@ enum boolean AMGraph_addEdge (struct AMGraph *graph, const int id1, const int id
   {
     if (index >= 0 && index < graph->n * graph->n)
     {
-      graph->array[graph->n * id1 + id2] = value;
+      if (graph->array[graph->n * id1 + id2] != -2)
+      {
+        graph->array[graph->n * id1 + id2] = value;
+      }
       return true;
     }
   }
   return false;
+}
+
+void AMGraph_removeEdges (struct AMGraph *graph, const int id)
+{
+  if (graph)
+  {
+    for (int r = 0; r < graph->n; r++)
+    {
+      for (int c = 0; c < graph->n; c++)
+      {
+        if (graph->array[r * graph->n + c]  == -2)
+        {
+          continue;
+        }
+        if (id == r ^ id == c)
+        {
+          graph->array[r * graph->n + c] = -1;
+        }
+      }
+    }
+  }
 }
 
 int main()
@@ -430,30 +510,29 @@ int main()
   struct AMGraph *graph = NULL;
 
   printf ( "[%d]\n", AMGraph_addVertex(&graph));
-  printf ( "[%d]\n", AMGraph_addVertex(&graph));
+  printf ( " [%d]\n ", AMGraph_addVertex(&graph));
   printf ( "[%d]\n", AMGraph_addVertex(&graph));
 
-  // AMGraph_removeVertex(graph, 1);
-  AMGraph_addEdge(graph, 0, 1, 20);
+  // printf ( "[%d]\n", AMGraph_addVertex(&graph));
+  AMGraph_removeVertex(graph, 1);
+  printf ( "[%d]\n", AMGraph_addVertex(&graph));
+
+  AMGraph_addEdge(graph, 0, 2, 20);
+  AMGraph_removeEdges(graph, 2);
   AMGraph_display(graph);
 
   // struct ELGraph *graph = NULL;
-
   // srand((unsigned) time(&t));  // fixed pseudo random
   // struct ELGraph *graph = NULL;
   // ELGraph_add_vertex(&graph, rand() % 100);
   // // ELGraph_remove_vertex(&graph, 1);
   // ELGraph_add_vertex(&graph, rand() % 100);
-
   // ELGraph_setVertexValue(graph, 0, 1000);
-
   // ELGraph_addEdge(graph, 0, 1, 0);
   // ELGraph_addEdge(graph,1, 0, 0);
   // ELGraph_removeEdge(graph, 1, 0);
-
   // display_edges(graph);
   // struct pair pair =  getVertexValue(graph, 0);
   // printf("  %d   %d \n", pair.valid, pair.value);
   // printf("[ vertex %d  %d]\n", graph->vertexList->value, graph->vertexList->id);
-
 }

@@ -200,46 +200,94 @@ std::ostream &operator << (std::ostream &stream, const AMGraph &graph)
 int AMGraph::addVertex()
 {
   n++;
-
-  for (std::vector<int> &arr: adjacentMap)
+  for (int r = 0; r < n; r++)
   {
-    arr.push_back(0);
-  }
+    for (int c = 0; c < n; c++)
+    {
+      adjacentMap.push_back(std::vector<int> ());
+      if (adjacentMap[r].size() < n)
+      {
+        adjacentMap[r].push_back(-1);
+      }
 
-  adjacentMap.push_back( std::vector<int> () );
+      if (r == c && adjacentMap[r][c] != -2)
+      {
+        adjacentMap[r][c] = 0;
+      }
 
-  for (int i = 0; i < n; i++)
-  {
-    adjacentMap[adjacentMap.size() - 1].push_back(0);
+      if (r == n - 1 && r > 0)
+      {
+        if (adjacentMap[r - 1][c]  == -2)
+        {
+          adjacentMap[r ][c]  = -2;
+        }
+      }
+
+      if (c == n - 1 && c > 0)
+      {
+        if (adjacentMap[r][c - 1]  == -2)
+        {
+          adjacentMap[r ][c - 1]  = -2;
+        }
+      }
+
+     }
   }
 }
 
 bool AMGraph::removeVertex(const unsigned &id)
 {
-  std::vector<int> *array;
-
-  if (id < adjacentMap.size())
+  bool removed = false;
+ for (int r = 0; r < n; r++)
   {
-    array = &adjacentMap[id];
-    for (int i = 0; i < n; i++)
+    for (int c = 0; c < n; c++)
     {
-      array->at(i) = -2;
+      if ( adjacentMap[r][c] != -2  && (r == id || c == id) )
+      {
+        adjacentMap[r][c] = -2;
+        removed |= true;
+      }
     }
-    return true;
   }
-  return false;
+    return removed;
 }
 
 bool AMGraph::addEdge (const unsigned &id1, const unsigned &id2, int value)
 {
   if (id1 < n && id2 < n)
   {
-    adjacentMap[id1][id2] = value;
+    if (adjacentMap[id1][id2] != -2)
+    {
+      adjacentMap[id1][id2] = value;
+    }
     return true;
   }
   return false;
 }
 
+void AMGraph::deleteEdges(const unsigned id)
+{
+  if (id < n)
+  {
+    for (int i = 0; i < n; i++ )
+    {
+      if (i == id)
+      {
+        continue;
+      }
+
+      if (adjacentMap[i][id] != -2)
+      {
+        adjacentMap[i][id] = -1;
+      }
+
+      if (adjacentMap[id][i] != -2)
+      {
+        adjacentMap[id][i] = -1;
+      }
+    }
+  }
+}
 
 int main()
 {
@@ -249,7 +297,10 @@ int main()
   graph.addVertex();
 
   graph.removeVertex(1);
-  graph.addEdge(0, 1, 21);
+  // graph.addEdge(0, 1, 21);
+
+  // graph.deleteEdges(1);
+
   std::cout << graph << '\n';
   // graph.addVertex(100);
   // graph.addVertex(1001);

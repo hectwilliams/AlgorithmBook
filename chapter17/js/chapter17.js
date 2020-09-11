@@ -186,34 +186,60 @@ class AMGraph
 
   addVertex()
   {
+    let data;
     this.n++;
 
-    for (let arr of this.adjacentMap)
+    this.adjacentMap.push ([] );
+
+    for (let r  = 0; r < this.n; r++)
     {
-      if (arr)
+      for (let c = 0; c < this.n; c++)
       {
-        arr.push(0);
+        if (this.adjacentMap[r].length < this.n )
+        {
+          this.adjacentMap[r].push(-1);
+        }
+
+        if ( r == c && this.adjacentMap[r][c])
+        {
+          this.adjacentMap[r][c] = 0;
+        }
+
+        if (r == this.n - 1 && r > 0)
+        {
+          if (this.adjacentMap[r - 1][c]  == null)
+          {
+            this.adjacentMap[r ][c]  = null;
+          }
+        }
+
+        if (c == this.n - 1 && c > 0)
+        {
+          if (  this.adjacentMap[r][c - 1]  == null  )
+          {
+            this.adjacentMap[r][c]  = null;
+          }
+        }
+
       }
     }
-
-    // new entry
-    this.adjacentMap.push([]);
-
-    for (let i = 0; i < this.n; i++)
-    {
-      this.adjacentMap[this.adjacentMap.length - 1].push( 0 );
-    }
-
   }
 
   removeVertex(id)
   {
-    if (id < this.adjacentMap.length && id >= 0)
+    let removed = false;
+    for (let r = 0; r < this.n; r++)
     {
-      this.adjacentMap[id] = null;
-      return true;
+      for (let c = 0; c < this.n; c++)
+      {
+        if ( this.adjacentMap[r][c] != null  && (r == id || c == id) )
+        {
+          this.adjacentMap[r][c] = null;
+          removed |= true;
+        }
+      }
     }
-    return false;
+    return removed;
   }
 
   addEdge(id1, id2, value)
@@ -228,6 +254,33 @@ class AMGraph
       }
     }
     return false;
+  }
+
+  deleteEdge (id)
+  {
+    if ( id < this.n)
+    {
+      for (let i = 0; i < this.n; i++)
+      {
+
+        if (i == id)
+        {
+          continue;
+        }
+
+        if (this.adjacentMap[i] )
+        {
+          this.adjacentMap[i][id] = -1;
+        }
+
+        if (this.adjacentMap[id] )
+        {
+          this.adjacentMap[id][i] = -1;
+        }
+
+
+      }
+    }
   }
 
   display()
@@ -247,14 +300,16 @@ class AMGraph
   graph.addVertex();
   graph.removeVertex(1)
   graph.addVertex();
-  graph.addEdge(0, 1, 222);
-  graph.display()
+  // graph.addEdge(0, 1, 222);
+
+  // graph.deleteEdge(1)
+  // graph.display()
   // graph.addVertex(200);
   // graph.addVertex(2020);
   // graph.addEdge(0, 1, 223322)
   // graph.setVertexValue(0, 232);
   // console.log(graph.adjacent(0, 1))
   // graph.removeEdges(1);
-  // graph.display()
+  graph.display()
 
 }

@@ -108,25 +108,52 @@ class AMGraph:
 
   def addVertex(self):
     self.n += 1
-
-    for arr in self.adjacentMap:
-      arr.append(0)
-
     self.adjacentMap.append([])
-    for i in range(0, self.n):
-      self.adjacentMap[self.adjacentMap.__len__() - 1].append(0)
+    for r in range(0, self.n):
+      for c in range(0, self.n):
+        if self.adjacentMap[r].__len__() < self.n:
+          self.adjacentMap[r].append(-1)
+
+        if r == c and self.adjacentMap[r][c] :
+          self.adjacentMap[r][c] = 0
+
+        if r == self.n -1 and r > 0:
+          if self.adjacentMap[r - 1] [c] == None:
+            self.adjacentMap[r][c] = None
+
+        if c == self.n -1 and c > 0:
+          if self.adjacentMap[r ] [c - 1] == None:
+            self.adjacentMap[r][c] = None
+
 
   def removeVertex(self, id):
-    if id >= 0 and id < self.adjacentMap.__len__():
-      self.adjacentMap[id] = None
-      return True
-    return False
+    removed = False
+    for r in range (0, self.n) :
+      for  c in range (0, self.n):
+        if self.adjacentMap[r][c] != None and  (r == id or c == id ) :
+          self.adjacentMap[r][c] = None
+          removed = True
+    return removed
 
   def addEdge (self, id1, id2, value):
     if id1 < self.n and id2 < self.n:
       self.adjacentMap[id1][id2] = value
       return True
     return False
+
+  def deleteEdge (self, id):
+      arr = None
+
+      for i in range (0, self.n):
+
+        if i == id:
+          continue
+
+        if self.adjacentMap[id] :
+          self.adjacentMap[id][i] = -1
+
+        if self.adjacentMap[i] :
+          self.adjacentMap[i][id] = -1
 
   def display(self):
     for arr in self.adjacentMap:
