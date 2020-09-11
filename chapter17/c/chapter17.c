@@ -500,6 +500,23 @@ void AMGraph_removeEdges (struct AMGraph *graph, const int id)
   }
 }
 
+enum boolean AMGraph_removeEdge (struct AMGraph *graph, const int id1, const int id2)
+{
+  if (graph)
+  {
+    if (id1 < graph->n && id2 < graph->n)
+    {
+      if (graph->array[id1] [id2 ] != -2)
+      {
+        graph->array[id1] [id2 ] = -1;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+
 int main()
 {
   time_t t;

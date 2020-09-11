@@ -279,6 +279,18 @@ void AMGraph::removeEdges(const unsigned id)
   }
 }
 
+bool AMGraph::removeEdge (const unsigned id1, const unsigned id2)
+{
+  if (id1 < n && id2 < n )
+  {
+    if (adjacentMap[id1][id2] != -2 )
+    {
+      adjacentMap[id1][id2] = -1;
+      return true;
+    }
+  }
+  return false;
+}
 
 
 int main()

@@ -65,6 +65,8 @@ class AMGraph
   bool removeVertex(const unsigned &id);
   bool addEdge (const unsigned &id1, const unsigned &id2, int value);
   void removeEdges(const unsigned id);
+  bool removeEdge (const unsigned id1, const unsigned id2);
+
 
 };
 

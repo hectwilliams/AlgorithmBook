@@ -267,6 +267,20 @@ class AMGraph
     }
   }
 
+  removeEdge (id1, id2)
+  {
+    if (id1 < this.n && id2 < this.n)
+    {
+      if (this.adjacentMap[id1][id2] != null )
+      {
+        this.adjacentMap[id1][id2]  = -1;
+        return true;
+      }
+    }
+    return false;
+  }
+
+
   display()
   {
     for (let arr of this.adjacentMap)

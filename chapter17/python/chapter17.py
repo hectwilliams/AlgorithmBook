@@ -146,6 +146,10 @@ class AMGraph:
       for  c in range (0, self.n):
         if self.adjacentMap[r][c] != None and (r == id or c == id) :
           self.adjacentMap[r][c] = -1
+  def removeEdge (self, id1, id2) :
+    if id1 < self.n and id2 < self.n:
+      if self.adjacentMap[r][c] != None:
+        self.adjacentMap[r][c] = -1
 
   def display(self):
     for arr in self.adjacentMap:
