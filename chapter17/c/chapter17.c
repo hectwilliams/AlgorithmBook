@@ -516,6 +516,20 @@ enum boolean AMGraph_removeEdge (struct AMGraph *graph, const int id1, const int
   return false;
 }
 
+struct pair AMGraph_getEdgeValue (struct AMGraph *graph, const unsigned id1, const unsigned id2)
+{
+  struct pair result = {.valid = false};
+
+  if (graph)
+  {
+    if ( id1 < graph->n &&  id2 < graph->n)
+    {
+      result.value = graph->array[id1][id2];
+      result.valid = true;
+    }
+  }
+  return result;
+}
 
 int main()
 {

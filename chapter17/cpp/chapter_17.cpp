@@ -292,6 +292,17 @@ bool AMGraph::removeEdge (const unsigned id1, const unsigned id2)
   return false;
 }
 
+std::pair<std::string, int> AMGraph::getEdgeValue (const unsigned id1, const unsigned id2)
+{
+  std::pair<std::string, int> result;
+
+    if (id1 < n && id2 < n )
+    {
+      return std::make_pair("valid", adjacentMap[id1][id2]);
+    }
+    return std::make_pair("error", NULL);
+}
+
 
 int main()
 {

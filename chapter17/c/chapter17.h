@@ -67,4 +67,4 @@ enum boolean AMGraph_removeVertex(struct AMGraph *graph, unsigned id );
 enum boolean AMGraph_addEdge(struct AMGraph *graph, const int id1, const int id2, const int value);
 void AMGraph_removeEdges (struct AMGraph *graph, const int id);
 enum boolean AMGraph_removeEdge (struct AMGraph *graph, const int id1, const int id2);
-
+struct pair AMGraph_getEdgeValue (struct AMGraph *graph, const unsigned id1, const unsigned id2);
