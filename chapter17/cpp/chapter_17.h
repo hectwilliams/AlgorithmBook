@@ -68,7 +68,7 @@ class AMGraph
   bool removeEdge (const unsigned id1, const unsigned id2);
   std::pair<std::string, int>  getEdgeValue (const unsigned id1, const unsigned id2);
   bool setEdgeValue (const unsigned id1, const unsigned id2, const int edgValue);
-
+  bool adjacent(const unsigned id1, const unsigned id2);
 };
 
 std::ostream &operator << (std::ostream &stream, const AMGraph &graph);

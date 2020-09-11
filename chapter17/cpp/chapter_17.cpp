@@ -319,6 +319,19 @@ bool AMGraph::setEdgeValue (const unsigned id1, const unsigned id2, const int ed
   return false;
 }
 
+bool AMGraph::adjacent(const unsigned id1, const unsigned id2)
+{
+  if (id1 < n && id2 < n  && id1 >= 0 && id2 >= 0)
+  {
+    if (adjacentMap[id1][id2] > 0)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+
 int main()
 {
   AMGraph graph;

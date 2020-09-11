@@ -165,6 +165,13 @@ class AMGraph:
         return True
     return None
 
+  def adjacent (self, id1, id2) :
+    if  id1 >=0  and id1 < self.n and id2 < self.n and id2 >= 0:
+      if self.adjacentMap[id1][id2] > 0:
+        return True
+    return False
+
+
   def display(self):
     for arr in self.adjacentMap:
       print(arr)

@@ -550,6 +550,21 @@ enum boolean AMGraph_setEdgeValue (struct AMGraph *graph, const unsigned id1, co
   return false;
 }
 
+enum boolean AMGraph_adjacent(struct AMGraph *graph, const unsigned id1, const unsigned id2)
+{
+   if (graph)
+  {
+    if (id1 >=0 && id1 < graph->n && id2 >= 0 && id2 < graph->n )
+    {
+      if (graph->array[id1 * graph->n + id2] > 0 )
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 int main()
 {
   time_t t;
