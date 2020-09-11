@@ -280,6 +280,17 @@ class AMGraph
     return false;
   }
 
+  getEdgeValue (id1, id2)
+  {
+    if ( (id1 >=0 && id1 < this.n)  && (id2 >=0 && id2 < this.n) )
+    {
+      if (this.adjacentMap[id1][id2] != null)
+      {
+        return this.adjacentMap[id1][id2];
+      }
+    }
+    return null;
+  }
 
   display()
   {

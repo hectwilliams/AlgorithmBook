@@ -524,8 +524,11 @@ struct pair AMGraph_getEdgeValue (struct AMGraph *graph, const unsigned id1, con
   {
     if ( id1 < graph->n &&  id2 < graph->n)
     {
-      result.value = graph->array[id1][id2];
-      result.valid = true;
+      if (graph->array[id1][id2] != -2)
+      {
+        result.value = graph->array[id1][id2];
+        result.valid = true;
+      }
     }
   }
   return result;

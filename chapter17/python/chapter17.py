@@ -154,7 +154,8 @@ class AMGraph:
 
   def getEdgeValue (self, id1, id2) :
     if  id1 >=0  and id1 < self.n and id2 < self.n and id2 >= 0:
-      return self.adjacentMap[id1][id2]
+      if self.adjacentMap[id1][id2] != None:
+        return self.adjacentMap[id1][id2]
     return None
 
   def display(self):
