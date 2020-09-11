@@ -306,6 +306,19 @@ std::pair<std::string, int> AMGraph::getEdgeValue (const unsigned id1, const uns
 }
 
 
+bool AMGraph::setEdgeValue (const unsigned id1, const unsigned id2, const int edgValue)
+{
+  if (id1 < n && id2 < n  && id1 >= 0 && id2 >= 0)
+  {
+    if (adjacentMap[id1][id2] != -2)
+    {
+      adjacentMap[id1][id2] = edgValue;
+      return true;
+    }
+  }
+  return false;
+}
+
 int main()
 {
   AMGraph graph;

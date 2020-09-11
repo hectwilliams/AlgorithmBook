@@ -506,9 +506,9 @@ enum boolean AMGraph_removeEdge (struct AMGraph *graph, const int id1, const int
   {
     if (id1 < graph->n && id2 < graph->n)
     {
-      if (graph->array[id1] [id2 ] != -2)
+      if (graph->array[id1 * graph->n + id2] != -2)
       {
-        graph->array[id1] [id2 ] = -1;
+       graph->array[id1 * graph->n + id2]= -1;
         return true;
       }
     }
@@ -524,14 +524,30 @@ struct pair AMGraph_getEdgeValue (struct AMGraph *graph, const unsigned id1, con
   {
     if ( id1 < graph->n &&  id2 < graph->n)
     {
-      if (graph->array[id1][id2] != -2)
+      if (graph->array[id1 * graph->n + id2] != -2)
       {
-        result.value = graph->array[id1][id2];
+        result.value = graph->array[id1 * graph->n + id2];
         result.valid = true;
       }
     }
   }
   return result;
+}
+
+enum boolean AMGraph_setEdgeValue (struct AMGraph *graph, const unsigned id1, const unsigned id2, const int edgeValue)
+{
+  if (graph)
+  {
+    if (id1 >=0 && id1 < graph->n && id2 >= 0 && id2 < graph->n )
+    {
+      if (graph->array[id1 * graph->n + id2] != -2)
+      {
+        graph->array[id1 * graph->n + id2]  = edgeValue;
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 int main()

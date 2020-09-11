@@ -158,6 +158,13 @@ class AMGraph:
         return self.adjacentMap[id1][id2]
     return None
 
+  def setEdgeValue(self, id1, id2 , value):
+    if  id1 >=0  and id1 < self.n and id2 < self.n and id2 >= 0:
+      if self.adjacentMap[id1][id2] != None:
+        self.adjacentMap[id1][id2] = value
+        return True
+    return None
+
   def display(self):
     for arr in self.adjacentMap:
       print(arr)
