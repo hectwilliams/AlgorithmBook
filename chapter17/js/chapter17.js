@@ -244,41 +244,25 @@ class AMGraph
 
   addEdge(id1, id2, value)
   {
-    let arr = this.adjacentMap[id1];
-    if (arr)
+    if (id1 < this.n && id2 < this.n)
     {
-      if (id2 < this.n)
-      {
-        arr[id2] = value;
-        return true;
-      }
+      this.adjacentMap [id1][id2]  = value;
+      return true;
     }
     return false;
   }
 
-  deleteEdge (id)
+
+  removeEdges (id)
   {
-    if ( id < this.n)
+    for (let r = 0 ; r < this.n; r++)
     {
-      for (let i = 0; i < this.n; i++)
+      for (let c = 0; c < this.n; c++)
       {
-
-        if (i == id)
+        if (this.adjacentMap[r][c] != null &&  (id == r || id == c ) )
         {
-          continue;
+          this.adjacentMap[r][c] = -1;
         }
-
-        if (this.adjacentMap[i] )
-        {
-          this.adjacentMap[i][id] = -1;
-        }
-
-        if (this.adjacentMap[id] )
-        {
-          this.adjacentMap[id][i] = -1;
-        }
-
-
       }
     }
   }
@@ -300,8 +284,8 @@ class AMGraph
   graph.addVertex();
   graph.removeVertex(1)
   graph.addVertex();
-  // graph.addEdge(0, 1, 222);
-
+  graph.addEdge(0, 2, 222);
+graph.removeEdges(2)
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);

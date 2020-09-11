@@ -265,29 +265,21 @@ bool AMGraph::addEdge (const unsigned &id1, const unsigned &id2, int value)
   return false;
 }
 
-void AMGraph::deleteEdges(const unsigned id)
+void AMGraph::removeEdges(const unsigned id)
 {
-  if (id < n)
+  for (int r = 0 ; r < n; r++)
   {
-    for (int i = 0; i < n; i++ )
+    for (int c = 0; c < n; c++)
     {
-      if (i == id)
+      if (adjacentMap[r][c] != -2 &&  (id == r || id == c) )
       {
-        continue;
-      }
-
-      if (adjacentMap[i][id] != -2)
-      {
-        adjacentMap[i][id] = -1;
-      }
-
-      if (adjacentMap[id][i] != -2)
-      {
-        adjacentMap[id][i] = -1;
+        adjacentMap[r][c] = -1;
       }
     }
   }
 }
+
+
 
 int main()
 {

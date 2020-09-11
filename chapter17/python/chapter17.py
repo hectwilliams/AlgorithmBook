@@ -141,19 +141,11 @@ class AMGraph:
       return True
     return False
 
-  def deleteEdge (self, id):
-      arr = None
-
-      for i in range (0, self.n):
-
-        if i == id:
-          continue
-
-        if self.adjacentMap[id] :
-          self.adjacentMap[id][i] = -1
-
-        if self.adjacentMap[i] :
-          self.adjacentMap[i][id] = -1
+  def removeEdges (self, id):
+    for r in range (0, self.n) :
+      for  c in range (0, self.n):
+        if self.adjacentMap[r][c] != None and (r == id or c == id) :
+          self.adjacentMap[r][c] = -1
 
   def display(self):
     for arr in self.adjacentMap:
@@ -163,7 +155,7 @@ graph = AMGraph()
 graph.addVertex()
 graph.addVertex()
 graph.addVertex()
-graph.addEdge(0 ,1,  22)
+graph.addEdge(0 ,2,  22)
 graph.removeVertex(1)
-
+# graph.removeEdges(0)
 graph.display()

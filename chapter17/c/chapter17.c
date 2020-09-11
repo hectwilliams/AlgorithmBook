@@ -437,7 +437,6 @@ int AMGraph_addVertex (struct AMGraph ** graph)
 
     free((*graph)->array);
     (*graph)-> array = newArray;
-
   }
 
   return k;
@@ -453,10 +452,9 @@ enum boolean AMGraph_removeVertex (struct AMGraph *graph, unsigned id )
     {
       if (graph->array[ r * graph->n + c ] != -2 && (r == id || c == id) )
       {
-        graph->array[ r * graph->n + c ]= -2;
+        graph->array[ r * graph->n + c ] = -2;
         result |= true;
       }
-
     }
   }
   return result;
@@ -493,7 +491,7 @@ void AMGraph_removeEdges (struct AMGraph *graph, const int id)
         {
           continue;
         }
-        if (id == r ^ id == c)
+        if (id == r || id == c)
         {
           graph->array[r * graph->n + c] = -1;
         }
@@ -518,7 +516,7 @@ int main()
   printf ( "[%d]\n", AMGraph_addVertex(&graph));
 
   AMGraph_addEdge(graph, 0, 2, 20);
-  AMGraph_removeEdges(graph, 2);
+  // AMGraph_removeEdges(graph, 2);
   AMGraph_display(graph);
 
   // struct ELGraph *graph = NULL;
