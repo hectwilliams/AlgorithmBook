@@ -344,10 +344,14 @@ class AMGraph
 
 }
 
-const vertexALGraph = (value, id) =>
+class ALVertex
 {
-  let vertex = {value, id, ids : []};
-  return vertex;
+  constructor(value, id)
+  {
+    this.id = id;
+    this.value = value;
+    this.ids = [];
+  }
 }
 
 class ALGraph
@@ -360,8 +364,33 @@ class ALGraph
 
   addVertex (value)
   {
-    this.adjacentList.push( vertexALGraph(value, this.counter));
+    this.adjacentList.push( new ALVertex(value, this.counter));
     return this.counter++;
+  }
+
+  removeVertex(id)
+  {
+    let removed = false;
+    let pos = 0;
+
+    while (pos < this.adjacentList.length)
+    {
+      if ( this.adjacentList[pos].id == id )
+      {
+        this.adjacentList.splice(pos , 1);
+      }
+      else
+      {
+        let vertexObj = this.adjacentList[pos];
+        let index = vertexObj.ids.findIndex( (currID) => currID == id );
+        if (index >= 0)
+        {
+          vertexObj.ids.splice(index, 1);
+        }
+        pos++;
+      }
+    }
+    return removed;
   }
 
   display()
@@ -370,14 +399,16 @@ class ALGraph
       console.log(obj);
     });
   }
-
 };
+
+
 
 {
   let graph = new ALGraph ();
   graph.addVertex('A');
   graph.addVertex('B');
-
+  graph.addVertex('C');
+  graph.removeVertex(1);
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);

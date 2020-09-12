@@ -590,7 +590,7 @@ struct llist * AMGraph_neighbors(struct AMGraph *graph, int id)
 
 void ALGraph_display (struct ALGraph * graph)
 {
-  printf("\n start \n");
+  printf("\n start \n\n");
   while (graph)
   {
     printf(" %d :  ", graph->value );
@@ -629,6 +629,47 @@ int ALGraph_addVertex (struct ALGraph ** graph, int value)
   return id++;
 }
 
+enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID)
+{
+  struct ALGraph * algraph_runner = *graph;
+  struct ALGraph *delNode;
+  int counter = 0;
+
+  while (algraph_runner->next)
+  {
+    if (algraph_runner->next->vertex_id == vertexID)
+    {
+      counter++;
+      delNode = algraph_runner->next;
+      algraph_runner->next = algraph_runner->next->next;
+      free(delNode->array);
+      free(delNode);
+    }
+    else
+    {
+      //remove id from array (-1 = NULL DATA )
+      for (int i = 0; i < algraph_runner->next->size; i++)
+      {
+        if (algraph_runner->next->array[i] == vertexID)
+        {
+          algraph_runner->next->array[i] = -1;
+        }
+      }
+      algraph_runner = algraph_runner->next;
+    }
+  }
+
+  if ((*graph )->vertex_id == vertexID)
+  {
+    delNode = *graph;
+    *graph = delNode->next;
+    free(delNode->array);
+    free(delNode);
+  }
+
+  return counter == 0 ? false : true;
+}
+
 
 int main()
 {
@@ -637,10 +678,10 @@ int main()
 
   struct ALGraph *graph = NULL;
 
-  printf ( "[%d]\n", ALGraph_addVertex(&graph,1));
-  printf ( " [%d]\n ", ALGraph_addVertex(&graph,2));
-  printf ( "[%d]\n", ALGraph_addVertex(&graph,3));
-
+  printf ( "[%d]\n", ALGraph_addVertex(&graph, 23));
+  printf ( " [%d]\n ", ALGraph_addVertex(&graph,111));
+  printf ( "[%d]\n", ALGraph_addVertex(&graph, 34323));
+  ALGraph_removeVertex(&graph, 1);
   ALGraph_display(graph);
 
   // AMGraph_removeEdges(graph, 2);

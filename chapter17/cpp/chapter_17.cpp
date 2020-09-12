@@ -372,13 +372,43 @@ int ALGraph::addVertex(std::string value)
   return id_counter++;
 }
 
+bool ALGraph::removeVertex (int vertexID)
+{
+  int pos = 0;
+  int curr_size = 0;
+  bool removed = false;
+
+  while (pos < adjacentList.size())
+  {
+    if (adjacentList[pos]->vertex_id == vertexID)
+    {
+      free(adjacentList[pos]);
+      adjacentList.erase(adjacentList.begin() + pos);
+      removed = true;
+    }
+    else
+    {
+      curr_size = adjacentList[pos]->ids.size();
+      for (int i = 0; i < curr_size && curr_size == adjacentList[pos]->ids.size() ; i++)
+      {
+        if ( adjacentList[pos]->ids[i] == vertexID)
+        {
+          adjacentList[pos]->ids.erase(  adjacentList[pos]->ids.begin() + i);
+        }
+      }
+      pos++;
+    }
+  }
+  return removed;
+}
+
 int main()
 {
   ALGraph graph;
   graph.addVertex("A");
   graph.addVertex("B");
   graph.addVertex("C");
-
+  graph.removeVertex(1);
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
   // graph.deleteEdges(1);

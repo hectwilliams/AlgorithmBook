@@ -196,19 +196,35 @@ class ALGraph:
   def __init__(self):
     self.counter = 0
     self.adjacentList = []
-
+  def display (self) :
+    for vertex in self.adjacentList:
+      print(vertex.__dict__)
   def addVertex (self, value) :
     self.adjacentList.append( ALVertex(value, self.counter))
     self.counter += 1
     return self.counter - 1
+  def removeVertex(self, id):
+    removed = False
+    pos = 0
 
-  def display (self) :
-    for vertex in self.adjacentList:
-      print(vertex.__dict__)
+    while pos < self.adjacentList.__len__():
+      if self.adjacentList[pos].id == id:
+        if self.adjacentList[pos].id == id:
+          self.adjacentList.pop(pos)
+      else:
+        index = None
+        for i in range(0, self.adjacentList[pos].ids.__len__()):
+          index = i if self.adjacentList[pos].ids[i] == id else index
+        if index >=0:
+          self.adjacentList[pos].ids.pop(index)
+        pos += 1
+    return removed
+
 
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
 graph.addVertex('c')
+graph.removeVertex(1)
 # graph.removeEdges(0)
 graph.display()

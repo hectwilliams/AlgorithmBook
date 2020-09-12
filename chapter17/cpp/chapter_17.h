@@ -92,11 +92,12 @@ class ALGraph
   public:
     unsigned id_counter;
     std::vector< ALVertex *> adjacentList;
-    int addVertex(std::string value);
     ALGraph ()
     {
       id_counter = 0;
     }
+    int addVertex(std::string value);
+    bool removeVertex (int vertexID);
 };
 
 std::ostream &operator << (std::ostream &stream, const ALGraph &graph);
