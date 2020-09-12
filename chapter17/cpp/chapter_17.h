@@ -1,6 +1,7 @@
 #include <vector>
 #include <utility> //pair
 #include <iostream>
+#include <string>     // std::string, std::to_string
 
 class ELVertex
 {
@@ -50,7 +51,6 @@ class ELGraph
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph);
 
-
 class AMGraph
 {
   public:
@@ -69,7 +69,37 @@ class AMGraph
   std::pair<std::string, int>  getEdgeValue (const unsigned id1, const unsigned id2);
   bool setEdgeValue (const unsigned id1, const unsigned id2, const int edgValue);
   bool adjacent(const unsigned id1, const unsigned id2);
-  std::vector<int> neighbors (const unsigned id)
+  std::vector<int> neighbors (const unsigned id);
 };
 
 std::ostream &operator << (std::ostream &stream, const AMGraph &graph);
+
+class ALVertex
+{
+  public:
+  int vertex_id;
+  std::string value;
+  std::vector<int> ids;
+  ALVertex(const std::string &value, const int &id)
+  {
+    this->value = value;
+    this->vertex_id = id;
+  }
+};
+
+class ALGraph
+{
+  public:
+    unsigned id_counter;
+    std::vector< ALVertex *> adjacentList;
+    int addVertex(std::string value);
+    ALGraph ()
+    {
+      id_counter = 0;
+    }
+};
+
+std::ostream &operator << (std::ostream &stream, const ALGraph &graph);
+
+
+

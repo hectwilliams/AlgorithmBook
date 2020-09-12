@@ -344,15 +344,40 @@ class AMGraph
 
 }
 
+const vertexALGraph = (value, id) =>
 {
-  let graph = new AMGraph ();
-  graph.addVertex();
-  graph.addVertex();
-  graph.addVertex();
-  graph.removeVertex(1)
-  graph.addVertex();
-  graph.addEdge(0, 2, 222);
-graph.removeEdges(2)
+  let vertex = {value, id, ids : []};
+  return vertex;
+}
+
+class ALGraph
+{
+  constructor()
+  {
+    this.counter = 0;
+    this.adjacentList = [];
+  }
+
+  addVertex (value)
+  {
+    this.adjacentList.push( vertexALGraph(value, this.counter));
+    return this.counter++;
+  }
+
+  display()
+  {
+    this.adjacentList.forEach((obj) => {
+      console.log(obj);
+    });
+  }
+
+};
+
+{
+  let graph = new ALGraph ();
+  graph.addVertex('A');
+  graph.addVertex('B');
+
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);

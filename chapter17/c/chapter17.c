@@ -588,24 +588,62 @@ struct llist * AMGraph_neighbors(struct AMGraph *graph, int id)
   return llist;
 }
 
+void ALGraph_display (struct ALGraph * graph)
+{
+  printf("\n start \n");
+  while (graph)
+  {
+    printf(" %d :  ", graph->value );
+    for (int i = 0; i < graph->size; i++)
+    {
+      printf(" [%d] ", graph->array[i] );
+    }
+    printf("\n");
+    graph = graph->next;
+  }
+  printf("\n end \n");
+
+}
+
+int ALGraph_addVertex (struct ALGraph ** graph, int value)
+{
+  static int id = 0;
+  struct ALGraph * tmp;
+
+  tmp = malloc( sizeof(struct ALGraph *) );
+  tmp->vertex_id = id;
+  tmp ->value = value;
+  tmp->size = 0;
+  tmp->array = malloc (sizeof(int *) *  tmp->size  );
+  tmp->next = NULL;
+
+  if ( *graph  == NULL)
+  {
+    *graph = tmp;
+  }
+  else
+  {
+    tmp->next = (*graph);
+    (*graph) = tmp;
+  }
+  return id++;
+}
+
+
 int main()
 {
   time_t t;
  // srand((unsigned) time(&t));  // fixed pseudo random
 
-  struct AMGraph *graph = NULL;
+  struct ALGraph *graph = NULL;
 
-  printf ( "[%d]\n", AMGraph_addVertex(&graph));
-  printf ( " [%d]\n ", AMGraph_addVertex(&graph));
-  printf ( "[%d]\n", AMGraph_addVertex(&graph));
+  printf ( "[%d]\n", ALGraph_addVertex(&graph,1));
+  printf ( " [%d]\n ", ALGraph_addVertex(&graph,2));
+  printf ( "[%d]\n", ALGraph_addVertex(&graph,3));
 
-  // printf ( "[%d]\n", AMGraph_addVertex(&graph));
-  AMGraph_removeVertex(graph, 1);
-  printf ( "[%d]\n", AMGraph_addVertex(&graph));
+  ALGraph_display(graph);
 
-  AMGraph_addEdge(graph, 0, 2, 20);
   // AMGraph_removeEdges(graph, 2);
-  AMGraph_display(graph);
 
   // struct ELGraph *graph = NULL;
   // srand((unsigned) time(&t));  // fixed pseudo random

@@ -56,7 +56,6 @@ struct llist
   struct llist *next;
 };
 
-
 struct pair
 {
   enum boolean valid;
@@ -78,3 +77,16 @@ struct pair AMGraph_getEdgeValue (struct AMGraph *graph, const unsigned id1, con
 enum boolean AMGraph_setEdgeValue (struct AMGraph *graph, const unsigned id1, const unsigned id2, const int edgeValue);
 enum boolean AMGraph_adjacent(struct AMGraph *graph, const unsigned id1, const unsigned id2);
 struct llist * AMGraph_neighbors(struct AMGraph *graph, int id);
+
+struct ALGraph
+{
+  int value;
+  int vertex_id;
+  int *array;
+  int size;
+  struct ALGraph *next;
+};
+
+int ALGraph_addVertex (struct ALGraph ** graph, int value);
+
+void ALGraph_display (struct ALGraph * graph);

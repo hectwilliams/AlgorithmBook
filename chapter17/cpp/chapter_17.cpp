@@ -349,25 +349,44 @@ std::vector<int> AMGraph::neighbors (const unsigned id)
   return array;
 }
 
+std::ostream &operator << (std::ostream &stream, const ALGraph &graph)
+{
+  std::string mes;
+  for (ALVertex *vertex : graph.adjacentList)
+  {
+    mes += "Vertex: " + vertex->value;
+    for (int id : vertex->ids)
+    {
+      mes += "[" + std::to_string(id) +  "]";
+    }
+    mes+= "\n";
+  }
+  stream << mes;
+  return stream;
+}
+
+int ALGraph::addVertex(std::string value)
+{
+  ALVertex *vertex = new ALVertex(value, id_counter);
+  adjacentList.push_back(vertex);
+  return id_counter++;
+}
+
 int main()
 {
-  AMGraph graph;
-  graph.addVertex();
-  graph.addVertex();
-  graph.addVertex();
+  ALGraph graph;
+  graph.addVertex("A");
+  graph.addVertex("B");
+  graph.addVertex("C");
 
-  graph.removeVertex(1);
+  // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
-
   // graph.deleteEdges(1);
-
   std::cout << graph << '\n';
   // graph.addVertex(100);
   // graph.addVertex(1001);
   // graph.addEdge(0,1);
   // std::cout << graph.getVertexValue(0).first << '\n';
   // // graph.removeEdges(1);
-
   // std::cout << graph << '\n';
-
 }

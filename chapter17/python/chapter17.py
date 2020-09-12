@@ -2,11 +2,13 @@ class ELVertex :
   def __init__(self, val, id) :
     self.value = val
     self.id = id
+
 class ELEdge:
   def __init__(self, id1, id2, val = 0):
     self.id1 = id1
     self.id2 = id2
     self.value = val
+
 class ELGraph :
   def __init__(self):
     self.vertexList = []
@@ -34,12 +36,14 @@ class ELGraph :
     if index != None:
       self.vertexList.pop(index)
     return index != None
+
   def getVertexValue (self, id):
     result = None
     for vertex in self.vertexList:
       if vertex.id == id:
         result = vertex.value
     return result
+
   def setVertexValue(self, id, value):
     for vertex in self.vertexList:
       if id == vertex.id :
@@ -183,11 +187,28 @@ class AMGraph:
     for arr in self.adjacentMap:
       print(arr)
 
-graph = AMGraph()
-graph.addVertex()
-graph.addVertex()
-graph.addVertex()
-graph.addEdge(0 ,2,  22)
-graph.removeVertex(1)
+class ALVertex :
+  def __init__(self, value, id) :
+    self.value = value
+    self.id = id
+    self.ids = []
+class ALGraph:
+  def __init__(self):
+    self.counter = 0
+    self.adjacentList = []
+
+  def addVertex (self, value) :
+    self.adjacentList.append( ALVertex(value, self.counter))
+    self.counter += 1
+    return self.counter - 1
+
+  def display (self) :
+    for vertex in self.adjacentList:
+      print(vertex.__dict__)
+
+graph = ALGraph()
+graph.addVertex('a')
+graph.addVertex('b')
+graph.addVertex('c')
 # graph.removeEdges(0)
 graph.display()
