@@ -98,6 +98,8 @@ class ALGraph
     }
     int addVertex(std::string value);
     bool removeVertex (int vertexID);
+    std::pair<std::string, std::string> getVertexValue(int vertexID);
+    bool setVertexValue (int vertexID, std::string value);
 };
 
 std::ostream &operator << (std::ostream &stream, const ALGraph &graph);

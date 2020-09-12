@@ -393,6 +393,31 @@ class ALGraph
     return removed;
   }
 
+  getVertexValue (id)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id)
+      {
+        return vertex.value;
+      }
+    }
+    return null;
+  }
+
+  setVertexValue (id, value)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id)
+      {
+        vertex.value = value;
+        return true;
+      }
+    }
+    return false;
+  }
+
   display()
   {
     this.adjacentList.forEach((obj) => {
@@ -408,7 +433,8 @@ class ALGraph
   graph.addVertex('A');
   graph.addVertex('B');
   graph.addVertex('C');
-  graph.removeVertex(1);
+  // graph.removeVertex(1);
+  console.log(graph.setVertexValue (1, '80') );
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);

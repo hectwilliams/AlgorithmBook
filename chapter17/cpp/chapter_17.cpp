@@ -402,21 +402,50 @@ bool ALGraph::removeVertex (int vertexID)
   return removed;
 }
 
+std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
+{
+  std::pair<std::string, std::string> result = std::make_pair("null", "");
+
+  for (ALVertex * vertex: adjacentList)
+  {
+    if (vertex->vertex_id == vertexID)
+    {
+      result.first = "true";
+      result.second = vertex->value;
+    }
+  }
+  return result;
+}
+
+bool ALGraph::setVertexValue (int vertexID, std::string value )
+{
+  for (ALVertex *vertex : adjacentList)
+  {
+    if (vertex->vertex_id == vertexID)
+    {
+      vertex->value = value;
+      return true;
+    }
+  }
+  return false;
+}
+
 int main()
 {
   ALGraph graph;
   graph.addVertex("A");
   graph.addVertex("B");
   graph.addVertex("C");
-  graph.removeVertex(1);
+  // graph.removeVertex(1);
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
   // graph.deleteEdges(1);
-  std::cout << graph << '\n';
+  std::cout << graph.setVertexValue(1,"1232232")
+  << '\n';
   // graph.addVertex(100);
   // graph.addVertex(1001);
   // graph.addEdge(0,1);
   // std::cout << graph.getVertexValue(0).first << '\n';
   // // graph.removeEdges(1);
-  // std::cout << graph << '\n';
+  std::cout << graph << '\n';
 }

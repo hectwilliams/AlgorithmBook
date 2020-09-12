@@ -670,6 +670,36 @@ enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID)
   return counter == 0 ? false : true;
 }
 
+struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id)
+{
+  struct pair result = {.valid = false};
+
+  while (graph)
+  {
+    if (graph->vertex_id == id)
+    {
+      result.value = graph->value;
+      result.valid = true;
+    }
+    graph = graph->next;
+  }
+  return result;
+}
+
+enum boolean ALGraph_setVertexValue (struct ALGraph *graph, int id, int value)
+{
+  while (graph)
+  {
+    if (graph->vertex_id == id)
+    {
+      graph->value = value;
+      return true;
+    }
+    graph = graph->next;
+  }
+
+  return false;
+}
 
 int main()
 {
@@ -681,7 +711,7 @@ int main()
   printf ( "[%d]\n", ALGraph_addVertex(&graph, 23));
   printf ( " [%d]\n ", ALGraph_addVertex(&graph,111));
   printf ( "[%d]\n", ALGraph_addVertex(&graph, 34323));
-  ALGraph_removeVertex(&graph, 1);
+  ALGraph_setVertexValue(graph, 1, 555);
   ALGraph_display(graph);
 
   // AMGraph_removeEdges(graph, 2);

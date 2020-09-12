@@ -91,3 +91,4 @@ void ALGraph_display (struct ALGraph * graph);
 int ALGraph_addVertex (struct ALGraph ** graph, int value);
 enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID);
 
+struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id);

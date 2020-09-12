@@ -219,12 +219,19 @@ class ALGraph:
           self.adjacentList[pos].ids.pop(index)
         pos += 1
     return removed
-
-
+  def getVertexValue(self,id) :
+    for vertex in self.adjacentList:
+      if vertex.id == id:
+        return vertex.value
+    return None
+  def setVertexValue (self, id, value) :
+    for vertex in self.adjacentList:
+      if vertex.id == id:
+        vertex.value = value
+    return False
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
-graph.addVertex('c')
-graph.removeVertex(1)
+print(graph.setVertexValue(1,122))
 # graph.removeEdges(0)
 graph.display()
