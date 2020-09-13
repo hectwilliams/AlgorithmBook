@@ -244,7 +244,6 @@ class ALGraph:
       vertexA.ids.append(id2)
       vertexA.edges.append(edgeValue)
       return True
-
     return False
   def removeEdges (self, id) :
     for vertex in self.adjacentList:
@@ -253,16 +252,30 @@ class ALGraph:
         if vertex.ids[i] == id:
           vertex.ids.pop(i)
           vertex.edges.pop(i)
-
         else :
           i += 1
-
-
+  def removeEdge(self, id1, id2) :
+    for vertex in self.adjacentList:
+      if vertex.id == id1:
+        for i in range(0, vertex.ids.__len__()):
+          if vertex.ids[i] == id2:
+            vertex.ids.pop(i)
+            vertex.edges.pop(i)
+            return True
+    return False
+  def getEdgeValue(self, id1, id2):
+    for vertex in self.adjacentList:
+      if vertex.id == id1:
+        for i , currID in enumerate(vertex.ids):
+          if currID  == id2:
+            return vertex.edges[i]
+    return None
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
 print(graph.setVertexValue(1,122))
 graph.addEdge(0, 1 , 900)
-graph.removeEdges(1)
+print(graph.getEdgeValue(0, 1))
+# graph.removeEdges(1)
 # graph.removeEdges(0)
 graph.display()

@@ -776,6 +776,8 @@ enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge)
     tmp = malloc( sizeof(struct ALGraphMeta *) );
     tmp->from_id = v1->vertex_id;
     tmp->edge = v2->vertex_id;
+    tmp->edgeValue = edge;
+
     tmp->next = v1->meta;
     v1->meta = tmp;
     return true;
@@ -820,6 +822,66 @@ void ALGraph_removeEdges(struct ALGraph *graph, int id)
   }
 }
 
+enum boolean ALGraph_removeEdge(struct ALGraph *graph, int id1, int id2)
+{
+  struct ALGraphMeta *meta, *delMeta;
+
+  while (graph)
+  {
+    if (graph->vertex_id == id1)
+    {
+      meta = graph->meta;
+      if (meta)
+      {
+        while (meta->next)
+        {
+          if (meta->next->edge == id2)
+          {
+            delMeta = meta->next;
+            meta->next = delMeta->next;
+            free(delMeta);
+            return true;
+          }
+        }
+        if (graph->meta->edge == id2)
+        {
+          delMeta = graph->meta;
+          graph->meta = delMeta->next;
+          free(delMeta);
+          return true;
+        }
+      }
+    }
+    graph = graph->next;
+  }
+  return false;
+}
+
+struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2)
+{
+  struct pair result = {.valid = false};
+  struct ALGraphMeta *meta;
+
+  while(graph)
+  {
+    if (graph->vertex_id == id1)
+    {
+      meta = graph->meta;
+      while (meta)
+      {
+        if (meta->edge == id2)
+        {
+          result.value = meta->edgeValue;
+          result.valid = true;
+        }
+        meta = meta->next;
+      }
+    }
+    graph = graph->next;
+  }
+  return result;
+}
+
 int main()
 {
   time_t t;
@@ -835,7 +897,7 @@ int main()
   ALGraph_addEdge(graph, 0, 1, 22);
   // ALGraph_removeVertex(&graph, 0);
 
-  ALGraph_removeEdges(graph, 1);
+  printf( "[%d**] \n",  ALGraph_getEdgeValue(graph, 0, 1).value );
 
   ALGraph_display(graph);
   // AMGraph_removeEdges(graph, 2);

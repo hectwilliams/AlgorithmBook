@@ -82,7 +82,8 @@ struct ALGraphMeta
 {
   struct ALGraphMeta *next;
   int from_id;
-  int edge;
+  int edge;  // edge is id vertex points to
+  int edgeValue;
 };
 
 struct ALGraph
@@ -91,7 +92,6 @@ struct ALGraph
   int value;
   int vertex_id;
   struct  ALGraphMeta *meta;   // [dest_id, edge, dest_id, edge...]
-
 };
 
 void ALGraph_display (struct ALGraph * graph);
@@ -101,3 +101,5 @@ enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID);
 struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id);
 enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge);
 void ALGraph_removeEdges(struct ALGraph *graph, int id);
+enum boolean ALGraph_removeEdge(struct ALGraph *graph, int id1, int id2) ;
+struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2);

@@ -468,12 +468,53 @@ void ALGraph::removeEdges(int id)
       {
         vertex->ids.erase(vertex->ids.begin() + i);
         vertex->edges.erase(vertex->edges.begin() + i);
-
         i--;
       }
     }
   }
 }
+
+bool ALGraph::removeEgde(int id1, int id2)
+{
+  std::vector<int>::iterator it;
+  for (ALVertex *vertex : adjacentList)
+  {
+    if (vertex->vertex_id == id1)
+    {
+      for (int i = 0; i < vertex->ids.size(); i++)
+      {
+        if (vertex->ids[i] == id2)
+        {
+          vertex->ids.erase(vertex->ids.begin() + i);
+          vertex->edges.erase(vertex->edges.begin() + i);
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+std::pair<std::string, int> ALGraph::getEdgeValue(int id1, int id2)
+{
+  std::pair<std::string , int> result = std::make_pair("error", NULL);
+  for (ALVertex *vertex : adjacentList)
+  {
+    if (vertex->vertex_id == id1)
+    {
+      for (int i = 0; i < vertex->ids.size(); i++)
+      {
+        if (vertex->ids[i] == id2)
+        {
+          result.second = vertex->edges[i];
+          result.first = "valid";
+        }
+      }
+    }
+  }
+  return result;
+}
+
 
 
 int main()
@@ -487,8 +528,7 @@ int main()
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
   // graph.deleteEdges(1);
-  std::cout << graph.setVertexValue(1,"Z") << '\n';
-  graph.removeEdges(1);
+  std::cout << graph.getEdgeValue(0, 1).second << '\n';
   // graph.addVertex(100);
   // graph.addVertex(1001);
   // graph.addEdge(0,1);

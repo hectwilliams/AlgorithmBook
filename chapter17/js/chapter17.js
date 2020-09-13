@@ -463,6 +463,42 @@ class ALGraph
     }
   }
 
+  removeEdge (id1, id2)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id1)
+      {
+        for (let i = 0; i < vertex.ids.length; i++)
+        {
+          if (vertex.ids[i] == id2 )
+          {
+            vertex.ids.splice(i, 1);
+            vertex.edges.splice(i, 1);
+          }
+        }
+      }
+    }
+  }
+
+  getEdgeValue (id1, id2)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id1)
+      {
+        for (let i = 0; i < vertex.ids.length; i++)
+        {
+          if (vertex.ids[i] == id2 )
+          {
+            return vertex.edges[i];
+          }
+        }
+      }
+    }
+    return null;
+  }
+
   display()
   {
     this.adjacentList.forEach((obj) => {
@@ -481,7 +517,8 @@ class ALGraph
   // graph.removeVertex(1);
   console.log(graph.setVertexValue (1, '80') );
   graph.addEdge(0, 1,131 );
-  graph.removeEdges(1);
+  // graph.removeEdge(0, 1);
+  console.log(graph.getEdgeValue(0, 1))
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);
