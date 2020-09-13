@@ -882,6 +882,31 @@ struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2)
   return result;
 }
 
+enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int value)
+{
+  struct ALGraphMeta *meta;
+
+  while(graph)
+  {
+    if (graph->vertex_id == id1)
+    {
+      meta = graph->meta;
+      while (meta)
+      {
+        if (meta->edge == id2)
+        {
+          meta->edgeValue = value;
+          return true;
+        }
+        meta = meta->next;
+      }
+    }
+    graph = graph->next;
+  }
+  return false;
+}
+
+
 int main()
 {
   time_t t;

@@ -270,12 +270,21 @@ class ALGraph:
           if currID  == id2:
             return vertex.edges[i]
     return None
+  def setEdgeValue(self, id1, id2, edgeValue):
+    for vertex in self.adjacentList:
+      if vertex.id == id1:
+        for i , currID in enumerate(vertex.ids):
+          if currID  == id2:
+            vertex.edges[i] = edgeValue
+            return True
+    return None
+
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
 print(graph.setVertexValue(1,122))
 graph.addEdge(0, 1 , 900)
-print(graph.getEdgeValue(0, 1))
+print(graph.setEdgeValue(0, 1, 404))
 # graph.removeEdges(1)
 # graph.removeEdges(0)
 graph.display()

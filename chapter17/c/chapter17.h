@@ -103,3 +103,4 @@ enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge);
 void ALGraph_removeEdges(struct ALGraph *graph, int id);
 enum boolean ALGraph_removeEdge(struct ALGraph *graph, int id1, int id2) ;
 struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2);
+enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int value);
