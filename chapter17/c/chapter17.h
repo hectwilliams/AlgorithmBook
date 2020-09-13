@@ -81,7 +81,7 @@ struct llist * AMGraph_neighbors(struct AMGraph *graph, int id);
 struct ALGraphMeta
 {
   struct ALGraphMeta *next;
-  int from_id;
+  int src;
   int edge;  // edge is id vertex points to
   int edgeValue;
 };

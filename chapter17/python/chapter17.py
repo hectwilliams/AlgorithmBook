@@ -285,7 +285,11 @@ class ALGraph:
           if currID  == id2:
             return True
     return False
-
+  def neighbors (self, id):
+    for vertex in self.adjacentList:
+      if vertex.id == id:
+        return vertex.ids
+    return []
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')

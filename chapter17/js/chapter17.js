@@ -536,6 +536,18 @@ class ALGraph
     return false;
   }
 
+  neighbors (id)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id)
+      {
+        return vertex.ids;
+      }
+    }
+    return [];
+  }
+
   display()
   {
     this.adjacentList.forEach((obj) => {
@@ -555,7 +567,7 @@ class ALGraph
   console.log(graph.setVertexValue (1, '80') );
   graph.addEdge(0, 1,131 );
   // graph.removeEdge(0, 1);
-  console.log(graph.getEdgeValue(0, 1))
+  console.log(graph.neighbors(0))
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);
@@ -564,6 +576,6 @@ class ALGraph
   // graph.setVertexValue(0, 232);
   // console.log(graph.adjacent(0, 1))
   // graph.removeEdges(1);
-  graph.display()
+  // graph.display()
 
 }

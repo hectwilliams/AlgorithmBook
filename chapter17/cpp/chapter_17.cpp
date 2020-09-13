@@ -551,6 +551,17 @@ std::pair<std::string, int> ALGraph::getEdgeValue(int id1, int id2)
     }
     return false;
   }
+    const std::vector<int> &ALGraph::neighbors(int id)
+    {
+      for (ALVertex *vertex : adjacentList)
+      {
+        if (vertex->vertex_id == id)
+        {
+         return vertex->ids;
+        }
+      }
+      return std::vector<int>();
+    }
 
 
 int main()
@@ -564,7 +575,7 @@ int main()
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
   // graph.deleteEdges(1);
-  std::cout << graph.getEdgeValue(0, 1).second << '\n';
+  std::cout << graph.neighbors(0).size() << '\n';
   // graph.addVertex(100);
   // graph.addVertex(1001);
   // graph.addEdge(0,1);

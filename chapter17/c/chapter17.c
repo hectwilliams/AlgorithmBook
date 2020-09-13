@@ -774,7 +774,7 @@ enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge)
   if (v1 && v2)
   {
     tmp = malloc( sizeof(struct ALGraphMeta *) );
-    tmp->from_id = v1->vertex_id;
+    tmp->src = v1->vertex_id;
     tmp->edge = v2->vertex_id;
     tmp->edgeValue = edge;
 
@@ -908,6 +908,8 @@ enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int 
 
 enum boolean ALGraph_adjacent(struct ALGraph *graph, int id1, int id2)
 {
+  struct ALGraphMeta *meta;
+
   while(graph)
   {
     if (graph->vertex_id == id1)
@@ -925,6 +927,24 @@ enum boolean ALGraph_adjacent(struct ALGraph *graph, int id1, int id2)
     graph = graph->next;
   }
   return false;
+}
+
+
+struct ALGraphMeta *ALGraph_neighbors (struct ALGraph *graph, int id)
+{
+  struct ALGraphMeta *llist;
+
+  while(graph)
+  {
+    if (graph->vertex_id == id)
+    {
+      llist = graph->meta;
+    }
+
+    graph = graph->next;
+  }
+
+  return llist ;
 }
 
 
