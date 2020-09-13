@@ -518,6 +518,24 @@ class ALGraph
     return false;
   }
 
+  adjacent (id1 , id2)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id1)
+      {
+        for (let i = 0; i < vertex.ids.length; i++)
+        {
+          if (vertex.ids[i] == id2 )
+          {
+              return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   display()
   {
     this.adjacentList.forEach((obj) => {

@@ -534,6 +534,23 @@ std::pair<std::string, int> ALGraph::getEdgeValue(int id1, int id2)
     return false;
   }
 
+  bool ALGraph::adjacent(int id1, int id2)
+  {
+    for (ALVertex *vertex : adjacentList)
+    {
+      if (vertex->vertex_id == id1)
+      {
+        for (int i = 0; i < vertex->ids.size(); i++)
+        {
+          if (vertex->ids[i] == id2)
+          {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
 
 
 int main()

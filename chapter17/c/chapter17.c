@@ -906,6 +906,27 @@ enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int 
   return false;
 }
 
+enum boolean ALGraph_adjacent(struct ALGraph *graph, int id1, int id2)
+{
+  while(graph)
+  {
+    if (graph->vertex_id == id1)
+    {
+      meta = graph->meta;
+      while (meta)
+      {
+        if (meta->edge == id2)
+        {
+          return true;
+        }
+        meta = meta->next;
+      }
+    }
+    graph = graph->next;
+  }
+  return false;
+}
+
 
 int main()
 {

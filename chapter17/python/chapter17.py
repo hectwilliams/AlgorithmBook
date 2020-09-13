@@ -278,6 +278,13 @@ class ALGraph:
             vertex.edges[i] = edgeValue
             return True
     return None
+  def adjacent(self, id1, id2):
+    for vertex in self.adjacentList:
+      if vertex.id == id1:
+        for i , currID in enumerate(vertex.ids):
+          if currID  == id2:
+            return True
+    return False
 
 graph = ALGraph()
 graph.addVertex('a')
