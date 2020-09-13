@@ -590,32 +590,36 @@ struct llist * AMGraph_neighbors(struct AMGraph *graph, int id)
 
 void ALGraph_display (struct ALGraph * graph)
 {
-  printf("\n start \n\n");
+  struct ALGraphMeta *meta;
+
   while (graph)
   {
-    printf(" %d :  ", graph->value );
-    for (int i = 0; i < graph->size; i++)
+    printf(" id: %d vertex :%d -> ", graph->vertex_id, graph->value);;
+
+    meta = graph->meta;
+    while (meta)
     {
-      printf(" [%d] ", graph->array[i] );
+      printf(" [%d] ", meta->edge );
+      meta = meta->next;
     }
-    printf("\n");
+    printf("\n\n");
     graph = graph->next;
   }
-  printf("\n end \n");
 
+  printf("\n end \n");
 }
 
 int ALGraph_addVertex (struct ALGraph ** graph, int value)
 {
   static int id = 0;
-  struct ALGraph * tmp;
+  struct ALGraph *tmp, *run;
 
-  tmp = malloc( sizeof(struct ALGraph *) );
+  tmp =  (struct ALGraph *) malloc( sizeof(struct ALGraph ) );
   tmp->vertex_id = id;
   tmp ->value = value;
-  tmp->size = 0;
-  tmp->array = malloc (sizeof(int *) *  tmp->size  );
+  tmp->meta = NULL;
   tmp->next = NULL;
+
 
   if ( *graph  == NULL)
   {
@@ -623,16 +627,24 @@ int ALGraph_addVertex (struct ALGraph ** graph, int value)
   }
   else
   {
-    tmp->next = (*graph);
-    (*graph) = tmp;
+    tmp->next = *graph;
+    *graph = tmp;
+    while (tmp->next)
+    {
+      tmp = tmp->next;
+    }
+    tmp->next = NULL;
   }
   return id++;
 }
+
 
 enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID)
 {
   struct ALGraph * algraph_runner = *graph;
   struct ALGraph *delNode;
+  struct ALGraphMeta *runner, *runner_buffer;
+
   int counter = 0;
 
   while (algraph_runner->next)
@@ -642,28 +654,68 @@ enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID)
       counter++;
       delNode = algraph_runner->next;
       algraph_runner->next = algraph_runner->next->next;
-      free(delNode->array);
+
+      // delete list element
+      runner = delNode->meta;
+      while (runner )
+      {
+        runner_buffer = runner;
+        free(runner_buffer);
+        runner = runner->next;
+      }
       free(delNode);
     }
     else
     {
-      //remove id from array (-1 = NULL DATA )
-      for (int i = 0; i < algraph_runner->next->size; i++)
+      // remove edge from vertex(driver)  META
       {
-        if (algraph_runner->next->array[i] == vertexID)
+
+        runner = algraph_runner->next->meta;
+        if (runner)
         {
-          algraph_runner->next->array[i] = -1;
+          while (runner->next)
+          {
+            if (runner->next->edge == vertexID)
+            {
+              runner_buffer = runner->next;
+              runner->next = runner_buffer->next;
+              free(runner_buffer);
+            }
+            else
+            {
+              runner = runner->next;
+            }
+          }
+
+          if (algraph_runner->next->meta->edge == vertexID)
+          {
+            runner_buffer = algraph_runner->next->meta;
+            algraph_runner->next->meta = algraph_runner->next->meta->next;
+            free(runner_buffer);
+          }
         }
+
       }
+
       algraph_runner = algraph_runner->next;
     }
   }
+
+      // delete list(ie. HEAD) element
 
   if ((*graph )->vertex_id == vertexID)
   {
     delNode = *graph;
     *graph = delNode->next;
-    free(delNode->array);
+
+    // delete list
+    runner = delNode->meta;
+    while (runner )
+    {
+      runner_buffer = runner;
+      free(runner_buffer);
+      runner = runner->next;
+    }
     free(delNode);
   }
 
@@ -697,6 +749,37 @@ enum boolean ALGraph_setVertexValue (struct ALGraph *graph, int id, int value)
     }
     graph = graph->next;
   }
+  return false;
+}
+
+enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge)
+{
+  struct ALGraph *v1 = NULL, *v2 = NULL;
+  struct ALGraphMeta *tmp;
+
+
+  while (graph)
+  {
+    if (graph->vertex_id == id1)
+    {
+      v1 = graph;
+    }
+    if (graph->vertex_id == id2)
+    {
+      v2 = graph;
+    }
+    graph = graph->next;
+  }
+
+  if (v1 && v2)
+  {
+    tmp = malloc( sizeof(struct ALGraphMeta *) );
+    tmp->from_id = v1->vertex_id;
+    tmp->edge = v2->vertex_id;
+    tmp->next = v1->meta;
+    v1->meta = tmp;
+    return true;
+  }
 
   return false;
 }
@@ -704,18 +787,19 @@ enum boolean ALGraph_setVertexValue (struct ALGraph *graph, int id, int value)
 int main()
 {
   time_t t;
- // srand((unsigned) time(&t));  // fixed pseudo random
 
+  // srand((unsigned) time(&t));  // fixed pseudo random
   struct ALGraph *graph = NULL;
+  printf ( "[%d] \n ", ALGraph_addVertex(&graph, 23));
+  printf ( " [%d] \n ", ALGraph_addVertex(&graph,111));
+  printf ( "[%d] \n ", ALGraph_addVertex(&graph, 34323));
 
-  printf ( "[%d]\n", ALGraph_addVertex(&graph, 23));
-  printf ( " [%d]\n ", ALGraph_addVertex(&graph,111));
-  printf ( "[%d]\n", ALGraph_addVertex(&graph, 34323));
   ALGraph_setVertexValue(graph, 1, 555);
+
+  ALGraph_addEdge(graph, 0, 1, 22);
+  ALGraph_removeVertex(&graph, 0);
   ALGraph_display(graph);
-
   // AMGraph_removeEdges(graph, 2);
-
   // struct ELGraph *graph = NULL;
   // srand((unsigned) time(&t));  // fixed pseudo random
   // struct ELGraph *graph = NULL;

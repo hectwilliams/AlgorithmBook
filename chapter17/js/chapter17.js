@@ -351,6 +351,7 @@ class ALVertex
     this.id = id;
     this.value = value;
     this.ids = [];
+    this.edges = [] ;
   }
 }
 
@@ -386,6 +387,8 @@ class ALGraph
         if (index >= 0)
         {
           vertexObj.ids.splice(index, 1);
+          vertexObj.edges.splice(index, 1);
+
         }
         pos++;
       }
@@ -418,6 +421,33 @@ class ALGraph
     return false;
   }
 
+  addEdge (id1, id2, edgeValue)
+  {
+    let v1 = null;
+    let v2 = null;
+
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id1)
+      {
+        v1 = vertex;
+      }
+      if (vertex.id == id2)
+      {
+        v2 = vertex ;
+      }
+    }
+
+    if (v1 && v2)
+    {
+      v1.ids.push(v2.id);
+      v1.edges.push(edgeValue)
+      return true;
+    }
+    return false;
+  }
+
+
   display()
   {
     this.adjacentList.forEach((obj) => {
@@ -435,6 +465,7 @@ class ALGraph
   graph.addVertex('C');
   // graph.removeVertex(1);
   console.log(graph.setVertexValue (1, '80') );
+  graph.addEdge(0, 1,131 )
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);

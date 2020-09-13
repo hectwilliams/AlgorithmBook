@@ -80,6 +80,8 @@ class ALVertex
   int vertex_id;
   std::string value;
   std::vector<int> ids;
+  std::vector<int> edges;
+
   ALVertex(const std::string &value, const int &id)
   {
     this->value = value;
@@ -100,6 +102,8 @@ class ALGraph
     bool removeVertex (int vertexID);
     std::pair<std::string, std::string> getVertexValue(int vertexID);
     bool setVertexValue (int vertexID, std::string value);
+    bool addEdge (int id1, int id2, int edge) ;
+
 };
 
 std::ostream &operator << (std::ostream &stream, const ALGraph &graph);

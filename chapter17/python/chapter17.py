@@ -192,6 +192,7 @@ class ALVertex :
     self.value = value
     self.id = id
     self.ids = []
+    self.edges = []
 class ALGraph:
   def __init__(self):
     self.counter = 0
@@ -206,7 +207,6 @@ class ALGraph:
   def removeVertex(self, id):
     removed = False
     pos = 0
-
     while pos < self.adjacentList.__len__():
       if self.adjacentList[pos].id == id:
         if self.adjacentList[pos].id == id:
@@ -217,6 +217,8 @@ class ALGraph:
           index = i if self.adjacentList[pos].ids[i] == id else index
         if index >=0:
           self.adjacentList[pos].ids.pop(index)
+          self.adjacentList[pos].edges.pop(index)
+
         pos += 1
     return removed
   def getVertexValue(self,id) :
@@ -229,9 +231,26 @@ class ALGraph:
       if vertex.id == id:
         vertex.value = value
     return False
+  def addEdge (self, id1, id2, edgeValue) :
+    vertexA = vertexB = None
+
+    for vertex in self.adjacentList:
+      if id1 == vertex.id:
+        vertexA = vertex
+      if id2 == vertex.id:
+        vertexB = vertex
+
+    if vertexB and vertexA:
+      vertexA.ids.append(id2)
+      vertexA.edges.append(edgeValue)
+      return True
+
+    return False
+
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
 print(graph.setVertexValue(1,122))
+graph.addEdge(0, 1 , 900)
 # graph.removeEdges(0)
 graph.display()

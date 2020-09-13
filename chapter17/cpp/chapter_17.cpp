@@ -355,9 +355,9 @@ std::ostream &operator << (std::ostream &stream, const ALGraph &graph)
   for (ALVertex *vertex : graph.adjacentList)
   {
     mes += "Vertex: " + vertex->value;
-    for (int id : vertex->ids)
+    for (int i =0; i < vertex->ids.size() ; i++)
     {
-      mes += "[" + std::to_string(id) +  "]";
+      mes += "[" + std::to_string(vertex->ids[i]) + "-" + std::to_string(vertex->edges[i]) +  "] ";
     }
     mes+= "\n";
   }
@@ -394,6 +394,7 @@ bool ALGraph::removeVertex (int vertexID)
         if ( adjacentList[pos]->ids[i] == vertexID)
         {
           adjacentList[pos]->ids.erase(  adjacentList[pos]->ids.begin() + i);
+          adjacentList[pos]->edges.erase(  adjacentList[pos]->edges.begin() + i);
         }
       }
       pos++;
@@ -430,12 +431,39 @@ bool ALGraph::setVertexValue (int vertexID, std::string value )
   return false;
 }
 
+bool ALGraph:: addEdge (int id1, int id2, int edge)
+{
+  ALVertex *v1, *v2;
+  v1 = v2 = NULL;
+
+  for (ALVertex *vertex : adjacentList)
+  {
+    if (vertex->vertex_id == id1)
+    {
+      v1 = vertex;
+    }
+
+    if (vertex->vertex_id == id2)
+    {
+      v2 = vertex;
+    }
+  }
+  if (v1 && v2)
+  {
+    v1->ids.push_back(v2->vertex_id);
+    v1->edges.push_back(edge);
+    return true;
+  }
+  return false ;
+}
+
 int main()
 {
   ALGraph graph;
   graph.addVertex("A");
   graph.addVertex("B");
   graph.addVertex("C");
+  graph.addEdge(0,1,200);
   // graph.removeVertex(1);
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
