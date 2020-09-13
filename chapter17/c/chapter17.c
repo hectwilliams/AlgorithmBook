@@ -784,6 +784,42 @@ enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge)
   return false;
 }
 
+void ALGraph_removeEdges(struct ALGraph *graph, int id)
+{
+  struct ALGraphMeta *meta, *delMeta;
+
+  while (graph)
+  {
+    meta = graph->meta;
+
+    if (meta)
+    {
+      while (meta->next)
+      {
+        if (meta->next->edge == id)
+        {
+          delMeta  = meta->next;
+          meta->next = delMeta->next;
+          free(delMeta);
+        }
+        else
+        {
+          meta = meta->next;
+        }
+      }
+
+      if (graph->meta->edge == id)
+      {
+        delMeta = graph->meta;
+        graph->meta = delMeta->next;
+        free(delMeta);
+      }
+    }
+
+    graph = graph->next;
+  }
+}
+
 int main()
 {
   time_t t;
@@ -797,7 +833,10 @@ int main()
   ALGraph_setVertexValue(graph, 1, 555);
 
   ALGraph_addEdge(graph, 0, 1, 22);
-  ALGraph_removeVertex(&graph, 0);
+  // ALGraph_removeVertex(&graph, 0);
+
+  ALGraph_removeEdges(graph, 1);
+
   ALGraph_display(graph);
   // AMGraph_removeEdges(graph, 2);
   // struct ELGraph *graph = NULL;

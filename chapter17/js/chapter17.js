@@ -447,6 +447,21 @@ class ALGraph
     return false;
   }
 
+  removeEdges(id)
+  {
+    for (let vertex of this.adjacentList)
+    {
+       for (let i = 0; i < vertex.ids.length; i++)
+       {
+        if (vertex.ids[i] == id)
+        {
+          vertex.ids.splice(i, 1);
+          vertex.edges.splice(i, 1);
+          i--;
+        }
+       }
+    }
+  }
 
   display()
   {
@@ -465,7 +480,8 @@ class ALGraph
   graph.addVertex('C');
   // graph.removeVertex(1);
   console.log(graph.setVertexValue (1, '80') );
-  graph.addEdge(0, 1,131 )
+  graph.addEdge(0, 1,131 );
+  graph.removeEdges(1);
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);

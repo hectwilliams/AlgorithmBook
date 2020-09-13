@@ -1,5 +1,5 @@
 #include "chapter_17.h"
-
+#include <algorithm>    // std::find
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph)
 {
@@ -457,6 +457,25 @@ bool ALGraph:: addEdge (int id1, int id2, int edge)
   return false ;
 }
 
+void ALGraph::removeEdges(int id)
+{
+  std::vector<int>::iterator it;
+  for (ALVertex *vertex : adjacentList)
+  {
+    for (int i = 0; i < vertex->ids.size(); i++)
+    {
+      if (vertex->ids[i] == id)
+      {
+        vertex->ids.erase(vertex->ids.begin() + i);
+        vertex->edges.erase(vertex->edges.begin() + i);
+
+        i--;
+      }
+    }
+  }
+}
+
+
 int main()
 {
   ALGraph graph;
@@ -468,8 +487,8 @@ int main()
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
   // graph.deleteEdges(1);
-  std::cout << graph.setVertexValue(1,"1232232")
-  << '\n';
+  std::cout << graph.setVertexValue(1,"Z") << '\n';
+  graph.removeEdges(1);
   // graph.addVertex(100);
   // graph.addVertex(1001);
   // graph.addEdge(0,1);

@@ -100,3 +100,4 @@ enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID);
 
 struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id);
 enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge);
+void ALGraph_removeEdges(struct ALGraph *graph, int id);

@@ -246,11 +246,23 @@ class ALGraph:
       return True
 
     return False
+  def removeEdges (self, id) :
+    for vertex in self.adjacentList:
+      i = 0
+      while i < vertex.ids.__len__():
+        if vertex.ids[i] == id:
+          vertex.ids.pop(i)
+          vertex.edges.pop(i)
+
+        else :
+          i += 1
+
 
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
 print(graph.setVertexValue(1,122))
 graph.addEdge(0, 1 , 900)
+graph.removeEdges(1)
 # graph.removeEdges(0)
 graph.display()
