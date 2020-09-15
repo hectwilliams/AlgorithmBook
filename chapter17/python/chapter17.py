@@ -290,6 +290,64 @@ class ALGraph:
       if vertex.id == id:
         return vertex.ids
     return []
+
+class SocialNetworkVertex :
+  def __init__(self, name= None, id = None):
+    self.name = name
+    self.id = id
+    self.friends = []
+
+def someoneOnInside (vertex, srcID, employeeIDs = []) :
+  stack = []
+  visited = []
+  bufferVertex = SocialNetworkVertex()
+
+  stack.append(vertex)
+
+  while stack:
+    bufferVertex = stack.pop()
+    if bufferVertex.id in visited:
+      continue
+    else:
+      visited.append(bufferVertex.id)
+      if srcID == bufferVertex.id:
+        for srcFriend in bufferVertex.friends:
+          for employeeID in employeeIDs:
+            if employeeID == srcFriend.id:
+              return True
+        return False
+      for friend in bufferVertex.friends:
+        stack.append(friend )
+
+  return False
+
+def someoneOnInsideNoReference(srcVertex):
+  stack = []
+  popularMapCount = {}
+  insiderObj = {'contactID': None , 'insiderID' : None}
+  vertex = None
+  maxCount = 0
+
+  stack.append(srcVertex)
+
+  while stack:
+    vertex = stack.pop()
+    for friendVertex in vertex.friends:
+      key = str(friendVertex.id)
+
+      if not (key in popularMapCount) :
+        popularMapCount[key] = 1
+      else:
+        popularMapCount[key] += 1
+
+      if insiderObj['contactID'] == None or popularMapCount[key] > maxCount:
+        insiderObj = {'contactID': vertex.id , 'insiderID' : friendVertex.id}
+      stack.append(friendVertex)
+
+  return insiderObj
+
+
+
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')

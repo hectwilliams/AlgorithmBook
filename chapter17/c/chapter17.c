@@ -947,6 +947,221 @@ struct ALGraphMeta *ALGraph_neighbors (struct ALGraph *graph, int id)
   return llist ;
 }
 
+struct ALGraph *getALGraphVertex(struct ALGraph *graph, int id)
+{
+  while (graph)
+  {
+    if (graph->vertex_id == id)
+    {
+      return graph;
+    }
+    graph = graph->next;
+  }
+  return NULL;
+}
+
+enum boolean findID (struct llist *list, const int id)
+{
+  while (list)
+  {
+    if (list->value == id)
+    {
+      return true;
+    }
+    list = list->next;
+  }
+  return false;
+}
+
+
+enum boolean Someone_on_inside(struct ALGraph *graph, int src_id , struct llist *company_ids)
+{
+  struct ALGraphStack  *stack = NULL, *stack_buffer = NULL;
+  struct llist *visited_llist = NULL, *visited_buffer;
+  struct ALGraphMeta *id_llist = NULL;
+  struct ALGraph *currVertex = NULL;
+
+  if (stack == NULL)
+  {
+    stack = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack) ) ;
+    stack->vertex = graph;
+    stack->next = NULL;
+  }
+
+  while (stack)
+  {
+    currVertex  = stack->vertex;
+    stack = stack->next;
+
+      // continue loop if id found
+    if (findID(visited_llist, currVertex->vertex_id))
+    {
+      continue;
+    }
+
+      // add id to visited list
+    {
+      visited_buffer = (struct llist *) malloc(sizeof(struct llist));
+      visited_buffer->value = currVertex->vertex_id;
+      visited_buffer->next = visited_llist;
+      visited_llist = visited_buffer;
+    }
+
+
+    if (currVertex->vertex_id == src_id)  // my vertex
+    // iterate ids linked to my vertex
+    {
+      id_llist = currVertex->meta;
+      while (id_llist)
+      {
+        if ( findID(company_ids, id_llist->edge)  )
+        {
+          return true;
+        }
+        id_llist = id_llist->next;
+      }
+      // src id has no friends within company
+      return false;
+    }
+    else if ( findID(company_ids, currVertex->vertex_id) )  // src id  has friend within company
+    {
+      return true;
+    }
+
+    // iterate current vertex destination ids
+    id_llist = currVertex->meta;
+
+    while (id_llist)
+    {
+      stack_buffer = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack));
+      stack_buffer->vertex = getALGraphVertex(graph, id_llist->edge);
+      // add valid vertex to stack
+      if (stack_buffer->vertex)
+      {
+        stack_buffer->next = stack;
+        stack = stack_buffer;
+      }
+      id_llist = id_llist->next;
+    }
+
+    free(currVertex);
+  }
+
+  return false;
+}
+
+struct employee_inside *Someone_on_insider_no_contact (struct ALGraph *graph)
+{
+  struct employee_inside *insider = NULL, *runner = NULL, *popularInsider ;
+  struct ALGraphStack  *stack = NULL, *stack_buffer = NULL;
+  struct llist *visited_llist = NULL, *visited_buffer;
+  struct ALGraphMeta *id_llist = NULL;
+  struct ALGraph *currVertex = NULL;
+
+  if (stack == NULL)
+  {
+    stack = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack) ) ;
+    stack->vertex = graph;
+    stack->next = NULL;
+  }
+
+  while (stack)
+  {
+    currVertex  = stack->vertex;
+    stack = stack->next;
+
+    // continue loop if id found
+    if (findID(visited_llist, currVertex->vertex_id))
+    {
+      continue;
+    }
+
+    // add id to visited list
+    {
+      visited_buffer = (struct llist *) malloc(sizeof(struct llist));
+      visited_buffer->value = currVertex->vertex_id;
+      visited_buffer->next = visited_llist;
+      visited_llist = visited_buffer;
+    }
+
+
+
+    // iterate current vertex destination ids
+    id_llist = currVertex->meta;
+
+    while (id_llist)
+    {
+      update_employe_inside(&insider, id_llist->src, id_llist->edge);
+      stack_buffer = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack));
+      stack_buffer->vertex = getALGraphVertex(graph, id_llist->edge);
+      // add valid vertex to stack
+      if (stack_buffer->vertex)
+      {
+        stack_buffer->next = stack;
+        stack = stack_buffer;
+      }
+
+      id_llist = id_llist->next;
+    }
+
+    free(currVertex);
+  }
+
+  popularInsider = insider;
+  runner = insider;
+
+  while (runner)
+  {
+    if ( runner->count >=  popularInsider->count )
+    {
+      popularInsider = runner;
+    }
+    runner = runner->next;
+  }
+
+  return popularInsider;
+
+}
+
+void update_employe_inside (struct employee_inside **head, int src_id, int employee_id)
+{
+  struct employee_inside *node = *head, *runner = NULL, *buffer;
+  printf("hello wowlrd   %d \n", runner);
+
+  if (node == NULL)
+  {
+    *head = employee_inside_allocate(employee_id, src_id);
+  }
+  else
+  {
+    runner = *head;
+
+    while (runner)
+    {
+      if (runner->id == employee_id)
+      {
+        runner->count++;
+        break;
+      }
+    }
+
+    if (runner == NULL)
+    {
+      buffer = employee_inside_allocate(employee_id, src_id);
+      buffer->next = *head;
+      *head = buffer;
+    }
+  }
+}
+
+struct employee_inside *employee_inside_allocate(int employee_id, int src_id)
+{
+  struct employee_inside *node = (struct employee_inside*) malloc(sizeof(struct employee_inside)) ;
+  node->count = 1;
+  node->id = employee_id;
+  node->contact_id = src_id;
+  return node;
+}
 
 int main()
 {
@@ -965,7 +1180,10 @@ int main()
 
   printf( "[%d**] \n",  ALGraph_getEdgeValue(graph, 0, 1).value );
 
-  ALGraph_display(graph);
+  // ALGraph_display(graph);
+
+  Someone_on_insider_no_contact(graph);
+
   // AMGraph_removeEdges(graph, 2);
   // struct ELGraph *graph = NULL;
   // srand((unsigned) time(&t));  // fixed pseudo random

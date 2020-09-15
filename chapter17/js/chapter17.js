@@ -557,6 +557,90 @@ class ALGraph
 };
 
 
+class SocialNetworkVertex
+{
+  constructor(id, name)
+  {
+    this.id = 0;
+    this.name = name;
+    this.friends = [];
+  }
+};
+
+const someoneOnInside = function(vertex, srcID, employeeIDs = [])
+{
+  let stack = [];
+  let visited = [];
+  let currVertex = null;
+
+  stack.push(vertex);
+
+  while (stack.length)
+  {
+
+    currVertex = stack.pop();
+
+    if ( visited.includes(currVertex.id) )
+    {
+      continue;
+    }
+    else
+    {
+      visited.push(currVertex.id);
+
+      if (srcID == currVertex.id)
+      {
+        for (let srcFriend of currVertex.friends)
+        {
+          for (let employeeID of employeeIDs)
+          {
+            if (srcFriend.id == employeeID)
+            {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      for (let friend of currVertex.friends)
+      {
+        stack.push(friend);
+      }
+    }
+
+  }
+
+  return false;
+}
+
+const someoneOnInsideNoReference = function (srcVertex)
+{
+  let stack = [] ;
+  let popularMap = {};
+  let insiderData = {contactID: null, insiderID: null};
+  let vertex;
+  let maxFriendCount = 0;
+
+  stack.push(srcVertex);
+  while (stack.length)
+  {
+    vertex = stack.pop();
+    for (let friendVertex of vertex.friends)
+    {
+      popularMap[friendVertex.id] = !popularMap[friendVertex.id] && 1 || popularMap[friendVertex.id] + 1;
+      if (insiderData.contactID == null || maxFriendCount <=  popularMap[friendVertex.id] )
+      {
+        maxFriendCount = popularMap[friendVertex.id];
+        insiderData.contactID = vertex.id;
+        insiderData.insiderID = friendVertex.id;
+      }
+      stack.push(friendVertex);
+    }
+  }
+  return insiderData;
+}
+
 
 {
   let graph = new ALGraph ();
@@ -577,5 +661,4 @@ class ALGraph
   // console.log(graph.adjacent(0, 1))
   // graph.removeEdges(1);
   // graph.display()
-
 }

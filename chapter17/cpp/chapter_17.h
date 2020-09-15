@@ -109,11 +109,26 @@ class ALGraph
     bool setEdgeValue(int id1, int id2, int edgeValue);
     bool adjacent(int id1, int id2);
     const std::vector<int> &neighbors(int id);
-
-
 };
 
 std::ostream &operator << (std::ostream &stream, const ALGraph &graph);
+
+class SocialNetworkVertex
+{
+  public:
+  int id;
+  std::string name;
+  std::vector<SocialNetworkVertex * > friends;
+
+  SocialNetworkVertex(int id, std::string)
+  {
+    this->id = id;
+    this->name = name;
+  }
+};
+
+bool someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs);
+
 
 
 

@@ -105,3 +105,24 @@ enum boolean ALGraph_removeEdge(struct ALGraph *graph, int id1, int id2) ;
 struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2);
 enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int value);
 enum boolean ALGraph_adjacent(struct ALGraph *graph, int id1, int id2) ;
+struct ALGraph *getALGraphVertex(struct ALGraph *graph, int id);
+
+struct ALGraphStack  // LIFO
+{
+  struct ALGraph *vertex;
+  struct ALGraphStack *next;
+};
+
+enum boolean Someone_on_inside(struct ALGraph *graph, int my_id ,struct llist *company_ids);
+
+struct employee_inside
+{
+  int count;
+  int id;
+  int contact_id;
+  struct employee_inside *next;
+};
+
+struct employee_inside *Someone_on_insider_no_contact (struct ALGraph *graph);
+struct employee_inside *employee_inside_allocate(int employee_id, int src_id);
+void update_employe_inside (struct employee_inside **head, int src_id, int employee_id);

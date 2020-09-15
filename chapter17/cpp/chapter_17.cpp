@@ -1,5 +1,7 @@
 #include "chapter_17.h"
 #include <algorithm>    // std::find
+#include <set>
+#include <map>
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph)
 {
@@ -551,17 +553,111 @@ std::pair<std::string, int> ALGraph::getEdgeValue(int id1, int id2)
     }
     return false;
   }
-    const std::vector<int> &ALGraph::neighbors(int id)
+  const std::vector<int> &ALGraph::neighbors(int id)
+  {
+    for (ALVertex *vertex : adjacentList)
     {
-      for (ALVertex *vertex : adjacentList)
+      if (vertex->vertex_id == id)
       {
-        if (vertex->vertex_id == id)
-        {
-         return vertex->ids;
-        }
+        return vertex->ids;
       }
-      return std::vector<int>();
     }
+    return std::vector<int>();
+  }
+
+bool  someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs)
+{
+  std::vector<SocialNetworkVertex*> stack;
+  SocialNetworkVertex *currVertex;
+  std::set<int> visitedMap;
+
+  if (!vertex)
+  {
+    return false;
+  }
+
+  // add input vertex to stack
+  stack.push_back(vertex);
+
+  while (!stack.empty())
+  {
+    currVertex = stack.back();
+    stack.pop_back();
+
+    if (visitedMap.count(currVertex->id))
+    {
+      continue;
+    }
+    else
+    {
+      visitedMap.insert(currVertex->id);
+
+      if (srcID == currVertex->id)
+      {
+        // iterate source's friends
+        for (SocialNetworkVertex * myFriendVertex: currVertex->friends)
+        {
+          for (int employeeID: companyIDs)
+          {
+            if (employeeID == myFriendVertex->id)
+            {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      // add friends to stack
+      for (SocialNetworkVertex * friendVertex: currVertex->friends)
+      {
+        stack.push_back(friendVertex);
+      }
+    }
+  }
+
+  return false;
+
+}
+
+std::pair<int, int> someoneOnInside (SocialNetworkVertex *sourceVertex)
+{
+  std::vector<SocialNetworkVertex *> stack;
+  std::map <SocialNetworkVertex * , int > popularList;
+  std::pair<int, int> insiderData = std::make_pair(-1, -1);  // [vertex ID Contact] [vertex ID Insider]
+  SocialNetworkVertex *vertex;
+  int maxCount = 0;
+  int contact_id = -1;
+
+  stack.push_back(sourceVertex);
+
+
+  while ( ! stack.empty()  )
+  {
+    vertex = stack.back();
+    stack.pop_back();
+
+    for (SocialNetworkVertex *friendVertex: vertex->friends)
+    {
+      if (popularList.count(friendVertex) == 0)
+      {
+        popularList.insert(std::make_pair(friendVertex, 0));
+      }
+
+      popularList.at(friendVertex)++;
+
+      if (popularList.at(friendVertex) >= maxCount)
+      {
+        maxCount = popularList.at(friendVertex);
+        insiderData.first = vertex->id;
+        insiderData.second = friendVertex->id;
+      }
+
+      stack.push_back(friendVertex);
+    }
+  }
+  return insiderData;
+}
 
 
 int main()
@@ -571,11 +667,11 @@ int main()
   graph.addVertex("B");
   graph.addVertex("C");
   graph.addEdge(0,1,200);
+  std::cout << graph.neighbors(0).size() << '\n';
   // graph.removeVertex(1);
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
   // graph.deleteEdges(1);
-  std::cout << graph.neighbors(0).size() << '\n';
   // graph.addVertex(100);
   // graph.addVertex(1001);
   // graph.addEdge(0,1);
