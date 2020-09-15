@@ -126,3 +126,5 @@ struct employee_inside
 struct employee_inside *Someone_on_insider_no_contact (struct ALGraph *graph);
 struct employee_inside *employee_inside_allocate(int employee_id, int src_id);
 void update_employe_inside (struct employee_inside **head, int src_id, int employee_id);
+
+

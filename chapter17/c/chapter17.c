@@ -1163,6 +1163,8 @@ struct employee_inside *employee_inside_allocate(int employee_id, int src_id)
   return node;
 }
 
+
+
 int main()
 {
   time_t t;

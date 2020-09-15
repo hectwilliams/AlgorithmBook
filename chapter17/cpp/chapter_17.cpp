@@ -1,6 +1,5 @@
 #include "chapter_17.h"
 #include <algorithm>    // std::find
-#include <set>
 #include <map>
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph)
@@ -658,6 +657,83 @@ std::pair<int, int> someoneOnInside (SocialNetworkVertex *sourceVertex)
   }
   return insiderData;
 }
+
+void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID , std::vector<int> &path , std::vector<int> currPath )
+{
+  std::vector<GenericGraph *> stack;
+  GenericGraph *vertex;
+
+  if (excludeID.count(graph->id))
+  {
+    return;
+  }
+
+  stack.push_back(graph);
+
+  while (!stack.empty())
+  {
+    vertex = stack.back();
+    excludeID.insert(vertex->id);
+    stack.pop_back();
+
+    if (id1 == vertex->id || currPath.size())
+    {
+      currPath.push_back(vertex->id);
+      if (currPath[currPath.size() - 1] == id2)
+      {
+        for (int ele: currPath)
+        {
+          path.push_back(ele);
+        }
+      }
+    }
+
+    for (GenericGraph *friendVertex: vertex->frieends )
+    {
+      stack.push_back(friendVertex);
+      vertexIsReachable(graph, id1, id2, excludeID, path , std::vector<int>(currPath.begin(), currPath.end()));
+    }
+  }
+}
+
+void allPaths (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID ,std::vector<std::vector<int> > &paths , std::vector<int> currPath )
+{
+  std::vector <GenericGraph * > stack;
+  GenericGraph *vertex;
+
+  if (excludeID.count(graph->id))
+  {
+    return;
+  }
+
+  stack.push_back(graph);
+
+  while (!stack.empty())
+  {
+    vertex = stack.back();
+    stack.pop_back();
+    excludeID.insert(vertex->id);
+
+    if (vertex->id == id1 || currPath.size())
+    {
+      currPath.push_back(vertex->id);
+
+      if (currPath[currPath.size() - 1] == id2)
+      {
+        paths.push_back(std::vector<int>(currPath.begin(), currPath.end()) );
+      }
+    }
+
+    for (GenericGraph *friendVertex: vertex->frieends )
+    {
+      stack.push_back(friendVertex);
+      allPaths(friendVertex, id1 , id2, excludeID, paths, std::vector<int>(currPath.begin(), currPath.end()) );
+    }
+  }
+
+
+}
+
 
 
 int main()

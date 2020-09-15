@@ -347,6 +347,58 @@ def someoneOnInsideNoReference(srcVertex):
   return insiderObj
 
 
+def vertexIsReachable(srcVertex, id1, id2, visited = {} , path = [], meta = {'done': False, 'path': [] }  ) :
+  stack = []
+  vertex = None
+
+  if str(srcVertex.id) in visited  :
+    return
+
+  if meta['done'] or (id1 in path) or (id2 in path) or (srcVertex.id in path):
+    return
+
+  stack.append(srcVertex)
+
+  while stack:
+    vertex = stack.pop()
+    visited [ str(srcVertex.id) ]  = True
+
+    if vertex.id == id1 and path.__len__():
+      path.append(vertex.id)
+      if path[-1] == id2:
+        meta['done'] = True
+        meta['path'] = path[:]
+
+    for friendVertex in vertex:
+      stack.append(friendVertex)
+      vertexIsReachable(friendVertex, id1, id2, visited, path[:], meta)
+
+  return meta
+
+def allPaths (srcVertex, source_id , destination_id, visited = {}, paths = [], currPath = []):
+  stack = []
+  vertex = None
+
+  if visited[str(srcVertex)]:
+    return
+
+  stack.append(srcVertex)
+
+  while stack:
+    vertex = stack.pop()
+    visited[vertex.id] = True
+
+    if vertex.id == source_id or currPath.__len__():
+      currPath.append(vertex.id)
+
+    if currPath[-1] == destination_id:
+        paths.append(currPath[:])
+
+    for friendVertex in vertex.friends:
+      stack.append(friendVertex)
+      allPaths(friendVertex, source_id, destination_id, visited, paths, currPath[:])
+
+  return paths
 
 graph = ALGraph()
 graph.addVertex('a')

@@ -2,6 +2,7 @@
 #include <utility> //pair
 #include <iostream>
 #include <string>     // std::string, std::to_string
+#include <set>
 
 class ELVertex
 {
@@ -130,5 +131,14 @@ class SocialNetworkVertex
 bool someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs);
 
 
+class GenericGraph
+{
+  public:
+    int id;
+    std::vector<GenericGraph*> frieends;
+};
 
+
+void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID ,std::vector<int> &path , std::vector<int> currPath = std::vector<int>() );
+void allPaths (GenericGraph *graph, int id1, int id2 ,  std::set<int> &excludeID, std::vector<std::vector<int> > &paths , std::vector<int> currPath = std::vector<int>() );
 

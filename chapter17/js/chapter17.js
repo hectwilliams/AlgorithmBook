@@ -641,6 +641,87 @@ const someoneOnInsideNoReference = function (srcVertex)
   return insiderData;
 }
 
+class GenericGraph
+{
+  constructor(id)
+  {
+    this.id = id;
+    this.friends = [];
+  }
+};
+
+const vertexIsReachable = function (srcVertex = new GenericGraph(), id1 = null, id2 = null, visited = {},  path = [], meta = {done: false, path: []})
+{
+  let stack = [];
+  let vertex = null;
+
+  if (visited[srcVertex.id])
+  {
+    return;
+  }
+
+  stack.push(srcVertex);
+
+  while (stack.length)
+  {
+
+    vertex = stack.pop();
+    visited[vertex.id] = true;
+
+    // path created
+    if (vertex.id === id1 || path.length)
+    {
+      path.push(vertex.id);
+      if (path[path.length - 1] == id2)
+      {
+        meta.path = path;
+        meta.done = true;
+      }
+    }
+
+    for (let friendVertex of vertex.friends)
+    {
+      stack.push(friendVertex);
+      vertexIsReachable(friendVertex, id1, id2,visited, path.slice(), meta);
+    }
+  }
+  return meta;
+}
+
+const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID = null, excludeID = [],  paths = [], currPath = [])
+{
+  let stack = [];
+  let vertex;
+
+  if (excludeID.includes(srcVertex.id))
+  {
+    return;
+  }
+
+  stack.push(srcVertex);
+  while (stack.length)
+  {
+    vertex = stack.pop();
+    excludeID.push(vertex.id);
+
+    if (vertex.id === srcID || currPath.length)
+    {
+      currPath.push(vertex.id);
+      if (currPath[currPath.length - 1] == destID)
+      {
+        paths.push(currPath);
+      }
+    }
+
+    for (let friendVertex of vertex.friends)
+    {
+      stack.push(friendVertex);
+      allPaths(friendVertex, srcID, destID, paths, currPath.slice());
+    }
+  }
+
+  return paths;
+}
 
 {
   let graph = new ALGraph ();
@@ -652,6 +733,8 @@ const someoneOnInsideNoReference = function (srcVertex)
   graph.addEdge(0, 1,131 );
   // graph.removeEdge(0, 1);
   console.log(graph.neighbors(0))
+
+  console.log(vertexIsReachable())
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);
