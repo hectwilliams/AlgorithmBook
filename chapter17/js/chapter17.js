@@ -635,7 +635,12 @@ const someoneOnInsideNoReference = function (srcVertex)
         insiderData.contactID = vertex.id;
         insiderData.insiderID = friendVertex.id;
       }
-      stack.push(friendVertex);
+
+      if (popularMap[friendVertex.id] == undefined)
+      {
+        stack.push(friendVertex);
+      }
+
     }
   }
   return insiderData;
@@ -654,11 +659,6 @@ const vertexIsReachable = function (srcVertex = new GenericGraph(), id1 = null, 
 {
   let stack = [];
   let vertex = null;
-
-  if (visited[srcVertex.id])
-  {
-    return;
-  }
 
   stack.push(srcVertex);
 
@@ -681,8 +681,11 @@ const vertexIsReachable = function (srcVertex = new GenericGraph(), id1 = null, 
 
     for (let friendVertex of vertex.friends)
     {
-      stack.push(friendVertex);
-      vertexIsReachable(friendVertex, id1, id2,visited, path.slice(), meta);
+      if (visited[friendVertex.id] == undefined)
+      {
+        stack.push(friendVertex);
+        vertexIsReachable(friendVertex, id1, id2, visited, path.slice(), meta);
+      }
     }
   }
   return meta;
@@ -693,12 +696,8 @@ const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID 
   let stack = [];
   let vertex;
 
-  if (excludeID.includes(srcVertex.id))
-  {
-    return;
-  }
-
   stack.push(srcVertex);
+
   while (stack.length)
   {
     vertex = stack.pop();
@@ -715,8 +714,11 @@ const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID 
 
     for (let friendVertex of vertex.friends)
     {
-      stack.push(friendVertex);
-      allPaths(friendVertex, srcID, destID, paths, currPath.slice());
+      if (excludeID[friendVertex.id] == undefined)
+      {
+        stack.push(friendVertex);
+        allPaths(friendVertex, srcID, destID, paths, currPath.slice());
+      }
     }
   }
 

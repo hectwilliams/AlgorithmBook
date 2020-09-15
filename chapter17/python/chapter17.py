@@ -351,9 +351,6 @@ def vertexIsReachable(srcVertex, id1, id2, visited = {} , path = [], meta = {'do
   stack = []
   vertex = None
 
-  if str(srcVertex.id) in visited  :
-    return
-
   if meta['done'] or (id1 in path) or (id2 in path) or (srcVertex.id in path):
     return
 
@@ -370,17 +367,15 @@ def vertexIsReachable(srcVertex, id1, id2, visited = {} , path = [], meta = {'do
         meta['path'] = path[:]
 
     for friendVertex in vertex:
-      stack.append(friendVertex)
-      vertexIsReachable(friendVertex, id1, id2, visited, path[:], meta)
+      if visited[str(friendVertex.id)] == None :
+        stack.append(friendVertex)
+        vertexIsReachable(friendVertex, id1, id2, visited, path[:], meta)
 
   return meta
 
 def allPaths (srcVertex, source_id , destination_id, visited = {}, paths = [], currPath = []):
   stack = []
   vertex = None
-
-  if visited[str(srcVertex)]:
-    return
 
   stack.append(srcVertex)
 
@@ -395,8 +390,9 @@ def allPaths (srcVertex, source_id , destination_id, visited = {}, paths = [], c
         paths.append(currPath[:])
 
     for friendVertex in vertex.friends:
-      stack.append(friendVertex)
-      allPaths(friendVertex, source_id, destination_id, visited, paths, currPath[:])
+      if visited[str(friendVertex.id)] == None :
+        stack.append(friendVertex)
+        allPaths(friendVertex, source_id, destination_id, visited, paths, currPath[:])
 
   return paths
 

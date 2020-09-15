@@ -663,11 +663,6 @@ void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &e
   std::vector<GenericGraph *> stack;
   GenericGraph *vertex;
 
-  if (excludeID.count(graph->id))
-  {
-    return;
-  }
-
   stack.push_back(graph);
 
   while (!stack.empty())
@@ -690,8 +685,11 @@ void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &e
 
     for (GenericGraph *friendVertex: vertex->frieends )
     {
-      stack.push_back(friendVertex);
-      vertexIsReachable(graph, id1, id2, excludeID, path , std::vector<int>(currPath.begin(), currPath.end()));
+      if (excludeID.count(friendVertex->id) == 0)
+      {
+        stack.push_back(friendVertex);
+        vertexIsReachable(graph, id1, id2, excludeID, path , std::vector<int>(currPath.begin(), currPath.end()));
+      }
     }
   }
 }
@@ -700,11 +698,6 @@ void allPaths (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID 
 {
   std::vector <GenericGraph * > stack;
   GenericGraph *vertex;
-
-  if (excludeID.count(graph->id))
-  {
-    return;
-  }
 
   stack.push_back(graph);
 
@@ -726,11 +719,13 @@ void allPaths (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID 
 
     for (GenericGraph *friendVertex: vertex->frieends )
     {
-      stack.push_back(friendVertex);
-      allPaths(friendVertex, id1 , id2, excludeID, paths, std::vector<int>(currPath.begin(), currPath.end()) );
+      if (excludeID.count(friendVertex->id) == 0)
+      {
+        stack.push_back(friendVertex);
+        allPaths(friendVertex, id1 , id2, excludeID, paths, std::vector<int>(currPath.begin(), currPath.end()) );
+      }
     }
   }
-
 
 }
 
