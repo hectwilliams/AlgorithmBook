@@ -691,7 +691,7 @@ const vertexIsReachable = function (srcVertex = new GenericGraph(), id1 = null, 
   return meta;
 }
 
-const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID = null, excludeID = [],  paths = [], currPath = [])
+const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID = null, excludeID = {},  paths = [], currPath = [])
 {
   let stack = [];
   let vertex;
@@ -723,6 +723,49 @@ const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID 
   }
 
   return paths;
+}
+
+const shortestPath = function (srcVertex = new GenericGraph(), srcID = null, destID = null, visited = {},  shortPath = [], currPath = [])
+{
+  let queue = [];
+  let vertex;
+
+  queue.push(srcVertex);
+
+  while (queue.length)
+  {
+    vertex = queue.shift();
+    visited[vertex.id] = true;
+
+    if (srcID == vertex.id || currPath.length)
+    {
+      currPath.push(vertex.id);
+      if (currPath[currPath.length - 1 ] == destID )
+      {
+        if (shortPath.length == 0 || currPath.length < shortPath.length)
+        {
+          // clear short path array
+          while(shortPath.length) {shortPath.pop()};
+
+          // mutate short path array
+          for (let currPathElement of currPath)
+          {
+            shortPath.push(currPathElement);
+          }
+        }
+      }
+    }
+    for (let friendVertex of vertex.friends)
+    {
+      if ( visited [ friendVertex.id ] == undefined )
+      {
+        queue.push(friendVertex);
+        shortestPath(friendVertex, srcID, destID, visited, shortPath, currPath.slice());
+      }
+    }
+
+  }
+
 }
 
 {

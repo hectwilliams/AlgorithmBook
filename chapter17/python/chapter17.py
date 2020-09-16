@@ -396,6 +396,30 @@ def allPaths (srcVertex, source_id , destination_id, visited = {}, paths = [], c
 
   return paths
 
+def shortestPath (srcVertex, id1, id2, visited = {}, path = [], currPath = []) :
+  queue = []
+  vertex = None
+
+  queue.append(srcVertex)
+
+  while queue:
+    vertex = queue.pop(0)
+    visited[str(vertex.id)] = True
+
+    if id1 == vertex.id or currPath.__len__() > 0:
+      currPath.append(vertex.id)
+      if currPath[currPath.__len__() - 1] == id2:
+        if not path or currPath.__len__() < path.__len__():
+          for ele in currPath:
+            path.append(ele)
+
+    for friendVertex in vertex.friends:
+      if visited[str(friendVertex.id) ] == None:
+        queue.append(friendVertex)
+        shortestPath(friendVertex, id1 , id2, visited, path, currPath[:] )
+
+
+
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')

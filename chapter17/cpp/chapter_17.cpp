@@ -1,6 +1,7 @@
 #include "chapter_17.h"
 #include <algorithm>    // std::find
 #include <map>
+#include <set>
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph)
 {
@@ -729,6 +730,43 @@ void allPaths (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID 
 
 }
 
+void shortestPath (GenericGraph *graph, int id1, int id2 ,  std::set<int> &excludeID, std::vector < int >  &path , std::vector <int> currPath )
+{
+  std::vector <GenericGraph * > queue;
+  GenericGraph *vertex;
+
+  queue.push_back(graph);
+
+  while (queue.size())
+  {
+    vertex = queue[0];
+    queue.erase(queue.begin());
+
+    if (id1 == vertex->id || currPath.size())
+    {
+      currPath.push_back(vertex->id);
+      if (currPath[currPath.size() - 1] == id2)
+      {
+        path.clear();
+        for (int &ele: currPath)
+        {
+          path.push_back(ele);
+        }
+      }
+    }
+
+    for (GenericGraph *friendVertex : vertex->frieends)
+    {
+      if ( excludeID.count(friendVertex->id) == 0 )
+      {
+        queue.push_back(friendVertex);
+        shortestPath (friendVertex, id1, id2, excludeID, path, std::vector<int>(currPath.begin(), currPath.end()) );
+      }
+    }
+
+  }
+
+}
 
 
 int main()

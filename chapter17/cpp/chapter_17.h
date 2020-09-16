@@ -142,3 +142,5 @@ class GenericGraph
 void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID ,std::vector<int> &path , std::vector<int> currPath = std::vector<int>() );
 void allPaths (GenericGraph *graph, int id1, int id2 ,  std::set<int> &excludeID, std::vector<std::vector<int> > &paths , std::vector<int> currPath = std::vector<int>() );
 
+void shortestPath (GenericGraph *graph, int id1, int id2, std::set<int> &excludeID, std::vector<int>  &path , std::vector<int> currPath = std::vector<int>() );
+
