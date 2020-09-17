@@ -258,7 +258,6 @@ class ALGraph:
 
   def removeEdge (self, id1, id2) :
     removed = False
-
     for vertex in self.adjacentList:
       if vertex.id == id1:
         index = 0
@@ -269,6 +268,14 @@ class ALGraph:
           else :
             index += 1
     return removed
+
+  def getEdgeValue(self, id1, id2):
+    for v1 in self.adjacentList:
+      if v1.id == id1:
+        for adj in v1.adjacent:
+          if adj[0] == id2:
+            return adj[1]
+    return None
 
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):

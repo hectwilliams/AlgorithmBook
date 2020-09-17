@@ -106,7 +106,8 @@ class ALGraph
     bool addEdge (int id1, int id2, int edge) ;
     void removeEdges(int id);
     bool removeEgde(int id1, int id2);
-    // std::pair<std::string, int> getEdgeValue(int id1, int id2) ;
+    std::pair<std::string, int> getEdgeValue(int id1, int id2);
+
     // bool setEdgeValue(int id1, int id2, int edgeValue);
     // bool adjacent(int id1, int id2);
     // const std::vector<int> &neighbors(int id);

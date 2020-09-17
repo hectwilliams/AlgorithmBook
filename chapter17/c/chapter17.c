@@ -845,26 +845,24 @@ enum boolean ALGraph_removeEdge(struct ALGraphLL *graph, int id1, int id2)
   return removed;
 }
 
-
-
-struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2)
+struct pair_string ALGraph_getEdgeValue(struct ALGraphLL *graph,int  id1, int id2)
 {
-  struct pair result = {.valid = false};
-  struct ALGraphMeta *meta;
+  struct pair_string result = {.valid = false};
+  struct ALGraphAdjLL *adj;
 
   while(graph)
   {
     if (graph->vertex_id == id1)
     {
-      meta = graph->meta;
-      while (meta)
+      adj = graph->adjacentVertices;
+      while (adj)
       {
-        if (meta->edge == id2)
+        if (adj->adjacent_id == id2)
         {
-          result.value = meta->edgeValue;
+          result.value = adj->adjacent_edge;
           result.valid = true;
         }
-        meta = meta->next;
+        adj = adj->next;
       }
     }
     graph = graph->next;

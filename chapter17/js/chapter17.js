@@ -471,6 +471,27 @@ class ALGraph
     return removed;
   }
 
+  getEdgeValue (id1, id2)
+  {
+    for (let vertex1 of this.adjacentList)
+    {
+      if (vertex1.id == id1)
+      {
+        for (let adj of this.adjacent )
+        {
+          if (adj.id == id2)
+          {
+            return adj.edge;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+
+
 };
 
 

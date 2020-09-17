@@ -465,6 +465,30 @@ void ALGraph::removeEdges(int id)
   }
 }
 
+std::pair<std::string, int> ALGraph::getEdgeValue(int id1, int id2)
+{
+  ALVertex *vertex;
+
+  std::pair<std::string, int> res = std::make_pair("error", NULL);
+
+  for (int i = 0; i < this->adjacentList.size(); i++)
+  {
+    vertex = this->adjacentList[i];
+    if (vertex->vertex_id == id1)
+    {
+      for (int k = 0; k < vertex->adjacent.size(); k++)
+      {
+        if (vertex->adjacent[k].first == id2)
+        {
+          res.first = "true";
+          res.second  = vertex->adjacent[k].second;
+        }
+      }
+    }
+  }
+  return res;
+}
+
 bool ALGraph::removeEgde(int id1, int id2)
 {
   ALVertex *vertex;
