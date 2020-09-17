@@ -687,7 +687,7 @@ enum boolean ALGraph_removeVertex (struct ALGraphLL ** graph, const int vertexID
   return removed;
 }
 
-struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id)
+struct pair ALGraph_getVertexValue(struct ALGraphLL *graph, int id)
 {
   struct pair result = {.valid = false};
 

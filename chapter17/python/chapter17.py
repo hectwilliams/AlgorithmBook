@@ -214,7 +214,11 @@ class ALGraph:
         return True
     return False
 
-
+  def getVertexValue(self, id) :
+    for vertex in self.adjacentList:
+      if vertex.id == id:
+        return vertex.value
+    return None
 
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):

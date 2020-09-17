@@ -388,6 +388,22 @@ bool ALGraph::removeVertex (int vertexID)
   return false;
 }
 
+std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
+{
+  std::pair<std::string, std::string> res = std::make_pair("error", "");
+  for (ALVertex *vertex : this->adjacentList)
+  {
+    if (vertex->vertex_id == vertexID)
+    {
+      res.first = "valid";
+      res.second = vertex->value;
+    }
+  }
+  return res;
+}
+
+
+
 
 bool  someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs)
 {

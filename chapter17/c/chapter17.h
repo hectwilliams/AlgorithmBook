@@ -78,21 +78,6 @@ enum boolean AMGraph_setEdgeValue (struct AMGraph *graph, const unsigned id1, co
 enum boolean AMGraph_adjacent(struct AMGraph *graph, const unsigned id1, const unsigned id2);
 struct llist * AMGraph_neighbors(struct AMGraph *graph, int id);
 
-struct ALGraphAdjLL
-{
-  int adjacent_id;
-  int adjacent_edge;
-  struct ALGraphAdjLL *next;
-
-};
-
-struct ALGraphLL
-{
-  int vertex_id;
-  const char *value;
-  struct ALGraphAdjLL *adjacentVertices;
-  struct ALGraphLL *next;
-};
 
 
 struct ALGraphMeta
@@ -111,14 +96,27 @@ struct ALGraph
   struct  ALGraphMeta *meta;   // [dest_id, edge, dest_id, edge...]
 };
 
+struct ALGraphAdjLL
+{
+  int adjacent_id;
+  int adjacent_edge;
+  struct ALGraphAdjLL *next;
 
+};
 
+struct ALGraphLL
+{
+  int vertex_id;
+  const char *value;
+  struct ALGraphAdjLL *adjacentVertices;
+  struct ALGraphLL *next;
+};
 
 void ALGraph_display (struct ALGraphLL * graph);
 int ALGraph_addVertex (struct ALGraphLL ** graph, const char *value);
 enum boolean ALGraph_removeVertex (struct ALGraphLL ** graph, const int vertexID);
+struct pair ALGraph_getVertexValue(struct ALGraphLL *graph, int id);
 
-struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id);
 enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge);
 void ALGraph_removeEdges(struct ALGraph *graph, int id);
 enum boolean ALGraph_removeEdge(struct ALGraph *graph, int id1, int id2) ;

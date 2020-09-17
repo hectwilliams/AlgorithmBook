@@ -362,6 +362,13 @@ class ALGraph
     this.adjacentList = [];
   }
 
+  display()
+  {
+    this.adjacentList.forEach((obj) => {
+      console.log(obj);
+    });
+  }
+
   addVertex (value)
   {
     this.adjacentList.push( new ALVertex(value, this.counter));
@@ -381,12 +388,18 @@ class ALGraph
     return false;
   }
 
-  display()
+  getVertexValue(id)
   {
-    this.adjacentList.forEach((obj) => {
-      console.log(obj);
-    });
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id)
+      {
+        return vertex.value;
+      }
+    }
+    return null;
   }
+
 };
 
 
