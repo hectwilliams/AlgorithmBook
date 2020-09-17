@@ -802,40 +802,50 @@ void ALGraph_removeEdges(struct ALGraphLL *graph, int id)
   }
 }
 
-enum boolean ALGraph_removeEdge(struct ALGraph *graph, int id1, int id2)
+enum boolean ALGraph_removeEdge(struct ALGraphLL *graph, int id1, int id2)
 {
-  struct ALGraphMeta *meta, *delMeta;
+  struct ALGraphAdjLL *adj;
+  void *delNode = NULL;
+  enum boolean removed = false;
 
   while (graph)
   {
     if (graph->vertex_id == id1)
     {
-      meta = graph->meta;
-      if (meta)
+      adj = graph->adjacentVertices;
+      if (adj)
       {
-        while (meta->next)
+        while (adj->next)
         {
-          if (meta->next->edge == id2)
+          if (adj->next->adjacent_id == id2)
           {
-            delMeta = meta->next;
-            meta->next = delMeta->next;
-            free(delMeta);
-            return true;
+            delNode = adj->next;
+            adj->next = adj->next->next;
+            free(delNode);
+            removed |= true;
+          }
+          else
+          {
+            adj = adj->next;
           }
         }
-        if (graph->meta->edge == id2)
+
+        if (graph->adjacentVertices->adjacent_id == id2)
         {
-          delMeta = graph->meta;
-          graph->meta = delMeta->next;
-          free(delMeta);
-          return true;
+          delNode = graph->adjacentVertices;
+          graph->adjacentVertices = graph->adjacentVertices->next;
+          free(delNode);
+          removed |= true;
         }
       }
+      return removed;
     }
     graph = graph->next;
   }
-  return false;
+  return removed;
 }
+
+
 
 struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2)
 {

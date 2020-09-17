@@ -448,8 +448,29 @@ class ALGraph
         }
       }
     }
-
   }
+
+  removeEdge (id1, id2)
+  {
+    let removed = false;
+
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id1)
+      {
+        for (let i = 0; i < vertex.adjacent.length; i++)
+        {
+          if ( vertex.adjacent[i].id == id2)
+          {
+            vertex.adjacent.splice(i--, 1);
+            removed |= true;
+          }
+        }
+      }
+    }
+    return removed;
+  }
+
 };
 
 

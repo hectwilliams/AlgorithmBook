@@ -388,6 +388,22 @@ bool ALGraph::removeVertex (int vertexID)
   return false;
 }
 
+
+std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
+{
+  std::pair<std::string, std::string> res = std::make_pair("error", "");
+  for (ALVertex *vertex : this->adjacentList)
+  {
+    if (vertex->vertex_id == vertexID)
+    {
+      res.first = "valid";
+      res.second = vertex->value;
+    }
+  }
+  return res;
+}
+
+
 bool ALGraph::setVertexValue (int vertexID, std::string value)
 {
   for (ALVertex *vertex: this->adjacentList)
@@ -449,22 +465,30 @@ void ALGraph::removeEdges(int id)
   }
 }
 
-
-std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
+bool ALGraph::removeEgde(int id1, int id2)
 {
-  std::pair<std::string, std::string> res = std::make_pair("error", "");
-  for (ALVertex *vertex : this->adjacentList)
+  ALVertex *vertex;
+  int index = 0;
+  bool removed = false;
+
+  for (int i = 0; i < this->adjacentList.size(); i++)
   {
-    if (vertex->vertex_id == vertexID)
+    vertex = this->adjacentList[i];
+
+    if (vertex->vertex_id == id1)
     {
-      res.first = "valid";
-      res.second = vertex->value;
+      for (int k = 0; k < vertex->adjacent.size(); k++)
+      {
+        if ( vertex->adjacent[k].first == id2 )
+        {
+          vertex->adjacent.erase(vertex->adjacent.begin() + k-- );
+          removed |= true;
+        }
+      }
     }
   }
-  return res;
+  return removed;
 }
-
-
 
 
 bool  someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs)
