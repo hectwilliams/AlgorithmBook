@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>     // std::string, std::to_string
 #include <set>
+#include <map>
 
 class ELVertex
 {
@@ -143,4 +144,6 @@ void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &e
 void allPaths (GenericGraph *graph, int id1, int id2 ,  std::set<int> &excludeID, std::vector<std::vector<int> > &paths , std::vector<int> currPath = std::vector<int>() );
 
 void shortestPath (GenericGraph *graph, int id1, int id2, std::set<int> &excludeID, std::vector<int>  &path , std::vector<int> currPath = std::vector<int>() );
+void gimmieThreeSteps (GenericGraph *graph, const int id, std::set<int> &excludeID, std::vector<int> &ids, std::vector<int> path = std::vector<int> () ) ;
 
+void easyToGetThere(GenericGraph *graph,  std::vector<int> &ids, std::map<int, std::pair<int, int> > data = std::map<int, std::pair<int, int> > ()  );

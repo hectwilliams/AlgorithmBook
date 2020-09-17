@@ -418,6 +418,27 @@ def shortestPath (srcVertex, id1, id2, visited = {}, path = [], currPath = []) :
         queue.append(friendVertex)
         shortestPath(friendVertex, id1 , id2, visited, path, currPath[:] )
 
+def gimmieThreeSteps (srcVertex, id , visited = {}, ids = [], currPath = []) :
+  queue = []
+  vertex = None
+
+  if currPath.__len__() >= 4:
+    return
+
+  queue.append(srcVertex)
+
+  while queue:
+    vertex = queue.pop(0)
+    visited [ str(vertex.id) ] = True
+
+    if id == vertex.id or currPath.__len__():
+      currPath.append(vertex.id)
+      ids.append(vertex.id)
+
+    for friendVertex in vertex.friends:
+      if visited [ str(friendVertex.id) ] == None:
+        queue.append(friendVertex)
+        gimmieThreeSteps(friendVertex, id, visited, ids, currPath[:])
 
 
 graph = ALGraph()

@@ -1,7 +1,5 @@
 #include "chapter_17.h"
 #include <algorithm>    // std::find
-#include <map>
-#include <set>
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph)
 {
@@ -765,9 +763,74 @@ void shortestPath (GenericGraph *graph, int id1, int id2 ,  std::set<int> &exclu
     }
 
   }
-
 }
 
+void gimmieThreeSteps (GenericGraph *graph, const int id, std::set<int> &excludeID, std::vector<int> &ids, std::vector<int> path)
+{
+  GenericGraph *vertex;
+  std::vector <GenericGraph *> queue;
+
+  if (path.size() >4)
+  {
+    return;
+  }
+
+  queue.push_back(graph);
+  while (!queue.empty())
+  {
+    vertex = queue[0];
+    queue.erase(queue.begin());
+    if (id == vertex->id || path.size())
+    {
+      path.push_back(vertex->id);
+      ids.push_back(vertex->id);
+    }
+    for (GenericGraph *friendVertex: vertex->frieends)
+    {
+      if (excludeID.count(vertex->id) == 0)
+      {
+        queue.push_back(friendVertex);
+        gimmieThreeSteps( graph, id, excludeID, ids, std::vector<int>(path.begin(), path.end()) );
+      }
+    }
+  }
+}
+
+void easyToGetThere(GenericGraph *graph,  std::vector<int> &ids, std::map<int, std::pair<int, int> > data )
+{
+  GenericGraph *vertex;
+  std::vector <GenericGraph *> queue;
+
+  if (data.size())
+  {
+    if (data.count(graph->id))
+    {
+      data.at(graph->id).first++;
+      if (data.at(graph->id).first  - data.at(graph->id).second )  // easier to get to vertex
+      {
+        ids.push_back(graph->id);
+        return;
+      }
+    }
+  }
+
+  queue.push_back(graph);
+
+  while (!queue.empty())
+  {
+    vertex = queue[0];
+    queue.erase(queue.begin());
+    if (data.count(vertex->id) == 0)
+    {
+      data.insert(std::make_pair(vertex->id, std::make_pair(0, vertex->frieends.size())));
+    }
+    for (GenericGraph *friendVertex: graph->frieends)
+    {
+      easyToGetThere(friendVertex, ids, data);
+    }
+  }
+
+}
 
 int main()
 {

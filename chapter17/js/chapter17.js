@@ -768,6 +768,76 @@ const shortestPath = function (srcVertex = new GenericGraph(), srcID = null, des
 
 }
 
+const gimmieThreeSteps = function(srcVertex = new GenericGraph(), srcID, visited = {}, ids = [], currPath = [])
+{
+  let queue = [];
+  let vertex;
+
+  if (currPath.length >= 4)
+  {
+    return;
+  }
+
+  queue.push(srcVertex);
+
+  while (queue.length)
+  {
+    vertex = queue.shift();
+    visited[vertex.id] = true;
+
+    if (srcID == vertex.id || currPath.length)
+    {
+      currPath.push(vertex.id);
+      ids.push(vertex.id);
+    }
+
+    for (let friendVertex of vertex.friends)
+    {
+      if (visited[friendVertex.id] == undefined)
+      {
+        queue.push(friendVertex);
+        gimmieThreeSteps(friendVertex, srcID, visited, ids, currPath.slice());
+      }
+    }
+
+  }
+}
+
+const easyToGetThere = function ( srcVertex = new GenericGraph() , data = {} , ids = [])
+{
+  let queue = [];
+  let vertex;
+
+  if (data[srcVertex.id])
+  {
+    data[srcVertex.id].in++ ;
+
+    if (data[srcVertex.id].in - data[srcVertex.id].out == 1)   // easier to get to vertex
+    {
+      ids.push(srcVertex.id);
+    }
+    return;
+  }
+
+  queue.push(srcVertex);
+
+  while (queue.length)
+  {
+    vertex = queue.shift();
+
+    if (data[vertex.id] == undefined)
+    {
+      data[vertex.id] = { in: 0, out: vertex.friends.length} ;
+    }
+    for (let friendVertex of vertex.friends)
+    {
+      easyToGetThere(friendVertex, data, ids);
+    }
+  }
+
+  return ids;
+}
+
 {
   let graph = new ALGraph ();
   graph.addVertex('A');
