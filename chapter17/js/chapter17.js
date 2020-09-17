@@ -490,6 +490,43 @@ class ALGraph
     return false;
   }
 
+  setEdgeValue (id1, id2, value)
+  {
+    for (let v1 of this.adjacentList)
+    {
+      if (v1.id == id1)
+      {
+        for (let adj of v1.adjacent)
+        {
+          if (adj.id)
+          {
+            return adj.edge;
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  adjacent(id1, id2)
+  {
+    for (let v1 of this.adjacentList)
+    {
+      if (v1.id == id1)
+      {
+        for (let adj of v1.adjacent)
+        {
+          if (adj.id == id2)
+          {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
 
 
 };

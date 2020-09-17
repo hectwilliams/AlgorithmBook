@@ -277,6 +277,23 @@ class ALGraph:
             return adj[1]
     return None
 
+  def setEdgeValue (self, id1, id2, edge) :
+    for v1 in self.adjacentList:
+      if v1.id == id1:
+        for adj in v1.adjacent:  # adj = array
+          if adj[0] == id2:
+            adj[1] = edge
+            return True
+    return False
+
+  def adjacent (self, id1, id2) :
+    for v1 in self.adjacentList:
+      if v1.id == id1:
+        for adj in v1.adjacent:   # adj  = array
+          if adj[0] == id2:
+            return False
+    return True
+
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):
     self.name = name

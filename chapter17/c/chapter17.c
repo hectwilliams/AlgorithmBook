@@ -870,23 +870,23 @@ struct pair_string ALGraph_getEdgeValue(struct ALGraphLL *graph,int  id1, int id
   return result;
 }
 
-enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int value)
+enum boolean  ALGraph_setEdgeValue(struct ALGraphLL *graph,int  id1, int id2, int value)
 {
-  struct ALGraphMeta *meta;
+  struct ALGraphAdjLL *adj;
 
   while(graph)
   {
     if (graph->vertex_id == id1)
     {
-      meta = graph->meta;
-      while (meta)
+      adj = graph->adjacentVertices;
+      while (adj)
       {
-        if (meta->edge == id2)
+        if (adj->adjacent_id == id2)
         {
-          meta->edgeValue = value;
+          adj->adjacent_edge = value;
           return true;
         }
-        meta = meta->next;
+        adj = adj->next;
       }
     }
     graph = graph->next;
@@ -894,22 +894,22 @@ enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int 
   return false;
 }
 
-enum boolean ALGraph_adjacent(struct ALGraph *graph, int id1, int id2)
+enum boolean ALGraph_adjacent(struct ALGraphLL *graph, int id1, int id2)
 {
-  struct ALGraphMeta *meta;
+  struct ALGraphAdjLL *adj;
 
   while(graph)
   {
     if (graph->vertex_id == id1)
     {
-      meta = graph->meta;
-      while (meta)
+      adj = graph->adjacentVertices;
+      while (adj)
       {
-        if (meta->edge == id2)
+        if (adj->adjacent_id == id2)
         {
           return true;
         }
-        meta = meta->next;
+        adj = adj->next;
       }
     }
     graph = graph->next;
