@@ -191,105 +191,30 @@ class ALVertex :
   def __init__(self, value, id) :
     self.value = value
     self.id = id
-    self.ids = []
-    self.edges = []
+    self.adjacent = []
+
 class ALGraph:
   def __init__(self):
-    self.counter = 0
+    self.__counter = -1
     self.adjacentList = []
+
   def display (self) :
     for vertex in self.adjacentList:
       print(vertex.__dict__)
-  def addVertex (self, value) :
-    self.adjacentList.append( ALVertex(value, self.counter))
-    self.counter += 1
-    return self.counter - 1
-  def removeVertex(self, id):
-    removed = False
-    pos = 0
-    while pos < self.adjacentList.__len__():
-      if self.adjacentList[pos].id == id:
-        if self.adjacentList[pos].id == id:
-          self.adjacentList.pop(pos)
-      else:
-        index = None
-        for i in range(0, self.adjacentList[pos].ids.__len__()):
-          index = i if self.adjacentList[pos].ids[i] == id else index
-        if index >=0:
-          self.adjacentList[pos].ids.pop(index)
-          self.adjacentList[pos].edges.pop(index)
 
-        pos += 1
-    return removed
-  def getVertexValue(self,id) :
-    for vertex in self.adjacentList:
-      if vertex.id == id:
-        return vertex.value
-    return None
-  def setVertexValue (self, id, value) :
-    for vertex in self.adjacentList:
-      if vertex.id == id:
-        vertex.value = value
-    return False
-  def addEdge (self, id1, id2, edgeValue) :
-    vertexA = vertexB = None
+  def addVertex(self, value) :
+    self.__counter += 1
+    self.adjacentList.append (ALVertex(value, self.__counter))
+    return id
 
-    for vertex in self.adjacentList:
-      if id1 == vertex.id:
-        vertexA = vertex
-      if id2 == vertex.id:
-        vertexB = vertex
+  def removeVertex (self, id):
+    for i, vertex in enumerate(self.adjacentList):
+      if vertex.id == id :
+        self.adjacentList.pop(i)
+        return True
+    return False
 
-    if vertexB and vertexA:
-      vertexA.ids.append(id2)
-      vertexA.edges.append(edgeValue)
-      return True
-    return False
-  def removeEdges (self, id) :
-    for vertex in self.adjacentList:
-      i = 0
-      while i < vertex.ids.__len__():
-        if vertex.ids[i] == id:
-          vertex.ids.pop(i)
-          vertex.edges.pop(i)
-        else :
-          i += 1
-  def removeEdge(self, id1, id2) :
-    for vertex in self.adjacentList:
-      if vertex.id == id1:
-        for i in range(0, vertex.ids.__len__()):
-          if vertex.ids[i] == id2:
-            vertex.ids.pop(i)
-            vertex.edges.pop(i)
-            return True
-    return False
-  def getEdgeValue(self, id1, id2):
-    for vertex in self.adjacentList:
-      if vertex.id == id1:
-        for i , currID in enumerate(vertex.ids):
-          if currID  == id2:
-            return vertex.edges[i]
-    return None
-  def setEdgeValue(self, id1, id2, edgeValue):
-    for vertex in self.adjacentList:
-      if vertex.id == id1:
-        for i , currID in enumerate(vertex.ids):
-          if currID  == id2:
-            vertex.edges[i] = edgeValue
-            return True
-    return None
-  def adjacent(self, id1, id2):
-    for vertex in self.adjacentList:
-      if vertex.id == id1:
-        for i , currID in enumerate(vertex.ids):
-          if currID  == id2:
-            return True
-    return False
-  def neighbors (self, id):
-    for vertex in self.adjacentList:
-      if vertex.id == id:
-        return vertex.ids
-    return []
+
 
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):
@@ -444,9 +369,10 @@ def gimmieThreeSteps (srcVertex, id , visited = {}, ids = [], currPath = []) :
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
-print(graph.setVertexValue(1,122))
-graph.addEdge(0, 1 , 900)
-print(graph.setEdgeValue(0, 1, 404))
+graph.removeVertex(0)
+# print(graph.setVertexValue(1,122))
+# graph.addEdge(0, 1 , 900)
+# print(graph.setEdgeValue(0, 1, 404))
 # graph.removeEdges(1)
 # graph.removeEdges(0)
 graph.display()

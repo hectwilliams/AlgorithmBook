@@ -588,138 +588,103 @@ struct llist * AMGraph_neighbors(struct AMGraph *graph, int id)
   return llist;
 }
 
-void ALGraph_display (struct ALGraph * graph)
+void ALGraph_display (struct ALGraphLL * graph)
 {
-  struct ALGraphMeta *meta;
+  struct ALGraphAdjLL *adjLL;
+  printf("\n DISPLAY \n");
 
   while (graph)
   {
-    printf(" id: %d vertex :%d -> ", graph->vertex_id, graph->value);;
-
-    meta = graph->meta;
-    while (meta)
+    printf( " {id: %d, value: %s} ", graph->vertex_id, graph->value); // vertex data
+    adjLL = graph->adjacentVertices; // adjacent lisst
+    if (adjLL)
     {
-      printf(" [%d] ", meta->edge );
-      meta = meta->next;
+      while (adjLL->next)
+      {
+        printf("[id - %d, edge - %d]", adjLL->adjacent_id, adjLL->adjacent_edge);
+        adjLL = adjLL->next;
+      }
+      printf("\n");
     }
-    printf("\n\n");
     graph = graph->next;
   }
 
-  printf("\n end \n");
+  printf("\n DISPLAY END \n");
 }
 
-int ALGraph_addVertex (struct ALGraph ** graph, int value)
+int ALGraph_addVertex (struct ALGraphLL ** graph, const char *value)
 {
   static int id = 0;
-  struct ALGraph *tmp, *run;
+  struct ALGraphLL *tmp, *run;
 
-  tmp =  (struct ALGraph *) malloc( sizeof(struct ALGraph ) );
+  tmp =  (struct ALGraphLL *) malloc( sizeof(struct ALGraphLL ) );
   tmp->vertex_id = id;
-  tmp ->value = value;
-  tmp->meta = NULL;
+  tmp->value = value;
   tmp->next = NULL;
+  tmp->adjacentVertices = NULL;
 
-
-  if ( *graph  == NULL)
-  {
-    *graph = tmp;
-  }
-  else
+  if (*graph != NULL)
   {
     tmp->next = *graph;
-    *graph = tmp;
-    while (tmp->next)
-    {
-      tmp = tmp->next;
-    }
-    tmp->next = NULL;
   }
+
+  *graph = tmp;
+
   return id++;
 }
 
 
-enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID)
+enum boolean ALGraph_removeVertex (struct ALGraphLL ** graph, const int vertexID)
 {
-  struct ALGraph * algraph_runner = *graph;
-  struct ALGraph *delNode;
-  struct ALGraphMeta *runner, *runner_buffer;
+  struct ALGraphLL * llist_graph = *graph;
+  struct ALGraphAdjLL *llist_adj;
+  void* delNode = NULL;
+  enum boolean removed = false;
 
-  int counter = 0;
-
-  while (algraph_runner->next)
+  while (llist_graph->next)
   {
-    if (algraph_runner->next->vertex_id == vertexID)
+    if (llist_graph->next->vertex_id == vertexID)
     {
-      counter++;
-      delNode = algraph_runner->next;
-      algraph_runner->next = algraph_runner->next->next;
-
-      // delete list element
-      runner = delNode->meta;
-      while (runner )
+      // remove adjacent entries
+      llist_adj = llist_graph->next->adjacentVertices;
+      while (llist_adj)
       {
-        runner_buffer = runner;
-        free(runner_buffer);
-        runner = runner->next;
+        delNode = llist_adj;
+        llist_adj = llist_adj->next;
+        free(delNode);
       }
+
+      // remove vertex
+      delNode = llist_graph->next;
+      llist_graph->next = llist_graph->next->next;
       free(delNode);
+      removed |= true;
     }
     else
     {
-      // remove edge from vertex(driver)  META
-      {
-
-        runner = algraph_runner->next->meta;
-        if (runner)
-        {
-          while (runner->next)
-          {
-            if (runner->next->edge == vertexID)
-            {
-              runner_buffer = runner->next;
-              runner->next = runner_buffer->next;
-              free(runner_buffer);
-            }
-            else
-            {
-              runner = runner->next;
-            }
-          }
-
-          if (algraph_runner->next->meta->edge == vertexID)
-          {
-            runner_buffer = algraph_runner->next->meta;
-            algraph_runner->next->meta = algraph_runner->next->meta->next;
-            free(runner_buffer);
-          }
-        }
-
-      }
-
-      algraph_runner = algraph_runner->next;
+      llist_graph = llist_graph->next;
     }
   }
 
-      // delete list(ie. HEAD) element
-
-  if ((*graph )->vertex_id == vertexID)
+  // src vertex id match
+  if ((*graph)->vertex_id == vertexID)
   {
-    delNode = *graph;
-    *graph = delNode->next;
-
-    // delete list
-    runner = delNode->meta;
-    while (runner )
+    // remove adjacent entries
+    llist_adj = llist_graph->adjacentVertices;
+    while (llist_adj)
     {
-      runner_buffer = runner;
-      free(runner_buffer);
-      runner = runner->next;
+      delNode = llist_adj;
+      llist_adj = llist_adj->next;
+      free(delNode);
     }
-    free(delNode);
-  }
 
-  return counter == 0 ? false : true;
+    // remove head vertex (update Graph head)
+    delNode = *graph;
+    *graph = (*graph)->next;
+    free(delNode);
+    removed |= true;
+  }
+  return removed;
 }
 
 struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id)
@@ -1163,28 +1128,26 @@ struct employee_inside *employee_inside_allocate(int employee_id, int src_id)
   return node;
 }
 
-
-
 int main()
 {
   time_t t;
 
   // srand((unsigned) time(&t));  // fixed pseudo random
-  struct ALGraph *graph = NULL;
-  printf ( "[%d] \n ", ALGraph_addVertex(&graph, 23));
-  printf ( " [%d] \n ", ALGraph_addVertex(&graph,111));
-  printf ( "[%d] \n ", ALGraph_addVertex(&graph, 34323));
+  struct ALGraphLL *graph = NULL;
+  printf ( "[%d] \n ", ALGraph_addVertex(&graph, "23"));
+  printf ( " [%d] \n ", ALGraph_addVertex(&graph,"111"));
+  // printf ( "[%d] \n ", ALGraph_addVertex(&graph, 34323));
 
-  ALGraph_setVertexValue(graph, 1, 555);
+  // ALGraph_setVertexValue(graph, 1, 555);
 
-  ALGraph_addEdge(graph, 0, 1, 22);
-  // ALGraph_removeVertex(&graph, 0);
+  // ALGraph_addEdge(graph, 0, 1, 22);
+  ALGraph_removeVertex(&graph, 0);
 
-  printf( "[%d**] \n",  ALGraph_getEdgeValue(graph, 0, 1).value );
+  // printf( "[%d**] \n",  ALGraph_getEdgeValue(graph, 0, 1).value );
 
-  // ALGraph_display(graph);
+  ALGraph_display(graph);
 
-  Someone_on_insider_no_contact(graph);
+  // Someone_on_insider_no_contact(graph);
 
   // AMGraph_removeEdges(graph, 2);
   // struct ELGraph *graph = NULL;

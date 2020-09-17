@@ -354,10 +354,10 @@ std::ostream &operator << (std::ostream &stream, const ALGraph &graph)
   std::string mes;
   for (ALVertex *vertex : graph.adjacentList)
   {
-    mes += "Vertex: " + vertex->value;
-    for (int i =0; i < vertex->ids.size() ; i++)
+    mes += "Vertex: " + vertex->value + " " +  std::to_string(vertex->vertex_id) + " |";
+    for (int i =0; i < vertex->adjacent.size() ; i++)
     {
-      mes += "[" + std::to_string(vertex->ids[i]) + "-" + std::to_string(vertex->edges[i]) +  "] ";
+      mes += "[" + std::to_string(vertex->adjacent[i].first ) + "-" + std::to_string(vertex->adjacent[i].second) +  "] ";
     }
     mes+= "\n";
   }
@@ -375,193 +375,19 @@ int ALGraph::addVertex(std::string value)
 bool ALGraph::removeVertex (int vertexID)
 {
   int pos = 0;
-  int curr_size = 0;
-  bool removed = false;
 
-  while (pos < adjacentList.size())
-  {
-    if (adjacentList[pos]->vertex_id == vertexID)
-    {
-      free(adjacentList[pos]);
-      adjacentList.erase(adjacentList.begin() + pos);
-      removed = true;
-    }
-    else
-    {
-      curr_size = adjacentList[pos]->ids.size();
-      for (int i = 0; i < curr_size && curr_size == adjacentList[pos]->ids.size() ; i++)
-      {
-        if ( adjacentList[pos]->ids[i] == vertexID)
-        {
-          adjacentList[pos]->ids.erase(  adjacentList[pos]->ids.begin() + i);
-          adjacentList[pos]->edges.erase(  adjacentList[pos]->edges.begin() + i);
-        }
-      }
-      pos++;
-    }
-  }
-  return removed;
-}
-
-std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
-{
-  std::pair<std::string, std::string> result = std::make_pair("null", "");
-
-  for (ALVertex * vertex: adjacentList)
+  for (ALVertex * vertex: this->adjacentList)
   {
     if (vertex->vertex_id == vertexID)
     {
-      result.first = "true";
-      result.second = vertex->value;
-    }
-  }
-  return result;
-}
-
-bool ALGraph::setVertexValue (int vertexID, std::string value )
-{
-  for (ALVertex *vertex : adjacentList)
-  {
-    if (vertex->vertex_id == vertexID)
-    {
-      vertex->value = value;
+      this->adjacentList.erase(this->adjacentList.begin() + pos) ;
       return true;
     }
+    pos++;
   }
   return false;
 }
 
-bool ALGraph:: addEdge (int id1, int id2, int edge)
-{
-  ALVertex *v1, *v2;
-  v1 = v2 = NULL;
-
-  for (ALVertex *vertex : adjacentList)
-  {
-    if (vertex->vertex_id == id1)
-    {
-      v1 = vertex;
-    }
-
-    if (vertex->vertex_id == id2)
-    {
-      v2 = vertex;
-    }
-  }
-  if (v1 && v2)
-  {
-    v1->ids.push_back(v2->vertex_id);
-    v1->edges.push_back(edge);
-    return true;
-  }
-  return false ;
-}
-
-void ALGraph::removeEdges(int id)
-{
-  std::vector<int>::iterator it;
-  for (ALVertex *vertex : adjacentList)
-  {
-    for (int i = 0; i < vertex->ids.size(); i++)
-    {
-      if (vertex->ids[i] == id)
-      {
-        vertex->ids.erase(vertex->ids.begin() + i);
-        vertex->edges.erase(vertex->edges.begin() + i);
-        i--;
-      }
-    }
-  }
-}
-
-bool ALGraph::removeEgde(int id1, int id2)
-{
-  std::vector<int>::iterator it;
-  for (ALVertex *vertex : adjacentList)
-  {
-    if (vertex->vertex_id == id1)
-    {
-      for (int i = 0; i < vertex->ids.size(); i++)
-      {
-        if (vertex->ids[i] == id2)
-        {
-          vertex->ids.erase(vertex->ids.begin() + i);
-          vertex->edges.erase(vertex->edges.begin() + i);
-          return true;
-        }
-      }
-    }
-  }
-  return false;
-}
-
-std::pair<std::string, int> ALGraph::getEdgeValue(int id1, int id2)
-{
-  std::pair<std::string , int> result = std::make_pair("error", NULL);
-  for (ALVertex *vertex : adjacentList)
-  {
-    if (vertex->vertex_id == id1)
-    {
-      for (int i = 0; i < vertex->ids.size(); i++)
-      {
-        if (vertex->ids[i] == id2)
-        {
-          result.second = vertex->edges[i];
-          result.first = "valid";
-        }
-      }
-    }
-  }
-  return result;
-}
-
-  bool ALGraph::setEdgeValue(int id1, int id2, int edgeValue)
-  {
-    for (ALVertex *vertex : adjacentList)
-    {
-      if (vertex->vertex_id == id1)
-      {
-        for (int i = 0; i < vertex->ids.size(); i++)
-        {
-          if (vertex->ids[i] == id2)
-          {
-            vertex->edges[i] = edgeValue;
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  bool ALGraph::adjacent(int id1, int id2)
-  {
-    for (ALVertex *vertex : adjacentList)
-    {
-      if (vertex->vertex_id == id1)
-      {
-        for (int i = 0; i < vertex->ids.size(); i++)
-        {
-          if (vertex->ids[i] == id2)
-          {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-  const std::vector<int> &ALGraph::neighbors(int id)
-  {
-    for (ALVertex *vertex : adjacentList)
-    {
-      if (vertex->vertex_id == id)
-      {
-        return vertex->ids;
-      }
-    }
-    return std::vector<int>();
-  }
 
 bool  someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs)
 {
@@ -838,9 +664,9 @@ int main()
   graph.addVertex("A");
   graph.addVertex("B");
   graph.addVertex("C");
-  graph.addEdge(0,1,200);
-  std::cout << graph.neighbors(0).size() << '\n';
-  // graph.removeVertex(1);
+  // graph.addEdge(0,1,200);
+  // std::cout << graph.neighbors(0).size() << '\n';
+  graph.removeVertex(1);
   // graph.removeVertex(1);
   // graph.addEdge(0, 1, 21);
   // graph.deleteEdges(1);

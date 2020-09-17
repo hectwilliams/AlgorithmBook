@@ -78,6 +78,23 @@ enum boolean AMGraph_setEdgeValue (struct AMGraph *graph, const unsigned id1, co
 enum boolean AMGraph_adjacent(struct AMGraph *graph, const unsigned id1, const unsigned id2);
 struct llist * AMGraph_neighbors(struct AMGraph *graph, int id);
 
+struct ALGraphAdjLL
+{
+  int adjacent_id;
+  int adjacent_edge;
+  struct ALGraphAdjLL *next;
+
+};
+
+struct ALGraphLL
+{
+  int vertex_id;
+  const char *value;
+  struct ALGraphAdjLL *adjacentVertices;
+  struct ALGraphLL *next;
+};
+
+
 struct ALGraphMeta
 {
   struct ALGraphMeta *next;
@@ -94,9 +111,12 @@ struct ALGraph
   struct  ALGraphMeta *meta;   // [dest_id, edge, dest_id, edge...]
 };
 
-void ALGraph_display (struct ALGraph * graph);
-int ALGraph_addVertex (struct ALGraph ** graph, int value);
-enum boolean ALGraph_removeVertex (struct ALGraph ** graph, const int vertexID);
+
+
+
+void ALGraph_display (struct ALGraphLL * graph);
+int ALGraph_addVertex (struct ALGraphLL ** graph, const char *value);
+enum boolean ALGraph_removeVertex (struct ALGraphLL ** graph, const int vertexID);
 
 struct pair ALGraph_getVertexValue(struct ALGraph *graph, int id);
 enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge);
@@ -112,6 +132,10 @@ struct ALGraphStack  // LIFO
   struct ALGraph *vertex;
   struct ALGraphStack *next;
 };
+
+
+
+
 
 enum boolean Someone_on_inside(struct ALGraph *graph, int my_id ,struct llist *company_ids);
 

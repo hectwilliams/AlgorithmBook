@@ -350,8 +350,7 @@ class ALVertex
   {
     this.id = id;
     this.value = value;
-    this.ids = [];
-    this.edges = [] ;
+    this.adjacent = [];
   }
 }
 
@@ -369,183 +368,17 @@ class ALGraph
     return this.counter++;
   }
 
-  removeVertex(id)
+  removeVertex (id)
   {
-    let removed = false;
-    let pos = 0;
-
-    while (pos < this.adjacentList.length)
+    for (let i = 0; i < this.adjacentList.length; i++)
     {
-      if ( this.adjacentList[pos].id == id )
+      if (this.adjacentList[i].id == id)
       {
-        this.adjacentList.splice(pos , 1);
-      }
-      else
-      {
-        let vertexObj = this.adjacentList[pos];
-        let index = vertexObj.ids.findIndex( (currID) => currID == id );
-        if (index >= 0)
-        {
-          vertexObj.ids.splice(index, 1);
-          vertexObj.edges.splice(index, 1);
-
-        }
-        pos++;
-      }
-    }
-    return removed;
-  }
-
-  getVertexValue (id)
-  {
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id)
-      {
-        return vertex.value;
-      }
-    }
-    return null;
-  }
-
-  setVertexValue (id, value)
-  {
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id)
-      {
-        vertex.value = value;
+        this.adjacentList.splice(i, 1);
         return true;
       }
     }
     return false;
-  }
-
-  addEdge (id1, id2, edgeValue)
-  {
-    let v1 = null;
-    let v2 = null;
-
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id1)
-      {
-        v1 = vertex;
-      }
-      if (vertex.id == id2)
-      {
-        v2 = vertex ;
-      }
-    }
-
-    if (v1 && v2)
-    {
-      v1.ids.push(v2.id);
-      v1.edges.push(edgeValue)
-      return true;
-    }
-    return false;
-  }
-
-  removeEdges(id)
-  {
-    for (let vertex of this.adjacentList)
-    {
-       for (let i = 0; i < vertex.ids.length; i++)
-       {
-        if (vertex.ids[i] == id)
-        {
-          vertex.ids.splice(i, 1);
-          vertex.edges.splice(i, 1);
-          i--;
-        }
-       }
-    }
-  }
-
-  removeEdge (id1, id2)
-  {
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id1)
-      {
-        for (let i = 0; i < vertex.ids.length; i++)
-        {
-          if (vertex.ids[i] == id2 )
-          {
-            vertex.ids.splice(i, 1);
-            vertex.edges.splice(i, 1);
-          }
-        }
-      }
-    }
-  }
-
-  getEdgeValue (id1, id2)
-  {
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id1)
-      {
-        for (let i = 0; i < vertex.ids.length; i++)
-        {
-          if (vertex.ids[i] == id2 )
-          {
-            return vertex.edges[i];
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-  setEdgeValue(id1, id2, edgeValue)
-  {
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id1)
-      {
-        for (let i = 0; i < vertex.ids.length; i++)
-        {
-          if (vertex.ids[i] == id2 )
-          {
-              vertex.edges[i] = edgeValue;
-              return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  adjacent (id1 , id2)
-  {
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id1)
-      {
-        for (let i = 0; i < vertex.ids.length; i++)
-        {
-          if (vertex.ids[i] == id2 )
-          {
-              return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  neighbors (id)
-  {
-    for (let vertex of this.adjacentList)
-    {
-      if (vertex.id == id)
-      {
-        return vertex.ids;
-      }
-    }
-    return [];
   }
 
   display()
@@ -838,18 +671,49 @@ const easyToGetThere = function ( srcVertex = new GenericGraph() , data = {} , i
   return ids;
 }
 
+ALGraph.prototype.isDAG = function (srcVertex = null, visited = {}, path = [])
+{
+  let queue, head;
+  let collection = (!srcVertex) ? this.adjacentList : [srcVertex] ;
+
+  for (let vertex of collection)
+  {
+    queue = [];
+    queue.push(vertex);
+
+    while (queue.length)
+    {
+      head = queue[0];
+      visited[head.id] = true;
+      queue.shift();
+
+      for (let currVertexFriends of head.friends)
+      {
+        if ( !visited[currVertexFriends.id] )
+        {
+          queue.push(currVertexFriends);
+          this.isDAG( currVertexFriends , JSON.parse(JSON.stringify(visited)),  path.concat(currVertexFriends.id) );
+        }
+      }
+
+    }
+  }
+}
+
 {
   let graph = new ALGraph ();
   graph.addVertex('A');
   graph.addVertex('B');
   graph.addVertex('C');
-  // graph.removeVertex(1);
-  console.log(graph.setVertexValue (1, '80') );
-  graph.addEdge(0, 1,131 );
-  // graph.removeEdge(0, 1);
-  console.log(graph.neighbors(0))
+  graph.removeVertex(1);
+  graph.display()
 
-  console.log(vertexIsReachable())
+  // console.log(graph.setVertexValue (1, '80') );
+  // graph.addEdge(0, 1,131 );
+  // graph.removeEdge(0, 1);
+  // console.log(graph.neighbors(0))
+
+  // console.log( graph.isDAG())
   // graph.deleteEdge(1)
   // graph.display()
   // graph.addVertex(200);
@@ -858,5 +722,4 @@ const easyToGetThere = function ( srcVertex = new GenericGraph() , data = {} , i
   // graph.setVertexValue(0, 232);
   // console.log(graph.adjacent(0, 1))
   // graph.removeEdges(1);
-  // graph.display()
 }
