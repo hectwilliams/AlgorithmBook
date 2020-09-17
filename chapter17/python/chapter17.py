@@ -228,11 +228,35 @@ class ALGraph:
     return False
 
   def addEdge(self, id1, id2, edge):
+    v1 = v2 = None
+
     for vertex in self.adjacentList:
       if vertex.id == id1:
-        vertex.adjacent.append([id2, edge])
+        v1 = vertex
+
+      if vertex.id == id2:
+        v2 = vertex
+
+      if v1 and v2:
+        v1 .adjacent.append([id2, edge])
         return True
     return False
+
+  def removeEdges(self, id) :
+    index_adj = None
+
+    for vertex in self.adjacentList:
+      if vertex.id == id:
+        vertex.adjacent = []
+      else:
+        index_adj = 0
+        while index_adj < vertex.adjacent.__len__():
+          if vertex.adjacent[index_adj][0]   == id:
+            vertex.adjacent.pop(index_adj)
+          else :
+            index_adj += 1
+
+
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):
     self.name = name

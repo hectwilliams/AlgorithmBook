@@ -415,16 +415,41 @@ class ALGraph
 
   addEdge(id1, id2, edge)
   {
-    let vertex = this.adjacentList.find(  (ele) => ele.id == id1 );
-    if (vertex)
+    let vertex1 = this.adjacentList.find(  (ele) => ele.id == id1 );
+    let vertex2 = this.adjacentList.find(  (ele) => ele.id == id2 );
+
+    if (vertex1 && vertex2)
     {
-      vertex.adjacent.push( {id: id2, edge} );
+      vertex1.adjacent.push( {id: id2, edge} );
       return true;
     }
 
     return false;
   }
 
+  removeEdges (id)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id)
+        //to edge (id-TX)
+      {
+        vertex.adjacent = [];
+      }
+      else
+      {
+        for (let i = 0; i < vertex.adjacent.length; i++)
+        {
+          if (vertex.adjacent[i].id == id)
+            // from edges (id- RX)
+          {
+            vertex.adjacent.splice(i--, 1);
+          }
+        }
+      }
+    }
+
+  }
 };
 
 

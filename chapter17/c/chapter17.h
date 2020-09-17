@@ -123,8 +123,8 @@ int ALGraph_addVertex (struct ALGraphLL ** graph, const char *value);
 enum boolean ALGraph_removeVertex (struct ALGraphLL ** graph, const int vertexID);
 struct pair_string ALGraph_getVertexValue(struct ALGraphLL *graph, int id, const char *value);
 enum boolean ALGraph_addEdge(struct ALGraphLL *graph, int id1, int id2, int edge);
+void ALGraph_removeEdges(struct ALGraphLL *graph, int id);
 
-void ALGraph_removeEdges(struct ALGraph *graph, int id);
 enum boolean ALGraph_removeEdge(struct ALGraph *graph, int id1, int id2) ;
 struct pair ALGraph_getEdgeValue(struct ALGraph *graph,int  id1, int id2);
 enum boolean  ALGraph_setEdgeValue(struct ALGraph *graph,int  id1, int id2, int value);

@@ -403,16 +403,52 @@ bool ALGraph::setVertexValue (int vertexID, std::string value)
 
 bool ALGraph::addEdge (int id1, int id2, int edge)
 {
+  ALVertex *v1 = NULL, *v2 = NULL;
+
    for (ALVertex *vertex: this->adjacentList)
   {
     if (vertex->vertex_id == id1)
     {
-      vertex->adjacent.push_back(std::make_pair( id2, edge ));
+      v1 = vertex;
+    }
+
+    if (vertex->vertex_id == id2)
+    {
+      v2 = vertex;
+    }
+
+    if (v1 && v2)
+    {
+      v1->adjacent.push_back(std::make_pair( id2, edge ));
       return true;
     }
+
   }
   return false;
 }
+
+void ALGraph::removeEdges(int id)
+{
+  ALVertex *vertex;
+  for (int i = 0; i < this->adjacentList.size(); i++)
+  {
+    if (this->adjacentList[i]->vertex_id == id)
+    {
+      this->adjacentList[i]->adjacent.clear();
+    }
+    else
+    {
+      for (int k = 0; k < this->adjacentList[i]->adjacent.size(); k++)
+      {
+        if (this->adjacentList[i]->adjacent[k].first == id )
+        {
+          this->adjacentList[i]->adjacent.erase( this->adjacentList[i]->adjacent.begin() + k--);
+        }
+      }
+    }
+  }
+}
+
 
 std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
 {

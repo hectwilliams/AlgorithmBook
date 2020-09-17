@@ -750,39 +750,55 @@ enum boolean ALGraph_addEdge(struct ALGraphLL *graph, int id1, int id2, int edge
   return false;
 }
 
-void ALGraph_removeEdges(struct ALGraph *graph, int id)
+void ALGraph_removeEdges(struct ALGraphLL *graph, int id)
 {
-  struct ALGraphMeta *meta, *delMeta;
+  struct ALGraphAdjLL *adj;
+  void *delNode = NULL;
 
   while (graph)
   {
-    meta = graph->meta;
-
-    if (meta)
+    if (graph->vertex_id == id)
+    // delete "from" edges in adjacent list
     {
-      while (meta->next)
+      adj = graph->adjacentVertices;
+      while (adj)
       {
-        if (meta->next->edge == id)
-        {
-          delMeta  = meta->next;
-          meta->next = delMeta->next;
-          free(delMeta);
-        }
-        else
-        {
-          meta = meta->next;
-        }
+        delNode = adj;
+        adj = adj->next;
+        free(delNode);
       }
-
-      if (graph->meta->edge == id)
-      {
-        delMeta = graph->meta;
-        graph->meta = delMeta->next;
-        free(delMeta);
-      }
+      graph->adjacentVertices = NULL;
     }
+    else
+    {
+      // search adjacent list and delete "to"  edges
+      adj = graph->adjacentVertices;
 
-    graph = graph->next;
+      if (adj)
+      {
+        while (adj->next)
+        {
+          if (adj->next->adjacent_id == id)
+          {
+            delNode = adj->next;
+            adj->next = adj->next->next;
+            free(delNode);
+          }
+          else
+          {
+            adj = adj->next;
+          }
+        }
+
+        if (graph->adjacentVertices->adjacent_id == id)
+        {
+          delNode  = graph->adjacentVertices;
+          graph->adjacentVertices = graph->adjacentVertices->next;
+          free(delNode);
+        }
+      }
+      graph = graph->next;
+    }
   }
 }
 
