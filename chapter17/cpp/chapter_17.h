@@ -102,7 +102,7 @@ class ALGraph
     int addVertex(std::string value);
     bool removeVertex (int vertexID);
     std::pair<std::string, std::string> getVertexValue(int vertexID);
-    // bool setVertexValue (int vertexID, std::string value);
+    bool setVertexValue (int vertexID, std::string value);
     // bool addEdge (int id1, int id2, int edge) ;
     // void removeEdges(int id);
     // bool removeEgde(int id1, int id2);

@@ -96,6 +96,12 @@ struct ALGraph
   struct  ALGraphMeta *meta;   // [dest_id, edge, dest_id, edge...]
 };
 
+struct pair_string
+{
+  enum boolean valid;
+  const char * value;
+};
+
 struct ALGraphAdjLL
 {
   int adjacent_id;
@@ -115,7 +121,7 @@ struct ALGraphLL
 void ALGraph_display (struct ALGraphLL * graph);
 int ALGraph_addVertex (struct ALGraphLL ** graph, const char *value);
 enum boolean ALGraph_removeVertex (struct ALGraphLL ** graph, const int vertexID);
-struct pair ALGraph_getVertexValue(struct ALGraphLL *graph, int id);
+struct pair_string ALGraph_getVertexValue(struct ALGraphLL *graph, int id, const char *value);
 
 enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge);
 void ALGraph_removeEdges(struct ALGraph *graph, int id);

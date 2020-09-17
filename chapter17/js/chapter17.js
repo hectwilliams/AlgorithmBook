@@ -400,6 +400,19 @@ class ALGraph
     return null;
   }
 
+  setVertexValue (id, value)
+  {
+    for (let vertex of this.adjacentList)
+    {
+      if (vertex.id == id)
+      {
+        vertex.value = value;
+        return true;
+      }
+    }
+    return false;
+  }
+
 };
 
 

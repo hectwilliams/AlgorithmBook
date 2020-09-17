@@ -388,6 +388,19 @@ bool ALGraph::removeVertex (int vertexID)
   return false;
 }
 
+bool ALGraph::setVertexValue (int vertexID, std::string value)
+{
+  for (ALVertex *vertex: this->adjacentList)
+  {
+    if (vertex->vertex_id == vertexID)
+    {
+      vertex->value = value;
+      return true;
+    }
+  }
+  return false;
+}
+
 std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
 {
   std::pair<std::string, std::string> res = std::make_pair("error", "");

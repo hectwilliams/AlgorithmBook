@@ -220,6 +220,13 @@ class ALGraph:
         return vertex.value
     return None
 
+  def setVertexValue(self, id, value ):
+    for vertex in self.adjacentList:
+      if vertex.id == id:
+        vertex.value = value
+        return True
+    return False
+
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):
     self.name = name

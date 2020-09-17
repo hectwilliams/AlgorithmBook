@@ -687,9 +687,9 @@ enum boolean ALGraph_removeVertex (struct ALGraphLL ** graph, const int vertexID
   return removed;
 }
 
-struct pair ALGraph_getVertexValue(struct ALGraphLL *graph, int id)
+struct pair_string ALGraph_getVertexValue(struct ALGraphLL *graph, int id, const char *value)
 {
-  struct pair result = {.valid = false};
+  struct pair_string result = {.valid = false};
 
   while (graph)
   {
@@ -703,7 +703,7 @@ struct pair ALGraph_getVertexValue(struct ALGraphLL *graph, int id)
   return result;
 }
 
-enum boolean ALGraph_setVertexValue (struct ALGraph *graph, int id, int value)
+enum boolean ALGraph_setVertexValue (struct ALGraph *graph, int id, const  char *value)
 {
   while (graph)
   {
