@@ -401,6 +401,19 @@ bool ALGraph::setVertexValue (int vertexID, std::string value)
   return false;
 }
 
+bool ALGraph::addEdge (int id1, int id2, int edge)
+{
+   for (ALVertex *vertex: this->adjacentList)
+  {
+    if (vertex->vertex_id == id1)
+    {
+      vertex->adjacent.push_back(std::make_pair( id2, edge ));
+      return true;
+    }
+  }
+  return false;
+}
+
 std::pair<std::string, std::string> ALGraph::getVertexValue(int vertexID)
 {
   std::pair<std::string, std::string> res = std::make_pair("error", "");

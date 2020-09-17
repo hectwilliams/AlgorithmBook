@@ -227,6 +227,12 @@ class ALGraph:
         return True
     return False
 
+  def addEdge(self, id1, id2, edge):
+    for vertex in self.adjacentList:
+      if vertex.id == id1:
+        vertex.adjacent.append([id2, edge])
+        return True
+    return False
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):
     self.name = name
@@ -380,9 +386,8 @@ def gimmieThreeSteps (srcVertex, id , visited = {}, ids = [], currPath = []) :
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
-graph.removeVertex(0)
 # print(graph.setVertexValue(1,122))
-# graph.addEdge(0, 1 , 900)
+graph.addEdge(0, 1 , 900)
 # print(graph.setEdgeValue(0, 1, 404))
 # graph.removeEdges(1)
 # graph.removeEdges(0)

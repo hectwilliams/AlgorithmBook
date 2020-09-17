@@ -703,7 +703,7 @@ struct pair_string ALGraph_getVertexValue(struct ALGraphLL *graph, int id, const
   return result;
 }
 
-enum boolean ALGraph_setVertexValue (struct ALGraph *graph, int id, const  char *value)
+enum boolean ALGraph_setVertexValue (struct ALGraphLL *graph, int id, const  char *value)
 {
   while (graph)
   {
@@ -717,11 +717,10 @@ enum boolean ALGraph_setVertexValue (struct ALGraph *graph, int id, const  char 
   return false;
 }
 
-enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge)
+enum boolean ALGraph_addEdge(struct ALGraphLL *graph, int id1, int id2, int edge)
 {
-  struct ALGraph *v1 = NULL, *v2 = NULL;
-  struct ALGraphMeta *tmp;
-
+  struct ALGraphLL *v1 = NULL, *v2 = NULL;
+  struct ALGraphAdjLL *adjacenty_entry;
 
   while (graph)
   {
@@ -736,15 +735,15 @@ enum boolean ALGraph_addEdge(struct ALGraph *graph, int id1, int id2, int edge)
     graph = graph->next;
   }
 
+
   if (v1 && v2)
   {
-    tmp = malloc( sizeof(struct ALGraphMeta *) );
-    tmp->src = v1->vertex_id;
-    tmp->edge = v2->vertex_id;
-    tmp->edgeValue = edge;
+    adjacenty_entry = malloc( sizeof(struct ALGraphAdjLL *) );
+    adjacenty_entry->adjacent_edge = edge;
+    adjacenty_entry->adjacent_id = id2;
 
-    tmp->next = v1->meta;
-    v1->meta = tmp;
+    adjacenty_entry->next = v1->adjacentVertices;
+    v1->adjacentVertices = adjacenty_entry;
     return true;
   }
 
@@ -1141,7 +1140,7 @@ int main()
   // ALGraph_setVertexValue(graph, 1, 555);
 
   // ALGraph_addEdge(graph, 0, 1, 22);
-  ALGraph_removeVertex(&graph, 0);
+  // ALGraph_removeVertex(&graph, 0);
 
   // printf( "[%d**] \n",  ALGraph_getEdgeValue(graph, 0, 1).value );
 

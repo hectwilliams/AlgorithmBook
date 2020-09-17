@@ -413,6 +413,18 @@ class ALGraph
     return false;
   }
 
+  addEdge(id1, id2, edge)
+  {
+    let vertex = this.adjacentList.find(  (ele) => ele.id == id1 );
+    if (vertex)
+    {
+      vertex.adjacent.push( {id: id2, edge} );
+      return true;
+    }
+
+    return false;
+  }
+
 };
 
 
