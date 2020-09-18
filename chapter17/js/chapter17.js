@@ -602,36 +602,43 @@ const someoneOnInside = function(UndirGraph = new Graph(), srcID, employeeIDs = 
   return false;
 }
 
-const someoneOnInsideNoReference = function (srcVertex)
+const someoneOnInsideNoReference = function (UndirGraph = new Graph())
 {
-  let stack = [] ;
-  let popularMap = {};
-  let insiderData = {contactID: null, insiderID: null};
-  let vertex;
-  let maxFriendCount = 0;
+  let stack = [];
+  let visited = {};
+  let currVertex = null;
+  let data = {maxFollower: 0, contact: '', id: ''};
+  let table =  {}
 
-  stack.push(srcVertex);
-  while (stack.length)
+  for (let vertex of UndirGraph.vertexList)
   {
-    vertex = stack.pop();
-    for (let friendVertex of vertex.friends)
+    stack.push(vertex);
+
+    while (stack.length)
     {
-      popularMap[friendVertex.id] = !popularMap[friendVertex.id] && 1 || popularMap[friendVertex.id] + 1;
-      if (insiderData.contactID == null || maxFriendCount <=  popularMap[friendVertex.id] )
-      {
-        maxFriendCount = popularMap[friendVertex.id];
-        insiderData.contactID = vertex.id;
-        insiderData.insiderID = friendVertex.id;
-      }
+      currVertex = stack.pop();
 
-      if (popularMap[friendVertex.id] == undefined)
+      for (let friendVertex of currVertex.friends)
       {
-        stack.push(friendVertex);
+        if (table[friendVertex.id]  == undefined)
+        {
+          stack.push(friendVertex);
+          table[friendVertex.id] = {contact: currVertex.id, id: friendVertex.id, followers: 1};
+        }
+        else
+        {
+          table[friendVertex.id].followers++;
+        }
+        if (data.maxFollower < table[friendVertex.id].followers )
+        {
+          data.maxFollower = table[friendVertex.id].followers;
+          data.id = friendVertex.id;
+          data.contact = currVertex.id;
+        }
       }
-
     }
   }
-  return insiderData;
+  return data;
 }
 
 class GenericGraph

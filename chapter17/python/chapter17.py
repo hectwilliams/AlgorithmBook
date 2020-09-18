@@ -338,31 +338,31 @@ def someoneOnInside (graph = GraphNetwork(), srcID, employeeIDs = []) :
 
   return False
 
-def someoneOnInsideNoReference(srcVertex):
+
+def someoneOnInsideNoReference(graph = GraphNetwork()):
   stack = []
-  popularMapCount = {}
-  insiderObj = {'contactID': None , 'insiderID' : None}
-  vertex = None
-  maxCount = 0
+  visited = {}
+  data = {'count': 0, 'insider': None }
 
-  stack.append(srcVertex)
+  for vertex in graph.vertexList:
+    stack.append(vertex)
 
-  while stack:
-    vertex = stack.pop()
-    for friendVertex in vertex.friends:
-      key = str(friendVertex.id)
+    while stack:
+      currVertex = stack.pop()
 
-      if not (key in popularMapCount) :
-        popularMapCount[key] = 1
-      else:
-        popularMapCount[key] += 1
+      for friendVertex in currVertex.friends:
 
-      if insiderObj['contactID'] == None or popularMapCount[key] > maxCount:
-        insiderObj = {'contactID': vertex.id , 'insiderID' : friendVertex.id}
-      stack.append(friendVertex)
+        if visited[ str(friendVertex.id) ]:
+          visited[ str(friendVertex.id) ]['followers'] += 1
+        else:
+          stack.append(friendVertex)
+          visited[str(friendVertex.id)] = {'contact': currVertex.id, 'employeeID': friendVertex.id, 'followers': 1}
 
-  return insiderObj
+        if data['count'] < visited[str(friendVertex.id)]['followers']:
+          data['insider'] =  visited[str(friendVertex.id)]
+          data['count'] = visited[str(friendVertex.id)]['followers']
 
+  return data['insider']
 
 def vertexIsReachable(srcVertex, id1, id2, visited = {} , path = [], meta = {'done': False, 'path': [] }  ) :
   stack = []

@@ -1034,117 +1034,51 @@ enum boolean Someone_on_inside(struct ALGraphLL *graph, int src_id , struct llis
 }
 
 
-struct employee_inside *Someone_on_insider_no_contact (struct ALGraph *graph)
+struct employee_inside *Someone_on_insider_no_contact (struct ALGraphLL *graph)
 {
-  struct employee_inside *insider = NULL, *runner = NULL, *popularInsider ;
-  struct ALGraphStack  *stack = NULL, *stack_buffer = NULL;
-  struct llist *visited_llist = NULL, *visited_buffer;
-  struct ALGraphMeta *id_llist = NULL;
-  struct ALGraph *currVertex = NULL;
+  struct ALGraphAdjLL *adj;
+  struct employee_inside *visitedLL = 0, *nodeLL = 0, *popularEmployee = 0;
+  int max = 0;
 
-  if (stack == NULL)
+  while (graph)
   {
-    stack = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack) ) ;
-    stack->vertex = graph;
-    stack->next = NULL;
-  }
+    adj = graph->adjacentVertices; // adjacent llist
 
-  while (stack)
-  {
-    currVertex  = stack->vertex;
-    stack = stack->next;
-
-    // continue loop if id found
-    if (findID(visited_llist, currVertex->vertex_id))
+    while (adj)
     {
-      continue;
-    }
-
-    // add id to visited list
-    {
-      visited_buffer = (struct llist *) malloc(sizeof(struct llist));
-      visited_buffer->value = currVertex->vertex_id;
-      visited_buffer->next = visited_llist;
-      visited_llist = visited_buffer;
-    }
-
-
-
-    // iterate current vertex destination ids
-    id_llist = currVertex->meta;
-
-    while (id_llist)
-    {
-      update_employe_inside(&insider, id_llist->src, id_llist->edge);
-      stack_buffer = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack));
-      stack_buffer->vertex = getALGraphVertex(graph, id_llist->edge);
-      // add valid vertex to stack
-      if (stack_buffer->vertex)
+      nodeLL = visitedLL;
+      while (nodeLL)
       {
-        stack_buffer->next = stack;
-        stack = stack_buffer;
+        if (nodeLL->id == adj->adjacent_id)
+        {
+          nodeLL->count++;
+          break;
+        }
+        nodeLL = nodeLL->next;
       }
 
-      id_llist = id_llist->next;
-    }
-
-    free(currVertex);
-  }
-
-  popularInsider = insider;
-  runner = insider;
-
-  while (runner)
-  {
-    if ( runner->count >=  popularInsider->count )
-    {
-      popularInsider = runner;
-    }
-    runner = runner->next;
-  }
-
-  return popularInsider;
-
-}
-
-void update_employe_inside (struct employee_inside **head, int src_id, int employee_id)
-{
-  struct employee_inside *node = *head, *runner = NULL, *buffer;
-  printf("hello wowlrd   %d \n", runner);
-
-  if (node == NULL)
-  {
-    *head = employee_inside_allocate(employee_id, src_id);
-  }
-  else
-  {
-    runner = *head;
-
-    while (runner)
-    {
-      if (runner->id == employee_id)
+      if (nodeLL == NULL)
       {
-        runner->count++;
-        break;
+        nodeLL = (struct employee_inside*) malloc(sizeof(struct employee_inside));
+        nodeLL->id = adj->adjacent_id;
+        nodeLL->contact_id = graph->vertex_id;
+        nodeLL->next = visitedLL;
+        nodeLL->count = 1;
+        visitedLL = nodeLL;
       }
+
+      if (max < nodeLL->count)
+      {
+        max = nodeLL->count;
+        popularEmployee = nodeLL;
+      }
+      adj = adj->next;
     }
 
-    if (runner == NULL)
-    {
-      buffer = employee_inside_allocate(employee_id, src_id);
-      buffer->next = *head;
-      *head = buffer;
-    }
+    graph = graph->next;
   }
-}
-
-struct employee_inside *employee_inside_allocate(int employee_id, int src_id)
-{
-  struct employee_inside *node = (struct employee_inside*) malloc(sizeof(struct employee_inside)) ;
-  node->count = 1;
-  node->id = employee_id;
-  node->contact_id = src_id;
-  return node;
+  return popularEmployee;
+  
 }
 
 int main()

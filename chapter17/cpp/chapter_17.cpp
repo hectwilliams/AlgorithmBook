@@ -617,7 +617,7 @@ bool someoneOnInside (GraphNetwork *graph, const int srcID, std::vector<int> com
         {
           for (const int &id: companyIDs )
           {
-            if (id == currVertex.id)
+            if (id == currVertex->id)
             {
               return true;
             }
@@ -628,49 +628,52 @@ bool someoneOnInside (GraphNetwork *graph, const int srcID, std::vector<int> com
           stack.push_back(friendVertex);
         }
       }
-
     }
   }
   return false;
 }
 
-std::pair<int, int> someoneOnInside (SocialNetworkVertex *sourceVertex)
+std::pair<int, int> someoneOnInside (GraphNetwork *graph)
 {
-  std::vector<SocialNetworkVertex *> stack;
-  std::map <SocialNetworkVertex * , int > popularList;
-  std::pair<int, int> insiderData = std::make_pair(-1, -1);  // [vertex ID Contact] [vertex ID Insider]
-  SocialNetworkVertex *vertex;
   int maxCount = 0;
-  int contact_id = -1;
+  std::set<int> visited;
+  std::vector<SocialNetworkVertex *> stack;
+  SocialNetworkVertex *currVertex, *vertex;
+  std::pair<int, int> insider = std::make_pair(-1, -1);  // [vertex ID Contact] [vertex ID Insider]
+  std::map <int, std::pair<int, int> > table;
 
-  stack.push_back(sourceVertex);
-
-
-  while ( ! stack.empty()  )
+  for  ( int i = 0; i < graph->vertex_list.size(); i++)
   {
-    vertex = stack.back();
-    stack.pop_back();
+    vertex = graph->vertex_list [i];
+    stack.push_back(vertex);
 
-    for (SocialNetworkVertex *friendVertex: vertex->friends)
+    while (stack.size())
     {
-      if (popularList.count(friendVertex) == 0)
+      currVertex = stack.back();
+      stack.pop_back();
+
+      for (SocialNetworkVertex * friendVertex: currVertex->friends)
       {
-        popularList.insert(std::make_pair(friendVertex, 0));
+        if (table.count(friendVertex->id) == 0)
+        {
+          stack.push_back(friendVertex);
+          table.insert( std::make_pair(friendVertex->id, std::make_pair(currVertex->id, 1) ) );
+        }
+        else
+        {
+          table.at(friendVertex->id ).second += 1;
+
+        }
+
+        if (maxCount < table.at(friendVertex->id ).second )
+        {
+          maxCount = table.at(friendVertex->id ).second ;
+          insider = std::make_pair(currVertex->id, friendVertex.->id);
+        }
       }
-
-      popularList.at(friendVertex)++;
-
-      if (popularList.at(friendVertex) >= maxCount)
-      {
-        maxCount = popularList.at(friendVertex);
-        insiderData.first = vertex->id;
-        insiderData.second = friendVertex->id;
-      }
-
-      stack.push_back(friendVertex);
     }
   }
-  return insiderData;
+  return insider;
 }
 
 void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID , std::vector<int> &path , std::vector<int> currPath )

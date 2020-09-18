@@ -143,6 +143,7 @@ class GenericGraph
     std::vector<GenericGraph*> frieends;
 };
 bool someoneOnInside (GraphNetwork *graph, const int srcID, std::vector<int> companyIDs);
+std::pair<int, int> someoneOnInside (GraphNetwork *graph);
 
 
 void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID ,std::vector<int> &path , std::vector<int> currPath = std::vector<int>() );

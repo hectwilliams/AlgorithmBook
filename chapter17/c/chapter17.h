@@ -128,7 +128,6 @@ struct pair_string ALGraph_getEdgeValue(struct ALGraphLL *graph,int  id1, int id
 enum boolean  ALGraph_setEdgeValue(struct ALGraphLL *graph,int  id1, int id2, int value);
 enum boolean ALGraph_adjacent(struct ALGraphLL *graph, int id1, int id2) ;
 struct intlist  *ALGraph_neighbors (struct ALGraphLL *graph, int id);
-
 struct ALGraph *getALGraphVertex(struct ALGraph *graph, int id);
 
 struct ALGraphStack  // LIFO
@@ -136,12 +135,6 @@ struct ALGraphStack  // LIFO
   struct ALGraph *vertex;
   struct ALGraphStack *next;
 };
-
-
-
-
-
-enum boolean Someone_on_inside(struct ALGraphLL *graph, int src_id , struct llist *company_ids);
 
 struct employee_inside
 {
@@ -151,8 +144,9 @@ struct employee_inside
   struct employee_inside *next;
 };
 
-struct employee_inside *Someone_on_insider_no_contact (struct ALGraph *graph);
-struct employee_inside *employee_inside_allocate(int employee_id, int src_id);
-void update_employe_inside (struct employee_inside **head, int src_id, int employee_id);
+enum boolean Someone_on_inside(struct ALGraphLL *graph, int src_id , struct llist *company_ids);
+struct employee_inside *Someone_on_insider_no_contact (struct ALGraphLL *graph);
+
+
 
 
