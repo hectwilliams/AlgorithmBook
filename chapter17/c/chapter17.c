@@ -897,15 +897,17 @@ enum boolean  ALGraph_setEdgeValue(struct ALGraphLL *graph,int  id1, int id2, in
 enum boolean ALGraph_adjacent(struct ALGraphLL *graph, int id1, int id2)
 {
   struct ALGraphAdjLL *adj;
+  int currID;
 
   while(graph)
   {
-    if (graph->vertex_id == id1)
+    if (graph->vertex_id == id1 || graph->vertex_id == id2)
     {
+      currID = graph->vertex_id;
       adj = graph->adjacentVertices;
       while (adj)
       {
-        if (adj->adjacent_id == id2)
+        if ( (currID == id1 && adj->adjacent_id == id2) || (currID == id2 && adj->adjacent_id == id1) )
         {
           return true;
         }
@@ -917,22 +919,43 @@ enum boolean ALGraph_adjacent(struct ALGraphLL *graph, int id1, int id2)
   return false;
 }
 
-
-struct ALGraphMeta *ALGraph_neighbors (struct ALGraph *graph, int id)
+struct intlist  *ALGraph_neighbors (struct ALGraphLL *graph, int id)
 {
-  struct ALGraphMeta *llist;
+  struct intlist *list = NULL, *buffer = NULL;
+  struct ALGraphAdjLL *adj;
 
   while(graph)
   {
-    if (graph->vertex_id == id)
+    if (graph->vertex_id == id) // from edges
     {
-      llist = graph->meta;
+      adj = graph->adjacentVertices;
+      while ( adj )
+      {
+        buffer = (struct intlist *) malloc( sizeof(struct intlist) );
+        buffer->value = adj->adjacent_id;
+        buffer->next = list;
+        list = buffer;
+        adj = adj->next;
+      }
     }
-
+    else
+    {
+      adj = graph->adjacentVertices;
+      while (adj)
+      {
+        if (adj->adjacent_id == id)  // to edges
+        {
+          buffer = (struct intlist *) malloc( sizeof(struct intlist) );
+          buffer->value = graph->vertex_id;
+          buffer->next = list;
+          list = buffer;
+        }
+        adj = adj->next;
+      }
+    }
     graph = graph->next;
   }
-
-  return llist ;
+  return list;
 }
 
 struct ALGraph *getALGraphVertex(struct ALGraph *graph, int id)

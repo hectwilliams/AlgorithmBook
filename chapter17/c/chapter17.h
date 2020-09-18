@@ -127,6 +127,7 @@ enum boolean ALGraph_removeEdge(struct ALGraphLL *graph, int id1, int id2);
 struct pair_string ALGraph_getEdgeValue(struct ALGraphLL *graph,int  id1, int id2);
 enum boolean  ALGraph_setEdgeValue(struct ALGraphLL *graph,int  id1, int id2, int value);
 enum boolean ALGraph_adjacent(struct ALGraphLL *graph, int id1, int id2) ;
+struct intlist  *ALGraph_neighbors (struct ALGraphLL *graph, int id);
 
 struct ALGraph *getALGraphVertex(struct ALGraph *graph, int id);
 

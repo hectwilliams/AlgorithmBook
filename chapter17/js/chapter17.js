@@ -527,8 +527,26 @@ class ALGraph
     return false;
   }
 
+  neighbors (id)
+  {
+    let res = [];
 
+    for (let vertex of this.adjacentList)
+    {
 
+      for (let adj of v.adjacent)
+      {
+        if (vertex.id == id)
+        {
+          res.push(adj[0]);
+        }
+        else if (adj[0] == id)
+        {
+          res.push(vertex.id);
+        }
+      }
+    }
+  }
 };
 
 

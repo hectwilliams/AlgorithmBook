@@ -513,14 +513,17 @@ bool ALGraph::setEdgeValue(int id1, int id2, int edgeValue)
 bool ALGraph::adjacent(int id1, int id2)
 {
   ALVertex *vertex;
+  int currID;
+
   for (int i = 0; i < this->adjacentList.size(); i++)
   {
     vertex = this->adjacentList[i];
-    if (vertex->vertex_id == id1)
+    if (vertex->vertex_id == id1 || vertex->vertex_id == id2)
     {
+      currID = vertex->vertex_id;
       for (int k = 0; k < vertex->adjacent.size(); k++)
       {
-        if ( vertex->adjacent[k].second == id2 )
+        if ( (currID == id1 && vertex->adjacent[k].second == id2) || (currID == id2 && vertex->adjacent[k].second == id1) )
         {
           return true;
         }
@@ -528,6 +531,35 @@ bool ALGraph::adjacent(int id1, int id2)
     }
   }
   return false;
+}
+
+std::vector<int> ALGraph::neighbors(int id)
+{
+  ALVertex *vertex;
+  std::vector<int> res;
+
+  for (int i = 0; i < this->adjacentList.size(); i++)
+  {
+    vertex = this->adjacentList[i];
+    if (vertex->vertex_id == id)
+    { // FROM
+      for (int k = 0; k < vertex->adjacent.size(); k++)
+      {
+        res.push_back(vertex->adjacent[k].first);
+      }
+    }
+    else
+    {
+      for (int k = 0; k < vertex->adjacent.size(); k++)
+      {
+        if ( vertex->adjacent[k].first == id )
+        {
+          res.push_back(vertex->vertex_id);
+        }
+      }
+    }
+  }
+  return res;
 }
 
 bool ALGraph::removeEgde(int id1, int id2)

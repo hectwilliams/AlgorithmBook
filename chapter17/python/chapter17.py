@@ -287,12 +287,25 @@ class ALGraph:
     return False
 
   def adjacent (self, id1, id2) :
-    for v1 in self.adjacentList:
-      if v1.id == id1:
-        for adj in v1.adjacent:   # adj  = array
-          if adj[0] == id2:
+    currID = None
+    for vertex in self.adjacentList:
+      if vertex.id == id1 or vertex.id == id2:
+        currID = vertex.id
+        for adj in vertex.adjacent:   # adj  = array
+          if (currID == id1 or  adj[0] == id2) or (currID == id2 or  adj[0] == id1) :
             return False
     return True
+
+  def neighbors (self, id) :
+    result = []
+
+    for vertex in self.adjacentList:
+      for adj in vertex.adjacent:
+        if vertex.id == id :  # FROM
+          result.append(adj[0])
+        elif adj[0] == id:   # TO
+          result.append( vertex.id)
+    return result
 
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):
