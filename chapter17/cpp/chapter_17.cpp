@@ -1,5 +1,8 @@
-#include "chapter_17.h"
 #include <algorithm>    // std::find
+#include <map>
+#include <set>
+#include <iostream>
+#include "chapter_17.h"
 
 std::ostream &operator << (std::ostream &stream, const ELGraph &graph)
 {
@@ -588,59 +591,47 @@ bool ALGraph::removeEgde(int id1, int id2)
 }
 
 
-bool  someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs)
+bool someoneOnInside (GraphNetwork *graph, const int srcID, std::vector<int> companyIDs)
 {
   std::vector<SocialNetworkVertex*> stack;
   SocialNetworkVertex *currVertex;
-  std::set<int> visitedMap;
+  std::set<int> visited;
 
-  if (!vertex)
+  if (!graph)
   {
     return false;
   }
 
-  // add input vertex to stack
-  stack.push_back(vertex);
-
-  while (!stack.empty())
+  for (SocialNetworkVertex *srcVertex : graph->vertex_list)
   {
-    currVertex = stack.back();
-    stack.pop_back();
-
-    if (visitedMap.count(currVertex->id))
+    stack.push_back(srcVertex);
+    while (stack.size())
     {
-      continue;
-    }
-    else
-    {
-      visitedMap.insert(currVertex->id);
+      currVertex = stack.back();
+      stack.pop_back();
+      visited.insert(currVertex->id);
 
-      if (srcID == currVertex->id)
+      for (SocialNetworkVertex *friendVertex: currVertex->friends)
       {
-        // iterate source's friends
-        for (SocialNetworkVertex * myFriendVertex: currVertex->friends)
+        if (friendVertex->id == srcID)
         {
-          for (int employeeID: companyIDs)
+          for (const int &id: companyIDs )
           {
-            if (employeeID == myFriendVertex->id)
+            if (id == currVertex.id)
             {
               return true;
             }
           }
         }
-        return false;
+        if (visited.count(friendVertex->id) == 0)
+        {
+          stack.push_back(friendVertex);
+        }
       }
 
-      // add friends to stack
-      for (SocialNetworkVertex * friendVertex: currVertex->friends)
-      {
-        stack.push_back(friendVertex);
-      }
     }
   }
-
   return false;
-
 }
 
 std::pair<int, int> someoneOnInside (SocialNetworkVertex *sourceVertex)

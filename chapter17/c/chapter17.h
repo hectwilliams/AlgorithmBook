@@ -141,7 +141,7 @@ struct ALGraphStack  // LIFO
 
 
 
-enum boolean Someone_on_inside(struct ALGraph *graph, int my_id ,struct llist *company_ids);
+enum boolean Someone_on_inside(struct ALGraphLL *graph, int src_id , struct llist *company_ids);
 
 struct employee_inside
 {

@@ -536,11 +536,11 @@ class ALGraph
 
       for (let adj of v.adjacent)
       {
-        if (vertex.id == id)
+        if (vertex.id == id)  // FROM
         {
           res.push(adj[0]);
         }
-        else if (adj[0] == id)
+        else if (adj[0] == id)  // TO
         {
           res.push(vertex.id);
         }
@@ -554,56 +554,51 @@ class SocialNetworkVertex
 {
   constructor(id, name)
   {
-    this.id = 0;
+    this.id = id;
     this.name = name;
     this.friends = [];
   }
 };
 
-const someoneOnInside = function(vertex, srcID, employeeIDs = [])
+class Graph  // undirected
+{
+  constructor()
+  {
+    this.vertexList = [];
+  }
+};
+
+const someoneOnInside = function(UndirGraph = new Graph(), srcID, employeeIDs = [])
 {
   let stack = [];
-  let visited = [];
+  let visited = {};
   let currVertex = null;
 
-  stack.push(vertex);
-
-  while (stack.length)
+  for (let vertex of UndirGraph.vertexList)
   {
+    stack.push(vertex);
 
-    currVertex = stack.pop();
-
-    if ( visited.includes(currVertex.id) )
+    while (stack.length)
     {
-      continue;
-    }
-    else
-    {
-      visited.push(currVertex.id);
-
-      if (srcID == currVertex.id)
+      currVertex = stack.pop();
+      visited[currVertex.id] = true;
+      for (let friendVertex of currVertex.friends)
       {
-        for (let srcFriend of currVertex.friends)
+        if (friendVertex.id == srcID)
         {
-          for (let employeeID of employeeIDs)
+          if (employeeIDs.findIndex( (employee) => employee == currVertex.id ) != -1)
           {
-            if (srcFriend.id == employeeID)
-            {
-              return true;
-            }
+            return true;
           }
         }
-        return false;
-      }
 
-      for (let friend of currVertex.friends)
-      {
-        stack.push(friend);
+        if (visited[friendVertex.id]  == undefined)
+        {
+          stack.push(friendVertex);
+        }
       }
     }
-
   }
-
   return false;
 }
 

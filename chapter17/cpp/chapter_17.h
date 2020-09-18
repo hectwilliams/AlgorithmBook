@@ -1,6 +1,5 @@
 #include <vector>
 #include <utility> //pair
-#include <iostream>
 #include <string>     // std::string, std::to_string
 #include <set>
 #include <map>
@@ -117,19 +116,25 @@ std::ostream &operator << (std::ostream &stream, const ALGraph &graph);
 class SocialNetworkVertex
 {
   public:
-  int id;
-  std::string name;
-  std::vector<SocialNetworkVertex * > friends;
+    int id;
+    std::string name;
+    std::vector <SocialNetworkVertex * > friends;
 
-  SocialNetworkVertex(int id, std::string)
+  SocialNetworkVertex(int id, std::string val)
   {
     this->id = id;
-    this->name = name;
+    this->name = val;
   }
 };
 
-bool someoneOnInside (SocialNetworkVertex *vertex, const int srcID, std::vector<int> companyIDs);
-
+class GraphNetwork
+{
+  public:
+    std::vector<SocialNetworkVertex *> vertex_list;
+  GraphNetwork()
+  {
+  }
+};
 
 class GenericGraph
 {
@@ -137,6 +142,7 @@ class GenericGraph
     int id;
     std::vector<GenericGraph*> frieends;
 };
+bool someoneOnInside (GraphNetwork *graph, const int srcID, std::vector<int> companyIDs);
 
 
 void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID ,std::vector<int> &path , std::vector<int> currPath = std::vector<int>() );

@@ -307,33 +307,34 @@ class ALGraph:
           result.append( vertex.id)
     return result
 
+class GraphNetwork:
+  def __init__(self):
+    self.vertexList = []
+
 class SocialNetworkVertex :
   def __init__(self, name= None, id = None):
     self.name = name
     self.id = id
     self.friends = []
 
-def someoneOnInside (vertex, srcID, employeeIDs = []) :
+def someoneOnInside (graph = GraphNetwork(), srcID, employeeIDs = []) :
   stack = []
-  visited = []
-  bufferVertex = SocialNetworkVertex()
+  visited = {}
+  currVertex = None
 
-  stack.append(vertex)
+  for vertex in graph.vertexList:
+    stack.append(vertex)
 
-  while stack:
-    bufferVertex = stack.pop()
-    if bufferVertex.id in visited:
-      continue
-    else:
-      visited.append(bufferVertex.id)
-      if srcID == bufferVertex.id:
-        for srcFriend in bufferVertex.friends:
-          for employeeID in employeeIDs:
-            if employeeID == srcFriend.id:
-              return True
-        return False
-      for friend in bufferVertex.friends:
-        stack.append(friend )
+    while stack :
+      currVertex = stack.pop()
+      visited [str(currVertex.id)] = True
+
+      for friendVertex in currVertex.friends:
+        if friendVertex.id == srcID:
+          if currVertex.id in employeeIDs:
+            return True
+        if visited [str(friendVertex.id)] == None :
+          stack.append(friendVertex)
 
   return False
 

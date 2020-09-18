@@ -984,82 +984,55 @@ enum boolean findID (struct llist *list, const int id)
   return false;
 }
 
-
-enum boolean Someone_on_inside(struct ALGraph *graph, int src_id , struct llist *company_ids)
+enum boolean Someone_on_inside(struct ALGraphLL *graph, int src_id , struct llist *company_ids)
 {
-  struct ALGraphStack  *stack = NULL, *stack_buffer = NULL;
-  struct llist *visited_llist = NULL, *visited_buffer;
-  struct ALGraphMeta *id_llist = NULL;
-  struct ALGraph *currVertex = NULL;
+  struct llist *visitedLL = NULL, *nodeLL;
+  struct ALGraphAdjLL *adj;
 
-  if (stack == NULL)
+  while (graph)
   {
-    stack = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack) ) ;
-    stack->vertex = graph;
-    stack->next = NULL;
-  }
+    nodeLL = visitedLL;
 
-  while (stack)
-  {
-    currVertex  = stack->vertex;
-    stack = stack->next;
-
-      // continue loop if id found
-    if (findID(visited_llist, currVertex->vertex_id))
+    // check visited list
+    while (nodeLL)
     {
-      continue;
-    }
-
-      // add id to visited list
-    {
-      visited_buffer = (struct llist *) malloc(sizeof(struct llist));
-      visited_buffer->value = currVertex->vertex_id;
-      visited_buffer->next = visited_llist;
-      visited_llist = visited_buffer;
-    }
-
-
-    if (currVertex->vertex_id == src_id)  // my vertex
-    // iterate ids linked to my vertex
-    {
-      id_llist = currVertex->meta;
-      while (id_llist)
+      if (graph->vertex_id == nodeLL->value)
       {
-        if ( findID(company_ids, id_llist->edge)  )
+        graph = graph->next;
+        continue;
+      }
+      nodeLL = nodeLL->next;
+    }
+
+    // add vertex (i.e node) to list
+    nodeLL = (struct llist*) malloc(sizeof(struct llist));
+    nodeLL->next = visitedLL;
+    visitedLL = nodeLL;
+
+    adj = graph->adjacentVertices;
+
+    //itetate adjacent nodes
+    while (adj)
+    {
+      if (adj->adjacent_id == src_id)
+      {
+        nodeLL = company_ids;
+        while (nodeLL)
         {
-          return true;
+          if (nodeLL->value == graph->vertex_id)
+          {
+            return true;
+          }
+          nodeLL = nodeLL->next;
         }
-        id_llist = id_llist->next;
       }
-      // src id has no friends within company
-      return false;
+      adj = adj->next;
     }
-    else if ( findID(company_ids, currVertex->vertex_id) )  // src id  has friend within company
-    {
-      return true;
-    }
-
-    // iterate current vertex destination ids
-    id_llist = currVertex->meta;
-
-    while (id_llist)
-    {
-      stack_buffer = (struct ALGraphStack *) malloc( sizeof(struct ALGraphStack));
-      stack_buffer->vertex = getALGraphVertex(graph, id_llist->edge);
-      // add valid vertex to stack
-      if (stack_buffer->vertex)
-      {
-        stack_buffer->next = stack;
-        stack = stack_buffer;
-      }
-      id_llist = id_llist->next;
-    }
-
-    free(currVertex);
+    graph = graph->next;
   }
-
   return false;
 }
+
 
 struct employee_inside *Someone_on_insider_no_contact (struct ALGraph *graph)
 {
