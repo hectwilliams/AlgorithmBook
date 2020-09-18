@@ -650,40 +650,53 @@ class GenericGraph
   }
 };
 
-const vertexIsReachable = function (srcVertex = new GenericGraph(), id1 = null, id2 = null, visited = {},  path = [], meta = {done: false, path: []})
+const vertex_Is_Reachable = function (dirGraph = new Graph(), id1, id2)
 {
   let stack = [];
-  let vertex = null;
+  let currVertex = null;
+  let visited = {};
+  let path = [];
+  let currID;
 
-  stack.push(srcVertex);
-
-  while (stack.length)
+  for  (let vertex of dirGraph.vertexList)
   {
-
-    vertex = stack.pop();
-    visited[vertex.id] = true;
-
-    // path created
-    if (vertex.id === id1 || path.length)
+    if (vertex.id == id1)
     {
-      path.push(vertex.id);
-      if (path[path.length - 1] == id2)
-      {
-        meta.path = path;
-        meta.done = true;
-      }
-    }
+      visited [vertex.id] = null;    // {dest.id : null }
+      stack.push(vertex);
 
-    for (let friendVertex of vertex.friends)
-    {
-      if (visited[friendVertex.id] == undefined)
+      while ( stack.length && !visited[id2])
       {
-        stack.push(friendVertex);
-        vertexIsReachable(friendVertex, id1, id2, visited, path.slice(), meta);
+        currVertex = stack.pop();
+        for (let friendVertex of currVertex.friends)
+        {
+          if (!visited[friendVertex.id])
+          {
+            visited [friendVertex.id] = [currVertex.id];   // {dest.id : src.id}
+            stack.push(friendVertex);
+          }
+        }
       }
+
+      // compute path (backpropagation via visited array )
+      currID = id2;
+      while ( visited [currID] )
+      {
+        path = path.unshift(parsseInt(currID));
+        currID = visited [currID] ;
+      }
+
+      // return  path
+      if (path.length)
+      {
+        path = path.unshift(parseInt(id1));
+      }
+
+      break;
     }
   }
-  return meta;
+
+  return path;
 }
 
 const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID = null, excludeID = {},  paths = [], currPath = [])

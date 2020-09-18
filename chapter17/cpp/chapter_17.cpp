@@ -676,40 +676,51 @@ std::pair<int, int> someoneOnInside (GraphNetwork *graph)
   return insider;
 }
 
-void vertexIsReachable (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID , std::vector<int> &path , std::vector<int> currPath )
+std::vector<int> vertexIsReachable (GraphNetwork *graph, int id1, int id2 )
 {
-  std::vector<GenericGraph *> stack;
-  GenericGraph *vertex;
+  std::vector<SocialNetworkVertex *> stack;
+  SocialNetworkVertex *currVertex, *vertex;
+  std::vector<int> path;
+  std::map<int, int> table;
+  int currID;
 
-  stack.push_back(graph);
-
-  while (!stack.empty())
+  for(int i = 0; i < graph->vertex_list.size(); i++)
   {
-    vertex = stack.back();
-    excludeID.insert(vertex->id);
-    stack.pop_back();
-
-    if (id1 == vertex->id || currPath.size())
+    vertex = graph->vertex_list[i]; // found start of path
+    if (vertex-> id == id1)
     {
-      currPath.push_back(vertex->id);
-      if (currPath[currPath.size() - 1] == id2)
+      stack.push_back(vertex)
+      while (stack.size() && table.count(id2) == 0 )
       {
-        for (int ele: currPath)
+        currVertex = stack.back();
+        stack.pop_back();
+
+        for (SocialNetworkVertex *friendVertex: currVertex->friends  )
         {
-          path.push_back(ele);
+          if (table.count(friendVertex.id) == 0)
+          {
+            table.insert(std::make_pair(friendVertex.id, currVertex.id));
+          }
         }
       }
-    }
 
-    for (GenericGraph *friendVertex: vertex->frieends )
-    {
-      if (excludeID.count(friendVertex->id) == 0)
+      currID = id2;
+      while (table.count(currID))
       {
-        stack.push_back(friendVertex);
-        vertexIsReachable(graph, id1, id2, excludeID, path , std::vector<int>(currPath.begin(), currPath.end()));
+        path.push_back(currID);
+        currID = table.at(currID);
       }
+
+      if (path.size())
+      {
+        path.push_back(id1);
+      }
+
     }
+    break;
   }
+
+  return path;
 }
 
 void allPaths (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID ,std::vector<std::vector<int> > &paths , std::vector<int> currPath )

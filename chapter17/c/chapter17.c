@@ -1078,8 +1078,10 @@ struct employee_inside *Someone_on_insider_no_contact (struct ALGraphLL *graph)
     graph = graph->next;
   }
   return popularEmployee;
-  
+
 }
+
+
 
 int main()
 {

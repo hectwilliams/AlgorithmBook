@@ -364,31 +364,30 @@ def someoneOnInsideNoReference(graph = GraphNetwork()):
 
   return data['insider']
 
-def vertexIsReachable(srcVertex, id1, id2, visited = {} , path = [], meta = {'done': False, 'path': [] }  ) :
+def vertexIsReachable(graph = GraphNetwork(), id1, id2) :
   stack = []
-  vertex = None
+  table = {}
+  path = []
 
-  if meta['done'] or (id1 in path) or (id2 in path) or (srcVertex.id in path):
-    return
+  for vertex in graph.vertexList:
+    if vertex.id == id1:
+      stack.append(vertex)
+      table[vertex.id] = None
+      while stack and  not (id2 in table) :
+        currVertex = stack.pop()
+        for friendVertex in currVertex.friends:
+          if not (friendVertex.id in table):
+            table[friendVertex.id] =  currVertex.id
+            stack.append(friendVertex)
 
-  stack.append(srcVertex)
-
-  while stack:
-    vertex = stack.pop()
-    visited [ str(srcVertex.id) ]  = True
-
-    if vertex.id == id1 and path.__len__():
-      path.append(vertex.id)
-      if path[-1] == id2:
-        meta['done'] = True
-        meta['path'] = path[:]
-
-    for friendVertex in vertex:
-      if visited[str(friendVertex.id)] == None :
-        stack.append(friendVertex)
-        vertexIsReachable(friendVertex, id1, id2, visited, path[:], meta)
-
-  return meta
+      currID = id2
+      while table[currID]:
+        path.append(currID)
+        currID = table[currID]
+      if path:
+        path.append(id1)
+      break
+  return path
 
 def allPaths (srcVertex, source_id , destination_id, visited = {}, paths = [], currPath = []):
   stack = []
