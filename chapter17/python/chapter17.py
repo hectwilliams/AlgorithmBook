@@ -442,28 +442,26 @@ def shortestPath (graph = GraphNetwork(), id1, id2) :
       break
   return path
 
-def gimmieThreeSteps (srcVertex, id , visited = {}, ids = [], currPath = []) :
+def gimmieThreeSteps (graph = GraphNetwork(), id) :
   queue = []
   vertex = None
+  visited = {}
+  ids = []
+  MAXSTEP = 3
 
-  if currPath.__len__() >= 4:
-    return
-
-  queue.append(srcVertex)
-
-  while queue:
-    vertex = queue.pop(0)
-    visited [ str(vertex.id) ] = True
-
-    if id == vertex.id or currPath.__len__():
-      currPath.append(vertex.id)
-      ids.append(vertex.id)
-
-    for friendVertex in vertex.friends:
-      if visited [ str(friendVertex.id) ] == None:
-        queue.append(friendVertex)
-        gimmieThreeSteps(friendVertex, id, visited, ids, currPath[:])
-
+  for i in range(0, graph.vertexList ):
+    if graph.vertexList[i].id == id:
+      visited[graph.vertexList[i].id] = 0
+      queue.append(graph.vertexList[i])
+      while queue:
+        vertex = queue.pop(0)
+        for friendVertex in vertex.friends:
+          if not (friendVertex.id in visited):
+            if visited[vertex.id] + 1 <= MAXSTEP:
+              visited[friendVertex.id] = visited[vertex.id] + 1
+              queue.append(friendVertex)
+              ids.append(friendVertex.id)
+  return ids
 
 graph = ALGraph()
 graph.addVertex('a')

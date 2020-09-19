@@ -825,35 +825,42 @@ std::vector<int> shortestPath (GraphNetwork *graph, int id1, int id2 )
   return path;
 }
 
-void gimmieThreeSteps (GenericGraph *graph, const int id, std::set<int> &excludeID, std::vector<int> &ids, std::vector<int> path)
+std::vector<int> gimmieThreeSteps (GraphNetwork *graph, const int id)
 {
-  GenericGraph *vertex;
-  std::vector <GenericGraph *> queue;
+  std::vector< SocialNetworkVertex * > queue;
+  std::map <int, int> table;
+  std::vector<int> ids;
+  const int MAXSTEP = 3;
+  SocialNetworkVertex *vertex;
 
-  if (path.size() >4)
+  for (int i = 0; i < graph->vertex_list.size(); i++)
   {
-    return;
-  }
+    if (graph->vertex_list[i]->id == id )
+    {
+      queue.push_back(graph->vertex_list[i]);
+      table.insert(std::make_pair(id, 0));
 
-  queue.push_back(graph);
-  while (!queue.empty())
-  {
-    vertex = queue[0];
-    queue.erase(queue.begin());
-    if (id == vertex->id || path.size())
-    {
-      path.push_back(vertex->id);
-      ids.push_back(vertex->id);
-    }
-    for (GenericGraph *friendVertex: vertex->frieends)
-    {
-      if (excludeID.count(vertex->id) == 0)
+      while (!queue.empty())
       {
-        queue.push_back(friendVertex);
-        gimmieThreeSteps( graph, id, excludeID, ids, std::vector<int>(path.begin(), path.end()) );
+        vertex = queue.front();
+        queue.erase(queue.begin());
+        for (SocialNetworkVertex * friendVertex: vertex->friends )
+        {
+          if (table.count(friendVertex->id) == 0)
+          {
+            table.insert(std::make_pair(friendVertex->id, table.at(vertex->id) + 1 ));
+            if (table.at(friendVertex->id) <= MAXSTEP)
+            {
+              ids.push_back(friendVertex->id);
+              queue.push_back(friendVertex);
+
+            }
+          }
+        }
       }
     }
   }
+  return ids;
 }
 
 void easyToGetThere(GenericGraph *graph,  std::vector<int> &ids, std::map<int, std::pair<int, int> > data )

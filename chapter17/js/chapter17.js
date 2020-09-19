@@ -781,39 +781,39 @@ const shortestPath = function (dirGraph = new Graph(), id1, id2)
   return path;
 }
 
-const gimmieThreeSteps = function(srcVertex = new GenericGraph(), srcID, visited = {}, ids = [], currPath = [])
+const gimmieThreeSteps = function ( dirGraph = new Graph(), id1, id2 )
 {
   let queue = [];
-  let vertex;
+  let visited = {};
+  let ids = [];
+  let currVertex;
+  let MAXSTEP = 3;
 
-  if (currPath.length >= 4)
+  for (let vertex of dirGraph.vertexList)
   {
-    return;
-  }
-
-  queue.push(srcVertex);
-
-  while (queue.length)
-  {
-    vertex = queue.shift();
-    visited[vertex.id] = true;
-
-    if (srcID == vertex.id || currPath.length)
+    if (vertex.id == id1)
     {
-      currPath.push(vertex.id);
-      ids.push(vertex.id);
-    }
-
-    for (let friendVertex of vertex.friends)
-    {
-      if (visited[friendVertex.id] == undefined)
+      visited [vertex.id] = 0;
+      queue.push(vertex);
+      while (queue.length)
       {
-        queue.push(friendVertex);
-        gimmieThreeSteps(friendVertex, srcID, visited, ids, currPath.slice());
+        currVertex = queue.shift();
+        for (let friendVertex of currVertex.friends)
+        {
+          if ( visited[friendVertex.id] == undefined)
+          {
+            visited[friendVertex.id] =  visited[currVertex.id] + 1
+            if (visited[friendVertex.id]  <= MAXSTEP)
+            {
+              ids.push(friendVertex.id);
+              queue.push(friendVertex);
+            }
+          }
+        }
       }
     }
-
   }
+  return ids;
 }
 
 const easyToGetThere = function ( srcVertex = new GenericGraph() , data = {} , ids = [])
