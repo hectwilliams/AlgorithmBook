@@ -463,6 +463,36 @@ def gimmieThreeSteps (graph = GraphNetwork(), id) :
               ids.append(friendVertex.id)
   return ids
 
+def easyToGetThere (graph = GraphNetwork()) :
+  queue = []
+  table = {}
+  ids = []
+
+  for i in range(0, graph.vertexList ):
+    queue.append( graph.vertexList[i] )
+
+    while queue:
+
+      vertex = queue.pop(0)
+
+      if not (vertex.id in table) :
+        table[vertex.id] = {'in': 0, 'out': 0}
+
+      for friendVertex in vertex.friends:
+
+        if not (friendVertex.id in table):
+          queue.append(friendVertex)
+          table[friendVertex.id] = {'in': 0, 'out': 0}
+
+        table[vertex.id]['out'] += 1
+        table[friendVertex.id]['in'] += 1
+
+    for key in table:
+      if table[key]['in'] > table[key]['out']:
+        ids.append(key)
+
+  return ids
+
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')

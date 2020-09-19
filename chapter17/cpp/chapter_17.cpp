@@ -848,6 +848,7 @@ std::vector<int> gimmieThreeSteps (GraphNetwork *graph, const int id)
         {
           if (table.count(friendVertex->id) == 0)
           {
+
             table.insert(std::make_pair(friendVertex->id, table.at(vertex->id) + 1 ));
             if (table.at(friendVertex->id) <= MAXSTEP)
             {
@@ -863,40 +864,48 @@ std::vector<int> gimmieThreeSteps (GraphNetwork *graph, const int id)
   return ids;
 }
 
-void easyToGetThere(GenericGraph *graph,  std::vector<int> &ids, std::map<int, std::pair<int, int> > data )
+std::vector<int>  easyToGetThere(GraphNetwork *graph )
 {
-  GenericGraph *vertex;
-  std::vector <GenericGraph *> queue;
+  std::vector< SocialNetworkVertex * > queue;
+  std::map <int, std::pair<int,int> > table;
+  std::vector<int> ids;
+  SocialNetworkVertex *vertex;
 
-  if (data.size())
+  for (int i = 0; i < graph->vertex_list.size(); i++)
   {
-    if (data.count(graph->id))
+    queue.push_back(graph->vertex_list[i]);
+    while (!queue.empty())
     {
-      data.at(graph->id).first++;
-      if (data.at(graph->id).first  - data.at(graph->id).second )  // easier to get to vertex
+      vertex =  queue.front();
+      queue.erase(queue.begin());
+
+      if (table.count(vertex->id) == 0)
       {
-        ids.push_back(graph->id);
-        return;
+        table.insert(std::make_pair(vertex->id, std::make_pair(0,0)));
+      }
+
+      for (SocialNetworkVertex * friendVertex: vertex->friends)
+      {
+        if (table.count(friendVertex->id) == 0)
+        {
+          queue.push_back(friendVertex);
+          table.insert(std::make_pair(friendVertex->id, std::make_pair(0,0)));
+        }
+        table.at(friendVertex->id).first++; // in
+        table.at(vertex->id).second++; // out
+
       }
     }
   }
 
-  queue.push_back(graph);
-
-  while (!queue.empty())
+  for(std::map <int, std::pair<int,int> > ::const_iterator it = table.begin(); it != table.end(); it++)
   {
-    vertex = queue[0];
-    queue.erase(queue.begin());
-    if (data.count(vertex->id) == 0)
+    if (it->second.first > it->second.second)
     {
-      data.insert(std::make_pair(vertex->id, std::make_pair(0, vertex->frieends.size())));
-    }
-    for (GenericGraph *friendVertex: graph->frieends)
-    {
-      easyToGetThere(friendVertex, ids, data);
+      ids.push_back(it->first);
     }
   }
-
+  return ids;
 }
 
 int main()

@@ -147,9 +147,9 @@ bool someoneOnInside (GraphNetwork *graph, const int srcID, std::vector<int> com
 std::pair<int, int> someoneOnInside (GraphNetwork *graph);
 std::vector<int> vertexIsReachable (GraphNetwork *graph, int id1, int id2 );
 
-void allPaths (GenericGraph *graph, int id1, int id2 ,  std::set<int> &excludeID, std::vector<std::vector<int> > &paths , std::vector<int> currPath = std::vector<int>() );
+std::vector<std::vector<int> > allPaths (GraphNetwork *graph, int id1, int id2  );
 
-void shortestPath (GenericGraph *graph, int id1, int id2, std::set<int> &excludeID, std::vector<int>  &path , std::vector<int> currPath = std::vector<int>() );
-std::vector<int> gimmieThreeSteps (GraphNetwork *graph, const int id)
+std::vector<int> shortestPath (GraphNetwork *graph, int id1, int id2 );
+std::vector<int> gimmieThreeSteps (GraphNetwork *graph, const int id);
 
-void easyToGetThere(GenericGraph *graph,  std::vector<int> &ids, std::map<int, std::pair<int, int> > data = std::map<int, std::pair<int, int> > ()  );
+std::vector<int>  easyToGetThere(GenericGraph *graph );

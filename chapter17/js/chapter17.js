@@ -816,35 +816,44 @@ const gimmieThreeSteps = function ( dirGraph = new Graph(), id1, id2 )
   return ids;
 }
 
-const easyToGetThere = function ( srcVertex = new GenericGraph() , data = {} , ids = [])
+const easyToGetThere = function ( dirGraph = new Graph() )
 {
   let queue = [];
+  let table = {};
+  let ids = [];
   let vertex;
 
-  if (data[srcVertex.id])
+  for (let i = 0; i < dirGraph.vertexList.length; i++)
   {
-    data[srcVertex.id].in++ ;
+    queue.append(dirGraph.vertexList[i]);
 
-    if (data[srcVertex.id].in - data[srcVertex.id].out == 1)   // easier to get to vertex
+    while (queue.length)
     {
-      ids.push(srcVertex.id);
+      vertex = queue.shift();
+
+      if (!table[vertex.id])
+      {
+        table[vertex.id] = {in: 0, out: 0 };
+      }
+
+      for (let friendVertex of vertex.friends)
+      {
+        if (!table[friendVertex.id])
+        {
+          queue.append(friendVertex);
+          table[friendVertex.id] = {in: 0, out: 0 };
+        }
+        table[vertex.id].out++;
+        table[friendVertex.id].in++;
+      }
     }
-    return;
   }
 
-  queue.push(srcVertex);
-
-  while (queue.length)
+  for (let key in table )
   {
-    vertex = queue.shift();
-
-    if (data[vertex.id] == undefined)
+    if (table[key].in > table[key].out)
     {
-      data[vertex.id] = { in: 0, out: vertex.friends.length} ;
-    }
-    for (let friendVertex of vertex.friends)
-    {
-      easyToGetThere(friendVertex, data, ids);
+      ids.push(parseInt(key));
     }
   }
 
