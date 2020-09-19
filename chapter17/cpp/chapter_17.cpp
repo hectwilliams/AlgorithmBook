@@ -668,7 +668,7 @@ std::pair<int, int> someoneOnInside (GraphNetwork *graph)
         if (maxCount < table.at(friendVertex->id ).second )
         {
           maxCount = table.at(friendVertex->id ).second ;
-          insider = std::make_pair(currVertex->id, friendVertex.->id);
+          insider = std::make_pair(currVertex->id, friendVertex->id);
         }
       }
     }
@@ -676,123 +676,153 @@ std::pair<int, int> someoneOnInside (GraphNetwork *graph)
   return insider;
 }
 
-std::vector<int> vertexIsReachable (GraphNetwork *graph, int id1, int id2 )
+std::vector<int> vertexIsReachable (GraphNetwork *graph, int id1, int id2)
 {
-  std::vector<SocialNetworkVertex *> stack;
+  std::vector < std::pair<SocialNetworkVertex*, SocialNetworkVertex * > > stack;
   SocialNetworkVertex *currVertex, *vertex;
   std::vector<int> path;
-  std::map<int, int> table;
-  int currID;
+  std::set<int> visited;
+  std::pair <SocialNetworkVertex*, SocialNetworkVertex* > obj ;
 
   for(int i = 0; i < graph->vertex_list.size(); i++)
   {
-    vertex = graph->vertex_list[i]; // found start of path
-    if (vertex-> id == id1)
-    {
-      stack.push_back(vertex)
-      while (stack.size() && table.count(id2) == 0 )
-      {
-        currVertex = stack.back();
-        stack.pop_back();
+    vertex = graph->vertex_list[i];
 
-        for (SocialNetworkVertex *friendVertex: currVertex->friends  )
+    if (vertex->id == id1)
+    {
+      stack.push_back( std::make_pair(vertex, nullptr) );
+      path.push_back(id1);
+
+      while(stack.size())
+      {
+        obj = stack.back();
+        stack.pop_back();
+        visited.insert(obj.first->id);
+
+        if (obj.second == vertex)
         {
-          if (table.count(friendVertex.id) == 0)
+          path.clear();
+          path.push_back(id1);
+        }
+
+        path.push_back(obj.first->id);
+
+        if (path.back() == id2)
+        {
+          return path;
+        }
+
+        for (SocialNetworkVertex *friendVertex: obj.first->friends)
+        {
+          if (visited.count(friendVertex->id) == 0)
           {
-            table.insert(std::make_pair(friendVertex.id, currVertex.id));
+            stack.push_back(std::make_pair(friendVertex, obj.first) );
           }
         }
       }
 
-      currID = id2;
-      while (table.count(currID))
-      {
-        path.push_back(currID);
-        currID = table.at(currID);
-      }
-
-      if (path.size())
-      {
-        path.push_back(id1);
-      }
-
-    }
-    break;
-  }
-
-  return path;
-}
-
-void allPaths (GenericGraph *graph, int id1, int id2 , std::set<int> &excludeID ,std::vector<std::vector<int> > &paths , std::vector<int> currPath )
-{
-  std::vector <GenericGraph * > stack;
-  GenericGraph *vertex;
-
-  stack.push_back(graph);
-
-  while (!stack.empty())
-  {
-    vertex = stack.back();
-    stack.pop_back();
-    excludeID.insert(vertex->id);
-
-    if (vertex->id == id1 || currPath.size())
-    {
-      currPath.push_back(vertex->id);
-
-      if (currPath[currPath.size() - 1] == id2)
-      {
-        paths.push_back(std::vector<int>(currPath.begin(), currPath.end()) );
-      }
-    }
-
-    for (GenericGraph *friendVertex: vertex->frieends )
-    {
-      if (excludeID.count(friendVertex->id) == 0)
-      {
-        stack.push_back(friendVertex);
-        allPaths(friendVertex, id1 , id2, excludeID, paths, std::vector<int>(currPath.begin(), currPath.end()) );
-      }
     }
   }
 
+  return std::vector<int> ();
 }
 
-void shortestPath (GenericGraph *graph, int id1, int id2 ,  std::set<int> &excludeID, std::vector < int >  &path , std::vector <int> currPath )
+std::vector<std::vector<int> > allPaths (GraphNetwork *graph, int id1, int id2  )
 {
-  std::vector <GenericGraph * > queue;
-  GenericGraph *vertex;
+  std::vector < std::pair<SocialNetworkVertex*, SocialNetworkVertex * > > stack;
+  SocialNetworkVertex *currVertex, *vertex;
+  std::vector<int> path;
+  std::set<int> visited;
+  std::pair <SocialNetworkVertex*, SocialNetworkVertex* > obj ;
+  std::vector<std::vector<int> > paths;
 
-  queue.push_back(graph);
-
-  while (queue.size())
+  for(int i = 0; i < graph->vertex_list.size(); i++)
   {
-    vertex = queue[0];
-    queue.erase(queue.begin());
+    vertex = graph->vertex_list[i];
 
-    if (id1 == vertex->id || currPath.size())
+    if (vertex->id == id1)
     {
-      currPath.push_back(vertex->id);
-      if (currPath[currPath.size() - 1] == id2)
+      stack.push_back( std::make_pair(vertex, nullptr) );
+      path.push_back(id1);
+
+      while(stack.size())
       {
-        path.clear();
-        for (int &ele: currPath)
+        obj = stack.back();
+        stack.pop_back();
+        visited.insert(obj.first->id);
+
+        if (obj.second == vertex)
         {
-          path.push_back(ele);
+          path.clear();
+          path.push_back(id1);
+        }
+
+        path.push_back(obj.first->id);
+
+        if (path.back() == id2)
+        {
+          paths.push_back(path);
+        }
+
+        for (SocialNetworkVertex *friendVertex: obj.first->friends)
+        {
+          if (visited.count(friendVertex->id) == 0)
+          {
+            stack.push_back(std::make_pair(friendVertex, obj.first) );
+          }
+        }
+      }
+
+    }
+  }
+  return paths;
+}
+
+std::vector<int> shortestPath (GraphNetwork *graph, int id1, int id2 )
+{
+  std::vector<int> path;
+  SocialNetworkVertex *vertex;
+  std::map< int, int > table;
+  std::vector <SocialNetworkVertex *> queue;
+
+  for(int i = 0; i < graph->vertex_list.size(); i++)
+  {
+    if (graph->vertex_list[i]->id == id1)
+    {
+      queue.push_back(graph->vertex_list[i]);
+
+      while (!queue.empty())
+      {
+        vertex = queue.front();
+        queue.erase(queue.begin());
+
+        for (SocialNetworkVertex *friendVertex: vertex->friends)
+        {
+          if (table.count(friendVertex->id) == 0 )
+          {
+            queue.push_back(friendVertex);
+            table.insert(std::make_pair(friendVertex->id, vertex->id));
+          }
+        }
+      }
+
+      // compute path
+      {
+        int currID = id2;
+        while (table.count(currID))
+        {
+          path.push_back(currID);
+          currID = table.at(currID);
+        }
+
+        if (!path.empty())
+        {
+          path.push_back(id1);
         }
       }
     }
-
-    for (GenericGraph *friendVertex : vertex->frieends)
-    {
-      if ( excludeID.count(friendVertex->id) == 0 )
-      {
-        queue.push_back(friendVertex);
-        shortestPath (friendVertex, id1, id2, excludeID, path, std::vector<int>(currPath.begin(), currPath.end()) );
-      }
-    }
-
   }
+  return path;
 }
 
 void gimmieThreeSteps (GenericGraph *graph, const int id, std::set<int> &excludeID, std::vector<int> &ids, std::vector<int> path)

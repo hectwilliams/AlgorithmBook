@@ -653,127 +653,132 @@ class GenericGraph
 const vertex_Is_Reachable = function (dirGraph = new Graph(), id1, id2)
 {
   let stack = [];
-  let currVertex = null;
+  let obj = null;
   let visited = {};
   let path = [];
-  let currID;
 
-  for  (let vertex of dirGraph.vertexList)
+  for (let vertex of dirGraph.vertexList)
   {
     if (vertex.id == id1)
     {
-      visited [vertex.id] = null;    // {dest.id : null }
-      stack.push(vertex);
+      stack.push( {curr: vertex, prev: undefined} );
+      path = [id];
 
-      while ( stack.length && !visited[id2])
+      while ( stack.length )
       {
-        currVertex = stack.pop();
-        for (let friendVertex of currVertex.friends)
+        obj = stack.pop();
+        visited [currVertex.curr.id] = true; // visited marker
+
+        if (obj.prev == vertex)  //search returned back to source node
+        {
+          path = [id];
+        }
+
+        path.push(obj.curr.id);    // add step to path
+
+        if (path[path.length - 1] == id2)   // path complete
+        {
+          return path;
+        }
+
+        for (let friendVertex of obj.curr.friends)
         {
           if (!visited[friendVertex.id])
           {
-            visited [friendVertex.id] = [currVertex.id];   // {dest.id : src.id}
-            stack.push(friendVertex);
+            stack.push( {curr: friendVertex, prev: obj.curr} );
           }
         }
       }
-
-      // compute path (backpropagation via visited array )
-      currID = id2;
-      while ( visited [currID] )
-      {
-        path = path.unshift(parsseInt(currID));
-        currID = visited [currID] ;
-      }
-
-      // return  path
-      if (path.length)
-      {
-        path = path.unshift(parseInt(id1));
-      }
-
-      break;
     }
   }
-
-  return path;
+  return [];
 }
 
-const allPaths = function (srcVertex = new GenericGraph(), srcID = null, destID = null, excludeID = {},  paths = [], currPath = [])
+const allPaths = function (dirGraph = new Graph(), id1, id2)
 {
   let stack = [];
-  let vertex;
+  let obj = null;
+  let visited = {};
+  let path = [], paths =  [];
 
-  stack.push(srcVertex);
-
-  while (stack.length)
+  for (let vertex of dirGraph.vertexList)
   {
-    vertex = stack.pop();
-    excludeID.push(vertex.id);
-
-    if (vertex.id === srcID || currPath.length)
+    if (vertex.id == id1)
     {
-      currPath.push(vertex.id);
-      if (currPath[currPath.length - 1] == destID)
-      {
-        paths.push(currPath);
-      }
-    }
+      stack.push( {curr: vertex, prev: undefined} );
+      path = [id];
 
-    for (let friendVertex of vertex.friends)
-    {
-      if (excludeID[friendVertex.id] == undefined)
+      while ( stack.length )
       {
-        stack.push(friendVertex);
-        allPaths(friendVertex, srcID, destID, paths, currPath.slice());
+        obj = stack.pop();
+        visited [currVertex.curr.id] = true; // visited marker
+
+        if (obj.prev == vertex)  //search returned back to source node
+        {
+          path = [id];
+        }
+
+        path.push(obj.curr.id);    // add step to path
+
+        if (path[path.length - 1] == id2)   // path complete
+        {
+          paths.push(  path ) ;
+        }
+
+        for (let friendVertex of obj.curr.friends)
+        {
+          if (!visited[friendVertex.id])
+          {
+            stack.push( {curr: friendVertex, prev: obj.curr} );
+          }
+        }
       }
     }
   }
-
   return paths;
 }
 
-const shortestPath = function (srcVertex = new GenericGraph(), srcID = null, destID = null, visited = {},  shortPath = [], currPath = [])
+const shortestPath = function (dirGraph = new Graph(), id1, id2)
 {
   let queue = [];
-  let vertex;
+  let table = {};
+  let path = [];
+  let currVertex;
 
-  queue.push(srcVertex);
 
-  while (queue.length)
+  for (let vertex of dirGraph.vertexList)
   {
-    vertex = queue.shift();
-    visited[vertex.id] = true;
-
-    if (srcID == vertex.id || currPath.length)
+    if (vertex.id == id1)
     {
-      currPath.push(vertex.id);
-      if (currPath[currPath.length - 1 ] == destID )
-      {
-        if (shortPath.length == 0 || currPath.length < shortPath.length)
-        {
-          // clear short path array
-          while(shortPath.length) {shortPath.pop()};
+      table [vertex.id] = null;
+      queue.push(vertex);
 
-          // mutate short path array
-          for (let currPathElement of currPath)
+      while ( queue.length  && !table[id2] )
+      {
+        currVertex = queue.shift();
+
+        for (let friendVertex of currVertex.friends)
+        {
+          if (!table[friendVertex.id])
           {
-            shortPath.push(currPathElement);
+            table [friendVertex.id] = currVertex.id;
+            queue.push(friendVertex);
           }
         }
       }
-    }
-    for (let friendVertex of vertex.friends)
-    {
-      if ( visited [ friendVertex.id ] == undefined )
+
+      // compute path (via back propagation)
       {
-        queue.push(friendVertex);
-        shortestPath(friendVertex, srcID, destID, visited, shortPath, currPath.slice());
+        let currID = id2;
+        while ( currID != null)
+        {
+          path.unshift( currID );
+          currID = table[currID];
+        }
       }
     }
-
   }
-
+  return path;
 }
 
 const gimmieThreeSteps = function(srcVertex = new GenericGraph(), srcID, visited = {}, ids = [], currPath = [])

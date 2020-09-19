@@ -366,73 +366,81 @@ def someoneOnInsideNoReference(graph = GraphNetwork()):
 
 def vertexIsReachable(graph = GraphNetwork(), id1, id2) :
   stack = []
+  path = []
+  visited = {}
+
+  for vertex in graph.vertexList:
+    if vertex.id == id1:
+      stack.append([vertex, None])
+      path.append(id1)
+      while stack:
+        arr = stack.pop()
+        visited[arr[0].id] = True
+
+        if arr[1] == vertex :
+          path = [id1]
+
+        path.append(arr[0].id)
+
+        if path[-1] == id2:
+          return path
+
+        for friendVertex in arr[0].friends:
+          if not ( friendVertex.id in visited) :
+            stack.append([ friendVertex, arr[0]])
+
+  return path
+
+def allPaths (graph = GraphNetwork(), source_id , id1, id2):
+  stack = []
+  path = []
+  visited = {}
+  paths = []
+
+  for vertex in graph.vertexList:
+    if vertex.id == id1:
+      stack.append([vertex, None])
+      path.append(id1)
+      while stack:
+        arr = stack.pop()
+        visited[arr[0].id] = True
+
+        if arr[1] == vertex :
+          path = [id1]
+
+        path.append(arr[0].id)
+
+        if path[-1] == id2:
+          paths.append(path)
+
+        for friendVertex in arr[0].friends:
+          if not ( friendVertex.id in visited) :
+            stack.append([ friendVertex, arr[0]])
+
+  return paths
+
+def shortestPath (graph = GraphNetwork(), id1, id2) :
+  queue = []
+  currVertex = None
   table = {}
   path = []
 
   for vertex in graph.vertexList:
     if vertex.id == id1:
-      stack.append(vertex)
       table[vertex.id] = None
-      while stack and  not (id2 in table) :
-        currVertex = stack.pop()
+      queue.append(vertex)
+      while queue and not table[id2] :
+        currVertex = queue.pop(0)
         for friendVertex in currVertex.friends:
-          if not (friendVertex.id in table):
-            table[friendVertex.id] =  currVertex.id
-            stack.append(friendVertex)
-
+          if not table[friendVertex.id] :
+            table[friendVertex.id] = currVertex.id
+            queue.append(friendVertex)
       currID = id2
-      while table[currID]:
+      while currID != None:
         path.append(currID)
         currID = table[currID]
-      if path:
-        path.append(id1)
       break
   return path
-
-def allPaths (srcVertex, source_id , destination_id, visited = {}, paths = [], currPath = []):
-  stack = []
-  vertex = None
-
-  stack.append(srcVertex)
-
-  while stack:
-    vertex = stack.pop()
-    visited[vertex.id] = True
-
-    if vertex.id == source_id or currPath.__len__():
-      currPath.append(vertex.id)
-
-    if currPath[-1] == destination_id:
-        paths.append(currPath[:])
-
-    for friendVertex in vertex.friends:
-      if visited[str(friendVertex.id)] == None :
-        stack.append(friendVertex)
-        allPaths(friendVertex, source_id, destination_id, visited, paths, currPath[:])
-
-  return paths
-
-def shortestPath (srcVertex, id1, id2, visited = {}, path = [], currPath = []) :
-  queue = []
-  vertex = None
-
-  queue.append(srcVertex)
-
-  while queue:
-    vertex = queue.pop(0)
-    visited[str(vertex.id)] = True
-
-    if id1 == vertex.id or currPath.__len__() > 0:
-      currPath.append(vertex.id)
-      if currPath[currPath.__len__() - 1] == id2:
-        if not path or currPath.__len__() < path.__len__():
-          for ele in currPath:
-            path.append(ele)
-
-    for friendVertex in vertex.friends:
-      if visited[str(friendVertex.id) ] == None:
-        queue.append(friendVertex)
-        shortestPath(friendVertex, id1 , id2, visited, path, currPath[:] )
 
 def gimmieThreeSteps (srcVertex, id , visited = {}, ids = [], currPath = []) :
   queue = []
