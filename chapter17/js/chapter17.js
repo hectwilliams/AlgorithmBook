@@ -825,7 +825,7 @@ const easyToGetThere = function ( dirGraph = new Graph() )
 
   for (let i = 0; i < dirGraph.vertexList.length; i++)
   {
-    queue.append(dirGraph.vertexList[i]);
+    queue.push(dirGraph.vertexList[i]);
 
     while (queue.length)
     {
@@ -840,7 +840,7 @@ const easyToGetThere = function ( dirGraph = new Graph() )
       {
         if (!table[friendVertex.id])
         {
-          queue.append(friendVertex);
+          queue.push(friendVertex);
           table[friendVertex.id] = {in: 0, out: 0 };
         }
         table[vertex.id].out++;
@@ -860,34 +860,59 @@ const easyToGetThere = function ( dirGraph = new Graph() )
   return ids;
 }
 
-ALGraph.prototype.isDAG = function (srcVertex = null, visited = {}, path = [])
+ALGraph.prototype.isDAG = function (dirGraph = new ALGraph(), array)
 {
-  let queue, head;
-  let collection = (!srcVertex) ? this.adjacentList : [srcVertex] ;
+  let queue;
+  let visited;
+  let foundTail;
+  let vertex;
+  let valid_graph;
 
-  for (let vertex of collection)
+  for (let i = 0; i < dirGraph.vertexList.length; i++)
   {
-    queue = [];
-    queue.push(vertex);
+    queue = []
+    visited = {};
+    foundTail = false;
+    valid_graph = true;
+    queue.push (dirGraph.vertexList[i]);
+    array.splice(0, array.length);
 
-    while (queue.length)
+    while (queue.length && valid_graph)
     {
-      head = queue[0];
-      visited[head.id] = true;
-      queue.shift();
+      vertex = queue.shift();
+      valid_graph &= (vertex.friends.length <= 1) && (foundTail == false );
+      foundTail = (vertex.friends.length == 0);
+      visited[vertex.id] = true;
+      array.push(vertex.id);
 
-      for (let currVertexFriends of head.friends)
+      for (let friendVertex of vertex.friends)
       {
-        if ( !visited[currVertexFriends.id] )
+        if (!visited[friendVertex.id])
         {
-          queue.push(currVertexFriends);
-          this.isDAG( currVertexFriends , JSON.parse(JSON.stringify(visited)),  path.concat(currVertexFriends.id) );
+          queue.push(friendVertex);
+        }
+        else
+        {
+          valid = false;
         }
       }
+    }
 
+    if (valid_graph == true)
+    {
+      return true;
     }
   }
+  return false;
 }
+
+ALGraph.prototype.arrayDAG = function (dirGraph = new ALGraph())
+{
+  let array = [];
+  this.isDAG(dirGraph, array);
+  return array;
+}
+
 
 {
   let graph = new ALGraph ();

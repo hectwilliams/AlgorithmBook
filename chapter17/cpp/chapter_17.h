@@ -131,9 +131,12 @@ class GraphNetwork
 {
   public:
     std::vector<SocialNetworkVertex *> vertex_list;
-  GraphNetwork()
-  {
-  }
+    GraphNetwork()
+    {
+    }
+    bool isDAG(std::vector<int> *array);
+    std::vector<int> DAGArray ();
+
 };
 
 class GenericGraph
@@ -151,5 +154,4 @@ std::vector<std::vector<int> > allPaths (GraphNetwork *graph, int id1, int id2  
 
 std::vector<int> shortestPath (GraphNetwork *graph, int id1, int id2 );
 std::vector<int> gimmieThreeSteps (GraphNetwork *graph, const int id);
-
 std::vector<int>  easyToGetThere(GenericGraph *graph );

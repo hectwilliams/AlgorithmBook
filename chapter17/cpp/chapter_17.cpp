@@ -908,6 +908,69 @@ std::vector<int>  easyToGetThere(GraphNetwork *graph )
   return ids;
 }
 
+bool GraphNetwork::isDAG(std::vector<int> *array)
+{
+  std::vector< SocialNetworkVertex * > queue;
+  std::set <int> visited;
+  SocialNetworkVertex *vertex;
+  bool isvalid;
+  bool foundTail;
+
+  for (int i = 0; i < vertex_list.size(); i++)
+  {
+    queue.clear();
+    visited.clear();
+    foundTail = false;
+    isvalid = true;
+    queue.push_back(vertex_list[i]);
+
+    if (array)
+    {
+      array->clear();
+    }
+
+    while (!queue.empty() && isvalid)
+    {
+      vertex = queue.front();
+      queue.erase(queue.begin());
+      isvalid &= vertex->friends.size() <= 1 && foundTail == false;
+      foundTail = vertex->friends.empty();
+      visited.insert(vertex->id);
+
+      if (array)
+      {
+        array->push_back(vertex->id);
+      }
+
+      for (SocialNetworkVertex *friendVertex: vertex->friends)
+      {
+        if (visited.count(friendVertex->id) == 0)
+        {
+          queue.push_back(friendVertex);
+        }
+        else
+        {
+          isvalid = false;
+        }
+      }
+    }
+
+    if (isvalid)
+    {
+      return true;
+    }
+  }
+
+  return false;
+
+}
+
+std::vector<int> GraphNetwork::DAGArray ()
+{
+  std::vector<int> arr;
+  isDAG(&arr);
+}
+
 int main()
 {
   ALGraph graph;

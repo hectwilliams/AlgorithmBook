@@ -493,6 +493,41 @@ def easyToGetThere (graph = GraphNetwork()) :
 
   return ids
 
+def isDaG (graph = GraphNetwork(), array= []) :
+  queue = visited = foundTail = vertex = isvalid = None
+
+  for i in range (0, graph.vertexList.__len__()):
+    queue = []
+    visited = {}
+    foundTail = False
+    isvalid = true
+    queue.append(graph.vertexList[i])
+    array.clear()
+
+    while queue.__len__() and isvalid:
+      vertex = queue.pop(0)
+      isvalid = vertex.friends.__len__() <= 1 and foundTail == False
+      foundTail = vertex.friends.__len__() == 0
+      visited[vertex.id] = True
+      array.append(vertex.id)
+
+      for friendVertex of vertex.friends:
+        if not (friendVertex.id in visited) :
+          visited[friendVertex.id] = True
+        else:
+          isvalid = False
+
+    if isvalid:
+      return True
+
+  array.clear()
+  return False
+
+def DAG_to_Array(graph = GraphNetwork()):
+  array = []
+  isDaG(graph, array)
+  return array
+
 graph = ALGraph()
 graph.addVertex('a')
 graph.addVertex('b')
