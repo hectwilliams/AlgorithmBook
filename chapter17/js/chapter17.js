@@ -906,6 +906,7 @@ ALGraph.prototype.isDAG = function (dirGraph = new ALGraph(), array)
   return false;
 }
 
+
 ALGraph.prototype.arrayDAG = function (dirGraph = new ALGraph())
 {
   let array = [];
@@ -913,27 +914,47 @@ ALGraph.prototype.arrayDAG = function (dirGraph = new ALGraph())
   return array;
 }
 
+let json = require('./dict.json');
+
+const wordLadder = function (wordA = '', wordB = '', path = [], visited = {}, paths = [])
+{
+  let newStr;
+
+  if (visited[wordA] === undefined)
+  {
+    path.push(wordA);
+  }
+  visited[wordA] = true;
+
+  if (path.slice(-1) == wordB)
+  {
+    paths.push(path.slice());
+  }
+
+  for (let i = 97; i <= 122; i++)
+  {
+    for (let j = 0; j < wordA.length; j++)
+    {
+      newStr = wordA.slice(0,j) + String.fromCharCode(i) + wordA.slice(j+1); // change one letter
+
+      if (json.words.includes(newStr) && !visited[newStr] )  // new word
+      {
+        visited[newStr] = true;
+        wordLadder(newStr, wordB, path.concat(newStr).slice(), JSON.parse(JSON.stringify(visited)) , paths);
+        visited[newStr] = false;
+      }
+    }
+  }
+  return paths;
+}
 
 {
-  let graph = new ALGraph ();
-  graph.addVertex('A');
-  graph.addVertex('B');
-  graph.addVertex('C');
-  graph.removeVertex(1);
-  graph.display()
-
-  // console.log(graph.setVertexValue (1, '80') );
-  // graph.addEdge(0, 1,131 );
-  // graph.removeEdge(0, 1);
-  // console.log(graph.neighbors(0))
-
-  // console.log( graph.isDAG())
-  // graph.deleteEdge(1)
-  // graph.display()
-  // graph.addVertex(200);
-  // graph.addVertex(2020);
-  // graph.addEdge(0, 1, 223322)
-  // graph.setVertexValue(0, 232);
-  // console.log(graph.adjacent(0, 1))
-  // graph.removeEdges(1);
+  console.log(wordLadder('top', 'hip'));
 }
+
+
+// cat -> cut -> cap
+
+// cat -> ... -> cap
+
+// cat -> cap -> cop

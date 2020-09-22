@@ -3,6 +3,7 @@
 #include <string>     // std::string, std::to_string
 #include <set>
 #include <map>
+#include <algorithm>    // std::find
 
 class ELVertex
 {
@@ -149,9 +150,27 @@ class GenericGraph
 bool someoneOnInside (GraphNetwork *graph, const int srcID, std::vector<int> companyIDs);
 std::pair<int, int> someoneOnInside (GraphNetwork *graph);
 std::vector<int> vertexIsReachable (GraphNetwork *graph, int id1, int id2 );
-
 std::vector<std::vector<int> > allPaths (GraphNetwork *graph, int id1, int id2  );
-
 std::vector<int> shortestPath (GraphNetwork *graph, int id1, int id2 );
 std::vector<int> gimmieThreeSteps (GraphNetwork *graph, const int id);
 std::vector<int>  easyToGetThere(GenericGraph *graph );
+void wordLadder(std::string wordA, std::string wordB, std::vector<std::string> path = std::vector<std::string>(), std::set<std::string> visited =  std::set<std::string>());
+std::ostream &operator << (std::ostream &stream, const std::vector<std::string> str);
+
+namespace Dictionary
+{
+  std::string dict_words[] = {
+     "cup",
+    "dog",
+    "dig",
+    "top",
+    "mop",
+    "cop",
+    "cap",
+    "lap",
+    "lip",
+    "hip",
+    "cat"
+  };
+  std::vector<std::string> words = std::vector<std::string> (std::begin(dict_words), std::end(dict_words));
+}

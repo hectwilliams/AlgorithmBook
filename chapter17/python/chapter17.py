@@ -1,3 +1,5 @@
+import copy
+
 class ELVertex :
   def __init__(self, val, id) :
     self.value = val
@@ -317,7 +319,7 @@ class SocialNetworkVertex :
     self.id = id
     self.friends = []
 
-def someoneOnInside (graph = GraphNetwork(), srcID, employeeIDs = []) :
+def someoneOnInside (graph , srcID, employeeIDs = []) :
   stack = []
   visited = {}
   currVertex = None
@@ -339,7 +341,7 @@ def someoneOnInside (graph = GraphNetwork(), srcID, employeeIDs = []) :
   return False
 
 
-def someoneOnInsideNoReference(graph = GraphNetwork()):
+def someoneOnInsideNoReference(graph):
   stack = []
   visited = {}
   data = {'count': 0, 'insider': None }
@@ -364,7 +366,7 @@ def someoneOnInsideNoReference(graph = GraphNetwork()):
 
   return data['insider']
 
-def vertexIsReachable(graph = GraphNetwork(), id1, id2) :
+def vertexIsReachable(graph , id1, id2) :
   stack = []
   path = []
   visited = {}
@@ -391,7 +393,7 @@ def vertexIsReachable(graph = GraphNetwork(), id1, id2) :
 
   return path
 
-def allPaths (graph = GraphNetwork(), source_id , id1, id2):
+def allPaths (graph , source_id , id1, id2):
   stack = []
   path = []
   visited = {}
@@ -419,7 +421,7 @@ def allPaths (graph = GraphNetwork(), source_id , id1, id2):
 
   return paths
 
-def shortestPath (graph = GraphNetwork(), id1, id2) :
+def shortestPath (graph , id1, id2) :
   queue = []
   currVertex = None
   table = {}
@@ -442,7 +444,7 @@ def shortestPath (graph = GraphNetwork(), id1, id2) :
       break
   return path
 
-def gimmieThreeSteps (graph = GraphNetwork(), id) :
+def gimmieThreeSteps (graph , id) :
   queue = []
   vertex = None
   visited = {}
@@ -511,7 +513,7 @@ def isDaG (graph = GraphNetwork(), array= []) :
       visited[vertex.id] = True
       array.append(vertex.id)
 
-      for friendVertex of vertex.friends:
+      for friendVertex in vertex.friends:
         if not (friendVertex.id in visited) :
           visited[friendVertex.id] = True
         else:
@@ -528,12 +530,39 @@ def DAG_to_Array(graph = GraphNetwork()):
   isDaG(graph, array)
   return array
 
-graph = ALGraph()
-graph.addVertex('a')
-graph.addVertex('b')
-# print(graph.setVertexValue(1,122))
-graph.addEdge(0, 1 , 900)
-# print(graph.setEdgeValue(0, 1, 404))
-# graph.removeEdges(1)
-# graph.removeEdges(0)
-graph.display()
+words= [
+  "cup",
+  "dog",
+  "dig",
+  "top",
+  "mop",
+  "cop",
+  "cap",
+  "lap",
+  "lip",
+  "hip",
+  "cat"
+]
+
+def wordLadder (wordA, wordB, path = [], visited = {}, paths = []) :
+  strBuffer = ""
+
+  if not  ( wordA in visited):
+    path.append(wordA)
+  visited[wordA] = True
+
+  if path[-1] == wordB:
+    paths.append(path)
+
+  for i in range(97, 123) :
+    for j in range(0, 3):
+      strBuffer = wordA[0 : j] + chr(i) + wordA[j + 1: :]
+      if (strBuffer in words) and   not (strBuffer in visited):
+        visited[strBuffer] = True
+        wordLadder(strBuffer, wordB, path + [strBuffer], copy.deepcopy(visited))
+        del visited[strBuffer]
+
+  return paths
+
+
+print (wordLadder("top", "hip") )

@@ -971,22 +971,50 @@ std::vector<int> GraphNetwork::DAGArray ()
   isDAG(&arr);
 }
 
+void wordLadder(std::string wordA, std::string wordB, std::vector<std::string> path, std::set<std::string> visited)
+{
+  std::string newString;
+
+  if (visited.count(wordA) == 0)
+  {
+    path.push_back(wordA);
+  }
+  visited.insert(wordA);
+
+  if (path.back() == wordB)
+  {
+    std::cout << path;
+  }
+
+  for (int i = 97; i <= 122; i++)
+  {
+    for (int j = 0; j < wordA.size(); j++)
+    {
+      newString = wordA.substr(0, j) + char(i) + wordA.substr(j + 1);
+      if ( visited.count(newString) == 0 && std::find(Dictionary::words.begin(), Dictionary::words.end(), newString) !=  Dictionary::words.end() )
+      {
+        visited.insert(newString);
+        path.push_back(newString);
+        wordLadder(newString, wordB, std::vector<std::string>(path.begin(), path.end())  , std::set<std::string> (visited.begin(), visited.end()) );
+        path.pop_back();
+        visited.erase(newString);
+      }
+    }
+  }
+}
+
+std::ostream &operator << (std::ostream &stream, const std::vector<std::string> collection)
+{
+  stream << "[";
+  for (const std::string &element: collection)
+  {
+    stream << element + ", ";
+  }
+  stream << "]\n";
+  return stream;
+}
+
 int main()
 {
-  ALGraph graph;
-  graph.addVertex("A");
-  graph.addVertex("B");
-  graph.addVertex("C");
-  // graph.addEdge(0,1,200);
-  // std::cout << graph.neighbors(0).size() << '\n';
-  graph.removeVertex(1);
-  // graph.removeVertex(1);
-  // graph.addEdge(0, 1, 21);
-  // graph.deleteEdges(1);
-  // graph.addVertex(100);
-  // graph.addVertex(1001);
-  // graph.addEdge(0,1);
-  // std::cout << graph.getVertexValue(0).first << '\n';
-  // // graph.removeEdges(1);
-  std::cout << graph << '\n';
+  wordLadder("top", "hip");
 }
