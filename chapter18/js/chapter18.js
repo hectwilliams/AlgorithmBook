@@ -1,6 +1,6 @@
 const OCTAL = 8;
 const HEXADECIIMAL =  16;
-
+const BINARY = 2;
 const dec2OctStr = function (value)
 {
   let str = "";
@@ -95,5 +95,25 @@ const hexStr2Val = function(str)
   return sum;
 }
 
-console.log(hexStr2Val("1F"));
+const dec2BinStr = function(value)
+{
+  let string = "";
+  while (value  > 0 )
+  {
+    string += value % 2;
+    value = parseInt(value/2);
+  }
+  return "0b" + string;
+}
+
+const binStr2Val = function(str)
+{
+  let sum = 0;
+  for (let i = 0; i < str.length; i++)
+  {
+    sum += parseInt(str[str.length - 1 - i] ) * parseInt(Math.pow(BINARY, i))
+  }
+  return sum;
+}
+console.log(binStr2Val("11111"));
 // console.log(octStr2Val("37"));

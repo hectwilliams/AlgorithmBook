@@ -2,6 +2,7 @@ import math
 
 OCTAL = 8
 HEXADECIMAL = 16
+BINARY = 2
 
 def dec2OctStr (value):
   string = ""
@@ -65,6 +66,19 @@ def hexStr2Val (string):
 
   return sum
 
-test = hexStr2Val("1F")
+def dec2BinStr(value) :
+  string = ""
+  while value > 0:
+    string += str(value % 2)
+    value = int(value / 2)
+  return "0b" + string
+
+def binStr2Val(string):
+  sum = 0
+  for i in range(string.__len__()):
+    sum += int(string[string.__len__() - 1- i]) * pow(BINARY, i)
+  return sum
+
+test = dec2BinStr(31)
 
 print(test)

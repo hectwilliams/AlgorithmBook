@@ -62,7 +62,6 @@ std::string dec2HexStr(int value)
 
   while (value > 0)
   {
-
     str = HexEncoder (std::to_string(value % HEXADECIMAL)) + str;
     value /= HEXADECIMAL;
   }
@@ -79,7 +78,28 @@ int hexStr2Val(std::string str)
   return sum;
 }
 
+std::string dec2BinStr (int value)
+{
+  std::string str;
+  while (value > 0)
+  {
+    str += std::to_string(value % BINARY );
+    value /= BINARY;
+  }
+  return "0b" + str;
+}
+
+int binStr2Val (std::string str)
+{
+  int sum  = 0;
+  for (int i = 0; i < str.size(); i++)
+  {
+    sum += (str[str.size() - 1- i]  - 48) * (int) pow(BINARY, i);
+  }
+  return sum;
+}
+
 int main ()
 {
-  std::cout << hexStr2Val( "1F") << '\n';
+  std::cout << dec2BinStr(5) << '\n';
 }

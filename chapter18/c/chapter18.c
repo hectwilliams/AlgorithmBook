@@ -183,9 +183,40 @@ int HexDecode(char c)
   return num;
 }
 
+char * dec2BinStr (int num)
+{
+  const int  NUM = 20;
+  static char str[NUM] = "";
+  int pos = 2;
+  int val = 0;
+
+  memset(str, 0, NUM);
+  memcpy(str, "0b", 2);
+
+  while (num > 0)
+  {
+    val = num % BINARY;
+    str[pos++] = 48 + val;
+    num /= 2;
+  }
+  return str;
+}
+
+int binStr2Val (const char * str)
+{
+  int sum = 0;
+  int len = strlen(str);
+
+  for (int i = 0; i < len; i++)
+  {
+    sum += (str[len - 1- i]  - 48) * (int) pow(BINARY, i);
+  }
+  return sum;
+}
+
 int main()
 {
-  // printf( "data %s\n", dec2OctStr(31));
+  printf( "data %d\n", binStr2Val("11111"));
   //  printf( "[%s]\n", dec2HexStr(31) );
-  printf( "[%d]\n", hexStr2Val("1F") );
+  // printf( "[%d]\n", hexStr2Val("1F") );
 }

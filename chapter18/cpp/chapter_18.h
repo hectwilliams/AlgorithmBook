@@ -2,6 +2,7 @@
 #include <string>
 #define OCTAL 8
 #define HEXADECIMAL 16
+#define BINARY 2
 
 std::string dec2OctStr(int value);
 int octStr2Val(std::string str);
@@ -106,3 +107,9 @@ char HexEncoder (unsigned num)
   }
   return res;
 }
+
+std::string dec2HexStr(int value);
+int hexStr2Val(std::string str);
+
+std::string dec2BinStr (int value);
+int binStr2Val (std::string str);
