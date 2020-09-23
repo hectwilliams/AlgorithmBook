@@ -14,4 +14,4 @@ int hexStr2Val(const char *str);
 char * dec2BinStr (int num);
 int binStr2Val (const char * str);
 void countInBinary (unsigned number);
-
+unsigned countSetBits(unsigned value)

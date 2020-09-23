@@ -185,8 +185,17 @@ const countInBinary = function(value)
     console.log( counter ,dec2BinStr(counter++));
 
   }
-
 }
-countInBinary(5)
+
+const countSetBits = function(value)
+{
+  let acc = 0;
+  while (value > 0)
+  {
+    acc += value % 2;
+    value = parseInt(value / 2);
+  }
+  return acc;
+}
 
 // console.log(octStr2Val("37"));

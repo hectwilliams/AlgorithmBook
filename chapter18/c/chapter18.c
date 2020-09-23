@@ -223,9 +223,23 @@ void countInBinary (unsigned numOfBits)
   }
 }
 
+unsigned countSetBits(unsigned value)
+{
+  unsigned acc = 0;
+  while (value > 0)
+  {
+    acc += value % 2;
+    value /= 2;
+  }
+  return acc;
+}
+
+
+
 int main()
 {
-  countInBinary(5);
+  unsigned x = countSetBits(0x3ff);
+  printf("[%d]\n", x);
   //  printf( "[%s]\n", dec2HexStr(31) );
   // printf( "[%d]\n", hexStr2Val("1F") );
 }

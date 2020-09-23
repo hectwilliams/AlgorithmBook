@@ -110,8 +110,18 @@ void countInBinary (unsigned value)
   }
 }
 
+unsigned countSetBits(unsigned value)
+{
+  unsigned acc = 0;
+  while (value > 0)
+  {
+    acc += value % 2;
+    value /= 2;
+  }
+  return acc;
+}
 
 int main ()
 {
-  countInBinary(5);
+  countSetBits(5);
 }

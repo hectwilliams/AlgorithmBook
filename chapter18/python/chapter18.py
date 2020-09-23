@@ -115,4 +115,11 @@ def countInBinary (val) :
     print(counter , dec2BinStr(counter))
     counter += 1
 
-countInBinary(5)
+def countSetBits(value) :
+  acc = 0
+  while value > 0:
+    acc += value % 2
+    value = int(value / 2)
+  return acc
+x = countSetBits(5)
+print(x)
