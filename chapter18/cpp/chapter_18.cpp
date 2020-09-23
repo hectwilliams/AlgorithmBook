@@ -83,7 +83,7 @@ std::string dec2BinStr (int value)
   std::string str;
   while (value > 0)
   {
-    str += std::to_string(value % BINARY );
+    str = std::to_string(value % BINARY ) + str;
     value /= BINARY;
   }
   return "0b" + str;
@@ -99,7 +99,19 @@ int binStr2Val (std::string str)
   return sum;
 }
 
+void countInBinary (unsigned value)
+{
+  int counter = 0;
+  int max = (int) pow(2, value);
+
+  while (counter < max)
+  {
+    std::cout << counter << " -> " << dec2BinStr(counter++) <<'\n';
+  }
+}
+
+
 int main ()
 {
-  std::cout << dec2BinStr(5) << '\n';
+  countInBinary(5);
 }

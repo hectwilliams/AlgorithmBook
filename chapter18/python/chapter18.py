@@ -69,7 +69,7 @@ def hexStr2Val (string):
 def dec2BinStr(value) :
   string = ""
   while value > 0:
-    string += str(value % 2)
+    string = str(value % 2) + string
     value = int(value / 2)
   return "0b" + string
 
@@ -108,6 +108,11 @@ def reorderWordFragment(collection):
 
   return collection
 
-test = reorderWordFragment(  ["BQX?","XD?E"] )
+def countInBinary (val) :
+  counter = 0
+  max = math.pow(2,val)
+  while counter < max:
+    print(counter , dec2BinStr(counter))
+    counter += 1
 
-print(test)
+countInBinary(5)

@@ -182,21 +182,20 @@ int HexDecode(char c)
   }
   return num;
 }
-
 char * dec2BinStr (int num)
 {
-  const int  NUM = 20;
-  static char str[NUM] = "";
-  int pos = 2;
+  const int  SPACE = 50;
+  static char str[SPACE] = "";
+  int pos = 2 + floor( log2(num) );
   int val = 0;
 
-  memset(str, 0, NUM);
+  memset(str, 0, SPACE);
   memcpy(str, "0b", 2);
 
   while (num > 0)
   {
     val = num % BINARY;
-    str[pos++] = 48 + val;
+    str[pos--] = 48 + val;
     num /= 2;
   }
   return str;
@@ -214,9 +213,19 @@ int binStr2Val (const char * str)
   return sum;
 }
 
+void countInBinary (unsigned numOfBits)
+{
+  int count = 0;
+  while (count < pow(2, numOfBits) )
+  {
+    printf( " %d  -> number[ %s]\n ", count,  dec2BinStr(count) );
+    count++;
+  }
+}
+
 int main()
 {
-  printf( "data %d\n", binStr2Val("11111"));
+  countInBinary(5);
   //  printf( "[%s]\n", dec2HexStr(31) );
   // printf( "[%d]\n", hexStr2Val("1F") );
 }

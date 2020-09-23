@@ -113,3 +113,5 @@ int hexStr2Val(std::string str);
 
 std::string dec2BinStr (int value);
 int binStr2Val (std::string str);
+
+void countInBinary (unsigned value);

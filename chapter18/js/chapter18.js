@@ -100,7 +100,7 @@ const dec2BinStr = function(value)
   let string = "";
   while (value  > 0 )
   {
-    string += value % 2;
+    string = value % 2 + string;
     value = parseInt(value/2);
   }
   return "0b" + string;
@@ -174,7 +174,19 @@ const reorderWordFragment = function (arr)
   return arr;
 }
 
-console.log( reorderWordFragment( ["XD?E","BDE?","?A?E"]) );
-console.log (reorderWordFragment( ["BQX?","XD?E"]) );
+const countInBinary = function(value)
+{
+  let counter = 0;
+  let max = parseInt (Math.log2(value));
+  max = Math.pow(2, value);
+
+  while (counter < max)
+  {
+    console.log( counter ,dec2BinStr(counter++));
+
+  }
+
+}
+countInBinary(5)
 
 // console.log(octStr2Val("37"));

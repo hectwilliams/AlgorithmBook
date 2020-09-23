@@ -11,6 +11,7 @@ char HexEncode (unsigned num);
 int HexDecode(char c);
 char * dec2HexStr(int num);
 int hexStr2Val(const char *str);
-
 char * dec2BinStr (int num);
 int binStr2Val (const char * str);
+void countInBinary (unsigned number);
+
