@@ -115,5 +115,66 @@ const binStr2Val = function(str)
   }
   return sum;
 }
-console.log(binStr2Val("11111"));
+const swap = function(collection, i, j)
+{
+  let temp = collection[i];
+  collection[i] = collection[j];
+  collection[j] = temp;
+}
+const reorderWordFragment = function (arr)
+{
+  let minChar;
+  let len = arr[0].length;
+  let pos;
+
+  for (let i = 0; i < len; i++)  //  iterate letter
+  {
+    minChar = 'A';
+    for (let k = 0; k < arr.length; k++) //  iterate word
+    {
+      if (i == 0)   // first column words
+      {
+        if (arr[k][i] == '?')
+        {
+          arr[k] = arr[k].slice(0, i) +  minChar + arr[k].slice(i + 1);
+        }
+        // order element at k
+        pos = k;
+        while (pos > 0)
+        {
+          if (arr[pos - 1] > arr[pos])
+          {
+            swap (arr, pos - 1, pos)
+          }
+          pos--;
+        }
+      }
+      else
+      {
+        if (arr[k][i] == '?')
+        {
+          arr[k] = arr[k].slice(0, i) +  minChar + arr[k].slice(i + 1);
+        }
+        else
+        {
+          minChar = arr[k][i]; // update min char
+        }
+      }
+
+      //test for order
+      if (k > 0)
+      {
+        if (arr[k - 1][i] > arr[k][i]  )
+        {
+          return null;
+        }
+      }
+    }
+  }
+  return arr;
+}
+
+console.log( reorderWordFragment( ["XD?E","BDE?","?A?E"]) );
+console.log (reorderWordFragment( ["BQX?","XD?E"]) );
+
 // console.log(octStr2Val("37"));

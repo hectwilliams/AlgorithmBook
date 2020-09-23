@@ -79,6 +79,35 @@ def binStr2Val(string):
     sum += int(string[string.__len__() - 1- i]) * pow(BINARY, i)
   return sum
 
-test = dec2BinStr(31)
+
+def reorderWordFragment(collection):
+  minChar = None
+  len = collection[0].__len__()
+
+  for i in range(0, len):
+    minChar = 'A'
+    for k in range(0, collection.__len__()):
+      if i == 0:
+        if collection[k][i]  == '?':
+          collection[k] = collection[k][0 : i] + minChar + collection[k][i + 1 : :]
+        pos = k
+        while pos > 0:
+          if collection[pos - 1][i] > collection[pos][i]   :
+            collection[pos - 1], collection[pos] = collection[pos] , collection[pos  - 1]
+          pos -= 1
+
+      else:
+        if collection[k][i]  == '?':
+          collection[k] = collection[k][0 : i] + minChar + collection[k][i + 1 : :]
+        else :
+          minChar = collection[k][i]
+
+      if k > 0 :
+        if collection[k - 1][i ] > collection[k][i] :
+          return None
+
+  return collection
+
+test = reorderWordFragment(  ["BQX?","XD?E"] )
 
 print(test)
