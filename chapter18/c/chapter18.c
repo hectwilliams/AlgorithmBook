@@ -303,7 +303,7 @@ int decodeBit (int bitNumber, int value)
 
   if (bitNumber < 32)
   {
-    bit = !!(value &  ~(1 << bitNumber));
+    bit = !!(value &  (1 << bitNumber));
   }
   return bit;
 }

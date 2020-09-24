@@ -252,10 +252,60 @@ const decodeBit = function (bitPosition,  value)
 
   if (bitPosition < 32 && bitPosition >=0 )
   {
-    bit = !!(value &  ~(1 << bitNumber));
+    bit = (value & (1 << bitNumber)) >> bitNumber;
   }
   return bit;
 }
 
-let x = decode32 ( 0x124578AB );
-console.log(x);
+const radixSort2 = function (arr = [])
+{
+  let collection = [], bucket = [];
+
+  for (let i = 0; i < 32; i++)
+  {
+    collection.push([]);
+  }
+  collection[0] = collection[0].concat(arr);
+
+  for (let bitPos = 0; bitPos < 32; bitPos++)
+  {
+    for (let i = 0; i < 32; i++)
+    {
+      bucket.push([]);
+    }
+    for (let row = 0; row < collection.length ;  row++)
+    {
+      for (let j = 0; j < collection[row].length; j++)
+      {
+        if (!! ( collection[row][j] & (1 << bitPos) ) )
+        {
+          bucket[bitPos].push( collection[row][j]);
+        }
+        else
+        {
+          bucket[row].push( collection[row][j]);
+        }
+      }
+    }
+    collection = bucket;
+    bucket = [];
+  }
+
+  collection = collection.reduce( (acc, ele) => {
+    return acc.concat(ele);
+  }, []);
+
+  for (let i = 0; i < collection.length; i++)
+  {
+    arr[i] = collection[i];
+  }
+}
+
+let testData = [ 902, 49, 212, 656, 58, 737, 899, 946, 240, 280 ];
+for (let i = 0; i < 10; i++)
+{
+  testData.push(parseInt(Math.random() * 1000));
+}
+
+console.log('update', radixSort2 (  testData ));
+console.log('test', testData);

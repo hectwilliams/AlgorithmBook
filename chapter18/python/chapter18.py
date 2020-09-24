@@ -1,5 +1,5 @@
 import math
-
+from functools import reduce
 OCTAL = 8
 HEXADECIMAL = 16
 BINARY = 2
@@ -145,13 +145,45 @@ def decode32 (value) :
   for i in range(0, 4):
     arr.insert(0, hex( (value & (0xFF << 8 * i) ) >> 8 * i ))
   return arr
+
 def encodeBit (bit, pos, value):
   if pos >= 0 and pos < 32:
     value =  (value & ~(1 << pos) ) | (bit << pos)
   return value
+
 def decodeBit (pos, value):
   if pos >= 0 and pos < 32:
-    return (value & ~(1 << pos)) >> pos
+    return (value & (1 << pos)) >> pos
   return None
-x = decode32 (0x124578AB )
-print(x)
+
+def reduceArrays (a = [],b = []):
+  return a + b
+
+def radixSort2 (arr = []) :
+  collection = []
+  bucket = []
+
+  for i in range(0, 32 ):
+    collection.append([])
+  collection[0] += arr
+
+  for bitPosition in range(0, 32):
+    for i in range(0, 32 ):
+      bucket.append([])
+    for row in range (0, collection.__len__()) :
+      for j in range(0, collection[row].__len__()) :
+        if  bool(collection[row][j] & (1 << bitPosition) ):
+          bucket[bitPosition].append(collection[row][j])
+        else:
+          bucket[row].append(collection[row][j])
+    collection = bucket
+    bucket = []
+
+  collection = reduce (reduceArrays, collection, [])
+
+  for i in range(0, arr.__len__()):
+    arr[i] = collection[i]
+
+arr = [ 902, 49, 212, 656, 58, 737, 899, 946, 240, 280 ]
+radixSort2 (arr)
+print(arr)
