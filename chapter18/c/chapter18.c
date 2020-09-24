@@ -259,10 +259,38 @@ unsigned encode32( unsigned char arr[4])
   return sum;
 }
 
+struct byte4 decode32 (int value)
+{
+  struct byte4 res = {.offset0 = 0, .offset1 = 0, .offset2 = 0, .offset3 = 0};
+  unsigned char mask = 0xFF;
+
+  for (int i = 0; i < 4; i++)
+  {
+    switch (i)
+    {
+    case 0:
+      res.offset0 = (value & ( mask << 8*i )) >> 8*i;
+      break;
+    case 1:
+      res.offset1 =  (value & ( mask << 8*i )) >> 8*i;
+      break;
+    case 2:
+      res.offset2 =  (value & ( mask << 8*i )) >> 8*i;
+      break;
+    case 3:
+      res.offset3 = (value & ( mask << 8*i )) >> 8*i;
+      break;
+    default:
+      break;
+    }
+  }
+  return res;
+}
+
 int main()
 {
-  unsigned char ff[4] =  { 0xF0, 0xC3, 0x96, 0x59 };
-  printf( "[%x]\n" ,encode32 (ff) ) ;
+  struct byte4 x = decode32 ( 0x124578AB ) ;
+  printf( "[%d]  [%d]  [%d]  [%d]\n " , x.offset3, x.offset2, x.offset1, x.offset0 ) ;
   // unsigned x = reverse32Bit(0b01100110011001101111000011110000);
   // printf("[%d]\n", x == 0b00001111000011110110011001100110);
 }

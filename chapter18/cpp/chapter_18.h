@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <array>
+
 #define OCTAL 8
 #define HEXADECIMAL 16
 #define BINARY 2
@@ -118,3 +120,4 @@ unsigned countSetBits(unsigned value);
 unsigned reversebits(unsigned value);
 
 unsigned encode32( unsigned char arr[4]);
+std::array<unsigned char, 4> decode32(int value);

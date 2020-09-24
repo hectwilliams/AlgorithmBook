@@ -18,3 +18,13 @@ void countInBinary (unsigned number);
 unsigned countSetBits(unsigned value);
 unsigned reverse32Bit(unsigned value);
 unsigned encode32( unsigned char arr[4]);
+
+struct byte4
+{
+  unsigned char offset0;
+  unsigned char offset1;
+  unsigned char offset2;
+  unsigned char offset3;
+};
+
+struct byte4 decode32 (int value);

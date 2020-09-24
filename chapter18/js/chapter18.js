@@ -225,5 +225,15 @@ const encode32 = function (arr)
   return sum;
 }
 
-let x = encode32 ( [0xF0, 0xC3, 0x96, 0x59 ] );
+const decode32 = function(value)
+{
+  let arr = [];
+  for (let i = 0; i < 4; i++)
+  {
+    arr.unshift(  (value & (0xFF << 8 * i) ) >> 8 * i    );
+  }
+  return arr;
+}
+
+let x = decode32 ( 0x124578AB );
 console.log(x);

@@ -147,7 +147,26 @@ unsigned encode32( unsigned char arr[4])
   return sum;
 }
 
+std::array<unsigned char, 4> decode32(int value)
+{
+  std::array<unsigned char, 4> res;
+  unsigned char mask = 0xFF;
+
+  for (int i = 0; i < 4; i++)
+  {
+    res[i] = (value & ( mask << 8*i )) >> 8*i;
+  }
+
+  for (int i = 0; i < 4; i++)
+  {
+    std::cout << std::hex <<  i << " " <<  ((int) res[i] ) << '\n';
+  }
+  return res;
+}
+
+
+
 int main ()
 {
- std::cout <<  reversebits( 0b01100110011001101111000011110000 ) << '\n';
+  decode32( 0x124578AB  ) ;
 }

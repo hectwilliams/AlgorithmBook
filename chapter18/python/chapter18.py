@@ -140,5 +140,10 @@ def encode32(arr):
     sum |= arr[i] << (4 - 1 - i) * 8
   return hex(sum)
 
-x = encode32 ( [0xF0, 0xC3, 0x96, 0x59 ] )
+def decode32 (value) :
+  arr = []
+  for i in range(0, 4):
+    arr.insert(0, hex( (value & (0xFF << 8 * i) ) >> 8 * i ))
+  return arr
+x = decode32 (0x124578AB )
 print(x)
