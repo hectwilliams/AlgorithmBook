@@ -28,3 +28,5 @@ struct byte4
 };
 
 struct byte4 decode32 (int value);
+int encodeBit (int bit, int bitNumber, int value);
+int decodeBit (int bitNumber, int value);
