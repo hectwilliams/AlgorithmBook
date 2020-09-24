@@ -164,9 +164,30 @@ std::array<unsigned char, 4> decode32(int value)
   return res;
 }
 
+int encodeBit(int bit, int bitNumber, int value)
+{
+  if (bitNumber < 32)
+  {
+    value &= ~(1 << bitNumber);
+    value |= (bit << bitNumber);
+  }
+  return value;
+}
 
+int decodeBit (int bitNumber, int value)
+{
+  int bit = -1;
+
+  if (bitNumber < 32)
+  {
+    bit = !!(value &  ~(1 << bitNumber));
+  }
+  return bit;
+}
 
 int main ()
 {
-  decode32( 0x124578AB  ) ;
-}
+ int x = decodeBit (  30,0x4FFFFFFF ) ;
+  printf( " %x " ,  x ) ;
+
+  }

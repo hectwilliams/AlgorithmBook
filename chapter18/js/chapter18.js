@@ -235,5 +235,27 @@ const decode32 = function(value)
   return arr;
 }
 
+const encodeBit = function(bit, bitPosition, value)
+{
+  if (bitPosition < 32 && bitPosition>=0)
+  {
+    value &= ~(1 << bitNumber);
+    value |= (bit << bitNumber);
+  }
+  return value;
+}
+
+
+const decodeBit = function (bitPosition,  value)
+{
+  let bit = -1;
+
+  if (bitPosition < 32 && bitPosition >=0 )
+  {
+    bit = !!(value &  ~(1 << bitNumber));
+  }
+  return bit;
+}
+
 let x = decode32 ( 0x124578AB );
 console.log(x);

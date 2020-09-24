@@ -287,10 +287,31 @@ struct byte4 decode32 (int value)
   return res;
 }
 
+int encodeBit (int bit, int bitNumber, int value)
+{
+  if (bitNumber < 32)
+  {
+    value &= ~(1 << bitNumber);
+    value |= (bit << bitNumber);
+  }
+  return value;
+}
+
+int decodeBit (int bitNumber, int value)
+{
+  int bit = -1;
+
+  if (bitNumber < 32)
+  {
+    bit = !!(value &  ~(1 << bitNumber));
+  }
+  return bit;
+}
+
 int main()
 {
-  struct byte4 x = decode32 ( 0x124578AB ) ;
-  printf( "[%d]  [%d]  [%d]  [%d]\n " , x.offset3, x.offset2, x.offset1, x.offset0 ) ;
+  int x = decodeBit (  30,0x4FFFFFFF ) ;
+  printf( " %x " ,  x ) ;
   // unsigned x = reverse32Bit(0b01100110011001101111000011110000);
   // printf("[%d]\n", x == 0b00001111000011110110011001100110);
 }

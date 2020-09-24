@@ -118,6 +118,8 @@ int binStr2Val (std::string str);
 void countInBinary (unsigned value);
 unsigned countSetBits(unsigned value);
 unsigned reversebits(unsigned value);
-
 unsigned encode32( unsigned char arr[4]);
 std::array<unsigned char, 4> decode32(int value);
+int encodeBit(int bit, int bitNumber, int value);
+int decodeBit (int bitNumber, int value);
+

@@ -145,5 +145,13 @@ def decode32 (value) :
   for i in range(0, 4):
     arr.insert(0, hex( (value & (0xFF << 8 * i) ) >> 8 * i ))
   return arr
+def encodeBit (bit, pos, value):
+  if pos >= 0 and pos < 32:
+    value =  (value & ~(1 << pos) ) | (bit << pos)
+  return value
+def decodeBit (pos, value):
+  if pos >= 0 and pos < 32:
+    return (value & ~(1 << pos)) >> pos
+  return None
 x = decode32 (0x124578AB )
 print(x)
