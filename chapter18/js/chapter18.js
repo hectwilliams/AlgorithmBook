@@ -215,5 +215,15 @@ const reverseBits = function (value)
   return value;
 }
 
-let x = reverseBits(0b01100110011001101111000011110000);
+const encode32 = function (arr)
+{
+  let sum = 0;
+  for (let i = 0 ; i < 4; i++)
+  {
+    sum |= ( arr[i] ) << (4 - 1 - i)*8;
+  }
+  return sum;
+}
+
+let x = encode32 ( [0xF0, 0xC3, 0x96, 0x59 ] );
 console.log(x);

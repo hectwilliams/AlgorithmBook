@@ -249,8 +249,20 @@ unsigned reverse32Bit(unsigned value)
   return value;
 }
 
+unsigned encode32( unsigned char arr[4])
+{
+  unsigned sum = 0;
+  for (int i = 0 ; i < 4; i++)
+  {
+    sum |= ( arr[i] ) << (4 - 1 - i)*8;
+  }
+  return sum;
+}
+
 int main()
 {
-  unsigned x = reverse32Bit(0b01100110011001101111000011110000);
-  printf("[%d]\n", x == 0b00001111000011110110011001100110);
+  unsigned char ff[4] =  { 0xF0, 0xC3, 0x96, 0x59 };
+  printf( "[%x]\n" ,encode32 (ff) ) ;
+  // unsigned x = reverse32Bit(0b01100110011001101111000011110000);
+  // printf("[%d]\n", x == 0b00001111000011110110011001100110);
 }

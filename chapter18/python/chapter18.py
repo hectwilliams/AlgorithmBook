@@ -134,5 +134,11 @@ def reverseBits (value):
     print(value)
   return value
 
-x = reverseBits(0b01100110011001101111000011110000)
+def encode32(arr):
+  sum = 0
+  for i in range(0, 4):
+    sum |= arr[i] << (4 - 1 - i) * 8
+  return hex(sum)
+
+x = encode32 ( [0xF0, 0xC3, 0x96, 0x59 ] )
 print(x)

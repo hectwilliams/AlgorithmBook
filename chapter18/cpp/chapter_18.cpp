@@ -137,6 +137,16 @@ unsigned reversebits(unsigned value)
   return value;
 }
 
+unsigned encode32( unsigned char arr[4])
+{
+  unsigned sum = 0;
+  for (int i = 0 ; i < 4; i++)
+  {
+    sum |= ( arr[i] ) << (4 - 1 - i)*8;
+  }
+  return sum;
+}
+
 int main ()
 {
  std::cout <<  reversebits( 0b01100110011001101111000011110000 ) << '\n';
