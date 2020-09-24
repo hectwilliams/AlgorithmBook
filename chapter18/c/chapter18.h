@@ -17,3 +17,4 @@ int binStr2Val (const char * str);
 void countInBinary (unsigned number);
 unsigned countSetBits(unsigned value);
 unsigned reverse32Bit(unsigned value);
+unsigned encode32( unsigned char arr[4]);
