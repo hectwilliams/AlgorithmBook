@@ -121,7 +121,23 @@ unsigned countSetBits(unsigned value)
   return acc;
 }
 
+unsigned reversebits(unsigned value)
+{
+  int lb, rb;
+  for (int i = 0; i < WORD_SIZE/2; i++)
+  {
+    lb = !!((1 << (WORD_SIZE - 1 - i)) & value) ;
+    rb = !!((1 << i) & value) ;
+
+    value &= ~(1 << (WORD_SIZE - 1 - i) ) & ~(1 << i);
+
+    value |= (lb << i);
+    value |= (rb << (WORD_SIZE - 1 - i));
+  }
+  return value;
+}
+
 int main ()
 {
-  countSetBits(5);
+ std::cout <<  reversebits( 0b01100110011001101111000011110000 ) << '\n';
 }

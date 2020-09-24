@@ -3,6 +3,7 @@ import math
 OCTAL = 8
 HEXADECIMAL = 16
 BINARY = 2
+WORD_SIZE = 32
 
 def dec2OctStr (value):
   string = ""
@@ -121,5 +122,17 @@ def countSetBits(value) :
     acc += value % 2
     value = int(value / 2)
   return acc
-x = countSetBits(5)
+
+def reverseBits (value):
+  lb = rb = 0
+  for i in range(0,WORD_SIZE / 2):
+    lb = bool( (1 << WORD_SIZE - i - 1) & value  )
+    rb = bool( (1 << i ) & value  )
+    value &= ~(1 << (WORD_SIZE - 1 - i) ) & ~(1 << i)
+    value |= (lb << i)
+    value |= (rb << (WORD_SIZE - 1 - i))
+    print(value)
+  return value
+
+x = reverseBits(0b01100110011001101111000011110000)
 print(x)

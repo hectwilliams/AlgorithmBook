@@ -234,12 +234,23 @@ unsigned countSetBits(unsigned value)
   return acc;
 }
 
+unsigned reverse32Bit(unsigned value)
+{
+  int leftBit = 0;
+  int rightBit = 0;
 
+  for (int i = 0; i < WORD_SIZE /2 ; i++)
+  {
+    leftBit = !!(value & (1 << WORD_SIZE - 1 - i));
+    rightBit = !!(value & (1 << i));
+    value = value & ~(1 << WORD_SIZE - 1 - i) & ~( 1 << i);
+    value =  value | (leftBit << i) | (rightBit << WORD_SIZE - 1 -i);
+  }
+  return value;
+}
 
 int main()
 {
-  unsigned x = countSetBits(0x3ff);
-  printf("[%d]\n", x);
-  //  printf( "[%s]\n", dec2HexStr(31) );
-  // printf( "[%d]\n", hexStr2Val("1F") );
+  unsigned x = reverse32Bit(0b01100110011001101111000011110000);
+  printf("[%d]\n", x == 0b00001111000011110110011001100110);
 }

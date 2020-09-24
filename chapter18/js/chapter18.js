@@ -1,6 +1,7 @@
 const OCTAL = 8;
 const HEXADECIIMAL =  16;
 const BINARY = 2;
+const WORD_SIZE = 32;
 const dec2OctStr = function (value)
 {
   let str = "";
@@ -198,4 +199,21 @@ const countSetBits = function(value)
   return acc;
 }
 
-// console.log(octStr2Val("37"));
+const reverseBits = function (value)
+{
+  let lb, rb;
+  for (let i = 0; i < parseInt(WORD_SIZE / 2); i++)
+  {
+    lb = !!((1 << (WORD_SIZE - 1 - i)) & value) ;
+    rb = !!((1 << i) & value) ;
+
+    value &= ~(1 << (WORD_SIZE - 1 - i) ) & ~(1 << i);
+
+    value |= (lb << i);
+    value |= (rb << (WORD_SIZE - 1 - i));
+  }
+  return value;
+}
+
+let x = reverseBits(0b01100110011001101111000011110000);
+console.log(x);
