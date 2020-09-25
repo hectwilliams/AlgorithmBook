@@ -184,6 +184,20 @@ def radixSort2 (arr = []) :
   for i in range(0, arr.__len__()):
     arr[i] = collection[i]
 
-arr = [ 902, 49, 212, 656, 58, 737, 899, 946, 240, 280 ]
-radixSort2 (arr)
-print(arr)
+def LED2Numeral(ledByte):
+  sevenSegmentSelct = {
+    0b01110111: 0,
+    0b00100100: 1,
+    0b01011101: 2,
+    0b01101101: 3,
+    0b00101110: 4,
+    0b01101011: 5,
+    0b01111011: 6,
+    0b00100101: 7,
+    0b01111111: 8,
+    0b00101111: 9
+  }
+  return sevenSegmentSelct[ledByte]
+
+x = (LED2Numeral(0x7B))
+print(x)

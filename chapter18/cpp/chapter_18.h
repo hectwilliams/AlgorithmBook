@@ -6,6 +6,16 @@
 #define HEXADECIMAL 16
 #define BINARY 2
 #define WORD_SIZE 32
+#define LED_0 0b01110111
+#define LED_1 0b00100100
+#define LED_2 0b01011101
+#define LED_3 0b01101101
+#define LED_4 0b00101110
+#define LED_5 0b01101011
+#define LED_6 0b01111011
+#define LED_7 0b00100101
+#define LED_8 0b01111111
+#define LED_9 0b00101111
 
 std::string dec2OctStr(int value);
 int octStr2Val(std::string str);
@@ -123,3 +133,4 @@ std::array<unsigned char, 4> decode32(int value);
 int encodeBit(int bit, int bitNumber, int value);
 int decodeBit (int bitNumber, int value);
 
+int LED2Numeral(unsigned char ledByte);

@@ -301,11 +301,43 @@ const radixSort2 = function (arr = [])
   }
 }
 
-let testData = [ 902, 49, 212, 656, 58, 737, 899, 946, 240, 280 ];
-for (let i = 0; i < 10; i++)
+const sevenSegment = {
+  0b01110111: 0,
+  0b00100100: 1,
+  0b01011101: 2,
+  0b01101101: 3,
+  0b00101110: 4,
+  0b01101011: 5,
+  0b01111011: 6,
+  0b00100101: 7,
+  0b01111111: 8,
+  0b00101111: 9
+};
+
+
+const LED2Numeral = function(ledByte)
 {
-  testData.push(parseInt(Math.random() * 1000));
+  return sevenSegment[ledByte];
 }
 
-console.log('update', radixSort2 (  testData ));
-console.log('test', testData);
+const Int2LED = function(twoByyte)
+{
+  let res = [];
+  let tmp;
+
+  while (twoByyte > 0)
+  {
+    tmp = twoByyte % 10;
+    for (let key in sevenSegment  )
+    {
+      if (tmp === sevenSegment[key])
+      {
+        res.push(key)
+      }
+    }
+    twoByyte = parseInt(twoByyte / 10);
+  }
+  return res;
+}
+
+console.log(Int2LED(85210) );

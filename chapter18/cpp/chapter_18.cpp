@@ -185,9 +185,50 @@ int decodeBit (int bitNumber, int value)
   return bit;
 }
 
+
+int LED2Numeral(unsigned char ledByte)
+{
+  int res = -1;
+  switch (ledByte)
+  {
+  case LED_0:
+    res = 0;
+    break;
+  case LED_1:
+    res = 1;
+    break;
+  case LED_2:
+    res = 2;
+    break;
+  case LED_3:
+    res = 3;
+    break;
+  case LED_4:
+    res = 4;
+    break;
+  case LED_5:
+    res = 5;
+    break;
+  case LED_6:
+    res = 6;
+    break;
+  case LED_7:
+    res = 7;
+    break;
+  case LED_8:
+    res = 8;
+    break;
+  case LED_9:
+    res = 9;
+    break;
+  default:
+    res = -1;
+  }
+  return res;
+}
+
 int main ()
 {
  int x = decodeBit (  30,0x4FFFFFFF ) ;
-  printf( " %x " ,  x ) ;
-
-  }
+ printf( " %x " ,  x ) ;
+}
