@@ -9,11 +9,12 @@ function AVLNode (value)
   this.count  = 1;
   this.left = null;
   this.right = null;
-  this.balamce = 0;
+  this.balance = 0;
 }
 
 AVLTree.prototype.add = function(value, node = null)
 {
+
   if (!node )
   {
     node = this.head;
@@ -29,22 +30,34 @@ AVLTree.prototype.add = function(value, node = null)
     {
       if (node.left)
       {
-        return this.add(value, node.left);
+        if (this.add(value, node.left))
+        {
+          node.balance++;
+          return 1;
+        }
       }
       else
       {
         node.left = new AVLNode(value);
+        node.balance++;
+        return 1
       }
     }
     else  if (value > node.value)
     {
       if (node.right)
       {
-        return this.add(value, node.right );
+        if (this.add(value, node.right ) )
+        {
+          node.balance--;
+          return 1;
+        }
       }
       else
       {
         node.right = new AVLNode(value);
+        node.balance--;
+        return 1;
       }
     }
 
@@ -54,6 +67,7 @@ AVLTree.prototype.add = function(value, node = null)
     }
 
   }
+
 };
 
 
@@ -71,7 +85,7 @@ AVLTree.prototype.display = function(node = null)
       this.display.call(this, node.left);
     }
 
-    console.log(node.value);
+    console.log(node.value + '-' + 'bal ' + node.balance );
 
     if (node.right)
     {
@@ -254,21 +268,21 @@ AVLTree.prototype.remove = function(value = null, node = null)
     //  tree.remove(8);
     // tree.display(); // 10 12
 
-    tree.add(11);
-    tree.add(14);
-    tree.add(4);
-    tree.add(6);
+    // tree.add(11);
+    // tree.add(14);
+    // tree.add(4);
+    // tree.add(6);
 
   // tree.remove(8);
   // tree.display(); // 4 6 10 11 12 14
 
-  tree.add(1);
+  // tree.add(1);
 
   // tree.remove(4);
   // tree.display(); // 1 6 8 10 11 12 14
 
 
-  tree.remove(10);
+  // tree.remove(10);
   tree.display(); // 1 4 6 8 11 12 14
 
 

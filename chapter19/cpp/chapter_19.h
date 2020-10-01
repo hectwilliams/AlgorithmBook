@@ -31,7 +31,7 @@ class AVLTree
       this->head = nullptr;
     }
     void display(AVLNode * node = nullptr);
-    void add(const int &value, AVLNode *node = NULL);
+    bool add(const int &value, AVLNode *node = NULL);
     bool remove(const int &value, AVLNode *node = NULL);
 };
 

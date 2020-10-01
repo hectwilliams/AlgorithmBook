@@ -17,7 +17,7 @@ class AVLTree:
     if node:
       if node.left:
         self.display(node.left)
-      print(node.value)
+      print( '[', str(node.value) + '- bal  ' + str(node.balance), ']')
       if node.right:
         self.display(node.right)
 
@@ -30,14 +30,22 @@ class AVLTree:
     else:
       if value < node.value:
         if node.left:
-          return self.add(value, node.left)
+          if self.add(value, node.left) :
+            node.balance += 1
+            return 1
         else:
           node.left = AVLNode(value)
+          node.balance += 1
+          return 1
       if value > node.value:
         if node.right:
-          return self.add(value, node.right)
+          if self.add(value, node.right):
+            node.balance -= 1
+            return 1
         else:
           node.right = AVLNode(value)
+          node.balance -= 1
+          return 1
       if value == node.value:
         node.count += 1
     return self
@@ -119,7 +127,10 @@ class AVLTree:
     return False
 
 tree = AVLTree()
-tree.add(8).add(10).add(12)
+
+tree.add(8)
+tree.add(10)
+tree.add(12)
 
 # tree.remove(10)
 # tree.display()
@@ -133,19 +144,22 @@ tree.add(8).add(10).add(12)
 # tree.display()
 # # expec 10 12
 
-tree.add(11).add(14) .add(4) .add(6)
+# tree.add(11)
+# tree.add(14)
+# tree.add(4)
+# tree.add(6)
 
 # tree.remove(8)
 # tree.display()
 # // 4 6 10 11 12 14
 
-tree.add(1)
+# tree.add(1)
 
 # tree.remove(4)
 # tree.display()
 # // 1 6 8 10 11 12 14
 
-tree.remove(10)
+# tree.remove(10)
 tree.display()
 # // 1 4 6 8 11 12 14
 

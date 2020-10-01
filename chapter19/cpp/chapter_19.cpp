@@ -15,7 +15,7 @@ void AVLTree::display(AVLNode * node)
     {
       display(node->left);
     }
-    std::cout << node->value << " ";
+    std::cout << '[' << node->value << "--> " << node->balance << ']' ;
     if (node->right)
     {
       display(node->right);
@@ -23,8 +23,9 @@ void AVLTree::display(AVLNode * node)
   }
 }
 
-void AVLTree::add(const int &value, AVLNode *node)
+bool AVLTree::add(const int &value, AVLNode *node)
 {
+
   if (node == nullptr)
   {
     node = head;
@@ -40,11 +41,17 @@ void AVLTree::add(const int &value, AVLNode *node)
     {
       if (node->left)
       {
-        return add(value, node->left);
+       if (add(value, node->left));
+       {
+         node->balance++;
+         return true;
+       }
       }
       else
       {
         node->left = new AVLNode(value);
+        node->balance++;
+        return true;
       }
     }
 
@@ -52,11 +59,17 @@ void AVLTree::add(const int &value, AVLNode *node)
     {
       if (node->right)
       {
-        return add(value, node->right);
+        if( add(value, node->right))
+        {
+          node->balance--;
+          return true;
+        }
       }
       else
       {
         node->right = new AVLNode(value);
+        node->balance--;
+        return true;
       }
     }
 
@@ -65,6 +78,9 @@ void AVLTree::add(const int &value, AVLNode *node)
       node->count++;
     }
   }
+
+  return false;
+
 }
 
 bool AVLTree::remove_helper(AVLNode *parent, AVLNode *node, AVLTree *tree)
@@ -129,6 +145,7 @@ bool AVLTree::remove_helper(AVLNode *parent, AVLNode *node, AVLTree *tree)
     if (node->right->left == NULL)
     {
       node->right->left = node->left;
+
       if (parent == NULL)
       {
         tree->head = node->right;
@@ -239,20 +256,20 @@ int main()
   // tree.remove(12);
   // tree.display(); // 8 10
 
-  tree.add(11);
-  tree.add(14);
-  tree.add(4);
-  tree.add(6);
+  // tree.add(11);
+  // tree.add(14);
+  // tree.add(4);
+  // tree.add(6);
 
-  // tree.remove(8);
-  // tree.display(); // 4 6 10 11 12 14
+  // // tree.remove(8);
+  // // tree.display(); // 4 6 10 11 12 14
 
-  tree.add(1);
+  // tree.add(1);
 
-  // tree.remove(4);
-  // tree.display(); // 1 6 8 10 11 12 14
+  // // tree.remove(4);
+  // // tree.display(); // 1 6 8 10 11 12 14
 
-  tree.remove(10);
+  // tree.remove(10);
   tree.display(); // 1 4 6 8 11 12 14
 
 }

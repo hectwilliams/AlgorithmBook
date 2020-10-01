@@ -6,16 +6,18 @@ struct AVLTree *avlnode (int value)
 {
   struct AVLTree *node = (struct AVLTree *) malloc(sizeof(struct AVLTree));
   node->value = value;
-  node->balanace = 0;
+  node->balance = 0;
   node->count = 1;
   node->left = NULL;
   node->right = NULL;
   return node;
 }
 
-void AVLTree_add(struct AVLTree **tree, int value)
+int AVLTree_add(struct AVLTree **tree, int value)
 {
   struct AVLTree *node = *tree;
+  int bal = 0;
+
 
   if (*tree == NULL)
   {
@@ -28,13 +30,14 @@ void AVLTree_add(struct AVLTree **tree, int value)
     {
       if (node->left)
       {
-        return AVLTree_add(&node->left, value);
+        bal = AVLTree_add(&node->left, value) ;
       }
       else
       {
+        node->balance++;
         node->left = avlnode(value);
+        return 1;
       }
-
     }
 
     else if (value > node->value)
@@ -42,11 +45,13 @@ void AVLTree_add(struct AVLTree **tree, int value)
       if (node->right)
       {
 
-        return AVLTree_add(&node->right, value);
+        bal = AVLTree_add(&node->right, value);
       }
       else
       {
+        node->balance--;
         node->right = avlnode(value);
+        return -1;
       }
     }
 
@@ -55,7 +60,11 @@ void AVLTree_add(struct AVLTree **tree, int value)
       node->count++;
     }
 
+    node->balance += bal;
   }
+
+  return bal;
+
 }
 
 void display(struct AVLTree *tree)
@@ -66,7 +75,7 @@ void display(struct AVLTree *tree)
     {
       display(tree->left);
     }
-    printf(" %d ", tree->value);
+    printf(" [val - %d  bal - %d ]  ", tree->value, tree-> balance);
     if (tree->right)
     {
       display(tree->right);
@@ -236,14 +245,16 @@ int AVLTree_remove(struct AVLTree **tree, int value)
 }
 
 
+
+
 int main()
 {
   struct AVLTree *tree = NULL;
 
   AVLTree_add(&tree, 10);
+
   AVLTree_add(&tree, 8);
   AVLTree_add(&tree, 12);
-
 
   // AVLTree_remove(&tree, 10);
   // display(tree); // expect 8 12
@@ -255,21 +266,21 @@ int main()
   // display(tree); // expect 8 10
 
 
-  AVLTree_add(&tree, 11);
-  AVLTree_add(&tree, 14);
-  AVLTree_add(&tree, 4);
-  AVLTree_add(&tree, 6);
+  // AVLTree_add(&tree, 11);
+  // AVLTree_add(&tree, 14);
+  // AVLTree_add(&tree, 4);
+  // AVLTree_add(&tree, 6);
 
   // AVLTree_remove(&tree, 8);
   // display(tree); // expect 4  6  10  11  12  14
 
 
   AVLTree_add(&tree, 1);
-
+  AVLTree_add(&tree, 0);
   // AVLTree_remove(&tree,4);
   // display(tree); // expect  1  6  8  10  11  12  14
-
-  AVLTree_remove(&tree, 10);
+//
+  // AVLTree_remove(&tree, 10);
   display(tree); //expect  1  4  6  8  11  12  14
 
   printf("\n");
