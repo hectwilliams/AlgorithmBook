@@ -17,6 +17,8 @@ class AVLNode
       this->balance = 0;
       this->value = value;
     }
+
+    unsigned height (AVLNode *node = NULL);
 };
 
 class AVLTree

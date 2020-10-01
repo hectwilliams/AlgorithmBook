@@ -253,6 +253,7 @@ AVLTree.prototype.remove = function(value = null, node = null)
 
 AVLTree.prototype.height = function(node = null)
 {
+
   let lheight = 0;
   let rheight = 0;
 
@@ -267,6 +268,40 @@ AVLTree.prototype.height = function(node = null)
     {
       lheight = 1 + this.height(node.left);
     }
+    if (node.right)
+    {
+      rheight = 1 + this.height(node.right);
+    }
+  }
+
+  if (lheight > rheight)
+  {
+    return lheight;
+  }
+  else
+  {
+    return rheight;
+  }
+
+};
+
+AVLNode.prototype.height = function(node = null)
+{
+  let lheight = 0;
+  let rheight = 0;
+
+  if (node == null)
+  {
+    node =  this;
+  }
+
+  if (node)
+  {
+    if (node.left)
+    {
+      lheight = 1 + this.height(node.left);
+    }
+
     if (node.right)
     {
       rheight = 1 + this.height(node.right);
@@ -317,6 +352,6 @@ AVLTree.prototype.height = function(node = null)
   // tree.remove(10);
   tree.display(); // 1 4 6 8 11 12 14
   console.log(tree.height());
-
   }()
+
 )

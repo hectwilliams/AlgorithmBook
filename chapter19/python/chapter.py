@@ -1,10 +1,30 @@
 class AVLNode :
+
   def __init__(self, value) :
     self.value = value
     self.left = None
     self.right = None
     self.balance = 0
     self.count = 1
+
+  def height (self, node = None):
+    lheight = rheight = 0
+
+    if node == None:
+      node = self
+
+    if node:
+
+      if node.left :
+        lheight = 1 + self.height(node.left)
+
+      if node.right:
+        rheight = 1 + self.height(node.right)
+
+    if lheight > rheight:
+      return lheight
+    else :
+      return rheight
 
 class AVLTree:
   def __init__(self):
