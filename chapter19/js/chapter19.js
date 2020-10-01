@@ -251,12 +251,44 @@ AVLTree.prototype.remove = function(value = null, node = null)
   return false;
 };
 
+AVLTree.prototype.height = function(node = null)
+{
+  let lheight = 0;
+  let rheight = 0;
+
+  if (node == null)
+  {
+    node = this.head;
+  }
+
+  if (node)
+  {
+    if (node.left)
+    {
+      lheight = 1 + this.height(node.left);
+    }
+    if (node.right)
+    {
+      rheight = 1 + this.height(node.right);
+    }
+  }
+
+  if (lheight > rheight)
+  {
+    return lheight;
+  }
+  else
+  {
+    return rheight;
+  }
+
+};
 
 (
   function() {
     let tree = new AVLTree();
-    tree.add(8);
     tree.add(10);
+    tree.add(8);
     tree.add(12);
 
     // tree.remove(10);
@@ -284,7 +316,7 @@ AVLTree.prototype.remove = function(value = null, node = null)
 
   // tree.remove(10);
   tree.display(); // 1 4 6 8 11 12 14
-
+  console.log(tree.height());
 
   }()
 )

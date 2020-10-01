@@ -197,7 +197,6 @@ int AVLTree_remove(struct AVLTree **tree, int value)
 {
   struct AVLTree *node = NULL, *prev = NULL;
 
-
   // validate pointer
   if (tree == NULL)
   {
@@ -244,6 +243,38 @@ int AVLTree_remove(struct AVLTree **tree, int value)
   return 0;
 }
 
+int AVLTree_height(const struct AVLTree **tree)
+{
+  int hleft = 0, hright = 0;
+
+  if (tree == NULL)
+  {
+    return  -1;
+  }
+
+  if (*tree)
+  {
+
+    if ((*tree)->left != NULL)
+    {
+      hleft += 1 + AVLTree_height (&(*tree)->left);
+    }
+
+    if ((*tree)->right != NULL)
+    {
+      hright += 1 + AVLTree_height(& (*tree)->right);
+    }
+  }
+
+  if (hleft > hright)
+  {
+    return hleft;
+  }
+  else
+  {
+    return hright;
+  }
+}
 
 
 
@@ -282,7 +313,7 @@ int main()
 //
   // AVLTree_remove(&tree, 10);
   display(tree); //expect  1  4  6  8  11  12  14
-
   printf("\n");
+  printf(" [height %d] " ,AVLTree_height(&tree));
 }
 

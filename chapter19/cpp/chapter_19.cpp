@@ -240,6 +240,38 @@ bool AVLTree::remove(const int &value, AVLNode *node)
   return false;
 }
 
+unsigned AVLTree::height (AVLNode *node)
+{
+  unsigned height_left = 0, height_right = 0;
+
+  if (node == NULL)
+  {
+    node = head;
+  }
+
+  if (node)
+  {
+    if (node->left != NULL)
+    {
+      height_left = 1 + height(node->left);
+    }
+
+    if (node->right != NULL)
+    {
+      height_right = 1 + height(node->right);
+    }
+  }
+
+  if (height_left > height_right)
+  {
+    return height_left;
+  }
+  else
+  {
+    return  height_right;
+  }
+}
+
 int main()
 {
   AVLTree tree;
@@ -271,5 +303,6 @@ int main()
 
   // tree.remove(10);
   tree.display(); // 1 4 6 8 11 12 14
+  std::cout << "\n" << "\n" << "height - " <<  tree.height();
 
 }

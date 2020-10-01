@@ -33,5 +33,6 @@ class AVLTree
     void display(AVLNode * node = nullptr);
     bool add(const int &value, AVLNode *node = NULL);
     bool remove(const int &value, AVLNode *node = NULL);
+    unsigned height (AVLNode *node = NULL);
 };
 
