@@ -14,17 +14,30 @@ class AVLNode :
       node = self
 
     if node:
-
       if node.left :
         lheight = 1 + self.height(node.left)
-
       if node.right:
         rheight = 1 + self.height(node.right)
-
     if lheight > rheight:
       return lheight
     else :
       return rheight
+
+  def isBalanced (self, node = None):
+    left_height = right_height = 0
+
+    if node == None :
+      node = self
+
+    if node.left:
+      left_height = node.left.height()
+    if node.right:
+      right_height = node.right.height()
+
+    if (abs(left_height - right_height) > 1):
+      return False
+    else:
+      return True
 
 class AVLTree:
   def __init__(self):
@@ -146,26 +159,15 @@ class AVLTree:
             return self.remove(value, node.right)
     return False
 
-  def height (self, node = None):
-    lheight = rheight = 0
+  def height (self):
+    self.head.height()
 
-    if node == None:
-      node = self.head
-
-    if node:
-      if node.left:
-        lheight = 1 + self.height(node.left)
-      if node.right:
-        rheight = 1 + self.height(node.right)
-
-    if rheight > lheight:
-        return rheight
-    else:
-      return lheight
-
+  def isBalanced (self):
+    if self.head:
+      return self.head.isBalanced()
+    return False
 
 tree = AVLTree()
-
 tree.add(10)
 tree.add(8)
 tree.add(12)

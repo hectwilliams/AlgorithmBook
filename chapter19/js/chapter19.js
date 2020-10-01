@@ -251,39 +251,6 @@ AVLTree.prototype.remove = function(value = null, node = null)
   return false;
 };
 
-AVLTree.prototype.height = function(node = null)
-{
-
-  let lheight = 0;
-  let rheight = 0;
-
-  if (node == null)
-  {
-    node = this.head;
-  }
-
-  if (node)
-  {
-    if (node.left)
-    {
-      lheight = 1 + this.height(node.left);
-    }
-    if (node.right)
-    {
-      rheight = 1 + this.height(node.right);
-    }
-  }
-
-  if (lheight > rheight)
-  {
-    return lheight;
-  }
-  else
-  {
-    return rheight;
-  }
-
-};
 
 AVLNode.prototype.height = function(node = null)
 {
@@ -316,7 +283,54 @@ AVLNode.prototype.height = function(node = null)
   {
     return rheight;
   }
+};
 
+
+AVLTree.prototype.height = function()
+{
+
+  return this.head.height();
+};
+
+
+AVLNode.prototype.isBalanced = function(node = null)
+{
+  let left = 0;
+  let right = 0;
+
+  if (node == null)
+  {
+    node = this;
+  }
+
+  if (node)
+  {
+    if (node.left)
+    {
+      left = node.left.height();
+    }
+    if (node.right)
+    {
+      right = node.right.height();
+    }
+  }
+
+  if (Math.abs(left - right) > 1)
+  {
+    return false;
+  }
+
+  return true;
+
+};
+
+AVLTree.prototype.isBalanced = function(node = null)
+{
+  if (this.head)
+  {
+    return this.head.isBalanced();
+  }
+  return false;
 };
 
 (
@@ -351,7 +365,7 @@ AVLNode.prototype.height = function(node = null)
 
   // tree.remove(10);
   tree.display(); // 1 4 6 8 11 12 14
-  console.log(tree.height());
+  console.log(tree.isBalanced());
   }()
 
 )

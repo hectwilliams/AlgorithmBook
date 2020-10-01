@@ -1,6 +1,7 @@
 #include "chapter19.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 struct AVLTree *avlnode (int value)
 {
@@ -301,7 +302,39 @@ int AVLNode_height(const struct AVLTree *node)
   }
 }
 
+int AVLTree_isBalanced (struct AVLTree *node)
+{
+  int height_left = 0, height_right = 0;
 
+  if (!node)
+  {
+    return - 1;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      height_left = AVLNode_height(node->left);
+    }
+
+    if (node->right)
+    {
+      height_right = AVLNode_height(node->right);
+    }
+  }
+
+
+  if ( abs(height_left - height_right)  <= 1 )
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+
+}
 
 int main()
 {
@@ -332,13 +365,15 @@ int main()
 
 
   AVLTree_add(&tree, 1);
-  AVLTree_add(&tree, 0);
+  // AVLTree_add(&tree, 0);
   // AVLTree_remove(&tree,4);
   // display(tree); // expect  1  6  8  10  11  12  14
 //
   // AVLTree_remove(&tree, 10);
   display(tree); //expect  1  4  6  8  11  12  14
   printf("\n");
-  printf(" [height %d] " ,AVLNode_height(tree->left));
+  printf(" [height %d] " , AVLNode_height(tree->left));
+  printf(" [balanced -  %d] " , AVLTree_isBalanced(tree) );
+
 }
 

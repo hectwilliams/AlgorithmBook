@@ -1,6 +1,8 @@
 #include <iostream>
-#include "chapter_19.h"
+#include <math.h>
 
+
+#include "chapter_19.h"
 
 void AVLTree::display(AVLNode * node)
 {
@@ -41,7 +43,7 @@ bool AVLTree::add(const int &value, AVLNode *node)
     {
       if (node->left)
       {
-       if (add(value, node->left));
+       if (add(value, node->left))
        {
          node->balance++;
          return true;
@@ -240,36 +242,9 @@ bool AVLTree::remove(const int &value, AVLNode *node)
   return false;
 }
 
-unsigned AVLTree::height (AVLNode *node)
+unsigned AVLTree::height ()
 {
-  unsigned height_left = 0, height_right = 0;
-
-  if (node == NULL)
-  {
-    node = head;
-  }
-
-  if (node)
-  {
-    if (node->left != NULL)
-    {
-      height_left = 1 + height(node->left);
-    }
-
-    if (node->right != NULL)
-    {
-      height_right = 1 + height(node->right);
-    }
-  }
-
-  if (height_left > height_right)
-  {
-    return height_left;
-  }
-  else
-  {
-    return  height_right;
-  }
+ return head->height();
 }
 
 unsigned  AVLNode::height (AVLNode *node )
@@ -302,8 +277,49 @@ unsigned  AVLNode::height (AVLNode *node )
   {
     return rheight;
   }
+}
+
+bool AVLNode::isBalanced(AVLNode *node)
+{
+  double left_height = 0, right_height = 0;
+
+  if (node == NULL)
+  {
+    node = this;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      left_height = height(node->left);
+    }
+
+    if (node->right)
+    {
+      right_height = height(node->right);
+    }
+  }
+
+  if (abs(left_height - right_height) > 1)
+  {
+    return false;
+  }
+
+  return true;
 
 }
+
+bool AVLTree::isBalanced()
+{
+  if (head)
+  {
+    return node->isBalanced();
+  }
+  return false;
+}
+
+
 
 
 int main()
