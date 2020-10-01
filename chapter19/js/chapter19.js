@@ -56,6 +56,7 @@ AVLTree.prototype.add = function(value, node = null)
   }
 };
 
+
 AVLTree.prototype.display = function(node = null)
 {
   if (!node)
@@ -69,7 +70,9 @@ AVLTree.prototype.display = function(node = null)
     {
       this.display.call(this, node.left);
     }
+
     console.log(node.value);
+
     if (node.right)
     {
       this.display.call(this, node.right);
@@ -77,12 +80,197 @@ AVLTree.prototype.display = function(node = null)
   }
 };
 
+AVLTree.prototype.removeHelper = function(parent, node)
+{
+  let runner = null, ancestor = null;
+  if (node.count > 1)
+  {
+    node.count--;
+    return true;
+  }
+
+  if (!node.left && !node.right)
+  {
+    if (parent == null)
+    {
+      this.head = null;
+    }
+    else if (parent.left == node)
+    {
+      parent.left = null;
+    }
+    else if (parent.right == node)
+    {
+      parent.right = null;
+    }
+  }
+
+  else if (node.left != null && node.right == null)
+  {
+    if (parent == null)
+    {
+      this.head = node.left;
+    }
+    else if (parent.left == node)
+    {
+      parent.left = node.left;
+    }
+    else if (parent.right == node)
+    {
+      pareent.right = node.left;
+    }
+  }
+
+  else if (node.right != null && node.left == null)
+  {
+    if (parent == null)
+    {
+      this.head = node.right;
+    }
+    else if (parent.left == node)
+    {
+      parent.left = node.right;
+    }
+    else if (parent.right == node)
+    {
+      parent.right = node.right;
+    }
+  }
+  else if (node.right && node.left)
+  {
+    if (node.right.left == null)
+    {
+      node.right.left = node.left;
+      if (parent == null)
+      {
+        this.head = node.right;
+      }
+      else if (parent.left == node)
+      {
+        parent.left = node.right;
+      }
+      else if (parent.right == node)
+      {
+        parent.right = node.right;
+      }
+    }
+    else
+    {
+      runner = node.right;
+      while (runner.left.left)
+      {
+        runner = runner.left;
+      }
+      ancestor = runner.left;
+      runner.left = runner.left.left;
+
+      ancestor.left = node.left;
+      ancestor.right = node.right;
+
+      if (parent == null)
+      {
+        this.head = ancestor;
+      }
+      else if (parent.left == node)
+      {
+        parent.left = ancestor;
+      }
+      else if (parent.right == node)
+      {
+        parent.right = ancestor;
+      }
+     }
+  }
+
+
+  return true;
+};
+
+
+AVLTree.prototype.remove = function(value = null, node = null)
+{
+
+  if (!node)
+  {
+    node = this.head;
+  }
+
+  if (node)
+  {
+
+    if (node.value == value )
+    {
+      return this.removeHelper(null, node);
+    }
+
+    else if (value < node.value)
+    {
+      if (node.left)
+      {
+        if (node.left.value == value)
+        {
+          return this.remove_helper(node, node.left);
+        }
+        else
+        {
+          return this.remove.call(this , value, node.left);
+        }
+      }
+    }
+
+    else if (value > node.value)
+    {
+      if (node.right)
+      {
+        if (node.right.value == value)
+        {
+          return this.removeHelper(node, node.right);
+        }
+        else
+        {
+          return this.remove.call(this , value, node.right);
+        }
+      }
+    }
+  }
+
+  return false;
+};
+
+
 (
   function() {
     let tree = new AVLTree();
     tree.add(8);
     tree.add(10);
     tree.add(12);
-    tree.display();
+
+    // tree.remove(10);
+    // tree.display(); // 8 12
+
+    // tree.remove(12);
+    // tree.display(); // 8 10
+
+    //  tree.remove(8);
+    // tree.display(); // 10 12
+
+    tree.add(11);
+    tree.add(14);
+    tree.add(4);
+    tree.add(6);
+
+  // tree.remove(8);
+  // tree.display(); // 4 6 10 11 12 14
+
+  tree.add(1);
+
+  // tree.remove(4);
+  // tree.display(); // 1 6 8 10 11 12 14
+
+
+  tree.remove(10);
+  tree.display(); // 1 4 6 8 11 12 14
+
+
   }()
 )

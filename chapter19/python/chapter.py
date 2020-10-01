@@ -42,6 +42,110 @@ class AVLTree:
         node.count += 1
     return self
 
+  def __removeHelper(self, parent, node):
+    runner = ancestor = None
+
+    if node.count > 1:
+      node.count -= 1
+    elif node.left == None and node.right == None :
+      if parent == None :
+        self.head = None
+      elif parent.left == node:
+        parent.left = None
+      elif parent.right == node:
+        parent.right = None
+    elif bool(node.left) and not bool(node.right):
+      if parent == None:
+        self.head = node.left
+      elif parent.left == node:
+        parent.left = node.left
+      elif parent.right == node:
+        parent.right = node.left
+    elif bool(node.right) and not bool(node.left) :
+      if parent== None:
+        self.head = node.right
+      elif parent.left == node:
+        parent.left = node.right
+      elif parent.right == node:
+        parent.right = node.right
+
+    elif bool(node.right) and bool(node.left) :
+
+      if node.right.left == None:
+        node.right.left = node.left
+
+        if parent == None :
+          self.head = node.right
+        elif parent.left == node:
+          parent.left = node.right
+        elif parent.right == node :
+          parent.right = node.right
+      else :
+        runner = node.right
+        while runner.left.left:
+          runner = runner.left
+        ancestor = runner.left
+        runner.left = runner.left.left
+
+        ancestor.left = node.left
+        ancestor.right = node.right
+        if parent == None :
+          self.head = ancestor
+        elif parent.left == node:
+          parent.left = ancestor
+        elif parent.right == node:
+          parent.right = ancestor
+
+    return True
+
+  def remove (self, value, node = None):
+    if node == None:
+      node = self.head
+    if node:
+      if value == node.value:
+        return self.__removeHelper(None, node)
+      elif value < node.value:
+        if node.left:
+          if (node.left.value == value):
+            return self.__removeHelper(node, node.left)
+          else:
+            return self.remove(value, node.left)
+      elif value > node.value:
+        if node.right:
+          if node.right.value == value:
+            return self.__removeHelper(node, node.right )
+          else:
+            return self.remove(value, node.right)
+    return False
+
 tree = AVLTree()
 tree.add(8).add(10).add(12)
+
+# tree.remove(10)
+# tree.display()
+# # expect 8 12
+
+# tree.remove(12)
+# tree.display()
+# # expect 8 10
+
+# tree.remove(8)
+# tree.display()
+# # expec 10 12
+
+tree.add(11).add(14) .add(4) .add(6)
+
+# tree.remove(8)
+# tree.display()
+# // 4 6 10 11 12 14
+
+tree.add(1)
+
+# tree.remove(4)
+# tree.display()
+# // 1 6 8 10 11 12 14
+
+tree.remove(10)
 tree.display()
+# // 1 4 6 8 11 12 14
+

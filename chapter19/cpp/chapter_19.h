@@ -1,3 +1,5 @@
+#include <vector>
+
 class AVLNode
 {
   public:
@@ -19,14 +21,17 @@ class AVLNode
 
 class AVLTree
 {
+  private:
+    bool remove_helper(AVLNode *parent, AVLNode *node, AVLTree *tree);
+
   public:
-
     AVLNode *head;
-
     AVLTree()
     {
       this->head = nullptr;
     }
     void display(AVLNode * node = nullptr);
     void add(const int &value, AVLNode *node = NULL);
+    bool remove(const int &value, AVLNode *node = NULL);
 };
+
