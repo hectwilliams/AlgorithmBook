@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "avl_tests.h"
 
 struct AVLTree *avlnode (int value)
 {
@@ -118,7 +119,7 @@ int AVLTree_remove_helper( struct AVLTree *parent, struct AVLTree **target)
 
     if (parent)
     {
-      return 1;
+      return 1; // update upstream node balance
     }
 
   }
@@ -235,14 +236,17 @@ int AVLTree_remove_helper( struct AVLTree *parent, struct AVLTree **target)
         }
       }
 
+      // update path balance ( from: predecessor(include) -> to: successor's parent(exclude) )
+      {
+        if (successor_parent->right == NULL)  // path's balance update
+        {
+          AVLTree_update_balance_path(node, successor_parent);
+        }
+      }
+
       // remove heir from heir's parent
       {
         successor_parent->left = successor_parent->left->left;  //  note: successor_parent->left->left = NULL
-      }
-
-      // update path balance ( from: predecessor(include) -> to: successor's parent(exclude) )
-      {
-        AVLTree_update_balance_path(node, successor_parent);
       }
 
       // promote heir ( ascend throne )
@@ -316,7 +320,7 @@ void AVLTree_update_balance_path(struct AVLTree *node, struct AVLTree *stop) // 
 int AVLTree_remove(struct AVLTree **tree, int value)
 {
   int update_balance_feedback = 0;
-  struct AVLTree *node = NULL, *prev = NULL;
+  struct AVLTree *node = NULL;
 
   if (tree == NULL)
   {
@@ -467,106 +471,11 @@ int AVLTree_isBalanced (struct AVLTree *node)
 
 }
 
-void avl_remove_single_child_node_a ()
-{
-  struct AVLTree *tree = NULL;
-
-  AVLTree_add(&tree, 100);
-  AVLTree_add(&tree, 50);
-  AVLTree_add(&tree, 25);
-  AVLTree_add(&tree, 70);
-
-  display(tree);
-  printf("\n");
-  AVLTree_remove(&tree, 100); // delete root node
-  display(tree);
-
-  /*
-    inOrder list:
-
-    initial tree values
-    [val - 25  bal - 0 ]
-    [val - 50  bal - 0 ]
-    [val - 70  bal - 0 ]
-    [val - 100 bal - 2 ]
-
-    mutated tree values
-    [val - 25  bal - 0 ]
-    [val - 50  bal - 0 ]
-    [val - 70  bal - 0 ]
-
-  */
-}
-
-void avl_remove_single_child_node_b ()
-{
-  struct AVLTree *tree = NULL;
-
-  AVLTree_add(&tree, 100);
-  AVLTree_add(&tree, 50);
-  AVLTree_add(&tree, 25);
-  AVLTree_add(&tree, 27);
-  AVLTree_add(&tree, 16);
-
-  display(tree);
-  // printf("\n");
-  // AVLTree_remove(&tree, 50); // delete root node
-  // display(tree);
-
-  /*
-    [val - 16  bal - 0 ]
-    [val - 25  bal - 0 ]
-    [val - 27  bal - 0 ]
-    [val - 50  bal - 0 ]
-    [val - 100  bal - 1 ]
-
-  */
-
-}
-
-
 
 int main()
 {
-  avl_remove_single_child_node_b();
-//   /*
-//     refer to
-//   */
-//   AVLTree_add(&tree, 100);
-//   AVLTree_add(&tree, 50);
-//   AVLTree_add(&tree, 25);
-//   AVLTree_add(&tree, 70);
-
-//   // AVLTree_remove(&tree, 10);
-//   // display(tree); // expect 8 12
-
-//   // AVLTree_remove(&tree, 8);
-//   // display(tree); // expect 10 12
-
-//   // AVLTree_remove(&tree, 12);
-//   // display(tree); // expect 8 10
-
-
-//   // AVLTree_add(&tree, 11);
-//   // AVLTree_add(&tree, 14);
-//   // AVLTree_add(&tree, 4);
-//   // AVLTree_add(&tree, 6);
-
-//   // AVLTree_remove(&tree, 8);
-//   // display(tree); // expect 4  6  10  11  12  14
-
-
-//   AVLTree_add(&tree, 1);
-//   // AVLTree_add(&tree, 0);
-//   // AVLTree_remove(&tree,4);
-//   // display(tree); // expect  1  6  8  10  11  12  14
-// //
-//   // AVLTree_remove(&tree, 10);
-//   display(tree); //expect  1  4  6  8  11  12  14
-//   printf("\n");
-//   printf(" [height %d] " , AVLNode_height(tree->left));
-//   printf(" [balanced -  %d] " , AVLTree_isBalanced(tree) );
-//   printf("\n");
-
+  avl_remove_full_node_a();
 }
+
+
 

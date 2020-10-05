@@ -33,14 +33,14 @@ AVLTree.prototype.add = function(value, node = null)
         if (this.add(value, node.left))
         {
           node.balance++;
-          return (node.balance != 0);
+          return node.balance != 0;
         }
       }
       else
       {
         node.left = new AVLNode(value);
         node.balance++;
-        return (node.balance != 0);
+        return node.balance != 0;
       }
     }
     else  if (value > node.value)
@@ -50,14 +50,14 @@ AVLTree.prototype.add = function(value, node = null)
         if (this.add(value, node.right ) )
         {
           node.balance--;
-          return (node.balance != 0);
+          return node.balance != 0;
         }
       }
       else
       {
         node.right = new AVLNode(value);
         node.balance--;
-        return (node.balance != 0);
+        return node.balance != 0;
       }
     }
 
@@ -85,7 +85,7 @@ AVLTree.prototype.display = function(node = null)
       this.display.call(this, node.left);
     }
 
-    console.log(node.value + '-' + 'bal ' + node.balance );
+    console.log( 'value: ' + node.value + ' ' + 'balance: ' + node.balance );
 
     if (node.right)
     {
@@ -96,113 +96,222 @@ AVLTree.prototype.display = function(node = null)
 
 AVLTree.prototype.removeHelper = function(parent, node)
 {
-  let runner = null, ancestor = null;
+  let parentOfSuccessor = null, successor = null;
+
   if (node.count > 1)
   {
     node.count--;
-    return true;
+    return false; // no updates to upstream nodes
   }
 
   if (!node.left && !node.right)
   {
+    successor = null;
     if (parent == null)
     {
-      this.head = null;
+      this.head = successor;
     }
     else if (parent.left == node)
     {
-      parent.left = null;
+      parent.left = successor;
     }
     else if (parent.right == node)
     {
-      parent.right = null;
+      parent.right = successor;
+    }
+
+    if (parent)
+    {
+      return true; // update upstream node balance
     }
   }
 
   else if (node.left != null && node.right == null)
   {
+    successor = node.left;
     if (parent == null)
     {
-      this.head = node.left;
+      this.head = successor;
     }
     else if (parent.left == node)
     {
-      parent.left = node.left;
+      parent.left = successor;
     }
     else if (parent.right == node)
     {
-      pareent.right = node.left;
+      parent.right = successor;
+    }
+
+    if (parent)
+    {
+      return true; // update upstream node balance
     }
   }
 
   else if (node.right != null && node.left == null)
   {
+    successor = node.right;
     if (parent == null)
     {
-      this.head = node.right;
+      this.head = successor;
     }
     else if (parent.left == node)
     {
-      parent.left = node.right;
+      parent.left = successor;
     }
     else if (parent.right == node)
     {
-      parent.right = node.right;
+      parent.right = successor;
+    }
+
+    if (parent)
+    {
+      return true; // update upstream node balance
     }
   }
+
   else if (node.right && node.left)
   {
+    // NOTE: successor connected to predecessor
+
     if (node.right.left == null)
     {
-      node.right.left = node.left;
-      if (parent == null)
+
+      successor = node.right;
+
+      // update successors's parent's balance
       {
-        this.head = node.right;
+        node.balance++;
       }
-      else if (parent.left == node)
+
+      // promote successor
       {
-        parent.left = node.right;
+        if (parent == null)
+        {
+          this.head = successor;
+        }
+        else if (parent.left == node)
+        {
+          parent.left = successor;
+        }
+        else if (parent.right == node)
+        {
+          parent.right = successor;
+        }
       }
-      else if (parent.right == node)
+
+      // copy predecessor attributes (omit right and value attributes)
       {
-        parent.right = node.right;
+        successor.left = node.left;
+        successor.balance = node.balance;
       }
+
+      // tree balance adjust ??
+      if (successor.balance == 0)
+      {
+        return true; // update upstream node balance
+      }
+
     }
+
     else
     {
-      runner = node.right;
-      while (runner.left.left)
-      {
-        runner = runner.left;
-      }
-      ancestor = runner.left;
-      runner.left = runner.left.left;
+      // NOTE:  successor is always a leaf node
 
-      ancestor.left = node.left;
-      ancestor.right = node.right;
+      // find successor
+      {
+        parentOfSuccessor = node.right;
+        while (parentOfSuccessor.left.left)
+        {
+          parentOfSuccessor = parentOfSuccessor.left;
+        }
+        successor = parentOfSuccessor.left;
+      }
 
-      if (parent == null)
+      // update successor's parent's balance
       {
-        this.head = ancestor;
+        if (parentOfSuccessor.left == successor)
+        {
+          parentOfSuccessor.balance--;
+        }
+
+        if (parentOfSuccessor.right == successor)
+        {
+          parentOfSuccessor.balance++;
+        }
       }
-      else if (parent.left == node)
+
+      // update path balance  (from: predecessor(include)   -->  to: successor(exclude))
       {
-        parent.left = ancestor;
+        if (parentOfSuccessor.right == null)
+        {
+          update_path_balance(node, parentOfSuccessor);
+        }
       }
-      else if (parent.right == node)
+
+      // remove successor from successor's parent
       {
-        parent.right = ancestor;
+        parentOfSuccessor.left = parentOfSuccessor.left.left;
       }
-     }
+
+      // promote successor
+      {
+        if (parent == null)
+        {
+          this.head = successor;
+        }
+        else if (parent.left == node)
+        {
+          parent.left = successor;
+        }
+        else if (parent.right == node)
+        {
+          parent.right = successor;
+        }
+
+        // copy attributes (omit value)
+        successor.left = node.left;
+        successor.right = node.right;
+        successor.balance = node.balance;
+        successor.count = node.count;
+      }
+
+      if (parentOfSuccessor.balance == 0)
+      {
+        return true;  // return upstream node balance
+      }
+
+    }
   }
 
-
-  return true;
+  return false;
 };
+
+const update_path_balance = function(currNode, stopNode)
+{
+  if (currNode && stopNode)
+  {
+    while (currNode != stopNode)
+    {
+      if (stopNode.value < currNode.value)
+      {
+        currNode.balance--;
+        return update_path_balance(currNode.left, stopNode);
+      }
+      else
+      {
+        currNode.balance++;
+        return update_path_balance(currNode.right, stopNode);
+      }
+    }
+  }
+};
+
 
 
 AVLTree.prototype.remove = function(value = null, node = null)
 {
+  let balanceFeedback = 0;
 
   if (!node)
   {
@@ -211,10 +320,9 @@ AVLTree.prototype.remove = function(value = null, node = null)
 
   if (node)
   {
-
     if (node.value == value )
     {
-      return this.removeHelper(null, node);
+      balanceFeedback =  this.removeHelper.call(this, null, node);
     }
 
     else if (value < node.value)
@@ -223,11 +331,16 @@ AVLTree.prototype.remove = function(value = null, node = null)
       {
         if (node.left.value == value)
         {
-          return this.remove_helper(node, node.left);
+          balanceFeedback =  this.removeHelper.call(this, node, node.left);
         }
         else
         {
-          return this.remove.call(this , value, node.left);
+          balanceFeedback =  this.remove.call(this, value, node.left);
+        }
+
+        if (balanceFeedback)
+        {
+          node.balance--;
         }
       }
     }
@@ -238,17 +351,22 @@ AVLTree.prototype.remove = function(value = null, node = null)
       {
         if (node.right.value == value)
         {
-          return this.removeHelper(node, node.right);
+          balanceFeedback =  this.removeHelper.call(this, node, node.right);
         }
         else
         {
-          return this.remove.call(this , value, node.right);
+          balanceFeedback =  this.remove.call(this, value, node.right);
+        }
+
+        if (balanceFeedback)
+        {
+          node.balance++;
         }
       }
     }
   }
 
-  return false;
+  return balanceFeedback;
 };
 
 
@@ -334,38 +452,24 @@ AVLTree.prototype.isBalanced = function(node = null)
 };
 
 (
-  function() {
+  function()
+  {
     let tree = new AVLTree();
-    tree.add(10);
-    tree.add(8);
-    tree.add(12);
 
-    // tree.remove(10);
-    // tree.display(); // 8 12
+    tree.add(200);
+    tree.add(100);
+    tree.add(25);
+    tree.add(120);
+    tree.add(140);
+    tree.add(110);
+    tree.add(105);
 
-    // tree.remove(12);
-    // tree.display(); // 8 10
+    tree.display();
+    console.log('\n');
+    tree.remove(100);
+    tree.display();
 
-    //  tree.remove(8);
-    // tree.display(); // 10 12
-
-    // tree.add(11);
-    // tree.add(14);
-    // tree.add(4);
-    // tree.add(6);
-
-  // tree.remove(8);
-  // tree.display(); // 4 6 10 11 12 14
-
-  // tree.add(1);
-
-  // tree.remove(4);
-  // tree.display(); // 1 6 8 10 11 12 14
-
-
-  // tree.remove(10);
-  tree.display(); // 1 4 6 8 11 12 14
-  console.log(tree.isBalanced());
+    console.log(tree.isBalanced());
   }()
 
 )
