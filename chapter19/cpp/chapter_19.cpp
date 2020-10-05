@@ -46,17 +46,15 @@ bool AVLTree::add(const int &value, AVLNode *node)
        if (add(value, node->left))
        {
          node->balance++;
-         if (node->balance != 0)
-         {
-            return true;
-         }
+        return (node->balance != 0);
+
        }
       }
       else
       {
         node->left = new AVLNode(value);
         node->balance++;
-        return true;
+        return (node->balance != 0);
       }
     }
 
@@ -67,17 +65,15 @@ bool AVLTree::add(const int &value, AVLNode *node)
         if( add(value, node->right))
         {
           node->balance--;
-          if (node->balance != 0)
-          {
-            return true;
-          }
+          return (node->balance != 0);
+
         }
       }
       else
       {
         node->right = new AVLNode(value);
         node->balance--;
-        return true;
+        return (node->balance != 0);
       }
     }
 

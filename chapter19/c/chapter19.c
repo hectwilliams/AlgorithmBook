@@ -17,7 +17,6 @@ struct AVLTree *avlnode (int value)
 int AVLTree_add(struct AVLTree **tree, int value)
 {
   struct AVLTree *node = *tree;
-  int bal = 0;
 
 
   if (*tree == NULL)
@@ -31,17 +30,17 @@ int AVLTree_add(struct AVLTree **tree, int value)
     {
       if (node->left)
       {
-        bal = AVLTree_add(&node->left, value) ;
+        if (AVLTree_add(&node->left, value) )
+        {
+          node->balance++;
+          return node->balance != 0;
+        }
       }
       else
       {
         node->balance++;
         node->left = avlnode(value);
-
-        if (node->balance != 0)
-        {
-          return 1;
-        }
+        return node->balance != 0;
       }
     }
 
@@ -49,18 +48,17 @@ int AVLTree_add(struct AVLTree **tree, int value)
     {
       if (node->right)
       {
-
-        bal = AVLTree_add(&node->right, value);
+        if (AVLTree_add(&node->right, value))
+        {
+          node->balance--;
+          return node->balance != 0;
+        }
       }
       else
       {
         node->balance--;
         node->right = avlnode(value);
-
-        if (node->balance != 0)
-        {
-          return -1;
-        }
+        return node->balance != 0;
       }
     }
 
@@ -69,10 +67,9 @@ int AVLTree_add(struct AVLTree **tree, int value)
       node->count++;
     }
 
-    node->balance += bal;
   }
 
-  return bal;
+  return 0;
 
 }
 
@@ -480,14 +477,58 @@ void avl_remove_single_child_node_a ()
   AVLTree_add(&tree, 70);
 
   display(tree);
+  printf("\n");
+  AVLTree_remove(&tree, 100); // delete root node
+  display(tree);
 
+  /*
+    inOrder list:
+
+    initial tree values
+    [val - 25  bal - 0 ]
+    [val - 50  bal - 0 ]
+    [val - 70  bal - 0 ]
+    [val - 100 bal - 2 ]
+
+    mutated tree values
+    [val - 25  bal - 0 ]
+    [val - 50  bal - 0 ]
+    [val - 70  bal - 0 ]
+
+  */
+}
+
+void avl_remove_single_child_node_b ()
+{
+  struct AVLTree *tree = NULL;
+
+  AVLTree_add(&tree, 100);
+  AVLTree_add(&tree, 50);
+  AVLTree_add(&tree, 25);
+  AVLTree_add(&tree, 27);
+  AVLTree_add(&tree, 16);
+
+  display(tree);
+  // printf("\n");
+  // AVLTree_remove(&tree, 50); // delete root node
+  // display(tree);
+
+  /*
+    [val - 16  bal - 0 ]
+    [val - 25  bal - 0 ]
+    [val - 27  bal - 0 ]
+    [val - 50  bal - 0 ]
+    [val - 100  bal - 1 ]
+
+  */
 
 }
 
 
+
 int main()
 {
-  avl_remove_single_child_node_a();
+  avl_remove_single_child_node_b();
 //   /*
 //     refer to
 //   */

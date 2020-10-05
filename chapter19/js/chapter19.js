@@ -33,17 +33,14 @@ AVLTree.prototype.add = function(value, node = null)
         if (this.add(value, node.left))
         {
           node.balance++;
-          if (node.balance != 0)
-          {
-            return 1;
-          }
+          return (node.balance != 0);
         }
       }
       else
       {
         node.left = new AVLNode(value);
         node.balance++;
-        return 1
+        return (node.balance != 0);
       }
     }
     else  if (value > node.value)
@@ -53,17 +50,14 @@ AVLTree.prototype.add = function(value, node = null)
         if (this.add(value, node.right ) )
         {
           node.balance--;
-          if (node.balance != 0)
-          {
-            return 1;
-          }
+          return (node.balance != 0);
         }
       }
       else
       {
         node.right = new AVLNode(value);
         node.balance--;
-        return 1;
+        return (node.balance != 0);
       }
     }
 

@@ -65,25 +65,27 @@ class AVLTree:
         if node.left:
           if self.add(value, node.left) :
             node.balance += 1
-            if node.balance != 0:
-              return 1
+            return (node.balance != 0)
+
         else:
           node.left = AVLNode(value)
           node.balance += 1
-          return 1
+          return (node.balance != 0)
 
       if value > node.value:
         if node.right:
           if self.add(value, node.right):
             node.balance -= 1
-            if node.balance != 0:
-              return 1
+            return (node.balance != 0)
+
         else:
           node.right = AVLNode(value)
           node.balance -= 1
-          return 1
+          return (node.balance != 0)
+
       if value == node.value:
         node.count += 1
+
     return self
 
   def __removeHelper(self, parent, node):
