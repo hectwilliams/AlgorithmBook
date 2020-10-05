@@ -46,7 +46,10 @@ bool AVLTree::add(const int &value, AVLNode *node)
        if (add(value, node->left))
        {
          node->balance++;
-         return true;
+         if (node->balance != 0)
+         {
+            return true;
+         }
        }
       }
       else
@@ -64,7 +67,10 @@ bool AVLTree::add(const int &value, AVLNode *node)
         if( add(value, node->right))
         {
           node->balance--;
-          return true;
+          if (node->balance != 0)
+          {
+            return true;
+          }
         }
       }
       else
@@ -310,7 +316,7 @@ bool AVLNode::isBalanced(AVLNode *node)
 
 }
 
-bool AVLTree::isBalanced()
+bool AVLTree::isBalanced(AVLNode *node)
 {
   if (head)
   {

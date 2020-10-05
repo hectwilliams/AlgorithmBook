@@ -33,7 +33,10 @@ AVLTree.prototype.add = function(value, node = null)
         if (this.add(value, node.left))
         {
           node.balance++;
-          return 1;
+          if (node.balance != 0)
+          {
+            return 1;
+          }
         }
       }
       else
@@ -50,7 +53,10 @@ AVLTree.prototype.add = function(value, node = null)
         if (this.add(value, node.right ) )
         {
           node.balance--;
-          return 1;
+          if (node.balance != 0)
+          {
+            return 1;
+          }
         }
       }
       else
