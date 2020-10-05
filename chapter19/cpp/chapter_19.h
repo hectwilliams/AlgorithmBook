@@ -25,7 +25,8 @@ class AVLNode
 class AVLTree
 {
   private:
-    bool remove_helper(AVLNode *parent, AVLNode *node, AVLTree *tree);
+    bool remove_helper(AVLNode *parent, AVLNode *node );
+    void update_balance_path(AVLNode *node, AVLNode *end);
 
   public:
     AVLNode *head;
@@ -36,8 +37,8 @@ class AVLTree
     void display(AVLNode * node = nullptr);
     bool add(const int &value, AVLNode *node = NULL);
     bool remove(const int &value, AVLNode *node = NULL);
+    bool isBalanced();
     unsigned height ();
-    bool isBalanced(AVLNode *node = NULL);
 
 };
 

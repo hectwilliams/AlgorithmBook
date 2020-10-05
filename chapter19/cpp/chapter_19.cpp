@@ -17,7 +17,7 @@ void AVLTree::display(AVLNode * node)
     {
       display(node->left);
     }
-    std::cout << '[' << node->value << "--> " << node->balance << ']' ;
+    std::cout << '[' << "value: " << node->value << "  -> " << "balance: "<< node->balance << ']' << '\n' ;
     if (node->right)
     {
       display(node->right);
@@ -45,9 +45,8 @@ bool AVLTree::add(const int &value, AVLNode *node)
       {
        if (add(value, node->left))
        {
-         node->balance++;
-        return (node->balance != 0);
-
+          node->balance++;
+          return node->balance != 0;
        }
       }
       else
@@ -87,166 +86,292 @@ bool AVLTree::add(const int &value, AVLNode *node)
 
 }
 
-bool AVLTree::remove_helper(AVLNode *parent, AVLNode *node, AVLTree *tree)
+bool AVLTree::remove_helper(AVLNode *parent, AVLNode *node)
 {
-  AVLNode *runner = NULL, *ancestor = NULL;
+  AVLNode *successor = NULL, *parent_of_successor = NULL;
+  // AVLNode *node = *target;
+
   if (node->count > 1)
   {
     node->count--;
-    return true;
+    return false; // no updates to upstream nodes
   }
 
   if (node->left == NULL && node->right == NULL)
   {
+    successor = NULL;
     if (parent == NULL)
     {
-      tree->head = NULL;
+      this->head = successor;
     }
     else if (parent->left == node)
     {
-      parent->left = NULL;
+      parent->left = successor;
     }
     else if (parent->right == node)
     {
-      parent->right = NULL;
+      parent->right = successor;
+    }
+
+    if (parent)
+    {
+      return true; // update upstream nodes
     }
   }
 
   else if (node->left != NULL && node->right == NULL )
   {
+    successor = node->left;
     if (parent == NULL)
     {
-      tree->head = node->left;
+      this->head = successor;
     }
     else if (parent->left == node)
     {
-      parent->left = node->left;
+      parent->left = successor;
     }
     else if (parent->right == node)
     {
-      parent->right = node->left;
+      parent->right = successor;
     }
+
+    if (parent)
+    {
+      return true; // update upstream nodes
+    }
+
   }
 
   else if (node->right != NULL && node->left == NULL )
   {
+    successor = node->right;
     if (parent == NULL)
     {
-      tree->head = node->right;
+      this->head = successor;
     }
     else if (parent->left == node)
     {
-      parent->left = node->right;
+      parent->left = successor;
     }
     else if (parent->right == node)
     {
-      parent->right = node->right;
+      parent->right = successor;
     }
+
+    if (parent)
+    {
+      return true;  // update upstream nodes
+    }
+
   }
 
   else if (node->right != NULL && node->left != NULL)
   {
     if (node->right->left == NULL)
     {
-      node->right->left = node->left;
+      // NOTE: successor connected to predecessor
 
-      if (parent == NULL)
+      // find successor
       {
-        tree->head = node->right;
+        successor = node->right;
       }
-      else if (parent->left == node)
+
+      // update successor's parent's balance
       {
-        parent->left = node->right;
+        node->balance++;
       }
-      else if (parent->right == node)
+
+      //promote successor
       {
-        parent->right = node->right;
+        if (parent == NULL)
+        {
+          this->head = successor;
+        }
+        else if (parent->left == node)
+        {
+          parent->left = successor;
+        }
+        else if (parent->right == node)
+        {
+          parent->right = successor;
+        }
+
+        // copy predecessor's attributes (omit right and value attributes )
+        successor->left = node->left;
+        successor->balance = node->balance;
       }
+
+      if (successor->balance == 0)
+      {
+        return true; // update upstream nodes
+      }
+
     }
     else
     {
-      runner = node->right;
-      while (runner->left->left)
-      {
-        runner = runner->left;
-      }
-      ancestor = runner->left;
-      runner->left = runner->left->left;
 
-      ancestor->left = node->left;
-      ancestor->right = node->right;
-      if (parent == NULL)
+      // NOTE: successor is a leaf node
+
+      // find successor
       {
-        tree->head = ancestor;
+        parent_of_successor = node->right;
+        while (parent_of_successor->left->left)
+        {
+          parent_of_successor = parent_of_successor->left;
+        }
+        successor = parent_of_successor->left;
       }
-      else if (parent->left == node)
+
+      //update successor's parent's balance
       {
-        parent->left = ancestor;
+        if (parent_of_successor->left == successor)
+        {
+          parent_of_successor->balance--;
+        }
+
+        if (parent_of_successor->right == successor)
+        {
+          parent_of_successor->balance++;
+        }
       }
-      else if (parent->right == node )
+
+      // update path balance ( from: predecessor(include) -> to: successor's parent(exclude) )
       {
-        parent->right = ancestor;
+        if (parent_of_successor->right == NULL)
+        {
+          update_balance_path(node, parent_of_successor);
+        }
       }
+
+      // remove successor from successor's parent
+      {
+        parent_of_successor->left = parent_of_successor->left->left;
+      }
+
+      // promote successor
+      {
+        if (parent == NULL)
+        {
+          this->head = successor;
+        }
+        else if (parent->left == node)
+        {
+          parent->left = successor;
+        }
+        else if (parent->right == node )
+        {
+          parent->right = successor;
+        }
+
+        // copy attributes (omit value)
+        successor->left = node->left;
+        successor->right = node->right;
+        successor->balance = node->balance;
+        successor->count = node->count;
+      }
+
+      if (parent_of_successor->balance == 0)
+      {
+        return true;  // update upstream nodes
+      }
+
     }
   }
 
   delete(node);
 
-  return true;
+  return false;
 
 }
 
+void AVLTree::update_balance_path(AVLNode *node, AVLNode *end)
+{
+  if (node && end)
+  {
+    while (node != end)
+    {
+      if (end->value < node->value)
+      {
+        node->balance--;
+        return update_balance_path(node->left, end);
+      }
+      else
+      {
+        node->balance++;
+        return update_balance_path(node->right, end);
+      }
+    }
+  }
+}
+
+
 bool AVLTree::remove(const int &value, AVLNode *node)
 {
-  AVLNode *prev = NULL;
+  bool balanceFeedback = false;
 
   if (node == NULL)
   {
     node = head;
   }
 
-
   if (node)
   {
     if (node->value == value)
     {
-      return remove_helper(NULL, node, this);
+       balanceFeedback = remove_helper(NULL, node);
     }
+
     else if (value < node->value)
     {
       if (node->left)
       {
         if (node->left->value == value)
         {
-          return remove_helper(node, node->left, this);
+          balanceFeedback = remove_helper(node, node->left);
         }
         else
         {
-          return remove(value, node->left);
+          balanceFeedback = remove(value, node->left);
         }
-      }
+
+        if (balanceFeedback)
+        {
+          node->balance--;
+        }
+       }
     }
+
     else if (value > node->value)
     {
       if (node->right)
       {
         if (node->right->value == value)
         {
-          remove_helper(node, node->right, this);
+          balanceFeedback = remove_helper(node, node->right);
         }
         else
         {
-          return remove(value, node->right);
+          balanceFeedback = remove(value, node->right);
+        }
+
+        if (balanceFeedback)
+        {
+          node->balance++;
         }
       }
     }
   }
-  return false;
+
+  return balanceFeedback;
 }
 
 unsigned AVLTree::height ()
 {
- return head->height();
+  if (head)
+  {
+    return head->height();
+  }
+  return -1;
 }
 
 unsigned  AVLNode::height (AVLNode *node )
@@ -312,11 +437,11 @@ bool AVLNode::isBalanced(AVLNode *node)
 
 }
 
-bool AVLTree::isBalanced(AVLNode *node)
+bool AVLTree::isBalanced()
 {
   if (head)
   {
-    return node->isBalanced();
+    return head->isBalanced();
   }
   return false;
 }
@@ -327,34 +452,18 @@ bool AVLTree::isBalanced(AVLNode *node)
 int main()
 {
   AVLTree tree;
-  tree.add(10);
-  tree.add(8);
-  tree.add(12);
 
-  // tree.remove(10);
-  // tree.display(); // 8 12
+  tree.add(200);
+  tree.add(100);
+  tree.add(25);
+  tree.add(120);
+  tree.add(110);
+  tree.add(140);
+  tree.add(105);
 
-  // tree.remove(8);
-  // tree.display(); // 10 12
+  tree.display();
 
-  // tree.remove(12);
-  // tree.display(); // 8 10
-
-  // tree.add(11);
-  // tree.add(14);
-  // tree.add(4);
-  // tree.add(6);
-
-  // // tree.remove(8);
-  // // tree.display(); // 4 6 10 11 12 14
-
-  // tree.add(1);
-
-  // // tree.remove(4);
-  // // tree.display(); // 1 6 8 10 11 12 14
-
-  // tree.remove(10);
-  tree.display(); // 1 4 6 8 11 12 14
-  std::cout << "\n" << "\n" << "height - " <<  tree.head->height();
-
+  tree.remove(100);
+  std::cout << '\n';
+  tree.display();
 }
