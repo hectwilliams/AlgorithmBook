@@ -50,7 +50,7 @@ class AVLTree:
     if node:
       if node.left:
         self.display(node.left)
-      print( '[', str(node.value) + '- bal  ' + str(node.balance), ']')
+      print ("value: ", node.value, " ", "balance: ", node.balance, sep="")
       if node.right:
         self.display(node.right)
 
@@ -61,12 +61,12 @@ class AVLTree:
     if node == None:
       self.head = AVLNode(value)
     else:
+
       if value < node.value:
         if node.left:
           if self.add(value, node.left) :
             node.balance += 1
             return (node.balance != 0)
-
         else:
           node.left = AVLNode(value)
           node.balance += 1
@@ -77,7 +77,6 @@ class AVLTree:
           if self.add(value, node.right):
             node.balance -= 1
             return (node.balance != 0)
-
         else:
           node.right = AVLNode(value)
           node.balance -= 1
@@ -86,83 +85,154 @@ class AVLTree:
       if value == node.value:
         node.count += 1
 
-    return self
+    return 0
 
   def __removeHelper(self, parent, node):
-    runner = ancestor = None
+    successor = None
+    parentOfSuccessor = None
 
     if node.count > 1:
       node.count -= 1
-    elif node.left == None and node.right == None :
+
+    elif not bool(node.left) and not bool(node.right):
+      successor = None
       if parent == None :
-        self.head = None
+        self.head = successor
       elif parent.left == node:
-        parent.left = None
+        parent.left = successor
       elif parent.right == node:
-        parent.right = None
+        parent.right = successor
+      return bool(parent)
+
     elif bool(node.left) and not bool(node.right):
+      successor = node.left
+
       if parent == None:
-        self.head = node.left
+        self.head = successor
       elif parent.left == node:
-        parent.left = node.left
+        parent.left = successor
       elif parent.right == node:
-        parent.right = node.left
-    elif bool(node.right) and not bool(node.left) :
-      if parent== None:
-        self.head = node.right
+        parent.right = successor
+      return bool(parent)
+
+    elif bool(node.right) and not bool(node.left):
+      successor = node.right
+      if parent == None:
+        self.head = successor
       elif parent.left == node:
-        parent.left = node.right
+        parent.left = successor
       elif parent.right == node:
-        parent.right = node.right
+        parent.right = successor
+      return bool(parent)
 
     elif bool(node.right) and bool(node.left) :
-
       if node.right.left == None:
-        node.right.left = node.left
+        # NOTE successor is connected to predecessor
 
-        if parent == None :
-          self.head = node.right
-        elif parent.left == node:
-          parent.left = node.right
-        elif parent.right == node :
-          parent.right = node.right
-      else :
-        runner = node.right
-        while runner.left.left:
-          runner = runner.left
-        ancestor = runner.left
-        runner.left = runner.left.left
+        # find successor
+        successor = node.right
 
-        ancestor.left = node.left
-        ancestor.right = node.right
+        # update successsor's parent's balance
+        node.balance += 1
+
+        # promote successor
         if parent == None :
-          self.head = ancestor
+          self.head = successor
         elif parent.left == node:
-          parent.left = ancestor
+          parent.left = successor
         elif parent.right == node:
-          parent.right = ancestor
+          parent.right = successor
 
-    return True
+        # copy predecessors
+        successor.left = node.left
+        successor.balance = node.balance
+
+        if successor.balance == 0:
+          return True   # update upstream nodes
+
+      else :
+
+        # NOTE successor is a leaf node
+
+        # find successor
+        parentOfSuccessor = node.right
+        while parentOfSuccessor.left.left:
+          parentOfSuccessor = parentOfSuccessor.left
+        successor = parentOfSuccessor.left
+
+        # update successor's parent's balance
+        if parentOfSuccessor.left == successor:
+          parentOfSuccessor.balance -= 1
+        if parentOfSuccessor.right == successor:
+          parentOfSuccessor.balance += 1
+
+        #update path balance (from: predecessor(include) -> to: successor's parent(exclude)  )
+        if not bool(parentOfSuccessor.right) :
+          self.__updateBalancePath(node, parentOfSuccessor)
+
+        #remove successor from success's parent
+        parentOfSuccessor.left = parentOfSuccessor.left.left
+
+        # promote successsor
+        if parent == None :
+          self.head = successor
+        elif parent.left == node:
+          parent.left = successor
+        elif parent.right == node:
+          parent.right = successor
+
+        # copy attributes (omit value attribute)
+        successor.right = node.right
+        successor.left = node.left
+        successor.balance = node.balance
+        successor.count = node.balance
+
+        #
+        if parentOfSuccessor.balance == 0:
+          return True
+
+    return False
+
+  def __updateBalancePath (self, node, stop):
+    if node and stop:
+      while node != stop:
+        if stop.value < node.value:
+          node.balance -= 1
+          return self.__updateBalancePath(node.left, stop)
+        else:
+          node.balance += 1
+          return self.__updateBalancePath(node.right, stop)
 
   def remove (self, value, node = None):
+    balanceFeedback = None
+
     if node == None:
       node = self.head
+
     if node:
+
       if value == node.value:
-        return self.__removeHelper(None, node)
+        balanceFeedback = self.__removeHelper(None, node)
+
       elif value < node.value:
         if node.left:
           if (node.left.value == value):
-            return self.__removeHelper(node, node.left)
+            balanceFeedback =  self.__removeHelper(node, node.left)
           else:
-            return self.remove(value, node.left)
+            balanceFeedback =  self.remove(value, node.left)
+          if balanceFeedback:
+            node.balance -= 1
+
       elif value > node.value:
         if node.right:
           if node.right.value == value:
-            return self.__removeHelper(node, node.right )
+            balanceFeedback =  self.__removeHelper(node, node.right )
           else:
-            return self.remove(value, node.right)
-    return False
+            balanceFeedback =  self.remove(value, node.right)
+          if balanceFeedback:
+            node.balance += 1
+
+    return balanceFeedback
 
   def height (self):
     self.head.height()
@@ -173,39 +243,19 @@ class AVLTree:
     return False
 
 tree = AVLTree()
-tree.add(10)
-tree.add(8)
-tree.add(12)
 
-# tree.remove(10)
-# tree.display()
-# # expect 8 12
+tree.add(200)
+tree.add(100)
+tree.add(25)
+tree.add(120)
+tree.add(110)
+tree.add(140)
+tree.add(105)
 
-# tree.remove(12)
-# tree.display()
-# # expect 8 10
 
-# tree.remove(8)
-# tree.display()
-# # expec 10 12
-
-# tree.add(11)
-# tree.add(14)
-# tree.add(4)
-# tree.add(6)
-
-# tree.remove(8)
-# tree.display()
-# // 4 6 10 11 12 14
-
-# tree.add(1)
-
-# tree.remove(4)
-# tree.display()
-# // 1 6 8 10 11 12 14
-
-# tree.remove(10)
 tree.display()
-print(tree.height())
-# // 1 4 6 8 11 12 14
+tree.remove(100)
+print()
+tree.display()
+
 
