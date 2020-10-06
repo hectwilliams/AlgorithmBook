@@ -69,7 +69,6 @@ int AVLTree_add(struct AVLTree **tree, int value)
     }
 
   }
-
   return 0;
 
 }
@@ -206,7 +205,6 @@ int AVLTree_remove_helper( struct AVLTree *parent, struct AVLTree **target)
         }
 
       }
-
     }
 
     else
@@ -380,6 +378,32 @@ int AVLTree_remove(struct AVLTree **tree, int value)
   return update_balance_feedback;
 }
 
+
+int AVLNode_height(const struct AVLTree *node)
+{
+  int hleft = 0, hright = 0;
+  if (node)
+  {
+    if (node->left != NULL)
+    {
+      hleft = 1 + AVLNode_height(node->left);
+    }
+    if (node->right != NULL)
+
+    {
+      hright = 1 + AVLNode_height(node->right);
+    }
+  }
+
+  if (hleft > hright)
+  {
+    return hleft;
+  }
+  else {
+    return hright;
+  }
+}
+
 int AVLTree_height(struct AVLTree **tree)
 {
   int hleft = 0, hright = 0;
@@ -412,30 +436,7 @@ int AVLTree_height(struct AVLTree **tree)
   }
 }
 
-int AVLNode_height(const struct AVLTree *node)
-{
-  int hleft = 0, hright = 0;
-  if (node)
-  {
-    if (node->left != NULL)
-    {
-      hleft = 1 + AVLNode_height(node->left);
-    }
-    if (node->right != NULL)
 
-    {
-      hright = 1 + AVLNode_height(node->right);
-    }
-  }
-
-  if (hleft > hright)
-  {
-    return hleft;
-  }
-  else {
-    return hright;
-  }
-}
 
 int AVLTree_isBalanced (struct AVLTree *node)
 {
@@ -474,7 +475,7 @@ int AVLTree_isBalanced (struct AVLTree *node)
 
 int main()
 {
-  avl_remove_full_node_a();
+  avl_remove_full_node_e();
 }
 
 

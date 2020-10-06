@@ -13,7 +13,6 @@ void display(struct AVLTree *tree);
 int AVLTree_add(struct AVLTree **tree, int value);
 int AVLTree_remove(struct AVLTree **tree, int value);
 int AVLTree_remove_helper( struct AVLTree *parent, struct AVLTree **target);
-int AVLTree_height( struct AVLTree **tree);
 int AVLNode_height(const struct AVLTree *node);
 int AVLTree_isBalanced (struct AVLTree *node);
 void AVLTree_update_balance_path(struct AVLTree *node, struct AVLTree *stop) ;
