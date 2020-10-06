@@ -376,8 +376,6 @@ unsigned AVLTree::height ()
 
 unsigned  AVLNode::height (AVLNode *node )
 {
-  unsigned lheight = 0, rheight = 0;
-
   if (node == NULL)
   {
     node = this;
@@ -385,25 +383,17 @@ unsigned  AVLNode::height (AVLNode *node )
 
   if (node)
   {
-    if (node->left)
+    if (node->balance > 0)
     {
-      lheight = 1 + height(node->left);
+      return 1 + height(node->left);
     }
 
-    if (node->right)
+    if (node->balance < 0)
     {
-      rheight = 1 + height(node->right);
+      return 1 + height(node->right);
     }
   }
-
-  if (lheight > rheight)
-  {
-    return lheight;
-  }
-  else
-  {
-    return rheight;
-  }
+  return 0;
 }
 
 bool AVLNode::isBalanced(AVLNode *node)

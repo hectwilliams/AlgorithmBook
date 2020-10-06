@@ -379,61 +379,22 @@ int AVLTree_remove(struct AVLTree **tree, int value)
 }
 
 
-int AVLNode_height(const struct AVLTree *node)
+int AVLNode_height(const struct AVLTree *node)   // logN
 {
-  int hleft = 0, hright = 0;
+
   if (node)
   {
-    if (node->left != NULL)
+    if (node->balance > 0)
     {
-      hleft = 1 + AVLNode_height(node->left);
-    }
-    if (node->right != NULL)
-
-    {
-      hright = 1 + AVLNode_height(node->right);
-    }
-  }
-
-  if (hleft > hright)
-  {
-    return hleft;
-  }
-  else {
-    return hright;
-  }
-}
-
-int AVLTree_height(struct AVLTree **tree)
-{
-  int hleft = 0, hright = 0;
-
-  if (tree == NULL)
-  {
-    return  0;
-  }
-
-  if (*tree)
-  {
-    if ((*tree)->left != NULL)
-    {
-      hleft += 1 + AVLTree_height (&(*tree)->left);
+      return 1 + AVLNode_height(node->left);
     }
 
-    if ((*tree)->right != NULL)
+    if (node->balance < 0)
     {
-      hright += 1 + AVLTree_height(& (*tree)->right);
+      return 1 + AVLNode_height(node->right);
     }
   }
-
-  if (hleft > hright)
-  {
-    return hleft;
-  }
-  else
-  {
-    return hright;
-  }
+  return 0;
 }
 
 
@@ -475,7 +436,18 @@ int AVLTree_isBalanced (struct AVLTree *node)
 
 int main()
 {
-  avl_remove_full_node_e();
+   struct AVLTree *tree = NULL;
+
+  AVLTree_add(&tree, 200);
+  AVLTree_add(&tree, 100);
+  AVLTree_add(&tree, 25);
+  AVLTree_add(&tree, 120);
+  AVLTree_add(&tree, 110);
+  AVLTree_add(&tree, 140);
+  AVLTree_add(&tree, 105);
+
+  printf(" height of tree  %d \n", AVLNode_height(tree));
+
 }
 
 

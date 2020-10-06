@@ -8,20 +8,15 @@ class AVLNode :
     self.count = 1
 
   def height (self, node = None):
-    lheight = rheight = 0
-
-    if node == None:
+    if not bool(node):
       node = self
 
     if node:
-      if node.left :
-        lheight = 1 + self.height(node.left)
-      if node.right:
-        rheight = 1 + self.height(node.right)
-    if lheight > rheight:
-      return lheight
-    else :
-      return rheight
+      if node.balance > 0:
+        return 1 + self.height(node.left)
+      if node.balance < 0:
+        return 1 + self.height(node.right)
+    return 0
 
   def isBalanced (self, node = None):
     left_height = right_height = 0
@@ -187,7 +182,7 @@ class AVLTree:
         successor.balance = node.balance
         successor.count = node.balance
 
-        #
+        # tree balance update ?
         if parentOfSuccessor.balance == 0:
           return True
 

@@ -372,35 +372,25 @@ AVLTree.prototype.remove = function(value = null, node = null)
 
 AVLNode.prototype.height = function(node = null)
 {
-  let lheight = 0;
-  let rheight = 0;
-
-  if (node == null)
+  if (!node)
   {
-    node =  this;
+    node = this;
   }
 
   if (node)
   {
-    if (node.left)
+    if (node.balance > 0)
     {
-      lheight = 1 + this.height(node.left);
+      return 1 + this.height.call(this, node.left);
     }
 
-    if (node.right)
+    if (node.balance < 0)
     {
-      rheight = 1 + this.height(node.right);
+      return 1 + this.height.call(this, node.right);
     }
   }
 
-  if (lheight > rheight)
-  {
-    return lheight;
-  }
-  else
-  {
-    return rheight;
-  }
+  return 0;
 };
 
 
