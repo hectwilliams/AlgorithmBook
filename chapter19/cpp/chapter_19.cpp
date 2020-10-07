@@ -383,12 +383,12 @@ unsigned  AVLNode::height (AVLNode *node )
 
   if (node)
   {
-    if (node->balance > 0)
+    if ( (node->balance > 0) || (node->balance == 0 && node->left) )
     {
       return 1 + height(node->left);
     }
 
-    if (node->balance < 0)
+    else if ((node->balance < 0) || (node->balance == 0 && node->right) )
     {
       return 1 + height(node->right);
     }
@@ -398,7 +398,7 @@ unsigned  AVLNode::height (AVLNode *node )
 
 bool AVLNode::isBalanced(AVLNode *node)
 {
-  double left_height = 0, right_height = 0;
+  double left_height = 0, right_height = 0, balance = 0;
 
   if (node == NULL)
   {
@@ -407,23 +407,23 @@ bool AVLNode::isBalanced(AVLNode *node)
 
   if (node)
   {
-    if (node->left)
+    if (node->left && node->right)
     {
-      left_height = height(node->left);
+      balance = node->left->height() - node->right->height();
+    }
+    else if (node->left)
+    {
+      balance = (1 + node->left->height());
+    }
+    else if (node->right)
+    {
+      balance = -(1 + node->right->height());
     }
 
-    if (node->right)
-    {
-      right_height = height(node->right);
-    }
+    return abs(balance) <= 1;
   }
 
-  if (abs(left_height - right_height) > 1)
-  {
-    return false;
-  }
-
-  return true;
+  return false;
 
 }
 

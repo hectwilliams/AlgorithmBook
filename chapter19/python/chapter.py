@@ -12,27 +12,32 @@ class AVLNode :
       node = self
 
     if node:
-      if node.balance > 0:
+
+      if (node.balance > 0) or (node.balance == 0 and node.left):
         return 1 + self.height(node.left)
-      if node.balance < 0:
+
+      if (node.balance < 0) or (node.balance == 0 and node.right):
         return 1 + self.height(node.right)
+
     return 0
 
   def isBalanced (self, node = None):
-    left_height = right_height = 0
+    balance = None
 
     if node == None :
       node = self
 
-    if node.left:
-      left_height = node.left.height()
-    if node.right:
-      right_height = node.right.height()
+    if node:
+      if node.left and node.right:
+        balance = node.left.height() - node.right.height()
+      elif node.left:
+        balance = 1 + node.left.height()
+      elif node.right:
+        balance = -(1 + node.right.height())
 
-    if (abs(left_height - right_height) > 1):
-      return False
-    else:
-      return True
+      return abs(balance) <= 1
+
+    return None
 
 class AVLTree:
   def __init__(self):

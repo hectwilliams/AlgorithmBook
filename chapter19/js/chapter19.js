@@ -379,17 +379,16 @@ AVLNode.prototype.height = function(node = null)
 
   if (node)
   {
-    if (node.balance > 0)
+    if( (node.balance > 0) || (node.balance == 0 && node.left) )
     {
       return 1 + this.height.call(this, node.left);
     }
 
-    if (node.balance < 0)
+    if ( (node.balance < 0) || (node.balance == 0 && node.right) )
     {
       return 1 + this.height.call(this, node.right);
     }
   }
-
   return 0;
 };
 
@@ -403,8 +402,7 @@ AVLTree.prototype.height = function()
 
 AVLNode.prototype.isBalanced = function(node = null)
 {
-  let left = 0;
-  let right = 0;
+  let balance = null;
 
   if (node == null)
   {
@@ -413,22 +411,25 @@ AVLNode.prototype.isBalanced = function(node = null)
 
   if (node)
   {
-    if (node.left)
+    if (node.right && node.left)
     {
-      left = node.left.height();
+      balance = node.left.height() - node.right.height();
     }
-    if (node.right)
+
+    else if (node.right)
     {
-      right = node.right.height();
+      balance = - (1 + node.right.height());
     }
+
+    else if (node.left)
+    {
+      balance = (1 + node.left.height());
+    }
+
+    return Math.abs(balance) <= 1;
   }
 
-  if (Math.abs(left - right) > 1)
-  {
-    return false;
-  }
-
-  return true;
+  return false;
 
 };
 
