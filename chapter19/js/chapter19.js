@@ -400,46 +400,34 @@ AVLTree.prototype.height = function()
 };
 
 
-AVLNode.prototype.isBalanced = function(node = null)
+AVLNode.prototype.isBalanced = function()
 {
-  let balance = null;
-
-  if (node == null)
-  {
-    node = this;
-  }
-
-  if (node)
-  {
-    if (node.right && node.left)
-    {
-      balance = node.left.height() - node.right.height();
-    }
-
-    else if (node.right)
-    {
-      balance = - (1 + node.right.height());
-    }
-
-    else if (node.left)
-    {
-      balance = (1 + node.left.height());
-    }
-
-    return Math.abs(balance) <= 1;
-  }
-
-  return false;
-
+  return Math.abs(this.balance) <= 1;
 };
 
-AVLTree.prototype.isBalanced = function(node = null)
+
+AVLTree.prototype.isBalanced = function()
 {
-  if (this.head)
+  return this.head.isBalanced();
+};
+
+
+AVLNode.prototype.setBalance = function()
+{
+  if (this.left && this.right)
   {
-    return this.head.isBalanced();
+    this.balance = this.left.height() - this.right.height();
   }
-  return false;
+
+  else if (this.right)
+  {
+    this.balance = -(1 + this.right.height());
+  }
+
+  else if (this.left)
+  {
+    this.balance = (1 + this.left.height());
+  }
 };
 
 (

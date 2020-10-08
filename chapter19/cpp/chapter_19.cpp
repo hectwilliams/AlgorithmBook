@@ -396,47 +396,34 @@ unsigned  AVLNode::height (AVLNode *node )
   return 0;
 }
 
-bool AVLNode::isBalanced(AVLNode *node)
+bool AVLNode::isBalanced()
 {
-  double left_height = 0, right_height = 0, balance = 0;
-
-  if (node == NULL)
-  {
-    node = this;
-  }
-
-  if (node)
-  {
-    if (node->left && node->right)
-    {
-      balance = node->left->height() - node->right->height();
-    }
-    else if (node->left)
-    {
-      balance = (1 + node->left->height());
-    }
-    else if (node->right)
-    {
-      balance = -(1 + node->right->height());
-    }
-
-    return abs(balance) <= 1;
-  }
-
-  return false;
-
+  return abs(this->balance) <= 1;
 }
 
 bool AVLTree::isBalanced()
 {
-  if (head)
-  {
-    return head->isBalanced();
-  }
-  return false;
+  return head->isBalanced();
 }
 
 
+void AVLNode::setBalance()
+{
+  if (this->left && this->right)
+  {
+    this->balance = this->left->height() - this->right->height();
+  }
+
+  else if (this->left)
+  {
+    this->balance = 1 + this->left->height();
+  }
+
+  else if (this->right)
+  {
+    this->balance = -(1 + this->right->height());
+  }
+}
 
 
 int main()
