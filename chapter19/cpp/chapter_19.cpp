@@ -425,6 +425,228 @@ void AVLNode::setBalance()
   }
 }
 
+void AVLNode::grandchild_promote()
+{
+  AVLNode *child, *grandchild, *tree;
+
+  if (this->balance > 0)  // PARENT -> LEFT
+  {
+    if (this->left->balance > 0)  // PARENT - > LEFT -> LEFT
+    {
+      // RIGHT
+      child = this->left;
+      grandchild = child->left;
+      tree = grandchild->right;
+
+      grandchild->right = child;
+      child->left = tree;
+      this->left = grandchild;
+
+      child->setBalance();
+      grandchild->setBalance();
+      this->setBalance();
+    }
+    else if (this->left->balance < 0)  // PARENT -> LEFT -> RIGHT
+    {
+      // LEFT
+      child = this->left;
+      grandchild = child->right;
+      tree = grandchild->left;
+
+      grandchild->left = child;
+      child->right = tree;
+      this->left = grandchild;
+
+      child->setBalance();
+      grandchild->setBalance();
+      this->setBalance();
+
+    }
+  }
+
+  else if (this->balance < 0)  // PARENT -> RIGHT
+  {
+    if (this->right->balance > 0)  /// PARENT -> RIGHT -> LEFT
+    {
+      // RIGHT
+      child = this->right;
+      grandchild = child->left;
+      tree = grandchild->right;
+
+      grandchild->right = child;
+      child->left = tree;
+      this->right = grandchild;
+
+      child->setBalance();
+      grandchild->setBalance();
+      this->setBalance();
+    }
+
+    else if (this->right->balance < 0) // PARENT ->RIGHT -> RIGHT
+    {
+      // LEFT
+      child = this->right;
+      grandchild = child->right;
+      tree = grandchild->left;
+
+      grandchild->left = child;
+      child->right = tree;
+      this->right = grandchild;
+
+      child->setBalance();
+      grandchild->setBalance();
+      this->setBalance();
+    }
+  }
+}
+
+
+void AVLTree::left_rotate(AVLNode *target, AVLNode *node )
+{
+  struct AVLNode *parent_of_target = NULL;
+  struct AVLNode *target_ref = NULL;
+  struct AVLNode *tree = NULL;
+  struct AVLNode *child = NULL;
+
+  if (!node)
+  {
+    node = head;
+  }
+
+  if (node)
+  {
+    if (node == target)
+    {
+      target_ref = node;
+    }
+    else if (node->left == target)
+    {
+      parent_of_target = node;
+      target_ref =  node->left;
+    }
+    else if (node->right == target)
+    {
+      parent_of_target = node;
+      target_ref = node->right;
+    }
+    else if (target->value < node->value)
+    {
+      return left_rotate(target, node->left);
+    }
+    else if (target->value > node->value)
+    {
+      return left_rotate(target, node->right);
+    }
+  }
+
+  if (target_ref)
+  {
+    target_ref->grandchild_promote();  // AVLTree class is friend of AVLNode
+
+    child = target_ref->right;
+    tree = child->left;
+
+    child->left = target_ref;
+    target_ref->right = tree;
+
+    target_ref->setBalance();
+    child->setBalance();
+
+    if (parent_of_target == NULL)
+    {
+      head = child;
+    }
+    else if (parent_of_target->left == target_ref)
+    {
+      parent_of_target->left = child;
+      parent_of_target->setBalance();
+    }
+    else if (parent_of_target->right == target_ref)
+    {
+      parent_of_target->right = child;
+      parent_of_target->setBalance();
+    }
+  }
+}
+
+void AVLTree::right_rotate(AVLNode *target, AVLNode *node )
+{
+  struct AVLNode *parent_of_target = NULL;
+  struct AVLNode *target_ref = NULL;
+  struct AVLNode *tree = NULL;
+  struct AVLNode *child = NULL;
+
+  if (!node)
+  {
+    node = head;
+  }
+
+  if (node)
+  {
+    if (node == target)
+    {
+      target_ref = node;
+    }
+
+    else if (node->left == target)
+    {
+      parent_of_target = node;
+      target_ref = node->left;
+    }
+
+    else if (node->right == target)
+    {
+      parent_of_target = node;
+      target_ref = node->right;
+    }
+
+    else if (target->value < node->value)
+    {
+      return right_rotate(target, node->left);
+    }
+
+    else if (target->value > node->value)
+    {
+      return right_rotate(target, node->right);
+    }
+  }
+
+  if (target_ref)
+  {
+    target_ref->grandchild_promote();
+
+    child = target_ref->left;
+    tree = child->right;
+
+    child->right = target_ref;
+    target_ref->left = tree;
+
+    target_ref->setBalance();
+    child->setBalance();
+
+    if (parent_of_target == NULL)
+    {
+      head = child;
+    }
+    else if (parent_of_target->left == target_ref)
+    {
+      parent_of_target->left = child;
+      parent_of_target->setBalance();
+    }
+    else if (parent_of_target->right == target_ref)
+    {
+      parent_of_target->right = child;
+      parent_of_target->setBalance();
+    }
+
+  }
+
+}
+
+
+
+
+
 
 int main()
 {
@@ -439,7 +661,6 @@ int main()
   tree.add(105);
 
   tree.display();
-
   tree.remove(100);
   std::cout << '\n';
   tree.display();

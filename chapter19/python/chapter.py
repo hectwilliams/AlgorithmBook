@@ -35,6 +35,65 @@ class AVLNode :
     elif bool(self.right) :
       self.balance = -(1 + self.right.height())
 
+  def grandchildPromote(self):
+    c, gc, tree  = None
+
+    if self.balance > 0 : # PARENT -> LEFT
+      if self.left.balance > 0 :  # PARENT -> LEFT  -> LEFT
+        c = self.left
+        gc = c.left
+        tree = gc.right
+
+        gc.right = c
+        c.left = tree
+        self.left = gc
+
+        c.setBalance()
+        gc.setBalance()
+        self.setBalance()
+
+      elif self.left.balance < 0 : # PARENT -> LEFT -> RIGHT
+        c = self.left
+        gc = c.right
+        tree = gc.left
+
+        gc.left = c
+        c.right = tree
+        self.left = gc
+
+        c.setBalance()
+        gc.setBalance()
+        self.setBalance()
+
+    elif self.balance < 0 : # PARENT -> RIGHT
+      if self.right.balance > 0 : # PARENT -> RIGHT -> LEFT
+        c = self.right
+        gc = c.left
+        tree = gc.right
+
+        gc.right = c
+        c.left = tree
+        self.right = gc
+
+        c.setBalance()
+        gc.setBalance()
+        self.setBalance()
+      elif self.right.balance < 0 : # PARENT -> RIGHT -> RIGHT
+        c = self.right
+        gc = c.right
+        tree = gc.left
+
+        gc.left = c
+        c.right = tree
+        self.right = gc
+
+        c.setBalance()
+        gc.setBalance()
+        self.setBalance()
+
+
+
+
 class AVLTree:
   def __init__(self):
     self.head = None
@@ -236,8 +295,97 @@ class AVLTree:
   def isBalanced (self):
     return self.head.isBalanced()
 
-tree = AVLTree()
+  def leftRotate(self, target, node = None):
+    node = None
+    parentOfTarget = None
+    targetRef = None
+    tree = None
+    child = None
 
+    if not node:
+      node = self.head
+
+    if node:
+      if node == target:
+        targetRef = node
+      elif node.left == target:
+        parentOfTarget = node
+        targetRef = node.left
+      elif node.right == target:
+        parentOfTarget = node
+        targetRef = node.right
+      elif target.value < node.value:
+        return self.leftRotate(target, node.left)
+      elif target.value > node.value:
+        return self.leftRotate(target, node.right)
+
+    if targetRef:
+      targetRef.grandchildPromote()
+
+      child = targetRef.right
+      tree = child.left
+
+      child.left = targetRef
+      targetRef.right = tree
+
+      targetRef.setBalance()
+      child.setBalance()
+
+      if parentOfTarget == None:
+        self.head = child
+      elif parentOfTarget.left == targetRef:
+        parentOfTarget.left = child
+        parentOfTarget.setBalance()
+      elif parentOfTarget.right == targetRef :
+        parentOfTarget.right  = child
+        parentOfTarget.setBalance()
+
+  def rightRotate(self, target, node = None):
+    node = None
+    parentOfTarget = None
+    targetRef = None
+    tree = None
+    child = None
+
+    if node == None :
+      node = self.head
+
+    if node:
+      if node == target:
+        targetRef = node
+      elif node.left == target:
+        parentOfTarget = node
+        targetRef = node.left
+      elif node.right == target :
+        parentOfTarget = node
+        targetRef = node.right
+      elif target.value < node.value:
+        return self.rightRotate(target, node.left)
+      elif target.value > node.value:
+        return self.rightRotate(target , node.right)
+
+    if targetRef:
+      targetRef.grandchildPromote()
+
+      child = targetRef.left
+      tree = child.right
+
+      child.right = targetRef
+      targetRef.left = tree
+
+      targetRef.setBalance()
+      child.setBalance()
+
+      if parentOfTarget == None :
+        self.head = child
+      elif parentOfTarget.left == targetRef:
+        parentOfTarget.left = child
+        parentOfTarget.setBalance()
+      elif parentOfTarget.right == targetRef:
+        parentOfTarget.right = child
+        parentOfTarget.setBalance()
+
+tree = AVLTree()
 tree.add(200)
 tree.add(100)
 tree.add(25)
@@ -245,8 +393,6 @@ tree.add(120)
 tree.add(110)
 tree.add(140)
 tree.add(105)
-
-
 tree.display()
 tree.remove(100)
 print()

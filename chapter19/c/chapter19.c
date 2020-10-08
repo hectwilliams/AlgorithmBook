@@ -514,7 +514,6 @@ void AVLTree_grandchild_promote (struct AVLTree *parent)
         AVLTree_setNodeBalance(child);
         AVLTree_setNodeBalance(grandchild);
         AVLTree_setNodeBalance(parent);
-        printf("gp %d  bal %d \n\n", grandchild->value, grandchild->balance);
       }
 
       else if (parent->right->balance < 0)  // TARGET.RIGHT.RIGHT
@@ -553,13 +552,16 @@ void AVLTree_left_rotate(struct AVLTree **tree, struct AVLTree *target)
     {
       target_ref = node;
     }
-
-    else if (node->left == target ^ node->right == target)
+    else if (node->left == target)
     {
       parent_of_target = node;
-      target_ref = node;
+      target_ref = node->left;
     }
-
+    else if (node->right == target)
+    {
+      parent_of_target = node;
+      target_ref = node->right;
+    }
     else if (target->value < node->value)
     {
       return AVLTree_left_rotate( & node->left, target);

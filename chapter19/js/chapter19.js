@@ -430,6 +430,215 @@ AVLNode.prototype.setBalance = function()
   }
 };
 
+AVLNode.prototype.grandchildPromote = function()
+{
+  let c, gc, tree;
+
+  if (this.balance > 0)
+  {
+    if (this.left.balance > 0)
+    {
+      c = this.left;
+      gc = c.left;
+      tree = gc.right;
+
+      gc.right = c;
+      c.left = tree;
+      this.left = gc;
+
+      c.setBalance();
+      gc.setBalance();
+      this.setBalance();
+    }
+    else if (this.left.balance < 0)
+    {
+      c = this.left;
+      gc = c.right;
+      tree = gc.left;
+
+      gc.left = c;
+      c.right = tree;
+      this.left = gc;
+
+      c.setBalance();
+      gc.setBalance();
+      this.setBalance();
+    }
+  }
+
+  else if (this.balance < 0)
+  {
+    if (this.right.balance > 0)
+    {
+      c = this.right;
+      gc = c.left;
+      tree = gc.right;
+
+      gc.right = c;
+      c.left = tree;
+      this.right = gc;
+
+      c.setBalance();
+      gc.setBalance();
+      this.setBalance();
+    }
+    else if (this.right.balance < 0)
+    {
+      c = this.right;
+      gc = c.right;
+      tree = gc.left;
+
+      gc.left = c;
+      c.right = tree;
+      this.right = gc;
+
+      c.setBalance();
+      gc.setBalance();
+      this.setBalance();
+    }
+  }
+
+};
+
+AVLTree.prototype.leftRotate = function(target, node = null)
+{
+  let parentOfTarget = null;
+  let targetRef = null;
+  let tree = null;
+  let child = null;
+
+  if (node == null)
+  {
+    node = this.head;
+  }
+
+  if (node)
+  {
+    if (node == target)
+    {
+      targetRef = node;
+    }
+    else if (node.left == target)
+    {
+      parentOfTarget = node;
+      targetRef = node.left;
+    }
+    else if (node.right == target)
+    {
+      parentOfTarget = node;
+      targetRef = node.right;
+    }
+    else if (target.value < node.value)
+    {
+      return this.leftRotate.call(this, target, node.right);
+    }
+    else if (target.value > node.value)
+    {
+      return this.leftRotate.call(this, target, node.right);
+    }
+  }
+
+
+  if (targetRef)
+  {
+    targetRef.grandchildPromote();
+
+    child = targetRef.right;
+    tree = child.left;
+
+    child.left = targetRef;
+    targetRef.right = tree;
+
+    targetRef.setBalance();
+    child.setBalance();
+
+    if (parentOfTarget == null)
+    {
+      this.head = child;
+    }
+    else if (parentOfTarget.left == targetRef)
+    {
+      parentOfTarget.left = child;
+      parentOfTarget.setBalance();
+    }
+    else if (parentOfTarget.right == targetRef)
+    {
+      parentOfTarget.right = child;
+      parentOfTarget.setBalance();
+    }
+  }
+};
+
+AVLTree.prototype.righttRotate = function(target, node = null)
+{
+  let parentOfTarget = null;
+  let targetRef = null;
+  let tree = null;
+  let child = null;
+
+  if (node == null)
+  {
+    node = this.head;
+  }
+
+  if (node)
+  {
+    if (node == target)
+    {
+      targetRef = node;
+    }
+    else if (node.left == target)
+    {
+      parentOfTarget = node;
+      targetRef = node.left;
+    }
+    else if (node.right == target)
+    {
+      parentOfTarget = node;
+      targetRef = node.right;
+    }
+    else if (target.value < node.value)
+    {
+      return this.leftRotate.call(this, target, node.right);
+    }
+    else if (target.value > node.value)
+    {
+      return this.leftRotate.call(this, target, node.right);
+    }
+  }
+
+  if (targetRef)
+  {
+    targetRef.grandchildPromote();
+    child = targetRef.left;
+    tree = child.right;
+
+    child.right = targetRef;
+    targetRef.left = tree;
+
+    targetRef.setBalance();
+    child.setBalance();
+
+    if (parentOfTarget == null)
+    {
+      this.head = child;
+    }
+    else if (parentOfTarget.left == targetRef)
+    {
+      parentOfTarget.left = child;
+      parentOfTarget.setBalance();
+    }
+    else if (parentOfTarget.right == targetRef)
+    {
+      parentOfTarget.right = child;
+      parentOfTarget.setBalance();
+    }
+  }
+
+};
+
+
+
 (
   function()
   {

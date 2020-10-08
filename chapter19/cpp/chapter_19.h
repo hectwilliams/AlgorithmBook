@@ -2,6 +2,8 @@
 
 class AVLNode
 {
+  friend class AVLTree;
+
   public:
     AVLNode *left;
     AVLNode *right;
@@ -17,13 +19,18 @@ class AVLNode
       this->balance = 0;
       this->value = value;
     }
-
     unsigned height (AVLNode *node = NULL);
-    bool isBalanced(AVLNode *node = NULL);
+    bool isBalanced();
+
+  private:
+      void setBalance();
+      void grandchild_promote();
 };
 
 class AVLTree
 {
+  friend class AVLNode;
+
   private:
     bool remove_helper(AVLNode *parent, AVLNode *node );
     void update_balance_path(AVLNode *node, AVLNode *end);
@@ -38,7 +45,9 @@ class AVLTree
     bool add(const int &value, AVLNode *node = NULL);
     bool remove(const int &value, AVLNode *node = NULL);
     bool isBalanced();
-    unsigned height ();
+    unsigned height();
+    void left_rotate(AVLNode *target, AVLNode *node = NULL );
+    void right_rotate(AVLNode *target, AVLNode *node = NULL );
 
 };
 
