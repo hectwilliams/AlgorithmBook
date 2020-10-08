@@ -378,10 +378,8 @@ int AVLTree_remove(struct AVLTree **tree, int value)
   return update_balance_feedback;
 }
 
-
 int AVLNode_height(const struct AVLTree *node)   // logN
 {
-
   if (node)
   {
     if (node->balance > 0)
@@ -389,65 +387,289 @@ int AVLNode_height(const struct AVLTree *node)   // logN
       return 1 + AVLNode_height(node->left);
     }
 
-    if (node->balance < 0)
+    else if (node->balance < 0)
     {
       return 1 + AVLNode_height(node->right);
+    }
+
+    else if (node->balance == 0 && node->right)
+    {
+      return 1 + AVLNode_height(node->right);
+    }
+
+    else if (node->balance == 0 && node->left)
+    {
+      return 1 + AVLNode_height(node->left);
     }
   }
   return 0;
 }
 
-
-
 int AVLTree_isBalanced (struct AVLTree *node)
 {
-  int height_left = 0, height_right = 0;
-
-  if (!node)
-  {
-    return - 1;
-  }
+  int balance = 0;
 
   if (node)
   {
-    if (node->left)
+    if (node->right && node->left)
     {
-      height_left = AVLNode_height(node->left);
+      balance = AVLNode_height(node->left) - AVLNode_height(node->right);
     }
 
-    if (node->right)
+    else if (node->right && node->left == NULL)
     {
-      height_right = AVLNode_height(node->right);
+      balance = - (1 + AVLNode_height(node->right));
     }
-  }
 
+    else if (node->left && node->right == NULL)
+    {
+      balance = (1 + AVLNode_height(node->left));
+    }
 
-  if ( abs(height_left - height_right)  <= 1 )
-  {
-    return 1;
+    return abs (balance <= 1);
   }
-  else
-  {
-    return 0;
-  }
-
+  return -1;
 }
 
 
+void AVLTree_setNodeBalance(struct AVLTree *node)
+{
+  if (node)
+  {
+    if (node->left && node->right)
+    {
+      node->balance = AVLNode_height(node->left) - AVLNode_height(node->right);
+    }
+
+    else if (node->right && node->left == NULL)
+    {
+      node->balance = - (1 + AVLNode_height(node->right));
+    }
+
+    else if (node->left && node->right == NULL)
+    {
+      node->balance = (1 + AVLNode_height(node->left));
+    }
+  }
+}
+
+void AVLTree_grandchild_promote (struct AVLTree *parent)
+{
+  struct AVLTree *child = NULL, *grandchild = NULL, *buffer_subtree = NULL;
+
+  if (parent)
+  {
+    if (parent->balance > 0)  // TARGET.LEFT
+    {
+
+      if (parent->left->balance > 0)  // TARGET.LEFT.LEFT
+      {
+        // RIGHT ROTATE
+        child = parent->left;
+        grandchild = parent->left->left;
+        buffer_subtree = parent->left->left->right;
+
+        grandchild->right = child;
+        child->left = buffer_subtree;
+        parent->left = grandchild;
+
+
+        AVLTree_setNodeBalance(child);
+        AVLTree_setNodeBalance(grandchild);
+        AVLTree_setNodeBalance(parent);
+      }
+
+      else if (parent->left->balance < 0)  // TARGET.LEFT.RIGHT
+      {
+        // LEFT ROTATE
+        child = parent->left;
+        grandchild = parent->left->right;
+        buffer_subtree = parent->left->right->left;
+
+        grandchild->left = child;
+        child->right = buffer_subtree;
+        parent->left = grandchild;
+
+        AVLTree_setNodeBalance(child);
+        AVLTree_setNodeBalance(grandchild);
+        AVLTree_setNodeBalance(parent);
+      }
+
+    }
+
+    else if (parent->balance < 0)  // TARGET.RIGHT
+    {
+
+      if (parent->right->balance > 0)  // TARGET.RIGHT.LEFT
+      {
+        // RIGHT ROTATE
+        child = parent->right;
+        grandchild = child->left;
+        buffer_subtree = grandchild->right;
+
+        grandchild->right = child;
+        child->left = buffer_subtree;
+        parent->right = grandchild;
+
+        AVLTree_setNodeBalance(child);
+        AVLTree_setNodeBalance(grandchild);
+        AVLTree_setNodeBalance(parent);
+        printf("gp %d  bal %d \n\n", grandchild->value, grandchild->balance);
+      }
+
+      else if (parent->right->balance < 0)  // TARGET.RIGHT.RIGHT
+      {
+        // LEFT ROTATE
+        child = parent->right;
+        grandchild = parent->right->right;
+        buffer_subtree = parent->right->right->left;
+
+        grandchild->left = child;
+        child->right = buffer_subtree;
+        parent->right = grandchild;
+
+        AVLTree_setNodeBalance(child);
+        AVLTree_setNodeBalance(grandchild);
+        AVLTree_setNodeBalance(parent);
+      }
+    }
+  }
+}
+
+
+void AVLTree_left_rotate(struct AVLTree **tree, struct AVLTree *target)
+{
+  struct AVLTree *node = *tree;
+  struct AVLTree *parent_of_target = NULL;
+  struct AVLTree *target_ref = NULL;
+  struct AVLTree *subtree = NULL;
+  struct AVLTree *child = NULL;
+
+  // find target
+  if (node)
+  {
+    // root
+    if (node == target)
+    {
+      target_ref = node;
+    }
+
+    else if (node->left == target ^ node->right == target)
+    {
+      parent_of_target = node;
+      target_ref = node;
+    }
+
+    else if (target->value < node->value)
+    {
+      return AVLTree_left_rotate( & node->left, target);
+    }
+
+    else if ( target->value > node->value)
+    {
+      return AVLTree_left_rotate(&node->right, target);
+    }
+  }
+
+  if (target_ref)
+  {
+    AVLTree_grandchild_promote(target_ref);
+
+    child = target_ref->right;
+    subtree = child->left;
+
+    child->left = target_ref;
+    target_ref->right = subtree;
+
+    AVLTree_setNodeBalance(target_ref);
+    AVLTree_setNodeBalance(child);
+
+    if (parent_of_target == NULL)
+    {
+      *tree = child;
+    }
+    else if (parent_of_target->left == target_ref)
+    {
+      parent_of_target->left = child;
+      AVLTree_setNodeBalance(parent_of_target);
+    }
+    else if (parent_of_target->right == target_ref)
+    {
+      parent_of_target->right = child;
+      AVLTree_setNodeBalance(parent_of_target);
+    }
+  }
+}
+
+void AVLTree_right_rotate(struct AVLTree **tree, struct AVLTree *target)
+{
+  struct AVLTree *node = *tree;
+  struct AVLTree *parent_of_target = NULL;
+  struct AVLTree *target_ref = NULL;
+  struct AVLTree *subtree = NULL;
+  struct AVLTree *child = NULL;
+
+  // find target
+
+  if (node)
+  {
+    if (node == target)
+    {
+      target_ref = node;
+    }
+    else if (node->left == target)
+    {
+      parent_of_target = node;
+      target_ref = node->left;
+    }
+    else if (node->right == target)
+    {
+      parent_of_target = node;
+      target_ref = node->right;
+    }
+    else if (target->value < node->value)
+    {
+      return AVLTree_right_rotate( & node->left, target);
+    }
+    else if ( target->value > node->value)
+    {
+      return AVLTree_right_rotate(&node->right, target);
+    }
+  }
+
+  if (target_ref)
+  {
+    AVLTree_grandchild_promote(target_ref);
+
+    child = target_ref->left;
+    subtree = child->right;
+
+    child->right = target_ref;
+    target_ref->left = subtree;
+
+    AVLTree_setNodeBalance(target_ref);
+    AVLTree_setNodeBalance(child);
+
+    if (parent_of_target == NULL)
+    {
+      *tree = child;
+    }
+    else if (parent_of_target->left == target_ref)
+    {
+      parent_of_target->left = child;
+      AVLTree_setNodeBalance(parent_of_target);
+    }
+    else if (parent_of_target->right == target_ref)
+    {
+      parent_of_target->right = child;
+      AVLTree_setNodeBalance(parent_of_target);
+    }
+  }
+}
+
 int main()
 {
-   struct AVLTree *tree = NULL;
-
-  AVLTree_add(&tree, 200);
-  AVLTree_add(&tree, 100);
-  AVLTree_add(&tree, 25);
-  AVLTree_add(&tree, 120);
-  AVLTree_add(&tree, 110);
-  AVLTree_add(&tree, 140);
-  AVLTree_add(&tree, 105);
-
-  printf(" height of tree  %d \n", AVLNode_height(tree));
-
+ rotate_right_ex4();
 }
 
 
