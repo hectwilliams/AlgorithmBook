@@ -18,8 +18,6 @@ struct AVLTree *avlnode (int value)
 int AVLTree_add(struct AVLTree **tree, int value)
 {
   struct AVLTree *node = *tree;
-
-
   if (*tree == NULL)
   {
     *tree = avlnode(value);
@@ -429,6 +427,11 @@ void AVLTree_setNodeBalance(struct AVLTree *node)
     {
       node->balance = (1 + AVLNode_height(node->left));
     }
+
+    else if (node->left == NULL && node->right == NULL)
+    {
+      node->balance = 0;
+    }
   }
 }
 
@@ -444,18 +447,6 @@ void AVLTree_grandchild_promote (struct AVLTree *parent)
       if (parent->left->balance > 0)  // TARGET.LEFT.LEFT
       {
         // RIGHT ROTATE
-        // child = parent->left;
-        // grandchild = parent->left->left;
-        // buffer_subtree = parent->left->left->right;
-
-        // grandchild->right = child;
-        // child->left = buffer_subtree;
-        // parent->left = grandchild;
-
-
-        // AVLTree_setNodeBalance(child);
-        // AVLTree_setNodeBalance(grandchild);
-        // AVLTree_setNodeBalance(parent);
       }
 
       else if (parent->left->balance < 0)  // TARGET.LEFT.RIGHT
@@ -498,17 +489,6 @@ void AVLTree_grandchild_promote (struct AVLTree *parent)
       else if (parent->right->balance < 0)  // TARGET.RIGHT.RIGHT
       {
         // LEFT ROTATE
-        // child = parent->right;
-        // grandchild = parent->right->right;
-        // buffer_subtree = parent->right->right->left;
-
-        // grandchild->left = child;
-        // child->right = buffer_subtree;
-        // parent->right = grandchild;
-
-        // AVLTree_setNodeBalance(child);
-        // AVLTree_setNodeBalance(grandchild);
-        // AVLTree_setNodeBalance(parent);
       }
     }
   }
@@ -649,38 +629,231 @@ void AVLTree_right_rotate(struct AVLTree **tree, struct AVLTree *target)
 }
 
 
-void AVLTree_balanced_add(struct AVLTree **tree, int value)
+int AVLTree_balanced_add(struct AVLTree **tree, int value)
 {
-  struct AVLTree *node;
+  struct AVLTree *node = *tree;
+  int updated_subtree = 0;
 
-  if (tree)
+  if (*tree == NULL)
   {
-    AVLTree_add(tree, value);
+    *tree = avlnode(value);
+  }
+  else
+  {
 
-    if ( ! abs(AVLTree_isBalanced(*tree)))
+    if (value < node->value )
     {
-
-      if ((*tree)->balance > 1)  // right rotate
+      if (node->left)
       {
-                printf("RIGHT ROTATE\n");
-
-        AVLTree_right_rotate(tree, *tree);
+        if (AVLTree_balanced_add(&node->left, value) )
+        {
+          if (node->left->balance < -1)
+          {
+            AVLTree_left_rotate(&node, node->left);
+            AVLTree_setNodeBalance(node);
+          }
+          else if (node->left->balance > 1)
+          {
+            AVLTree_right_rotate(&node, node->left);
+            AVLTree_setNodeBalance(node);
+          }
+          else
+          {
+            node->balance++;
+          }
+          return node->balance != 0;
+        }
       }
-
-      else if ((*tree)->balance < -1)  // left rotate
+      else
       {
-                printf("LEFT  ROTATE\n");
+        node->balance++;
+        node->left = avlnode(value);
+        return node->balance != 0;
+      }
+    }
 
-        AVLTree_left_rotate(tree, *tree);
+    else if (value > node->value)
+    {
+      if (node->right)
+      {
+        if (AVLTree_balanced_add(&node->right, value))
+        {
+          if (node->right->balance < -1)
+          {
+            AVLTree_left_rotate(&node, node->right);
+            AVLTree_setNodeBalance(node);
+          }
+          else if (node->right->balance > 1)
+          {
+            AVLTree_right_rotate(&node, node->right);
+            AVLTree_setNodeBalance(node);
+          }
+          else
+          {
+            node->balance--;
+          }
+
+          return node->balance != 0;
+        }
+      }
+      else
+      {
+        node->balance--;
+        node->right = avlnode(value);
+        return node->balance != 0;
+      }
+    }
+
+    else if (value == node->value)
+    {
+      node->count++;
+    }
+
+    // ROOT NODE ANALYSIS
+    if (node->balance < -1)
+    {
+      AVLTree_left_rotate(tree, node);
+    }
+    else if (node->balance > 1)
+    {
+      AVLTree_right_rotate(tree, node);
+    }
+
+  }
+  return 0;
+
+}
+
+
+
+int AVLTree_balanced_remove(struct AVLTree **tree, int value)
+{
+  static struct AVLTree *root_ref = NULL;
+  int update_balance_feedback = 0;
+  struct AVLTree *node = NULL;
+
+
+  if (tree == NULL)
+  {
+    return 0;
+  }
+
+  node = *tree;
+
+  // store root
+  if (root_ref ==  NULL)
+  {
+    root_ref = *tree;
+  }
+
+
+  if (node)
+  {
+    if (node->value == value)
+    {
+      update_balance_feedback = AVLTree_remove_helper(NULL, tree);
+    }
+
+    else if ( value < node->value)
+    {
+      if (node->left)
+      {
+        if (node->left->value == value)
+        {
+         update_balance_feedback =  AVLTree_remove_helper(node, &node->left);
+        }
+
+        else
+        {
+          update_balance_feedback =  AVLTree_balanced_remove(&node->left, value); // recursion
+        }
+
+        if (update_balance_feedback)
+        {
+          if (node->left)
+          {
+            if (node->left->balance > 1)
+            {
+              AVLTree_right_rotate(&node, node->left);
+            }
+
+            else if (node->left->balance < -1)
+            {
+              AVLTree_left_rotate(&node, node->left);
+            }
+
+            AVLTree_setNodeBalance(node);
+          }
+          else
+          {
+            node->balance--;
+          }
+        }
+      }
+    }
+
+    else if (value > node->value)
+    {
+      if (node->right)
+      {
+        if (node->right->value == value)
+        {
+          update_balance_feedback =  AVLTree_remove_helper(node, &node->right);
+        }
+        else
+        {
+          update_balance_feedback =  AVLTree_balanced_remove(&node->right, value);  // recursion
+        }
+
+        if (update_balance_feedback)
+        {
+          if (node->right)
+          {
+            if (node->right->balance > 1)
+            {
+              AVLTree_right_rotate(&node, node->right);
+            }
+
+            else if (node->right->balance < -1)
+            {
+              AVLTree_left_rotate(&node, node->right);
+            }
+
+            AVLTree_setNodeBalance(node);
+          }
+          else
+          {
+            node->balance++;
+          }
+        }
       }
     }
   }
+
+   // reset root;
+  if (root_ref ==  node)
+  {
+    if (node->balance > 1) {
+      AVLTree_right_rotate(tree, node) ;
+    }
+
+    if (node->balance < -1)
+    {
+      AVLTree_left_rotate(tree, node);
+    }
+
+    root_ref = NULL;
+  }
+
+
+  return update_balance_feedback;
 }
+
 
 
 int main()
 {
- balanced_add_test();
+ balanced_remove_test();
 }
 
 

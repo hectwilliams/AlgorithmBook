@@ -423,6 +423,11 @@ void AVLNode::setBalance()
   {
     this->balance = -(1 + this->right->height());
   }
+
+  else if (this->right == NULL && this->left == NULL)
+  {
+    this->balance = 0;
+  }
 }
 
 void AVLNode::grandchild_promote()
@@ -643,21 +648,100 @@ void AVLTree::right_rotate(AVLNode *target, AVLNode *node )
 
 }
 
-void AVLTree::balanced_add(int value)
+void AVLTree::balanced_add(const int &value, AVLNode *node)
 {
-  add (value);
-  if (! head->isBalanced())
+  if (node == nullptr)
   {
-    if (head->balance > 1)
+    node = head;
+  }
+
+  if (node == nullptr)
+  {
+    head = new AVLNode(value);
+  }
+  else
+  {
+    if (value < node->value)
     {
-      right_rotate(head);
+      if (node->left)
+      {
+       if (balanced_add(value, node->left))
+       {
+         if (node->left->balance < -1)
+         {
+           left_rotate(node->left);
+           node->setBalance();
+         }
+         else if (node->left->balance > 1)
+         {
+           right_rotate(node->left);
+           node->setBalance();
+         }
+         else
+         {
+          node->balance++;
+         }
+         return node->balance != 0;
+       }
+      }
+      else
+      {
+        node->left = new AVLNode(value);
+        node->balance++;
+        return node->balance != 0;
+      }
     }
 
-    if (head->balance < -1)
+    else if (value > node->value)
     {
-      left_rotate(head);
+      if (node->right)
+      {
+        if (balanced_add(value, node->right))
+        {
+          if (node->right->balance < -1)
+          {
+            left_rotate(node->right);
+            node->setBalance();
+          }
+          else if (node->right->balance > 1)
+          {
+            right_rotate(node->right);
+            node->setBalance();
+          }
+          else
+          {
+            node->balance--;
+          }
+          return node->balance != 0;
+        }
+      }
+      else
+      {
+        node->right = new AVLNode(value);
+        node->balance--;
+        return node->balance != 0;
+      }
     }
+
+    else if (value == node->value)
+    {
+      node->count++;
+    }
+
+    // ROOT NODE CHECK
+    if (node->balance < -1)
+    {
+      left_rotate(node);
+    }
+    else if (node->balance > 1)
+    {
+      right_rotate(node);
+    }
+
   }
+
+  return false;
+
 }
 
 

@@ -35,6 +35,9 @@ class AVLNode :
     elif bool(self.right) :
       self.balance = -(1 + self.right.height())
 
+    elif not bool(self.left) and not bool(self.right) :
+      self.balance = 0
+
   def grandchildPromote(self):
     c, gc, tree  = None
 
@@ -385,13 +388,58 @@ class AVLTree:
         parentOfTarget.right = child
         parentOfTarget.setBalance()
 
-  def balancedAdd(self, value) :
-    self.add(value)
-    if not self.head.isBalanced() :
-      if self.head.balance > 1 :
-        self.rightRotate(self.head)
-      if self.head.balance < -1 :
-        self.leftRotate(self.head)
+  def balancedAdd(self, value, node = None) :
+    if node == None:
+      node = self.head
+
+    if node == None:
+      self.head = AVLNode(value)
+    else:
+
+      if value < node.value:
+        if node.left:
+          if self.balancedAdd(value, node.left) :
+            if node.left.balance < -1:
+              self.leftRotate(node.left)
+              node.setBalance()
+            elif node.left.balance > 1:
+              self.rightRotate(node.left)
+              node.setBalance()
+            else:
+              node.balance += 1
+            return (node.balance != 0)
+        else:
+          node.left = AVLNode(value)
+          node.balance += 1
+          return (node.balance != 0)
+
+      if value > node.value:
+        if node.right:
+          if self.balancedAdd(value, node.right):
+            if node.right.balance < -1:
+              self.leftRotate(node.right)
+              node.setBalance()
+            elif node.right.balance > 1:
+              self.rightRotate(node.right)
+              node.setBalance()
+            else:
+              node.balance -= 1
+            return (node.balance != 0)
+        else:
+          node.right = AVLNode(value)
+          node.balance -= 1
+          return (node.balance != 0)
+
+      if value == node.value:
+        node.count += 1
+
+      # ROOT NODE CHECK
+      if node.balance < -1:
+        self.leftRotate(node)
+      elif node.balance > 1:
+        self.rightRotate(node)
+
+    return 0
 
 tree = AVLTree()
 tree.add(200)

@@ -428,6 +428,11 @@ AVLNode.prototype.setBalance = function()
   {
     this.balance = (1 + this.left.height());
   }
+
+  else if (this.left == null && this.right == null)
+  {
+    this.balance = 0;
+  }
 };
 
 AVLNode.prototype.grandchildPromote = function()
@@ -570,7 +575,7 @@ AVLTree.prototype.leftRotate = function(target, node = null)
   }
 };
 
-AVLTree.prototype.righttRotate = function(target, node = null)
+AVLTree.prototype.rightRotate = function(target, node = null)
 {
   let parentOfTarget = null;
   let targetRef = null;
@@ -594,7 +599,7 @@ AVLTree.prototype.righttRotate = function(target, node = null)
       targetRef = node.left;
     }
     else if (node.right == target)
-    {
+
       parentOfTarget = node;
       targetRef = node.right;
     }
@@ -641,20 +646,97 @@ AVLTree.prototype.righttRotate = function(target, node = null)
 
 AVLTree.prototype.balancedAdd = function (value)
 {
-  this.add(value);
-  if (!this.head.isBalanced())
+
+  if (!node )
   {
-    if (this.head.balance > 1)
+    node = this.head;
+  }
+
+  if (!node)
+  {
+    this.head = new AVLNode(value)
+  }
+  else
+  {
+    if (value < node.value)
     {
-      this.righttRotate(this.head);
+      if (node.left)
+      {
+        if (this.balancedAdd.call(this, value, node.left))
+        {
+          if (node.left.balance < -1)
+          {
+            this.leftRotate.call(this, node.left);
+            node.setBalance();
+          }
+          else if (node.left.balance > 1)
+          {
+            this.rightRotate.call(this, node.left);
+            node.setBalance();
+          }
+          else
+          {
+            node.balance++;
+          }
+          return node.balance != 0;
+        }
+      }
+      else
+      {
+        node.left = new AVLNode(value);
+        node.balance++;
+        return node.balance != 0;
+      }
+    }
+    else  if (value > node.value)
+    {
+      if (node.right)
+      {
+        if (this.balancedAdd.call(this, value, node.right ) )
+        {
+          if (node.right.balance < -1)
+          {
+            this.leftRotate.call(this, node.right);
+            node.setBalance();
+          }
+          else if (node.right.balance > 1)
+          {
+            this.rightRotate.call(this, node.right);
+            node.setBalance();
+           }
+           else
+           {
+            node.balance--;
+           }
+          return node.balance != 0;
+        }
+      }
+      else
+      {
+        node.right = new AVLNode(value);
+        node.balance--;
+        return node.balance != 0;
+      }
+    }
+    else if (value == node.value)
+    {
+      node.count++;
     }
 
-    if (this.head.balance < -1)
+    // root node
+    if (node.balance < -1)
     {
-      this.leftRotate(this.head);
+      this.leftRotate.call(this, node);
     }
+    else if (node.balance > 1)
+    {
+      this.rightRotate.call(this, node);
+    }
+
   }
+
 };
+
 (
   function()
   {
