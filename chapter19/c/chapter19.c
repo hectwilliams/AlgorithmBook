@@ -465,18 +465,18 @@ void AVLTree_grandchild_promote (struct AVLTree *parent)
       if (parent->left->balance > 0)  // TARGET.LEFT.LEFT
       {
         // RIGHT ROTATE
-        child = parent->left;
-        grandchild = parent->left->left;
-        buffer_subtree = parent->left->left->right;
+        // child = parent->left;
+        // grandchild = parent->left->left;
+        // buffer_subtree = parent->left->left->right;
 
-        grandchild->right = child;
-        child->left = buffer_subtree;
-        parent->left = grandchild;
+        // grandchild->right = child;
+        // child->left = buffer_subtree;
+        // parent->left = grandchild;
 
 
-        AVLTree_setNodeBalance(child);
-        AVLTree_setNodeBalance(grandchild);
-        AVLTree_setNodeBalance(parent);
+        // AVLTree_setNodeBalance(child);
+        // AVLTree_setNodeBalance(grandchild);
+        // AVLTree_setNodeBalance(parent);
       }
 
       else if (parent->left->balance < 0)  // TARGET.LEFT.RIGHT
@@ -519,17 +519,17 @@ void AVLTree_grandchild_promote (struct AVLTree *parent)
       else if (parent->right->balance < 0)  // TARGET.RIGHT.RIGHT
       {
         // LEFT ROTATE
-        child = parent->right;
-        grandchild = parent->right->right;
-        buffer_subtree = parent->right->right->left;
+        // child = parent->right;
+        // grandchild = parent->right->right;
+        // buffer_subtree = parent->right->right->left;
 
-        grandchild->left = child;
-        child->right = buffer_subtree;
-        parent->right = grandchild;
+        // grandchild->left = child;
+        // child->right = buffer_subtree;
+        // parent->right = grandchild;
 
-        AVLTree_setNodeBalance(child);
-        AVLTree_setNodeBalance(grandchild);
-        AVLTree_setNodeBalance(parent);
+        // AVLTree_setNodeBalance(child);
+        // AVLTree_setNodeBalance(grandchild);
+        // AVLTree_setNodeBalance(parent);
       }
     }
   }
@@ -668,6 +668,14 @@ void AVLTree_right_rotate(struct AVLTree **tree, struct AVLTree *target)
     }
   }
 }
+
+
+void AVLTree_balanced_add(struct AVLTree *tree, int value)
+{
+
+
+}
+
 
 int main()
 {

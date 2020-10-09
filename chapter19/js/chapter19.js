@@ -434,23 +434,23 @@ AVLNode.prototype.grandchildPromote = function()
 {
   let c, gc, tree;
 
-  if (this.balance > 0)
+  if (this.balance > 0)    // PARENT -> LEFT
   {
-    if (this.left.balance > 0)
+    if (this.left.balance > 0)  // PARENT  -> LEFT  -> LEFT
     {
-      c = this.left;
-      gc = c.left;
-      tree = gc.right;
+      // c = this.left;
+      // gc = c.left;
+      // tree = gc.right;
 
-      gc.right = c;
-      c.left = tree;
-      this.left = gc;
+      // gc.right = c;
+      // c.left = tree;
+      // this.left = gc;
 
-      c.setBalance();
-      gc.setBalance();
-      this.setBalance();
+      // c.setBalance();
+      // gc.setBalance();
+      // this.setBalance();
     }
-    else if (this.left.balance < 0)
+    else if (this.left.balance < 0)  // PARENT  -> LEFT  -> RIGHT
     {
       c = this.left;
       gc = c.right;
@@ -466,9 +466,9 @@ AVLNode.prototype.grandchildPromote = function()
     }
   }
 
-  else if (this.balance < 0)
+  else if (this.balance < 0)  // PARENT -> RIGHT
   {
-    if (this.right.balance > 0)
+    if (this.right.balance > 0)   // PARENT  -> RIGHT  -> LEFT
     {
       c = this.right;
       gc = c.left;
@@ -482,19 +482,20 @@ AVLNode.prototype.grandchildPromote = function()
       gc.setBalance();
       this.setBalance();
     }
-    else if (this.right.balance < 0)
+
+    else if (this.right.balance < 0)   // PARENT  -> RIGHT  -> RIGHT
     {
-      c = this.right;
-      gc = c.right;
-      tree = gc.left;
+      // c = this.right;
+      // gc = c.right;
+      // tree = gc.left;
 
-      gc.left = c;
-      c.right = tree;
-      this.right = gc;
+      // gc.left = c;
+      // c.right = tree;
+      // this.right = gc;
 
-      c.setBalance();
-      gc.setBalance();
-      this.setBalance();
+      // c.setBalance();
+      // gc.setBalance();
+      // this.setBalance();
     }
   }
 

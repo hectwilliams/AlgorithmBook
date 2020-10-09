@@ -40,17 +40,17 @@ class AVLNode :
 
     if self.balance > 0 : # PARENT -> LEFT
       if self.left.balance > 0 :  # PARENT -> LEFT  -> LEFT
-        c = self.left
-        gc = c.left
-        tree = gc.right
+        # c = self.left
+        # gc = c.left
+        # tree = gc.right
 
-        gc.right = c
-        c.left = tree
-        self.left = gc
+        # gc.right = c
+        # c.left = tree
+        # self.left = gc
 
-        c.setBalance()
-        gc.setBalance()
-        self.setBalance()
+        # c.setBalance()
+        # gc.setBalance()
+        # self.setBalance()
 
       elif self.left.balance < 0 : # PARENT -> LEFT -> RIGHT
         c = self.left
@@ -79,17 +79,17 @@ class AVLNode :
         gc.setBalance()
         self.setBalance()
       elif self.right.balance < 0 : # PARENT -> RIGHT -> RIGHT
-        c = self.right
-        gc = c.right
-        tree = gc.left
+        # c = self.right
+        # gc = c.right
+        # tree = gc.left
 
-        gc.left = c
-        c.right = tree
-        self.right = gc
+        # gc.left = c
+        # c.right = tree
+        # self.right = gc
 
-        c.setBalance()
-        gc.setBalance()
-        self.setBalance()
+        # c.setBalance()
+        # gc.setBalance()
+        # self.setBalance()
 
 
 

@@ -434,17 +434,17 @@ void AVLNode::grandchild_promote()
     if (this->left->balance > 0)  // PARENT - > LEFT -> LEFT
     {
       // RIGHT
-      child = this->left;
-      grandchild = child->left;
-      tree = grandchild->right;
+      // child = this->left;
+      // grandchild = child->left;
+      // tree = grandchild->right;
 
-      grandchild->right = child;
-      child->left = tree;
-      this->left = grandchild;
+      // grandchild->right = child;
+      // child->left = tree;
+      // this->left = grandchild;
 
-      child->setBalance();
-      grandchild->setBalance();
-      this->setBalance();
+      // child->setBalance();
+      // grandchild->setBalance();
+      // this->setBalance();
     }
     else if (this->left->balance < 0)  // PARENT -> LEFT -> RIGHT
     {
@@ -485,17 +485,17 @@ void AVLNode::grandchild_promote()
     else if (this->right->balance < 0) // PARENT ->RIGHT -> RIGHT
     {
       // LEFT
-      child = this->right;
-      grandchild = child->right;
-      tree = grandchild->left;
+      // child = this->right;
+      // grandchild = child->right;
+      // tree = grandchild->left;
 
-      grandchild->left = child;
-      child->right = tree;
-      this->right = grandchild;
+      // grandchild->left = child;
+      // child->right = tree;
+      // this->right = grandchild;
 
-      child->setBalance();
-      grandchild->setBalance();
-      this->setBalance();
+      // child->setBalance();
+      // grandchild->setBalance();
+      // this->setBalance();
     }
   }
 }
