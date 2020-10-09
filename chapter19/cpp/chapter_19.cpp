@@ -648,7 +648,7 @@ void AVLTree::right_rotate(AVLNode *target, AVLNode *node )
 
 }
 
-void AVLTree::balanced_add(const int &value, AVLNode *node)
+bool AVLTree::balanced_add(const int &value, AVLNode *node)
 {
   if (node == nullptr)
   {
@@ -737,12 +737,123 @@ void AVLTree::balanced_add(const int &value, AVLNode *node)
     {
       right_rotate(node);
     }
+  }
+  return false;
+}
 
+bool AVLTree::balanced_remove(const int &value, AVLNode *node)
+{
+  bool balanceFeedback = false;
+
+  if (node == NULL)
+  {
+    node = head;
   }
 
-  return false;
+  if (node)
+  {
+    if (node->value == value)
+    {
+       balanceFeedback = remove_helper(NULL, node);
+    }
 
+    else if (value < node->value)
+    {
+      if (node->left)
+      {
+        if (node->left->value == value)
+        {
+          balanceFeedback = remove_helper(node, node->left);
+        }
+        else
+        {
+          balanceFeedback = balanced_remove(value, node->left);
+        }
+
+        if (balanceFeedback)
+        {
+          if (node->left)
+          {
+            if (node->left->balance > 1)
+            {
+              right_rotate(node->left);
+              node->setBalance();
+
+            }
+            else if (node->left->balance < -1)
+            {
+              left_rotate(node->left);
+              node->setBalance();
+            }
+            else
+            {
+              node->balance--;
+            }
+          }
+          else
+          {
+            node->balance--;
+          }
+        }
+       }
+    }
+
+    else if (value > node->value)
+    {
+      if (node->right)
+      {
+        if (node->right->value == value)
+        {
+          balanceFeedback = remove_helper(node, node->right);
+        }
+        else
+        {
+          balanceFeedback = balanced_remove(value, node->right);
+        }
+
+        if (balanceFeedback)
+        {
+          if (node->right)
+          {
+            if (node->right->balance > 1)
+            {
+              right_rotate(node->right);
+              node->setBalance();
+            }
+            else if (node->right->balance < -1)
+            {
+              left_rotate(node->right);
+              node->setBalance();
+            }
+            else
+            {
+              node->balance++;
+            }
+          }
+          else
+          {
+            node->balance++;
+          }
+        }
+      }
+    }
+  }
+
+  if (node == this->head)
+  {
+    if (node->balance > 1)
+    {
+      right_rotate(node);
+    }
+    else if (node->balance < -1)
+    {
+      left_rotate(node);
+    }
+  }
+
+  return balanceFeedback;
 }
+
 
 
 

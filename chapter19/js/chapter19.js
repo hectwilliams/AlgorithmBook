@@ -737,6 +737,122 @@ AVLTree.prototype.balancedAdd = function (value)
 
 };
 
+
+AVLTree.prototype.balancedRemove = function (value, node = null)
+{
+  let balanceFeedback = 0;
+
+  if (!node)
+  {
+    node = this.head;
+  }
+
+  if (node)
+  {
+    if (node.value == value )
+    {
+      balanceFeedback =  this.removeHelper.call(this, null, node);
+    }
+
+    else if (value < node.value)
+    {
+      if (node.left)
+      {
+        if (node.left.value == value)
+        {
+          balanceFeedback =  this.removeHelper.call(this, node, node.left);
+        }
+        else
+        {
+          balanceFeedback =  this.balancedRemove.call(this, value, node.left);
+        }
+
+        if (balanceFeedback)
+        {
+          if (node.left)
+          {
+            if (node.left.balance > 1)
+            {
+              this.rightRotate.call(this, node.left);
+              node.setBalance();
+            }
+            else if (node.left.balance < -1)
+            {
+              this.leftRotate.call(this, node.left);
+              node.setBalance();
+
+            }
+            else
+            {
+              node.balance--;
+            }
+           }
+           else
+           {
+             node.balance--;
+           }
+
+        }
+      }
+    }
+
+    else if (value > node.value)
+    {
+      if (node.right)
+      {
+        if (node.right.value == value)
+        {
+          balanceFeedback =  this.removeHelper.call(this, node, node.right);
+        }
+        else
+        {
+          balanceFeedback =  this.balancedRemove.call(this, value, node.right);
+        }
+
+        if (balanceFeedback)
+        {
+          if (node.right)
+          {
+            if (node.right.balance < -1)
+            {
+              this.leftRotate.call(this, node.right);
+              node.setBalance();
+
+            }
+            else if (node.right.balance > 1)
+            {
+              this.rightRotate.call(this, node.right);
+              node.setBalance();
+            }
+            else
+            {
+              node.balance++;
+            }
+          }
+          else
+          {
+            node.balance++;
+          }
+        }
+      }
+    }
+  }
+
+  if (node == this.head)
+  {
+    if (node.balance > 1)
+    {
+      this.rightRotate.call(this, node);
+    }
+    else if (node.balance < -1)
+    {
+      this.leftRotate.call(this, node );
+    }
+  }
+
+  return balanceFeedback;
+};
+
 (
   function()
   {

@@ -43,18 +43,7 @@ class AVLNode :
 
     if self.balance > 0 : # PARENT -> LEFT
       if self.left.balance > 0 :  # PARENT -> LEFT  -> LEFT
-        # c = self.left
-        # gc = c.left
-        # tree = gc.right
-
-        # gc.right = c
-        # c.left = tree
-        # self.left = gc
-
-        # c.setBalance()
-        # gc.setBalance()
-        # self.setBalance()
-
+        pass
       elif self.left.balance < 0 : # PARENT -> LEFT -> RIGHT
         c = self.left
         gc = c.right
@@ -82,20 +71,7 @@ class AVLNode :
         gc.setBalance()
         self.setBalance()
       elif self.right.balance < 0 : # PARENT -> RIGHT -> RIGHT
-        # c = self.right
-        # gc = c.right
-        # tree = gc.left
-
-        # gc.left = c
-        # c.right = tree
-        # self.right = gc
-
-        # c.setBalance()
-        # gc.setBalance()
-        # self.setBalance()
-
-
-
+        pass
 
 class AVLTree:
   def __init__(self):
@@ -441,6 +417,62 @@ class AVLTree:
 
     return 0
 
+  def balancedRemove (self, value, node = None):
+    balanceFeedback = None
+
+    if node == None:
+      node = self.head
+
+    if node:
+
+      if value == node.value:
+        balanceFeedback = self.__removeHelper(None, node)
+
+      elif value < node.value:
+        if node.left:
+          if (node.left.value == value):
+            balanceFeedback =  self.__removeHelper(node, node.left)
+          else:
+            balanceFeedback =  self.balancedRemove(value, node.left)
+          if balanceFeedback:
+            if node.left:
+              if node.left.balance > 1:
+                self.rightRotate(node.left)
+                node.setBalance()
+              elif node.left.balance < -1:
+                self.leftRotate(node.left)
+                node.setBalance()
+              else:
+                node.balance -= 1
+            else:
+              node.balance -= 1
+
+      elif value > node.value:
+        if node.right:
+          if node.right.value == value:
+            balanceFeedback =  self.__removeHelper(node, node.right )
+          else:
+            balanceFeedback =  self.balancedRemove(value, node.right)
+          if balanceFeedback:
+            if node.right:
+              if node.right.balance > 1:
+                self.rightRotate(node.right)
+                node.setBalance()
+              elif node.right.balance < -1:
+                self.leftRotate(node.right)
+                node.setBalance()
+              else:
+                node.balance += 1
+            else:
+              node.balance += 1
+
+    if node == self.head:
+      if node.balance > 1:
+        self.rightRotate(node)
+      elif node.balance < -1:
+        self.leftRotate(node)
+
+    return balanceFeedback
 tree = AVLTree()
 tree.add(200)
 tree.add(100)

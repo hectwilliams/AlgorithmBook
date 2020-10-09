@@ -775,14 +775,19 @@ int AVLTree_balanced_remove(struct AVLTree **tree, int value)
             if (node->left->balance > 1)
             {
               AVLTree_right_rotate(&node, node->left);
+              AVLTree_setNodeBalance(node);
+
             }
 
             else if (node->left->balance < -1)
             {
               AVLTree_left_rotate(&node, node->left);
+              AVLTree_setNodeBalance(node);
             }
-
-            AVLTree_setNodeBalance(node);
+            else
+            {
+              node->balance--;
+            }
           }
           else
           {
@@ -812,14 +817,18 @@ int AVLTree_balanced_remove(struct AVLTree **tree, int value)
             if (node->right->balance > 1)
             {
               AVLTree_right_rotate(&node, node->right);
+              AVLTree_setNodeBalance(node);
             }
 
             else if (node->right->balance < -1)
             {
               AVLTree_left_rotate(&node, node->right);
+              AVLTree_setNodeBalance(node);
             }
-
-            AVLTree_setNodeBalance(node);
+            else
+            {
+              node->balance++;
+            }
           }
           else
           {
@@ -837,7 +846,7 @@ int AVLTree_balanced_remove(struct AVLTree **tree, int value)
       AVLTree_right_rotate(tree, node) ;
     }
 
-    if (node->balance < -1)
+    else if (node->balance < -1)
     {
       AVLTree_left_rotate(tree, node);
     }
