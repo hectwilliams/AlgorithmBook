@@ -81,7 +81,7 @@ void display(struct AVLTree *tree)
     {
       display(tree->left);
     }
-    printf(" [val - %d  bal - %d ]  ", tree->value, tree-> balance);
+    printf(" [val - %d  bal - %d ]  \n", tree->value, tree-> balance);
     if (tree->right)
     {
       display(tree->right);
@@ -407,28 +407,7 @@ int AVLNode_height(const struct AVLTree *node)   // logN
 
 int AVLTree_isBalanced (struct AVLTree *node)
 {
-  int balance = 0;
-
-  if (node)
-  {
-    if (node->right && node->left)
-    {
-      balance = AVLNode_height(node->left) - AVLNode_height(node->right);
-    }
-
-    else if (node->right && node->left == NULL)
-    {
-      balance = - (1 + AVLNode_height(node->right));
-    }
-
-    else if (node->left && node->right == NULL)
-    {
-      balance = (1 + AVLNode_height(node->left));
-    }
-
-    return abs (balance <= 1);
-  }
-  return -1;
+    return abs (node->balance ) <= 1;
 }
 
 
@@ -670,16 +649,38 @@ void AVLTree_right_rotate(struct AVLTree **tree, struct AVLTree *target)
 }
 
 
-void AVLTree_balanced_add(struct AVLTree *tree, int value)
+void AVLTree_balanced_add(struct AVLTree **tree, int value)
 {
+  struct AVLTree *node;
 
+  if (tree)
+  {
+    AVLTree_add(tree, value);
 
+    if ( ! abs(AVLTree_isBalanced(*tree)))
+    {
+
+      if ((*tree)->balance > 1)  // right rotate
+      {
+                printf("RIGHT ROTATE\n");
+
+        AVLTree_right_rotate(tree, *tree);
+      }
+
+      else if ((*tree)->balance < -1)  // left rotate
+      {
+                printf("LEFT  ROTATE\n");
+
+        AVLTree_left_rotate(tree, *tree);
+      }
+    }
+  }
 }
 
 
 int main()
 {
- rotate_right_ex4();
+ balanced_add_test();
 }
 
 

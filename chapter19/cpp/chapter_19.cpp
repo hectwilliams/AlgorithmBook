@@ -643,6 +643,22 @@ void AVLTree::right_rotate(AVLNode *target, AVLNode *node )
 
 }
 
+void AVLTree::balanced_add(int value)
+{
+  add (value);
+  if (! head->isBalanced())
+  {
+    if (head->balance > 1)
+    {
+      right_rotate(head);
+    }
+
+    if (head->balance < -1)
+    {
+      left_rotate(head);
+    }
+  }
+}
 
 
 

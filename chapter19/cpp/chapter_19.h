@@ -48,6 +48,6 @@ class AVLTree
     unsigned height();
     void left_rotate(AVLNode *target, AVLNode *node = NULL );
     void right_rotate(AVLNode *target, AVLNode *node = NULL );
-
+    void balanced_add(int value);
 };
 

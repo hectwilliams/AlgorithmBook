@@ -24,4 +24,5 @@ void AVLTree_right_rotate(struct AVLTree **tree, struct AVLTree *target);
 void AVLTree_grandchild_promote(struct AVLTree *parent);
 void AVLTree_setNodeBalance(struct AVLTree *node); // set 'balance' attribute
 
+void AVLTree_balanced_add(struct AVLTree **tree, int value);
 #endif

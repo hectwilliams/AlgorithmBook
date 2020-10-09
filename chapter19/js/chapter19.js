@@ -639,7 +639,22 @@ AVLTree.prototype.righttRotate = function(target, node = null)
 };
 
 
+AVLTree.prototype.balancedAdd = function (value)
+{
+  this.add(value);
+  if (!this.head.isBalanced())
+  {
+    if (this.head.balance > 1)
+    {
+      this.righttRotate(this.head);
+    }
 
+    if (this.head.balance < -1)
+    {
+      this.leftRotate(this.head);
+    }
+  }
+};
 (
   function()
   {

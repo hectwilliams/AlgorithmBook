@@ -385,6 +385,14 @@ class AVLTree:
         parentOfTarget.right = child
         parentOfTarget.setBalance()
 
+  def balancedAdd(self, value) :
+    self.add(value)
+    if not self.head.isBalanced() :
+      if self.head.balance > 1 :
+        self.rightRotate(self.head)
+      if self.head.balance < -1 :
+        self.leftRotate(self.head)
+
 tree = AVLTree()
 tree.add(200)
 tree.add(100)
