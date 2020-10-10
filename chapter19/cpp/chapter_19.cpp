@@ -914,9 +914,37 @@ void AVLTree::repair(AVLNode *node)
 
   }
 
-
-
  }
+
+
+bool RBTree::contains (const int &value , RBNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node )
+  {
+    if (node->value == value)
+    {
+      return true;
+    }
+
+    else if (value < node->value)
+    {
+      return contains(value, node->left);
+    }
+
+    else if (value > node->value)
+    {
+      return contains(value, node->right);
+    }
+  }
+
+  return false;
+
+}
 
 
 

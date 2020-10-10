@@ -515,6 +515,18 @@ class RBNode:
 class RBTree:
   def __init__(self):
     self.root = None
+  def contains(self, value, node = None ):
+    if node == None:
+      node = self.root
+
+    if node:
+      if node.value == value:
+        return True
+      elif value < node.value:
+        return self.contains(value, node.left)
+      elif value > node.value :
+        return self.contains(value, node.right)
+    return False
 
 tree = AVLTree()
 tree.add(200)

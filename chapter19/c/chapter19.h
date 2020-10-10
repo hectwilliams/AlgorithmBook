@@ -43,5 +43,7 @@ struct RBTree
 
 struct RBTree *rbnode (const int value);
 
+struct RBTree_contains(struct RBTree **tree, const int value );
+
 
 #endif

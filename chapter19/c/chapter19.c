@@ -927,7 +927,6 @@ void AVLTree_repair(struct AVLTree **tree)
       root_ref = NULL;
     }
 
-
   }
 }
 
@@ -940,6 +939,37 @@ struct RBTree *rbnode (const int value)
   node->value = value;
   return node;
 }
+
+int RBTree_contains(struct RBTree **tree, const int value )
+{
+  struct RBTree *node;
+
+  if (tree)
+  {
+    node = *tree;
+  }
+
+  if (node)
+  {
+    if (node->value == value)
+    {
+      return 1;
+    }
+
+    else if (value < node->value)
+    {
+      return RBTree_contains(&node->left, value);
+    }
+
+    else if (value > node->value)
+    {
+      return RBTree_contains(&node->right, value);
+    }
+  }
+
+  return 0;
+}
+
 
 
 

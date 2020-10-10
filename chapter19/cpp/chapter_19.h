@@ -84,4 +84,5 @@ class RBTree
     {
       this->root = NULL;
     }
+    bool contains (const int &value , RBNode *node = NULL);
 };

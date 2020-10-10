@@ -926,6 +926,32 @@ function RBTree ()
   this.root = null;
 }
 
+RBTree.prototype.contains = function(value, node = null)
+{
+  if (node == null)
+  {
+    node = this.root;
+  }
+
+  if (node)
+  {
+    if (node.value == value)
+    {
+      return true;
+    }
+
+    else if (value < node.value)
+    {
+      return this.contains.call(this, value, node.left);
+    }
+
+    else if (value > node.value)
+    {
+      return this.contains.call(this, value, node.right);
+    }
+  }
+  return false;
+};
 
 (
   function()
