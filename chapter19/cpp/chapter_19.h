@@ -54,3 +54,34 @@ class AVLTree
 
 };
 
+class RBNode
+{
+  public:
+    bool color;  // 0 -black 1-red
+    RBNode *left;
+    RBNode *right;
+    int count;
+    int value;
+
+    RBNode (const int &value)
+    {
+      this->value = value;
+      this->count = 1;
+      this->color = true;
+      this->left = NULL;
+      this->right = NULL;
+    }
+  private:
+
+};
+
+
+class RBTree
+{
+  public:
+    RBNode *root;
+    RBTree()
+    {
+      this->root = NULL;
+    }
+};

@@ -10,6 +10,8 @@ struct AVLTree
   int count;
 };
 
+struct AVLTree *avlnode (int value);
+
 void display(struct AVLTree *tree);
 int AVLTree_add(struct AVLTree **tree, int value);
 int AVLTree_remove(struct AVLTree **tree, int value);
@@ -28,4 +30,18 @@ int AVLTree_balanced_add(struct AVLTree **tree, int value);
 int AVLTree_balanced_remove(struct AVLTree **tree, int value);
 
 void AVLTree_repair(struct AVLTree **tree);
+
+
+struct RBTree
+{
+  int value;
+  const char *color;
+  struct RBTree *left;
+  struct RBTree *right;
+  int count;
+};
+
+struct RBTree *rbnode (const int value);
+
+
 #endif

@@ -505,6 +505,16 @@ class AVLTree:
         elif node.balance < -1:
           self.leftRotate(node)
 
+class RBNode:
+  def __init__(self, value):
+    self.color = True
+    self.left = None
+    self.right = None
+    self.value = value
+    self.count = 1
+class RBTree:
+  def __init__(self):
+    self.root = None
 
 tree = AVLTree()
 tree.add(200)

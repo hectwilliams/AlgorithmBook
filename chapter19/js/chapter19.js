@@ -911,6 +911,22 @@ AVLTree.prototype.repair = function(node  = null)
 
 };
 
+
+function RBNode(value)
+{
+  this.color = true;
+  this.left = null;
+  this.right = null;
+  this.value = value;
+  this.count = 1;
+}
+
+function RBTree ()
+{
+  this.root = null;
+}
+
+
 (
   function()
   {

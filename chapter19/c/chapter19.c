@@ -927,8 +927,20 @@ void AVLTree_repair(struct AVLTree **tree)
       root_ref = NULL;
     }
 
+
   }
 }
+
+struct RBTree *rbnode (const int value)
+{
+  struct RBTree *node = (struct RBTree *) malloc(sizeof(struct RBTree));
+  node->color = "red";
+  node->count = 1;
+  node->left =  node->right = NULL;
+  node->value = value;
+  return node;
+}
+
 
 
 
