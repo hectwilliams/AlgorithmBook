@@ -858,11 +858,84 @@ int AVLTree_balanced_remove(struct AVLTree **tree, int value)
   return update_balance_feedback;
 }
 
+void AVLTree_repair(struct AVLTree **tree)
+{
+  static struct AVLTree *root_ref = NULL;
+  struct AVLTree *node;
+
+  if (tree == NULL)
+  {
+    return;
+  }
+
+  node = *tree;
+
+  if (root_ref == NULL)
+  {
+    root_ref = node;
+  }
+
+  if (node)
+  {
+    if (node->balance > 0)
+    {
+      AVLTree_repair(&node->left);
+
+      if (node->left->balance > 1)
+      {
+        AVLTree_right_rotate(&node, node->left);
+        AVLTree_setNodeBalance(node);
+      }
+      else if (node->left->balance < -1)
+      {
+        AVLTree_left_rotate(&node, node->left);
+        AVLTree_setNodeBalance(node);
+      }
+    }
+    else if (node->balance < 0)
+    {
+      AVLTree_repair(&node->right);
+
+      if (node->right->balance > 1)
+      {
+        AVLTree_right_rotate(&node, node->right);
+        AVLTree_setNodeBalance(node);
+
+      }
+      else if (node->right->balance < -1)
+      {
+        AVLTree_left_rotate(&node, node->right);
+        AVLTree_setNodeBalance(node);
+      }
+    }
+
+    else if (node->balance == 0)
+    {
+      return;
+    }
+
+    if (root_ref == node)
+    {
+      if (node->balance > 1)
+      {
+        AVLTree_right_rotate(tree, node);
+      }
+      else if (node->balance < -1)
+      {
+        AVLTree_left_rotate(tree, node);
+      }
+      root_ref = NULL;
+    }
+
+  }
+}
+
+
 
 
 int main()
 {
- balanced_remove_test();
+ repair_test();
 }
 
 

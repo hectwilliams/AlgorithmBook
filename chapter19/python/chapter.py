@@ -473,6 +473,39 @@ class AVLTree:
         self.leftRotate(node)
 
     return balanceFeedback
+
+  def repair(self, node = None) :
+    if node == None:
+      node = self.head
+
+    if node:
+
+      if node.balance > 0:
+        self.repair(node.left)
+        if node.left.balance > 1:
+          self.rightRotate(node.left)
+          node.setBalance()
+        elif node.left.balance < -1:
+          self.leftRotate(node.left)
+          node.setBalance()
+      elif node.balance < 0:
+        self.repair(node.right)
+        if node.right.balance > 1:
+          self.rightRotate(node.right)
+          node.setBalance()
+        elif node.right.balance < -1:
+          self.leftRotate(node.right)
+          node.setBalance()
+      elif node.balance == 0:
+        return
+
+      if node == self.head:
+        if node.balance < 1:
+          self.rightRotate(node)
+        elif node.balance < -1:
+          self.leftRotate(node)
+
+
 tree = AVLTree()
 tree.add(200)
 tree.add(100)

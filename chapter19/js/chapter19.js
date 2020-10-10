@@ -853,6 +853,64 @@ AVLTree.prototype.balancedRemove = function (value, node = null)
   return balanceFeedback;
 };
 
+
+AVLTree.prototype.repair = function(node  = null)
+{
+  if (node == null)
+  {
+    node = this.head;
+  }
+
+  if (node)
+  {
+
+    if (node.balance > 0 )
+    {
+      this.repair.call(this, node.left);
+
+      if (node.left.balance > 1)
+      {
+        this.rightRotate.call(this, node.left);
+        node.setBalance();
+      }
+      else if (node.left.balance < -1)
+      {
+        this.leftRotate.call(this, node.left);
+        node.setBalance();
+      }
+    }
+
+    else if (node.balace < 0)
+    {
+      this.repair.call(this, node.right);
+
+      if (node.right.balance > 1)
+      {
+        this.rightRotate.call(this, node.right);
+        node.setBalance();
+      }
+      else if (node.right.balance < -1)
+      {
+        this.leftRotate.call(this, node.right);
+        node.setBalance();
+      }
+    }
+
+    if (node == this.head)
+    {
+      if (node.balance > 1)
+      {
+        this.rightRotate.call(this, node);
+      }
+      else if (node.balance < -1)
+      {
+        this.leftRotate.call(this, node);
+      }
+    }
+  }
+
+};
+
 (
   function()
   {

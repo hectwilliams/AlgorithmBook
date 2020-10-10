@@ -50,6 +50,7 @@ class AVLTree
     void right_rotate(AVLNode *target, AVLNode *node = NULL );
     bool balanced_add(const int &value, AVLNode *node = NULL);
     bool balanced_remove(const int &value, AVLNode *node = NULL);
+    void repair(AVLNode *node = NULL);
 
 };
 

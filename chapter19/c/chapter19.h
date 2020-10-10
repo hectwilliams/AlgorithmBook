@@ -27,4 +27,5 @@ void AVLTree_setNodeBalance(struct AVLTree *node); // set 'balance' attribute
 int AVLTree_balanced_add(struct AVLTree **tree, int value);
 int AVLTree_balanced_remove(struct AVLTree **tree, int value);
 
+void AVLTree_repair(struct AVLTree **tree);
 #endif

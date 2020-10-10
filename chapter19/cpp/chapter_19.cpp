@@ -854,7 +854,69 @@ bool AVLTree::balanced_remove(const int &value, AVLNode *node)
   return balanceFeedback;
 }
 
+void AVLTree::repair(AVLNode *node)
+{
+  if (node == NULL)
+  {
+    node = head;
+  }
 
+  if (node)
+  {
+    if (node->balance > 0)
+    {
+      repair(node->left);
+
+      if (node->left->balance > 1)
+      {
+        right_rotate(node->left);
+        node->setBalance();
+      }
+      else if (node->left->balance < -1)
+      {
+        left_rotate(node->left);
+        node->setBalance();
+      }
+    }
+
+    else if (node->balance < 0)
+    {
+      repair(node->right);
+
+      if (node->right->balance > 1)
+      {
+        right_rotate(node->right);
+        node->setBalance();
+      }
+      else if (node->right->balance < -1)
+      {
+        left_rotate(node->right);
+        node->setBalance();
+      }
+    }
+
+    else if (node->balance == 0)
+    {
+      return;
+    }
+
+    if (node == this->head)
+    {
+      if (node->balance > 1)
+      {
+        right_rotate(node);
+      }
+      else if (node->balance < -1)
+      {
+        left_rotate(node);
+      }
+    }
+
+  }
+
+
+
+ }
 
 
 
