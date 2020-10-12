@@ -507,18 +507,18 @@ class AVLTree:
 
 class RBNode:
   def __init__(self, value):
-    self.color = True
+    self.color = 1
     self.left = None
     self.right = None
     self.value = value
     self.count = 1
+
 class RBTree:
   def __init__(self):
     self.root = None
   def contains(self, value, node = None ):
     if node == None:
       node = self.root
-
     if node:
       if node.value == value:
         return True
@@ -528,17 +528,196 @@ class RBTree:
         return self.contains(value, node.right)
     return False
 
-tree = AVLTree()
-tree.add(200)
-tree.add(100)
-tree.add(25)
-tree.add(120)
-tree.add(110)
-tree.add(140)
-tree.add(105)
-tree.display()
-tree.remove(100)
-print()
-tree.display()
+  def __translate (self, node, parent = None, code = -1):
+    c = gc = gc_l = gc_r = tree = None
+
+    #/ function
+    def paint():
+      node.color = 1
+      node.left.color = node.right.color = 0
+
+    def ll (): # left left
+      c = node.left
+      tree = c.right
+
+      c.right = node
+      node.left = tree
+
+      c.color = 0
+      c.left.color = c.right.color = 1
+
+      if parent == None:
+        self.root = c
+      elif parent.left == node:
+        parent.left = c
+      elif parent.right == node:
+        parent.right = c
+
+    def lr ():  # left right
+      c = node.left
+      gc = node.left.right
+      gc_l = gc.left
+      gc_r = gc.right
+
+      gc.left = c
+      gc.right = node
+      node.left = gc_r
+      c.right = gc_l
+
+      gc.color = 0
+      gc.left.color = gc.right.color = 1
+
+      if parent == None:
+        self.root = gc
+      elif parent.left == node:
+        parent.left = gc
+      elif parent.right == node:
+        parent.right = gc
+
+    def rr ():
+      c = node.right
+      tree = c.left
+
+      c.left = node
+      node.right = tree
+
+      c.color = 0
+      c.left.color = c.right.color = 1
+
+      if parent == None:
+        self.root = c
+      elif parent.left == node:
+        parent.left = c
+      elif parent.right == node:
+        parent.right = c
 
 
+    def rl ():
+      c = node.right
+      gc = node.right.left
+      gc_l = gc.left
+      gc_r = gc.right
+
+      gc.right = c
+      gc.left = node
+      node.right = gc_l
+      c.left = gc_r
+
+      gc.color = 0
+      gc.left.color = gc.right.color = 1
+
+      if parent == None:
+        self.root = gc
+      elif parent.left == node :
+        parent.left = gc
+      elif parent.right == node :
+        parent.right = gc
+
+
+  # select function
+    case = {
+      0: paint,
+      1: ll,
+      2: lr,
+      3: rr,
+      4: rl
+    }
+
+  # swtich
+    def switcher (arg):
+      func = case.get(arg)  # get callback and call function
+      func()
+  # execute
+    switcher(code)
+
+  # root node must be black
+    if self.root.color:
+      self.root.color = 0
+
+  def add(self, value, node = None , parent = None):
+    acc  = 0
+
+    if self.root == None :
+      self.root = RBNode(value)
+      self.root.color = 0
+    else:
+      if node == None:
+        node  = self.root
+
+      if value < node.value:
+        if node.left:
+          acc = self.add(value, node.left, node)
+          acc += (node.left.color)
+
+          if acc == 2:
+            acc = 0
+            if node.right == None:
+              if node.left and node.left.left:
+                self.__translate(node, parent, 1)
+              elif node.left and node.left.right:
+                self.__translate(node.parent, 2)
+            elif node.right.color == 0  :
+              if node.left and node.left.left:
+                self.__translate(node, parent, 1)
+              elif node.left and node.left.right:
+                self.__translate(node, parent, 2)
+            elif node.right.color:
+              self.__translate(node, parent , 0)
+        else:
+          node.left = RBNode(value)
+          acc = 1
+
+      elif value > node.value:
+        if node.right:
+          acc = self.add(value, node.right, node)
+          acc += (node.right.color)
+          if acc == 2:
+            acc = 0
+            if node.left == None:
+              if node.right and node.right.right:
+                self.__translate(node, parent , 3)
+              elif node.right and node.right.left:
+                self.__translate(node, parent, 4)
+            elif node.left.color == 0:
+              if node.right and node.right.right:
+                self.__translate(node, parent ,3)
+              elif node.right and node.right.left:
+                self.__translate(node, parent, 4)
+            elif node.left.color :
+              self.__translate(node, parent, 0)
+        else:
+          node.right = RBNode(value)
+          acc = 1
+
+      elif value == node.value:
+        node.count += 1
+        acc = 0
+
+      if node.color == 0  :
+        acc = 0
+
+    return acc
+
+
+  def display(self, node = None):
+    if node == None:
+      node = self.root
+    if node :
+      if node.left:
+        self.display(node.left)
+      print ("value: ", node.value, " ", "color: ", node.color, sep="")
+      if node.right:
+        self.display(node.right)
+
+
+tree =  RBTree()
+tree.add(3)
+tree.add(1)
+tree.add(5)
+tree.add(7)
+tree.add(6)
+tree.add(8)
+tree.add(9)
+tree.add(10)
+
+tree.display()

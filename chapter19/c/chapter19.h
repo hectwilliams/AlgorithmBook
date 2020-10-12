@@ -11,7 +11,6 @@ struct AVLTree
 };
 
 struct AVLTree *avlnode (int value);
-
 void display(struct AVLTree *tree);
 int AVLTree_add(struct AVLTree **tree, int value);
 int AVLTree_remove(struct AVLTree **tree, int value);
@@ -28,22 +27,40 @@ void AVLTree_setNodeBalance(struct AVLTree *node); // set 'balance' attribute
 
 int AVLTree_balanced_add(struct AVLTree **tree, int value);
 int AVLTree_balanced_remove(struct AVLTree **tree, int value);
-
 void AVLTree_repair(struct AVLTree **tree);
 
 
 struct RBTree
 {
   int value;
-  const char *color;
+  int color;
   struct RBTree *left;
   struct RBTree *right;
   int count;
 };
 
 struct RBTree *rbnode (const int value);
+int RBTree_contains(struct RBTree **tree, const int value);
+int RBTree_add(struct RBTree **tree, const int value);
+void RBTree_repaint(struct RBTree *parent);
 
-struct RBTree_contains(struct RBTree **tree, const int value );
+void RBTree_display(struct RBTree *node);
 
+void RBTree_translate(struct RBTree **root, struct RBTree *node, int rotate_code);
+struct RBTree *findParent (struct RBTree *tree, struct RBTree *target);
+int RBTree_height_valid(struct RBTree *node, int height);
 
+struct llist
+{
+  int value;
+  struct llist *next;
+};
 #endif
+
+/*
+          100
+         /    \
+       50      300
+      /
+     25
+*/

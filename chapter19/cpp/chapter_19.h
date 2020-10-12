@@ -51,11 +51,12 @@ class AVLTree
     bool balanced_add(const int &value, AVLNode *node = NULL);
     bool balanced_remove(const int &value, AVLNode *node = NULL);
     void repair(AVLNode *node = NULL);
-
 };
 
 class RBNode
 {
+  friend class RBTree; //  RBTree class can access  node private members
+
   public:
     bool color;  // 0 -black 1-red
     RBNode *left;
@@ -72,7 +73,6 @@ class RBNode
       this->right = NULL;
     }
   private:
-
 };
 
 
@@ -85,4 +85,9 @@ class RBTree
       this->root = NULL;
     }
     bool contains (const int &value , RBNode *node = NULL);
+    int add(const int &value, RBNode *node = NULL, RBNode *parent = NULL );
+    void display (RBNode *node = NULL);
+  private:
+    void translate(RBNode *node = NULL, RBNode *parent = NULL, int code = -1);
+
 };

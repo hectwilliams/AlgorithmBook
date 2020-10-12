@@ -913,7 +913,6 @@ void AVLTree::repair(AVLNode *node)
     }
 
   }
-
  }
 
 
@@ -943,26 +942,298 @@ bool RBTree::contains (const int &value , RBNode *node)
   }
 
   return false;
+}
+
+
+int RBTree::add(const int &value, RBNode *node , RBNode *parent )
+{
+  int acc = 0;
+
+  if (root == NULL)
+  {
+    root = new RBNode(value);
+    root->color = 0;
+  }
+  else
+  {
+    if (node == NULL)
+    {
+      node = root;
+    }
+
+    if (value < node->value)
+    {
+      if (node->left)
+      {
+        acc = add(value, node->left, node) + +(node->left->color);
+
+        if (acc == 2 )
+        {
+          acc = 0;
+          if (node->right == NULL)
+          {
+            if (node->left && node->left->left)
+            {
+              translate(node, parent, 1);
+            }
+            else if (node->left && node->left->right)
+            {
+              translate(node, parent, 2);
+            }
+          }
+
+          else if ( ! node->right->color )
+          {
+            if (node->left && node->left->left)
+            {
+              translate(node, parent, 1);
+            }
+            else if (node->left && node->left->right)
+            {
+              translate(node, parent, 2);
+            }
+          }
+
+          else if (node->right->color)
+          {
+            translate(node, parent, 0);
+          }
+        }
+      }
+      else
+      {
+        node->left = new RBNode(value);
+        acc = 1;
+      }
+    }
+
+    else if (value > node->value)
+    {
+      if (node -> right)
+      {
+        acc = add(value, node->right, node) + +(node->right->color);
+
+        if (acc == 2)
+        {
+          acc = 0;
+
+          if (node->left == NULL)
+          {
+            if (node->right && node->right->right)
+            {
+              translate(node, parent, 3);
+            }
+            else if (node->right && node->right->left)
+            {
+              translate(node, parent, 4);
+            }
+          }
+          else if ( ! node->left->color )
+          {
+            if (node->right && node->right->right)
+            {
+              translate(node, parent, 3);
+            }
+            else if (node->right && node->right->left)
+            {
+              translate(node, parent, 4);
+            }
+          }
+          else if (node->left->color)
+          {
+            translate(node, parent, 0);
+          }
+        }
+      }
+      else
+      {
+        node->right = new RBNode(value);
+        acc = 1;
+      }
+    }
+    else if (value == node->value)
+    {
+      node->count++;
+      acc = 0;
+    }
+
+    if (node->color == 0)
+    {
+      acc = 0;
+    }
+  }
+
+  return acc;
+}
+
+
+void RBTree::translate(RBNode *node, RBNode *parent, int code)
+{
+  RBNode *c, *gc, *gc_l, *gc_r, *tree;
+
+  switch (code)
+  {
+
+  case 0:
+    node->color = 1;
+    node->left->color = node->right->color = 0;
+    break;
+
+  case 1:  // LEFT LEFT
+    c = node->left;
+    tree = c->right;
+
+    c->right = node;
+    node->left = tree;
+
+    c->color = 0;
+    c->left->color = c->right->color = 1;
+
+    if (parent == NULL)
+    {
+      root = c;
+    }
+    else if (parent->left == node)
+    {
+      parent->left = c;
+    }
+    else if (parent->right == node)
+    {
+      parent->right = c;
+    }
+
+    break;
+
+  case 2:  // LEFT RIGHT
+    c = node->left;
+    gc = node->left->right;
+    gc_l = gc->left;
+    gc_r = gc->right;
+
+    gc->left = c;
+    gc->right = node;
+    node->left = gc_r;
+    c->right = gc_l;
+
+    gc->color = 0;
+    gc->left->color = gc->right->color = 1;
+
+    if (parent == NULL)
+    {
+      root = gc;
+    }
+    else if (parent->left == node)
+    {
+      parent->left = gc;
+    }
+    else if (parent->right == node)
+    {
+      parent->right = gc;
+    }
+
+    break;
+
+
+  case 3: // RIGHT RIGHT
+    c = node->right;
+    tree = c->left;
+
+    c->left = node;
+    node->right = tree;
+
+    c->color = 0;
+    c->left->color = c->right->color = 1;
+
+    if (parent == NULL)
+    {
+      root = c;
+    }
+    else if (parent->left == node)
+    {
+      parent->left = c;
+    }
+    else if (parent->right == node)
+    {
+      parent->right = c;
+    }
+
+    break;
+
+  case 4: // RIGHT LEFT
+    c = node->right;
+    gc = node->right->left;
+    gc_l = gc->left;
+    gc_r = gc->right;
+
+    gc->right = c;
+    gc->left = node;
+    node->right = gc_l;
+    c->left = gc_r;
+
+    gc->color = 0;
+    gc->left->color = gc->right->color = 1;
+
+    if (parent == NULL)
+    {
+      root = gc;
+    }
+    else if (parent->left == node)
+    {
+      parent->left = gc;
+    }
+    else if (parent->right == node)
+    {
+      parent->right = gc;
+    }
+    break;
+
+    default:
+      break;
+
+  }
+
+  if (root->color)
+  {
+    root->color = false;
+  }
 
 }
 
+
+void RBTree::display (RBNode *node)
+{
+  if (node == NULL)
+  {
+    node = root;
+  }
+
+  if (node)
+  {
+    if (node->left)
+    {
+      display(node->left);
+    }
+    std::cout << "val -  " << node->value << " " << "color - " << node->color << '\n';
+
+    if (node->right)
+    {
+      display(node->right);
+    }
+   }
+}
 
 
 
 int main()
 {
-  AVLTree tree;
-
-  tree.add(200);
-  tree.add(100);
-  tree.add(25);
-  tree.add(120);
-  tree.add(110);
-  tree.add(140);
-  tree.add(105);
-
-  tree.display();
-  tree.remove(100);
-  std::cout << '\n';
+  RBTree tree;
+  tree.add(3);
+  tree.add(1);
+  tree.add(5);
+  tree.add(7);
+  tree.add(6);
+  tree.add(8);
+  tree.add(9);
+  tree.add(10);
   tree.display();
 }
