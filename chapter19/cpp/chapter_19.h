@@ -23,8 +23,9 @@ class AVLNode
     bool isBalanced();
 
   private:
-      void setBalance();
-      void grandchild_promote();
+    void copyAttributes(AVLNode src); // avl remove
+
+
 };
 
 class AVLTree
@@ -32,8 +33,7 @@ class AVLTree
   friend class AVLNode;
 
   private:
-    bool remove_helper(AVLNode *parent, AVLNode *node );
-    void update_balance_path(AVLNode *node, AVLNode *end);
+    int inOrderSuccesor(); // avl remove
 
   public:
     AVLNode *head;
@@ -42,12 +42,16 @@ class AVLTree
       this->head = nullptr;
     }
     void display(AVLNode * node = nullptr);
-    bool add(const int &value, AVLNode *node = NULL);
-    bool remove(const int &value, AVLNode *node = NULL);
     bool isBalanced();
     unsigned height();
+    bool add(const int &value, AVLNode *node = NULL);
+    bool remove(const int &value, AVLNode *node = NULL);
+
+
     void left_rotate(AVLNode *target, AVLNode *node = NULL );
     void right_rotate(AVLNode *target, AVLNode *node = NULL );
+
+
     bool balanced_add(const int &value, AVLNode *node = NULL);
     bool balanced_remove(const int &value, AVLNode *node = NULL);
     void repair(AVLNode *node = NULL);
@@ -87,7 +91,11 @@ class RBTree
     bool contains (const int &value , RBNode *node = NULL);
     int add(const int &value, RBNode *node = NULL, RBNode *parent = NULL );
     void display (RBNode *node = NULL);
+    bool remove(const int &value, RBNode *node= NULL);
+
   private:
     void translate(RBNode *node = NULL, RBNode *parent = NULL, int code = -1);
+    void remove_helper(RBNode *parent, RBNode *node = NULL);
+
 
 };
