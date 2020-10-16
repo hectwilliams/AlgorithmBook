@@ -23,7 +23,11 @@ class AVLNode
     int inOrderSuccessor(); // avl remove
     void copyAttributes(AVLNode *src); // avl remove
     bool updateBalanceAck(bool isValid, int level);  // avl remove
+
+    void calculateBalance(); // avl rotate
+
     void whoAmI ()
+
     {
       std::cout <<  " [ ] " << this->value << " ,  " <<  this->balance << " " ;
     }
@@ -63,8 +67,12 @@ class AVLTree
     // bool balanced_add(const int &value, AVLNode *node = NULL);
     // bool balanced_remove(const int &value, AVLNode *node = NULL);
     // void repair(AVLNode *node = NULL);
+
   private:
     bool removeHelper(AVLNode *node, AVLNode *parent);  // avl remove
+    void leftRotateTranslate(AVLNode *parent) ; // avl rotate
+    void rightRotateTranslate(AVLNode *parent); // avl rotate
+
 
 };
 

@@ -397,6 +397,10 @@ AVLTree.prototype.balancedAdd = function (value)
 
 };
 
+AVLNode.prototype.calculateBalance = function()
+{
+  this.balance = (1 + this.left.height()) - (1 + this.right.height());
+};
 
 AVLTree.prototype.balancedRemove = function (value, node = null)
 {

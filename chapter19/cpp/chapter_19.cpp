@@ -308,6 +308,10 @@ bool AVLTree::isBalanced()
 }
 
 
+void AVLNode::calculateBalance()
+{
+  this->balance =  (1 + this->left->height()) - (1 + this->right->height());
+}
 
 
 int main()

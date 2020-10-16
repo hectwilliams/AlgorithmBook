@@ -86,6 +86,10 @@ class AVLNode :
           flag = False
 
     return flag
+
+  def calculateBalance(self):
+    self.balance = (1 + self.left.height()) - (1 + self.right.height())
+
 class AVLTree:
   def __init__(self):
     self.head = None
