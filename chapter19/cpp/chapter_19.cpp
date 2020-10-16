@@ -133,7 +133,7 @@ bool AVLTree::removeHelper(AVLNode *node, AVLNode *parent)
     node->copyAttributes(  del);
     if (!isRoot)
     {
-      node->balance++;
+      parent->balance++;
     }
   }
 
@@ -143,7 +143,7 @@ bool AVLTree::removeHelper(AVLNode *node, AVLNode *parent)
     node->copyAttributes(   del);
     if (!isRoot)
     {
-      node->balance--;
+      parent->balance--;
     }
   }
 
@@ -179,8 +179,6 @@ bool AVLTree::removeHelper(AVLNode *node, AVLNode *parent)
         flag = 0;
       }
     }
-
-
   }
 
   if (del)
@@ -205,8 +203,7 @@ bool AVLNode::updateBalanceAck (bool isValid, int level)
       isValid = false;
     }
   }
-  return isValid
-  ;
+  return isValid;
 }
 
 

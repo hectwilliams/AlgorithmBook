@@ -87,7 +87,7 @@ void avl_remove_test ()
     tree.add(array[i]);
   }
 
-  tree.remove(100);
+  tree.remove(500);
   tree.display();
 
 }

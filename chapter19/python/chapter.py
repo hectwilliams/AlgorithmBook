@@ -40,12 +40,52 @@ class AVLNode :
 
   def updateBalanceAck(self, isValid, level):
     prevBal = self.balance
+
     if isValid:
       self.balance += level
       if prevBal == 0:
-        isValid = false
+        isValid = 0
     return isValid
 
+  def removeHelper(self, parent, updateRootCallback, removeCallback):
+    isRoot = (self == parent)
+    successor = None
+    flag = True
+
+    if self.left != None and self.right != None :
+      successor = self.inOrderSuccessor()
+      flag = removeCallback(successor, self)
+      flag = self.updateBalanceAck(flag , 1)
+      self.value = successor
+
+    elif self.right:
+      self.copyAttributes(self.right)
+      if not bool(isRoot):
+        parent.balance += 1
+
+    elif self.left:
+      self.copyAttributes(self.left)
+      if not (isRoot):
+        parent.balance -= 1
+
+    elif self.left == None and self.right == None :
+
+      if isRoot:
+        updateRootCallback(None)
+
+      elif parent.right == self:
+        parent.balance += 1
+        parent.right = None
+        if parent.left:
+          flag = False
+
+      elif parent.left == self:
+        parent.balance -= 1
+        parent.left = None
+        if parent.right:
+          flag = False
+
+    return flag
 class AVLTree:
   def __init__(self):
     self.head = None
@@ -94,6 +134,39 @@ class AVLTree:
 
     return 0
 
+  def remove(self, value, node = None):
+    flag = False
+
+    def setRoot(val):
+      self.head = val
+
+    if node == None:
+      node = self.head
+      if not node:
+        return
+
+    if node.value == value:
+      flag = node.removeHelper(node, setRoot, self.remove)
+
+    elif value < node.value:
+      if node.left:
+        if node.left.value == value:
+          flag = node.left.removeHelper(node, setRoot, self.remove)
+        else:
+          flag = self.remove(value, node.left)
+          flag = node.updateBalanceAck(flag , -1)
+
+    elif value > node.value:
+      if node.right:
+        if node.right.value == value:
+          flag = node.right.removeHelper(node, setRoot, self.remove)
+        else:
+          flag = self.remove(value, node.right)
+          flag = node.updateBalanceAck(flag ,  1)
+
+    print(node.value, node.balance)
+
+    return flag
 
 class RBNode:
   def __init__(self, value):
@@ -355,16 +428,32 @@ class RBTree:
             self.remove(value, node.right)
 
 
-tree =  RBTree()
-tree.add(3)
-tree.add(1)
-tree.add(5)
-tree.add(7)
-tree.add(6)
-tree.add(8)
-tree.add(9)
-tree.add(10)
+# tree =  RBTree()
+# tree.add(3)
+# tree.add(1)
+# tree.add(5)
+# tree.add(7)
+# tree.add(6)
+# tree.add(8)
+# tree.add(9)
+# tree.add(10)
 
-tree.remove(6)
+# tree.remove(6)
 
+# tree.display()
+
+
+tree = AVLTree()
+data = [
+100,
+50,       500,
+25,      450,        1000,
+20,     300,  480,   900,   2000,
+15,    200,          800
+]
+
+for ele in data:
+  tree.add(ele)
+
+tree.remove(450)
 tree.display()

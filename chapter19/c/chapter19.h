@@ -13,17 +13,23 @@ struct AVLTree
 struct AVLTree *avlnode (int value);
 void display(struct AVLTree *tree);
 int AVLTree_add(struct AVLTree **tree, int value);
-int AVLTree_remove(struct AVLTree **tree, int value);
-int AVLTree_remove_helper( struct AVLTree *parent, struct AVLTree **target);
 int AVLNode_height(const struct AVLTree *node);
 int AVLTree_isBalanced (struct AVLTree *node);
-void AVLTree_update_balance_path(struct AVLTree *node, struct AVLTree *stop) ;
-void copy_attributes (struct AVLTree *successor, struct AVLTree *predecessor);
+int AVLTree_remove(struct AVLTree **tree , int value);
+void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target);
+void AVLTree_rightRotate(struct AVLTree **root, struct AVLTree *target);
 
-void AVLTree_left_rotate(struct AVLTree **tree, struct AVLTree *target);
-void AVLTree_right_rotate(struct AVLTree **tree, struct AVLTree *target);
-void AVLTree_grandchild_promote(struct AVLTree *parent);
-void AVLTree_setNodeBalance(struct AVLTree *node); // set 'balance' attribute
+// avl tree: remove  helper
+int AVLTree_balance_feedback_update(struct AVLTree *node, int code);
+void balanceFlag(struct AVLTree *node, int *flag, int newFlag);
+int inOrderSuccessor (struct AVLTree *node);
+void copy_attributes (struct AVLTree *dest, struct AVLTree *src);
+
+// avl tree: rotation helper
+void calBalance(struct AVLTree *node);
+void AVLTree_leftRotate_translate(struct AVLTree *target, struct AVLTree **parent) ;
+void AVLTree_rightRotate_translate(struct AVLTree *target, struct AVLTree **parent);
+
 
 int AVLTree_balanced_add(struct AVLTree **tree, int value);
 int AVLTree_balanced_remove(struct AVLTree **tree, int value);
@@ -50,17 +56,10 @@ void RBTree_translate(struct RBTree **root, struct RBTree *node, int rotate_code
 struct RBTree *findParent (struct RBTree *tree, struct RBTree *target);
 int RBTree_height_valid(struct RBTree *node, int height);
 
-struct llist
-{
-  int value;
-  struct llist *next;
-};
+void RBTree_remove(struct RBTree **tree, int value);
+int RBTree_remove_helper(struct RBTree *parent, struct RBTree **target);
+int RBTree_balance_check(struct RBTree *node);
+
 #endif
 
-/*
-          100
-         /    \
-       50      300
-      /
-     25
-*/
+
