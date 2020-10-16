@@ -100,6 +100,7 @@ AVLTree.prototype.display = function(node = null)
 
 
 
+
 AVLNode.prototype.height = function(node = null)
 {
   if (!node)
@@ -155,6 +156,29 @@ AVLNode.prototype.inOrderSuccessor = function()
   }
   return runner.value;
 };
+
+AVLNode.prototype.copyAttributes = function(src)
+{
+  let attrs = ['left', 'right', 'count', 'value', 'balance' ];
+  attr.forEach((attr)=>{
+    this[attr] = src[attr];
+  });
+};
+
+AVLNode.prototype.updateBalanceAck = function(isValid, level)
+{
+  let prevBal = this.balance;
+  if (isValid)
+  {
+    this.balance += level;
+    if (prevBal == 0)
+    {
+      isValid = false;
+    }
+  }
+  return isValid;
+};
+
 
 
 AVLTree.prototype.balancedAdd = function (value)

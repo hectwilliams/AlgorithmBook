@@ -31,6 +31,21 @@ class AVLNode :
       runner = runner.left
     return runner.value
 
+  def copyAttributes(self, src):
+    self.balance = src.balance
+    self.left = src.left
+    self.right = src.right
+    self.count = src.count
+    self.value = src.value
+
+  def updateBalanceAck(self, isValid, level):
+    prevBal = self.balance
+    if isValid:
+      self.balance += level
+      if prevBal == 0:
+        isValid = false
+    return isValid
+
 class AVLTree:
   def __init__(self):
     self.head = None
