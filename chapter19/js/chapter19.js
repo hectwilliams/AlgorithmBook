@@ -101,30 +101,25 @@ AVLTree.prototype.display = function(node = null)
 
 
 
-AVLNode.prototype.height = function(node = null)
+AVLNode.prototype.height = function()
 {
-  if (!node)
+  if (this)
   {
-    node = this;
-  }
-
-  if (node)
-  {
-    if (node.left == null && node.right == null)
+    if (this.left == null && this.right == null)
     {
       return  0;
     }
-    else if( node.balance > 0 )
+    else if( this.balance > 0  && this.left)
     {
-      return 1 + this.height.call(this, node.left);
+      return 1 + this.left.height();
     }
 
-    else if ( node.balance < 0)
+    else if ( this.balance < 0 && this.right)
     {
-      return 1 + this.height.call(this, node.right);
+      return 1 + this.right.height();
     }
+    return 0;
   }
-  return 0;
 };
 
 
@@ -304,6 +299,180 @@ AVLTree.prototype.remove = function(value, node = null)
 
 };
 
+AVLNode.prototype.calculateBalance = function()
+{
+  this.balance = (1 + this.height.call(this.left) ) -   (1 - this.height.call(this.right) );
+};
+
+
+
+AVLNode.prototype.leftRotateTranslate = function(parent, avlTreeObj)
+{
+  let c, t, promote;
+
+  promote = this.right;
+
+  if (this.right.balance > 0)
+  {
+    promote = this.right.left;
+    avlTreeObj.rightRotate(this.right, this);
+  }
+
+  c = this.right;
+  t = c.left;
+
+  c.left = this;
+  this.right = t;
+
+  this.calculateBalance();
+  c.calculateBalance();
+
+  if (parent == this)
+  {
+    avlTreeObj.head = promote;
+  }
+
+  else if (parent.left == this)
+  {
+    parent.left = promote;
+  }
+
+  else if (parent.right == this)
+  {
+    parent.right = promote;
+  }
+
+};
+
+
+AVLTree.prototype.leftRotate = function(target, node = null)
+{
+  if (node == null)
+  {
+    node = this.head;
+    if (!node)
+    {
+      return;
+    }
+  }
+
+  if (node && target.right)
+  {
+    if (node == target)
+    {
+      node.leftRotateTranslate(node, this);
+    }
+
+    else if (target.value < node.value)
+    {
+      if (node.left == target)
+      {
+        node.left.leftRotateTranslate(node, this);
+      }
+      else
+      {
+        this.leftRotate(target, node.left);
+      }
+    }
+
+    else if (target.value > node.value)
+    {
+      if (node.right == target)
+      {
+        node.right.leftRotateTranslate(node, this);
+      }
+      else
+      {
+        this.leftRotate(target, node.right);
+      }
+    }
+
+  }
+
+};
+
+AVLTree.prototype.rightRotate = function(target, node = null)
+{
+  if (node == null )
+  {
+    node = this.head;
+    if (!node)
+    {
+      return;
+    }
+  }
+
+  if (target.left)
+  {
+
+    if (node == target)
+    {
+      node.rightRotateTranslate(node, this);
+    }
+
+    else if (target.value < node.value)
+    {
+      if (node.left == target)
+      {
+        node.left.rightRotateTranslate(node, this);
+      }
+      else
+      {
+        this.rightRotate(target, node.left);
+      }
+    }
+
+    else if (target.value > node.value)
+    {
+      if (node.right == target)
+      {
+        node.right.rightRotateTranslate(node, this);
+      }
+      else
+      {
+        this.rightRotate(target, node.right);
+      }
+    }
+  }
+}
+
+AVLNode.prototype.rightRotateTranslate = function(parent, avlTreeObj)
+{
+  let c, t, promote;
+
+  promote = this.left;
+
+  if (this.left.balance < 0)
+  {
+    promote = this.left.right;
+    avlTreeObj.leftRotate(this.left, this);
+  }
+
+  c = this.left;
+  t = c.right;
+
+  c.right = this;
+  this.left = t;
+
+  this.calculateBalance();
+  c.calculateBalance();
+
+
+  if (parent == this)
+  {
+    avlTreeObj.head = promote;
+  }
+  else if (parent.left == this)
+  {
+    parent.left = promote;
+  }
+  else if (parent.right == this)
+  {
+    parent.right = promote;
+  }
+};
+
+
 AVLTree.prototype.balancedAdd = function (value)
 {
 
@@ -397,10 +566,9 @@ AVLTree.prototype.balancedAdd = function (value)
 
 };
 
-AVLNode.prototype.calculateBalance = function()
-{
-  this.balance = (1 + this.left.height()) - (1 + this.right.height());
-};
+
+
+
 
 AVLTree.prototype.balancedRemove = function (value, node = null)
 {
@@ -998,27 +1166,46 @@ RBTree.prototype.remove = function (value, node = null)
 (
   function()
   {
-
     let tree = new AVLTree();
-     data = [
 
-      100,
-      50,       500,
-    25,      450,        1000,
-  20,     300,  480,   900,   2000,
- 15,    200,          800
-     ]
+//      data = [
 
-    data.forEach((data) =>{
-      tree.add(data);
-    });
-    tree.remove(450);
+//       100,
+//       50,       500,
+//     25,      450,        1000,
+//   20,     300,  480,   900,   2000,
+//  15,    200,          800
+//      ]
 
-    tree.display();
+//     data.forEach((data) =>{
+//       tree.add(data);
+//     });
+//     tree.remove(450);
 
+//     tree.display();
 
+// console.log(tree.isBalanced());
 
-    // console.log(tree.isBalanced());
+    tree.add(10);
+    tree.add(17);
+    tree.add(6);
+    tree.add(15);
+    tree.add(8);
+    tree.add(3);
+    tree.add(4);
+    tree.add(20);
+    tree.add(18);
+
+    tree.leftRotate(tree.head.right);
+
+    console.log(tree.head.right.value);
+    console.log(tree.head.right.right.value);
+    console.log(tree.head.right.left.value);
+
+    // console.log(tree.head.right.right.value);
+    // console.log(tree.head.right.right.right.value);
+
+    // tree.display();
+
   }()
-
 )

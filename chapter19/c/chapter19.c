@@ -363,40 +363,7 @@ void calBalance(struct AVLTree *node)
   }
 }
 
-void AVLTree_leftRotate_translate(struct AVLTree *target, struct AVLTree **parent)
-{
-  struct AVLTree *c, *t, *promo;
 
-  promo = target->right;
-
-  if (target->right->balance > 0)
-  {
-    promo = target->right->left;
-    AVLTree_rightRotate(&target, target->right);
-  }
-
-  c = target->right;
-  t = c->left;
-
-  c->left = target;
-  target->right = t;
-
-  calBalance(target);
-  calBalance(c);
-
-  if (*parent == target)
-  {
-    *parent = promo;
-  }
-  else if ((*parent)->left == target)
-  {
-    (*parent)->left = promo;
-  }
-  else if ( (*parent)->right == target)
-  {
-    (*parent)->right = promo;
-  }
-}
 
 void AVLTree_rightRotate_translate(struct AVLTree *target, struct AVLTree **parent)
 {
@@ -446,24 +413,18 @@ void AVLTree_rightRotate(struct AVLTree **root, struct AVLTree *target)
 {
   struct AVLTree *node = *root, *promote = NULL;
 
-  if (node)
+  if (node && target->left)
   {
     if (node == target)
     {
-      if (node->left)
-      {
         AVLTree_rightRotate_translate (node, root);
-      }
     }
 
     else if (target->value < node->value)
     {
       if (node->left == target)
       {
-        if (target->left)
-        {
           AVLTree_rightRotate_translate (node->left, &node);
-        }
       }
       else
       {
@@ -475,16 +436,48 @@ void AVLTree_rightRotate(struct AVLTree **root, struct AVLTree *target)
     {
       if (node->right == target)
       {
-        if (node->right)
-        {
           AVLTree_rightRotate_translate (node->right, &node);
-        }
       }
       else
       {
         AVLTree_rightRotate(&node->right, target);
       }
     }
+  }
+}
+
+void AVLTree_leftRotate_translate(struct AVLTree *target, struct AVLTree **parent)
+{
+  struct AVLTree *c, *t, *promo;
+
+  promo = target->right;
+
+  if (target->right->balance > 0)
+  {
+    promo = target->right->left;
+    AVLTree_rightRotate(&target, target->right);
+  }
+
+  c = target->right;
+  t = c->left;
+
+  c->left = target;
+  target->right = t;
+
+  calBalance(target);
+  calBalance(c);
+
+  if (*parent == target)
+  {
+    *parent = promo;
+  }
+  else if ((*parent)->left == target)
+  {
+    (*parent)->left = promo;
+  }
+  else if ( (*parent)->right == target)
+  {
+    (*parent)->right = promo;
   }
 }
 
@@ -498,27 +491,19 @@ void AVLTree_rightRotate(struct AVLTree **root, struct AVLTree *target)
 void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target)
 {
   struct AVLTree *node = *root;
-  struct AVLTree *promote = NULL;
-  void *del = NULL;
 
-  if (node)
+  if (node && target->right)
   {
     if ( node == target)
     {
-      if (target->right)
-      {
         AVLTree_leftRotate_translate(node, root);
-      }
     }
 
     else if ( target->value < node->value )
     {
       if (node->left == target)
       {
-        if (target->right)
-        {
           AVLTree_leftRotate_translate(node->left, &node);
-        }
       }
       else
       {
@@ -530,10 +515,7 @@ void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target)
     {
       if (node->right == target)
       {
-        if (target->right)
-        {
           AVLTree_leftRotate_translate(node->right, &node);
-        }
       }
       else
       {
@@ -542,8 +524,6 @@ void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target)
     }
   }
 }
-
-
 
 // int AVLTree_balanced_add(struct AVLTree **tree, int value)
 // {

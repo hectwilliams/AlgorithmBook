@@ -314,6 +314,182 @@ void AVLNode::calculateBalance()
 }
 
 
+
+
+void AVLNode::leftRotateTranslate(AVLNode *parent,  AVLTree *obj  )  // avl rotate
+{
+  AVLNode *promote, *c, *t;
+
+  promote = this->right;
+
+  if (this->right->balance > 0)
+  {
+    promote = this->right->left;
+    obj->rightRotate(this->right, this);
+  }
+
+  c = this->right;
+  t = c->left;
+
+  c->left = this;
+  this->right = t;
+
+  this->calculateBalance();
+  c->calculateBalance();
+
+  if (parent == this)
+  {
+    obj->head = promote;
+  }
+
+  else if (parent->left == this)
+  {
+    parent->left = promote;
+  }
+
+  else if (parent->right == this)
+  {
+    parent->right = promote;
+  }
+}
+
+ void AVLTree::leftRotate(AVLNode *target , AVLNode *node )
+ {
+
+  if (node == NULL)
+  {
+    node = head;
+    if (!node)
+    {
+      return;
+    }
+  }
+
+  if (target->right)
+  {
+    if (node == target)
+    {
+        node->leftRotateTranslate(node, this);
+    }
+
+    else if (target->value < node->value)
+    {
+      if (node->left == target)
+      {
+        node->left->leftRotateTranslate(node, this);
+      }
+      else
+      {
+        leftRotate(target, node->left);
+      }
+    }
+
+    else if (target->value > node->value)
+    {
+      if (node->right == target)
+      {
+        node->right->leftRotateTranslate(node, this);
+      }
+      else
+      {
+        leftRotate(target, node->right);
+      }
+    }
+  }
+
+ }
+
+void AVLNode::rightRotateTranslate(AVLNode *parent,  AVLTree *obj  )
+{
+  AVLNode *c, *t, *promote;
+
+  promote = this->left;
+
+  if (this->left->balance < 0)
+  {
+    promote = this->left->right;
+    obj->leftRotate( this->left , this);
+  }
+
+  c = this->left;
+  t = c->right;
+
+  c->right = this;
+  this->left = t;
+
+  this->calculateBalance();
+  c->calculateBalance();
+
+  if (parent == this)
+  {
+    obj->head = promote;
+  }
+
+  else if (parent->left == this)
+  {
+    parent->left = promote;
+  }
+
+  else if (parent->right == this)
+  {
+    parent->right = promote;
+  }
+
+}
+
+ void AVLTree::rightRotate(AVLNode *target , AVLNode *node )
+ {
+
+   if (node == NULL)
+   {
+     node = head;
+     if (!node)
+     {
+       return;
+     }
+   }
+
+   if(target->left)
+   {
+     if (node == target)
+     {
+       node->rightRotateTranslate(node, this);
+     }
+
+     else if (target->value < node->value)
+     {
+
+       if (node->left == target)
+       {
+
+         node->left->rightRotateTranslate(node, this);
+       }
+
+       else
+       {
+         rightRotate(target, node->left);
+       }
+
+     }
+
+     else if (target->value > node->value)
+     {
+
+       if (node->right == target)
+       {
+         node->right->rightRotateTranslate(node, this);
+       }
+       else
+       {
+         rightRotate(target, node->right);
+       }
+
+     }
+
+   }
+
+ }
+
 int main()
 {
 

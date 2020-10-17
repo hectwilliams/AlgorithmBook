@@ -30,11 +30,9 @@ void calBalance(struct AVLTree *node);
 void AVLTree_leftRotate_translate(struct AVLTree *target, struct AVLTree **parent) ;
 void AVLTree_rightRotate_translate(struct AVLTree *target, struct AVLTree **parent);
 
-
 int AVLTree_balanced_add(struct AVLTree **tree, int value);
 int AVLTree_balanced_remove(struct AVLTree **tree, int value);
 void AVLTree_repair(struct AVLTree **tree);
-
 
 struct RBTree
 {

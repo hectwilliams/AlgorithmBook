@@ -8,11 +8,8 @@ class AVLNode :
     self.count = 1
 
   def height (self, node = None):
-    if not bool(node):
-      node = self
-
     if node:
-      if node.left == None and node.right == None:
+      if bool(node.left) and bool(node.right):
         return 0
       if (node.balance > 0) :
         return 1 + self.height(node.left)
@@ -88,7 +85,61 @@ class AVLNode :
     return flag
 
   def calculateBalance(self):
-    self.balance = (1 + self.left.height()) - (1 + self.right.height())
+    self.balance = (1 + self.height(self.left))   - (1 + self.height(self.right))
+
+  def leftRotateTranslate (self, parent, avlObj) :
+    c  = t = promote = None
+
+    promote = self.right
+
+    if self.right.balance > 0:
+      promote = self.right.left
+      avlObj.rightRotate(self.right, self)   # (target, runnr))
+
+    c = self.right
+    t = c.left
+
+    c.left = self
+    self.right = t
+
+    self.calculateBalance()
+    c.calculateBalance()
+
+    if parent == self:
+      avlObj.head = promote
+
+    elif parent.left == self:
+      parent.left = promote
+
+    elif parent.right == self:
+      parent.right = promote
+
+
+  def rightRotateTranslate(self, parent, avlObj) :
+    c = t = promote = None
+    promote = self.left
+
+    if self.left.balance < 0 :
+      promote = self.left.right
+      avlObj.leftRotate(self.left, self)    # (target, runnr))
+
+    c = self.left
+    t = c.right
+
+    c.right = self
+    self.left = t
+
+    self.calculateBalance()
+    c.calculateBalance()
+
+    if parent == self :
+      avlObj.head = promote
+
+    elif parent.left == self:
+      parent.left = promote
+
+    elif parent.right == self:
+      parent.right = promote
 
 class AVLTree:
   def __init__(self):
@@ -171,6 +222,56 @@ class AVLTree:
     print(node.value, node.balance)
 
     return flag
+
+
+  def leftRotate(self, target, node = None) :
+
+    if not node:
+      node = self.head
+      if not node:
+        return
+
+    if target.right:
+
+      if node == target:
+        node.leftRotateTranslate(node, self )
+
+      elif target.value < node.value:
+        if node.left == target:
+          node.left.leftRotateTranslate(node, self )
+        else:
+          self.leftRotate(target, node.left)
+
+      elif target.value > node.value:
+        if node.right == target:
+          node.right.leftRotateTranslate(node, self )
+        else:
+          self.leftRotate(target, node.right)
+
+  def rightRotate(self, target, node = None) :
+
+    if node == None:
+      node = self.head
+      if not node:
+        return
+
+    if target.left:
+
+      if node == target:
+        node.rightRotateTranslate(node, self)
+
+      elif target.value < node.value:
+        if node.left == target:
+          node.left.rightRotateTranslate(node, self)
+        else:
+          self.rightRotate(target, node.left)
+
+      elif target.value > node.value :
+        if node.right == target:
+          node.right.rightRotateTranslate(node, self)
+        else:
+          self.rightRotate(target, node.right)
+
 
 class RBNode:
   def __init__(self, value):
@@ -449,15 +550,27 @@ class RBTree:
 
 tree = AVLTree()
 data = [
-100,
-50,       500,
-25,      450,        1000,
-20,     300,  480,   900,   2000,
-15,    200,          800
+  100,
+  50,       500,
+  25,      450,        1000,
+  20,     300,  480,   900,   2000,
+  15,    200,          800
 ]
 
-for ele in data:
-  tree.add(ele)
+# for ele in data:
+# tree.add(ele)
 
-tree.remove(450)
+# tree.remove(450)
+
+tree.add(10)
+tree.add(17)
+tree.add(6)
+tree.add(15)
+tree.add(8)
+tree.add(3)
+tree.add(4)
+tree.add(20)
+tree.add(18)
+tree.leftRotate(tree.head.right )
+print(tree.head.right.value , tree.head.right.left.value, tree.head.right.right.value  )
 tree.display()
