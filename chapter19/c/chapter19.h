@@ -33,12 +33,12 @@ void AVLTree_leftRotate_translate(struct AVLTree *target, struct AVLTree **paren
 void AVLTree_rightRotate_translate(struct AVLTree *target, struct AVLTree **parent);
 
 // avl tree  helper
-void balanceCheck(struct AVLTree *target, struct AVLTree **parent);
+void AVLTree_balanceCheck(struct AVLTree *target, struct AVLTree **parent);
 
 
 int AVLTree_balancedAdd(struct AVLTree **root, int value);
+int AVLTree_balanceRemove(struct AVLTree **root, int value);
 
-int AVLTree_balancedRemove(struct AVLTree **tree, int value);
 void AVLTree_repair(struct AVLTree **tree);
 
 struct RBTree

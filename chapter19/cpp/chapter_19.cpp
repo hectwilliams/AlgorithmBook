@@ -269,10 +269,6 @@ unsigned AVLTree::height ()
 
 unsigned  AVLNode::height (AVLNode *node )
 {
-  if (node == NULL)
-  {
-    node = this;
-  }
 
   if (node)
   {
@@ -306,7 +302,7 @@ bool AVLTree::isBalanced()
 
 void AVLNode::calculateBalance()
 {
-  this->balance =  (1 + this->left->height()) - (1 + this->right->height());
+  this->balance =  (1 + this->height(this->left)) - (1 + this->height(this->right));
 }
 
 
@@ -352,46 +348,46 @@ void AVLNode::leftRotateTranslate(AVLNode *parent,  AVLTree *obj  )  // avl rota
  void AVLTree::leftRotate(AVLNode *target , AVLNode *node )
  {
 
-  if (node == NULL)
-  {
-    node = head;
-    if (!node)
+    if (node == NULL)
     {
-      return;
-    }
-  }
-
-  if (target->right)
-  {
-    if (node == target)
-    {
-        node->leftRotateTranslate(node, this);
-    }
-
-    else if (target->value < node->value)
-    {
-      if (node->left == target)
+      node = head;
+      if (!node)
       {
-        node->left->leftRotateTranslate(node, this);
-      }
-      else
-      {
-        leftRotate(target, node->left);
+        return;
       }
     }
 
-    else if (target->value > node->value)
+      if (target->right)
     {
-      if (node->right == target)
+      if (node == target)
       {
-        node->right->leftRotateTranslate(node, this);
+          node->leftRotateTranslate(node, this);
       }
-      else
+
+      else if (target->value < node->value)
       {
-        leftRotate(target, node->right);
+        if (node->left == target)
+        {
+          node->left->leftRotateTranslate(node, this);
+        }
+        else
+        {
+          leftRotate(target, node->left);
+        }
+      }
+
+      else if (target->value > node->value)
+      {
+        if (node->right == target)
+        {
+          node->right->leftRotateTranslate(node, this);
+        }
+        else
+        {
+          leftRotate(target, node->right);
+        }
       }
     }
-  }
 
  }
 
@@ -565,6 +561,65 @@ void AVLNode::rightRotateTranslate(AVLNode *parent,  AVLTree *obj  )
     return ret;
   }
 
+  bool AVLTree::balanceRemove(const int &value, AVLNode *node)
+ {
+  int flag = 0;
+
+  if (node == NULL)
+  {
+    node = head;
+  }
+
+  if (node->value == value)
+  {
+    flag = removeHelper(node, node);
+  }
+
+  else if (value < node->value)
+  {
+    if (node->left)
+    {
+      if (node->left->value == value)
+      {
+        flag = removeHelper(node->left, node);
+      }
+      else
+      {
+        flag = remove(value, node->left);
+        flag = node->updateBalanceAck(flag, -1);
+
+      }
+    }
+    node->left->balanceCheck(this);
+  }
+  else if (value > node->value)
+  {
+    if (node->right)
+    {
+      if (node->right->value == value )
+
+      {
+        flag = removeHelper(node->right, node);
+      }
+      else
+      {
+        flag = remove(value, node->right);
+        flag = node->updateBalanceAck(flag, 1);
+      }
+    }
+
+
+    node->right->balanceCheck(this);
+
+  }
+
+  if (node == this->head)
+  {
+    this->head->balanceCheck(this);
+  }
+
+  return flag;
+}
 
 
 

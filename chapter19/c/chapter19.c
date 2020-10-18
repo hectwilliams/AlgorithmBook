@@ -89,7 +89,7 @@ int inOrderSuccessor (struct AVLTree *node)
 int AVLTree_removeHelper(struct AVLTree *node, struct AVLTree **parent)
 {
 
-  void *del;
+  void *del = NULL;
   int isRoot = (*parent == node );
   int successor;
   int flag = 1;
@@ -476,8 +476,12 @@ void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target)
   }
 }
 
-void balanceCheck(struct AVLTree *target, struct AVLTree **root)
+void AVLTree_balanceCheck(struct AVLTree *target, struct AVLTree **root)
 {
+  if (!target)
+  {
+    return;
+  }
   if (target->balance > 1)
   {
     AVLTree_rightRotate(root, target);
@@ -514,7 +518,7 @@ int AVLTree_balancedAdd(struct AVLTree **root, int value)
         {
           (*root)->balance++;
         }
-        balanceCheck((*root)->left, root);
+        AVLTree_balanceCheck((*root)->left, root);
       }
       else
       {
@@ -532,7 +536,7 @@ int AVLTree_balancedAdd(struct AVLTree **root, int value)
         {
           (*root)->balance--;
         }
-        balanceCheck((*root)->right, root);
+        AVLTree_balanceCheck((*root)->right, root);
       }
       else
       {
@@ -550,7 +554,7 @@ int AVLTree_balancedAdd(struct AVLTree **root, int value)
 
   if (currRoot == *root)
   {
-    balanceCheck(*root, root); // balance check root
+    AVLTree_balanceCheck(*root, root); // balance check root
     currRoot = NULL;
   }
 
@@ -558,59 +562,69 @@ int AVLTree_balancedAdd(struct AVLTree **root, int value)
 }
 
 
+int AVLTree_balanceRemove(struct AVLTree **root , int value)
+{
+  struct AVLTree *node = *root;
+  static void *currRoot = NULL;
 
-//     else if (value > node->value)
-//     {
-//       if (node->right)
-//       {
-//         if (AVLTree_balanced_add(&node->right, value))
-//         {
-//           if (node->right->balance < -1)
-//           {
-//             AVLTree_left_rotate(&node, node->right);
-//             AVLTree_setNodeBalance(node);
-//           }
-//           else if (node->right->balance > 1)
-//           {
-//             AVLTree_right_rotate(&node, node->right);
-//             AVLTree_setNodeBalance(node);
-//           }
-//           else
-//           {
-//             node->balance--;
-//           }
 
-//           return node->balance != 0;
-//         }
-//       }
-//       else
-//       {
-//         node->balance--;
-//         node->right = avlnode(value);
-//         return node->balance != 0;
-//       }
-//     }
+  int updateBalanceFlag = 0;
 
-//     else if (value == node->value)
-//     {
-//       node->count++;
-//     }
+  if (node)
+  {
 
-//     // ROOT NODE ANALYSIS
-//     if (node->balance < -1)
-//     {
-//       AVLTree_left_rotate(tree, node);
-//     }
-//     else if (node->balance > 1)
-//     {
-//       AVLTree_right_rotate(tree, node);
-//     }
+    if (currRoot == NULL)
+    {
+      currRoot = *root;
+    }
 
-//   }
-//   return 0;
+    if (node->value == value)
+    {
+      updateBalanceFlag = AVLTree_removeHelper(node , &node);
+    }
 
-// }
+    else if (value < node->value)
+    {
+      if (node->left)
+      {
+        if (node->left->value == value)
+        {
+          updateBalanceFlag = AVLTree_removeHelper(node->left , &node);
+        }
+        else
+        {
+          updateBalanceFlag = AVLTree_balanceRemove(&node->left, value);
+          updateBalanceFlag = balanceFlag(node, updateBalanceFlag, -1);   // left side feedback
+        }
+      }
+        AVLTree_balanceCheck(node->left, node);
+    }
 
+    else if (value > node->value)
+    {
+      if (node->right)
+      {
+        if (node->right->value == value)
+        {
+          updateBalanceFlag = AVLTree_removeHelper(node->right , &node);
+        }
+        else
+        {
+          updateBalanceFlag = AVLTree_balanceRemove(&node->right, value);
+          updateBalanceFlag = balanceFlag(node, updateBalanceFlag, 1);     // right side feedback
+        }
+      }
+        AVLTree_balanceCheck(node->right,  node);
+    }
+  }
+
+  if (currRoot == *root)
+  {
+    AVLTree_balanceCheck(*root, root);
+    currRoot = NULL;
+  }
+  return updateBalanceFlag;
+}
 
 
 // // int AVLTree_balanced_remove(struct AVLTree **tree, int value)

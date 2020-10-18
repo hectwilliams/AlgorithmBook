@@ -34,7 +34,7 @@ class AVLNode
 
     void whoAmI ()
     {
-      std::cout <<  " [ ] " << this->value << " ,  " <<  this->balance << " " ;
+      // std::cout <<  " [ ] " << this->value << " ,  " <<  this->balance << " " ;
     }
 
     AVLNode(int value)
@@ -67,11 +67,9 @@ class AVLTree
     void leftRotate(AVLNode *target , AVLNode *node = NULL);
     void rightRotate(AVLNode *target , AVLNode *node = NULL);
 
-    // void left_rotate(AVLNode *target, AVLNode *node = NULL );
-    // void right_rotate(AVLNode *target, AVLNode *node = NULL );
-
-
     bool balancedAdd(const int &value, AVLNode *node = NULL);
+    bool balanceRemove(const int &value, AVLNode *node = NULL);
+
     // bool balanced_remove(const int &value, AVLNode *node = NULL);
     // void repair(AVLNode *node = NULL);
 
@@ -97,11 +95,6 @@ void avl_remove_test ()
 
   AVLTree tree;
 
-  for (int i = 0; i < sizeof(array) / sizeof(int) ; i++)
-  {
-    // tree.add(array[i]);
-  }
-
 #include <stdio.h>
 
  char buffer [100];
@@ -116,6 +109,16 @@ void avl_remove_test ()
   tree.balancedAdd(25);
   tree.balancedAdd(5 );
   tree.balancedAdd(10);
+
+
+  for (int i = 0; i < sizeof(array) / sizeof(int) ; i++)
+  {
+    tree.balancedAdd(array[i]);
+  }
+
+  // tree.balanceRemove(100);
+  // tree.balanceRemove(400);
+  // tree.balanceRemove(500);
 
   tree.display();
 

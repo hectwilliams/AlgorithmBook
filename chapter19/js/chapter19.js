@@ -75,31 +75,20 @@ AVLTree.prototype.add = function(value, node = null)
 };
 
 
-AVLTree.prototype.display = function(node = null)
+AVLNode.prototype.display = function()
 {
-  if (!node)
+  if (this.left)
   {
-    node = this.head;
+    this.left.display();
   }
 
-  if (node)
+  console.log( 'value: ' + this.value + ' ' + 'balance: ' + this.balance );
+
+  if (this.right)
   {
-    if (node.left)
-    {
-      this.display.call(this, node.left);
-    }
-
-    console.log( 'value: ' + node.value + ' ' + 'balance: ' + node.balance );
-
-    if (node.right)
-    {
-      this.display.call(this, node.right);
-    }
+    this.right.display();
   }
 };
-
-
-
 
 AVLNode.prototype.height = function()
 {
@@ -118,8 +107,9 @@ AVLNode.prototype.height = function()
     {
       return 1 + this.right.height();
     }
-    return 0;
   }
+
+  return 0;
 };
 
 
@@ -155,7 +145,7 @@ AVLNode.prototype.inOrderSuccessor = function()
 AVLNode.prototype.copyAttributes = function(src)
 {
   let attrs = ['left', 'right', 'count', 'value', 'balance' ];
-  attr.forEach((attr)=>{
+  attrs.forEach((attr)=>{
     this[attr] = src[attr];
   });
 };
@@ -174,7 +164,7 @@ AVLNode.prototype.updateBalanceAck = function(isValid, level)
   return isValid;
 };
 
-AVLNode.prototype.removeHelper = function(parent, setRootCallback, remove)
+AVLNode.prototype.removeHelper = function(parent, AVLTreeClass)
 {
   let isRoot = this == parent;
   let successor;
@@ -184,7 +174,7 @@ AVLNode.prototype.removeHelper = function(parent, setRootCallback, remove)
   if (this.left && this.right)
   {
     successor = this.inOrderSuccessor();
-    flag = remove(successor, this);
+    flag = AVLTreeClass.remove(successor, this);
     flag = this.updateBalanceAck(flag , 1);
     this.value = successor;
   }
@@ -211,7 +201,7 @@ AVLNode.prototype.removeHelper = function(parent, setRootCallback, remove)
   {
     if (isRoot)
     {
-      setRootCallback(null);
+      AVLTreeClass.head = null;
     }
 
     else if (parent.right == this )
@@ -243,11 +233,6 @@ AVLTree.prototype.remove = function(value, node = null)
 {
   let flag = 0;
 
-  const setRoot = (val) =>
-  {
-    this.head = val;
-  };
-
   if (node == null )
   {
     node = this.head;
@@ -259,7 +244,7 @@ AVLTree.prototype.remove = function(value, node = null)
 
   if (node.value == value)
   {
-    flag = node.removeHelper.call(node, node, setRoot , this.remove.bind(this));
+    flag = node.removeHelper.call(node, this);
   }
 
   else if (value < node.value)
@@ -268,7 +253,7 @@ AVLTree.prototype.remove = function(value, node = null)
     {
       if (node.left.value == value )
       {
-        flag = node.removeHelper.call(node.left, node, setRoot , this.remove.bind(this));
+        flag = node.left.removeHelper(node, this);
       }
       else
       {
@@ -284,7 +269,7 @@ AVLTree.prototype.remove = function(value, node = null)
     {
       if (node.right.value == value )
       {
-        flag = node.removeHelper.call(node.right, node, setRoot , this.remove.bind(this));
+        flag = node.right.removeHelper(node, this);
       }
       else
       {
@@ -301,7 +286,7 @@ AVLTree.prototype.remove = function(value, node = null)
 
 AVLNode.prototype.calculateBalance = function()
 {
-  this.balance = (1 + this.height.call(this.left) ) -   (1 - this.height.call(this.right) );
+  this.balance = (1 + this.height.call(this.left) ) -   (1 + this.height.call(this.right) );
 };
 
 
@@ -356,7 +341,7 @@ AVLTree.prototype.leftRotate = function(target, node = null)
     }
   }
 
-  if (node && target.right)
+  if ( target.right)
   {
     if (node == target)
     {
@@ -386,9 +371,7 @@ AVLTree.prototype.leftRotate = function(target, node = null)
         this.leftRotate(target, node.right);
       }
     }
-
   }
-
 };
 
 AVLTree.prototype.rightRotate = function(target, node = null)
@@ -474,7 +457,7 @@ AVLNode.prototype.rightRotateTranslate = function(parent, avlTreeObj)
 
 AVLNode.prototype.balanceCheck = function (avlTree)
 {
-  if (this.balance > 1)
+  if (this.balance  > 1)
   {
     avlTree.rightRotate(this);
   }
@@ -494,16 +477,15 @@ AVLTree.prototype.balancedAdd = function (value, node = null)
     node = this.head;
   }
 
-  if (!this.head)
+  if ( !node )
   {
     this.head = new AVLNode(value);
   }
-
   else if (value < node.value)
   {
     if (node.left)
     {
-      if (this.balancedAdd(value, node.left))
+      if ( this.balancedAdd(value, node.left) )
       {
         node.balance++;
       }
@@ -521,7 +503,7 @@ AVLTree.prototype.balancedAdd = function (value, node = null)
   {
     if (node.right)
     {
-      if (this.balancedAdd(value, node.right))
+      if ( this.balancedAdd(value, node.right) )
       {
         node.balance--;
       }
@@ -551,123 +533,68 @@ AVLTree.prototype.balancedAdd = function (value, node = null)
 
 
 
-
-
 AVLTree.prototype.balancedRemove = function (value, node = null)
 {
-  let balanceFeedback = 0;
+  let flag = 0;
 
-  if (!node)
+  if (node == null )
   {
     node = this.head;
+    if (!node)
+    {
+      return;
+    }
   }
 
-  if (node)
+  if (node.value == value)
   {
-    if (node.value == value )
-    {
-      balanceFeedback =  this.removeHelper.call(this, null, node);
-    }
+    flag = node.removeHelper(node, this);
+  }
 
-    else if (value < node.value)
+  else if (value < node.value)
+  {
+    if (node.left)
     {
-      if (node.left)
+      if (node.left.value == value )
       {
-        if (node.left.value == value)
-        {
-          balanceFeedback =  this.removeHelper.call(this, node, node.left);
-        }
-        else
-        {
-          balanceFeedback =  this.balancedRemove.call(this, value, node.left);
-        }
-
-        if (balanceFeedback)
-        {
-          if (node.left)
-          {
-            if (node.left.balance > 1)
-            {
-              this.rightRotate.call(this, node.left);
-              node.setBalance();
-            }
-            else if (node.left.balance < -1)
-            {
-              this.leftRotate.call(this, node.left);
-              node.setBalance();
-
-            }
-            else
-            {
-              node.balance--;
-            }
-           }
-           else
-           {
-             node.balance--;
-           }
-
-        }
+        flag = node.left.removeHelper(node, this);
+      }
+      else
+      {
+        flag = this.remove(value, node.left);
+        flag = node.updateBalanceAck(flag, -1);
       }
     }
 
-    else if (value > node.value)
+    node.left.balanceCheck(this);
+
+  }
+
+  else if (value >  node.value)
+  {
+    if (node.right)
     {
-      if (node.right)
+      if (node.right.value == value )
       {
-        if (node.right.value == value)
-        {
-          balanceFeedback =  this.removeHelper.call(this, node, node.right);
-        }
-        else
-        {
-          balanceFeedback =  this.balancedRemove.call(this, value, node.right);
-        }
-
-        if (balanceFeedback)
-        {
-          if (node.right)
-          {
-            if (node.right.balance < -1)
-            {
-              this.leftRotate.call(this, node.right);
-              node.setBalance();
-
-            }
-            else if (node.right.balance > 1)
-            {
-              this.rightRotate.call(this, node.right);
-              node.setBalance();
-            }
-            else
-            {
-              node.balance++;
-            }
-          }
-          else
-          {
-            node.balance++;
-          }
-        }
+        flag = node.right.removeHelper(node, this);
+      }
+      else
+      {
+        flag = this.remove(value, node.right);
+        flag = node.updateBalanceAck(flag, 1);
       }
     }
+
+    node.right.balanceCheck(this);
   }
 
-  if (node == this.head)
+  if (this.head == node)
   {
-    if (node.balance > 1)
-    {
-      this.rightRotate.call(this, node);
-    }
-    else if (node.balance < -1)
-    {
-      this.leftRotate.call(this, node );
-    }
+    this.head.balanceCheck(this);
   }
 
-  return balanceFeedback;
+  return flag;
 };
-
 
 AVLTree.prototype.repair = function(node  = null)
 {
@@ -1143,7 +1070,6 @@ RBTree.prototype.remove = function (value, node = null)
       }
     }
   }
-
 };
 
 (
@@ -1151,24 +1077,13 @@ RBTree.prototype.remove = function (value, node = null)
   {
     let tree = new AVLTree();
 
-//      data = [
-
-//       100,
-//       50,       500,
-//     25,      450,        1000,
-//   20,     300,  480,   900,   2000,
-//  15,    200,          800
-//      ]
-
-//     data.forEach((data) =>{
-//       tree.add(data);
-//     });
-//     tree.remove(450);
-
-//     tree.display();
-
-// console.log(tree.isBalanced());
-
+    let data = [
+      100,
+      50,       500,
+      25,      450,        1000,
+      20,     300,  480,   900,   2000,
+      15,    200,          800
+    ];
 
   tree.balancedAdd(100);
   tree.balancedAdd(50 );
@@ -1179,10 +1094,20 @@ RBTree.prototype.remove = function (value, node = null)
   tree.balancedAdd(5 );
   tree.balancedAdd(10);
 
+  data.forEach((ele) => {
+    tree.balancedAdd(ele);
+  });
+
+
+  tree.balancedRemove(100);
+  tree.balancedRemove(400);
+  tree.balancedRemove(500);
+
+
     // console.log(tree.head.right.right.value);
     // console.log(tree.head.right.right.right.value);
 
-    tree.display();
+    tree.head.display();
 
   }()
 )
