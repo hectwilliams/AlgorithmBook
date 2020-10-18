@@ -149,11 +149,8 @@ bool AVLTree::removeHelper(AVLNode *node, AVLNode *parent)
 
   else if (node->left == NULL && node->right == NULL)
   {
-
     del = node;
-
     if (isRoot)
-
     {
       this->head = NULL;
     }
@@ -256,7 +253,6 @@ bool AVLTree::remove(const int &value, AVLNode *node)
   if (node)
   {
     node->whoAmI();
-    std::cout << "  flag - " << flag << '\n';
 
   }
   return flag;
@@ -490,6 +486,88 @@ void AVLNode::rightRotateTranslate(AVLNode *parent,  AVLTree *obj  )
 
  }
 
+  void AVLNode::balanceCheck(AVLTree *avlTreeClass)
+  {
+    if (this->balance > 1)
+    {
+      avlTreeClass->rightRotate(this);
+    }
+
+    else if (this->balance < -1)
+    {
+      avlTreeClass->leftRotate(this);
+    }
+  }
+
+
+  bool AVLTree::balancedAdd(const int &value, AVLNode *node )
+  {
+    bool ret = 0;
+
+    if (node == NULL)
+    {
+      node = head;
+    }
+
+    if (head == NULL )
+    {
+      head =  new AVLNode(value);
+    }
+    else
+    {
+      if (value < node->value)
+      {
+        if (node->left)
+        {
+          if (balancedAdd(value, node->left))
+          {
+            node->balance++;
+          }
+          node->left->balanceCheck(this);
+        }
+        else
+        {
+          node->balance++;
+          node->left = new AVLNode(value);
+        }
+        ret = node->balance != 0;
+      }
+
+      else if (value > node->value)
+      {
+        if (node->right)
+        {
+          if (balancedAdd(value, node->right))
+          {
+            node->balance--;
+          }
+          node->right->balanceCheck(this);
+        }
+        else
+        {
+          node->balance--;
+          node->right = new AVLNode(value);
+        }
+        ret = node->balance != 0;
+      }
+
+      else if (value == node->value)
+      {
+        node->count++;
+        ret = false;
+      }
+    }
+
+      if (node == head)
+      {
+        head->balanceCheck(this);
+      }
+    return ret;
+  }
+
+
+
+
 int main()
 {
 
@@ -498,212 +576,6 @@ int main()
 }
 
 
-
-// bool AVLTree::balanced_add(const int &value, AVLNode *node)
-// {
-//   if (node == nullptr)
-//   {
-//     node = head;
-//   }
-
-//   if (node == nullptr)
-//   {
-//     head = new AVLNode(value);
-//   }
-//   else
-//   {
-//     if (value < node->value)
-//     {
-//       if (node->left)
-//       {
-//        if (balanced_add(value, node->left))
-//        {
-//          if (node->left->balance < -1)
-//          {
-//            left_rotate(node->left);
-//            node->setBalance();
-//          }
-//          else if (node->left->balance > 1)
-//          {
-//            right_rotate(node->left);
-//            node->setBalance();
-//          }
-//          else
-//          {
-//           node->balance++;
-//          }
-//          return node->balance != 0;
-//        }
-//       }
-//       else
-//       {
-//         node->left = new AVLNode(value);
-//         node->balance++;
-//         return node->balance != 0;
-//       }
-//     }
-
-//     else if (value > node->value)
-//     {
-//       if (node->right)
-//       {
-//         if (balanced_add(value, node->right))
-//         {
-//           if (node->right->balance < -1)
-//           {
-//             left_rotate(node->right);
-//             node->setBalance();
-//           }
-//           else if (node->right->balance > 1)
-//           {
-//             right_rotate(node->right);
-//             node->setBalance();
-//           }
-//           else
-//           {
-//             node->balance--;
-//           }
-//           return node->balance != 0;
-//         }
-//       }
-//       else
-//       {
-//         node->right = new AVLNode(value);
-//         node->balance--;
-//         return node->balance != 0;
-//       }
-//     }
-
-//     else if (value == node->value)
-//     {
-//       node->count++;
-//     }
-
-//     // ROOT NODE CHECK
-//     if (node->balance < -1)
-//     {
-//       left_rotate(node);
-//     }
-//     else if (node->balance > 1)
-//     {
-//       right_rotate(node);
-//     }
-//   }
-//   return false;
-// }
-
-// bool AVLTree::balanced_remove(const int &value, AVLNode *node)
-// {
-//   bool balanceFeedback = false;
-
-//   if (node == NULL)
-//   {
-//     node = head;
-//   }
-
-//   if (node)
-//   {
-//     if (node->value == value)
-//     {
-//        balanceFeedback = remove_helper(NULL, node);
-//     }
-
-//     else if (value < node->value)
-//     {
-//       if (node->left)
-//       {
-//         if (node->left->value == value)
-//         {
-//           balanceFeedback = remove_helper(node, node->left);
-//         }
-//         else
-//         {
-//           balanceFeedback = balanced_remove(value, node->left);
-//         }
-
-//         if (balanceFeedback)
-//         {
-//           if (node->left)
-//           {
-//             if (node->left->balance > 1)
-//             {
-//               right_rotate(node->left);
-//               node->setBalance();
-
-//             }
-//             else if (node->left->balance < -1)
-//             {
-//               left_rotate(node->left);
-//               node->setBalance();
-//             }
-//             else
-//             {
-//               node->balance--;
-//             }
-//           }
-//           else
-//           {
-//             node->balance--;
-//           }
-//         }
-//        }
-//     }
-
-//     else if (value > node->value)
-//     {
-//       if (node->right)
-//       {
-//         if (node->right->value == value)
-//         {
-//           balanceFeedback = remove_helper(node, node->right);
-//         }
-//         else
-//         {
-//           balanceFeedback = balanced_remove(value, node->right);
-//         }
-
-//         if (balanceFeedback)
-//         {
-//           if (node->right)
-//           {
-//             if (node->right->balance > 1)
-//             {
-//               right_rotate(node->right);
-//               node->setBalance();
-//             }
-//             else if (node->right->balance < -1)
-//             {
-//               left_rotate(node->right);
-//               node->setBalance();
-//             }
-//             else
-//             {
-//               node->balance++;
-//             }
-//           }
-//           else
-//           {
-//             node->balance++;
-//           }
-//         }
-//       }
-//     }
-//   }
-
-//   if (node == this->head)
-//   {
-//     if (node->balance > 1)
-//     {
-//       right_rotate(node);
-//     }
-//     else if (node->balance < -1)
-//     {
-//       left_rotate(node);
-//     }
-//   }
-
-//   return balanceFeedback;
-// }
 
 // void AVLTree::repair(AVLNode *node)
 // {

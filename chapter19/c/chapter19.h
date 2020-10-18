@@ -20,18 +20,25 @@ void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target);
 void AVLTree_rightRotate(struct AVLTree **root, struct AVLTree *target);
 
 // avl tree: remove  helper
+int AVLTree_removeHelper(struct AVLTree *node, struct AVLTree **parent);
 int AVLTree_balance_feedback_update(struct AVLTree *node, int code);
-void balanceFlag(struct AVLTree *node, int *flag, int newFlag);
+int balanceFlag(struct AVLTree *node, int isValid, int level);
 int inOrderSuccessor (struct AVLTree *node);
 void copy_attributes (struct AVLTree *dest, struct AVLTree *src);
+
 
 // avl tree: rotation helper
 void calBalance(struct AVLTree *node);
 void AVLTree_leftRotate_translate(struct AVLTree *target, struct AVLTree **parent) ;
 void AVLTree_rightRotate_translate(struct AVLTree *target, struct AVLTree **parent);
 
-int AVLTree_balanced_add(struct AVLTree **tree, int value);
-int AVLTree_balanced_remove(struct AVLTree **tree, int value);
+// avl tree  helper
+void balanceCheck(struct AVLTree *target, struct AVLTree **parent);
+
+
+int AVLTree_balancedAdd(struct AVLTree **root, int value);
+
+int AVLTree_balancedRemove(struct AVLTree **tree, int value);
 void AVLTree_repair(struct AVLTree **tree);
 
 struct RBTree

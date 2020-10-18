@@ -472,97 +472,80 @@ AVLNode.prototype.rightRotateTranslate = function(parent, avlTreeObj)
   }
 };
 
-
-AVLTree.prototype.balancedAdd = function (value)
+AVLNode.prototype.balanceCheck = function (avlTree)
 {
+  if (this.balance > 1)
+  {
+    avlTree.rightRotate(this);
+  }
 
-  if (!node )
+  else if (this.balance < -1)
+  {
+    avlTree.leftRotate(this);
+  }
+};
+
+AVLTree.prototype.balancedAdd = function (value, node = null)
+{
+  let ret = 0;
+
+  if (node == null)
   {
     node = this.head;
   }
 
-  if (!node)
+  if (!this.head)
   {
-    this.head = new AVLNode(value)
+    this.head = new AVLNode(value);
   }
-  else
+
+  else if (value < node.value)
   {
-    if (value < node.value)
+    if (node.left)
     {
-      if (node.left)
+      if (this.balancedAdd(value, node.left))
       {
-        if (this.balancedAdd.call(this, value, node.left))
-        {
-          if (node.left.balance < -1)
-          {
-            this.leftRotate.call(this, node.left);
-            node.setBalance();
-          }
-          else if (node.left.balance > 1)
-          {
-            this.rightRotate.call(this, node.left);
-            node.setBalance();
-          }
-          else
-          {
-            node.balance++;
-          }
-          return node.balance != 0;
-        }
-      }
-      else
-      {
-        node.left = new AVLNode(value);
         node.balance++;
-        return node.balance != 0;
       }
+      node.left.balanceCheck(this);
     }
-    else  if (value > node.value)
+    else
     {
-      if (node.right)
-      {
-        if (this.balancedAdd.call(this, value, node.right ) )
-        {
-          if (node.right.balance < -1)
-          {
-            this.leftRotate.call(this, node.right);
-            node.setBalance();
-          }
-          else if (node.right.balance > 1)
-          {
-            this.rightRotate.call(this, node.right);
-            node.setBalance();
-           }
-           else
-           {
-            node.balance--;
-           }
-          return node.balance != 0;
-        }
-      }
-      else
-      {
-        node.right = new AVLNode(value);
-        node.balance--;
-        return node.balance != 0;
-      }
+      node.balance++;
+      node.left = new AVLNode(value);
     }
-    else if (value == node.value)
-    {
-      node.count++;
-    }
-
-    // root node
-    if (node.balance < -1)
-    {
-      this.leftRotate.call(this, node);
-    }
-    else if (node.balance > 1)
-    {
-      this.rightRotate.call(this, node);
-    }
-
+    ret = node.balance != 0;
   }
+
+  else if (value > node.value)
+  {
+    if (node.right)
+    {
+      if (this.balancedAdd(value, node.right))
+      {
+        node.balance--;
+      }
+      node.right.balanceCheck(this);
+    }
+    else
+    {
+      node.balance--;
+      node.right = new AVLNode(value);
+    }
+    ret = node.balance != 0;
+  }
+
+  else if (value == node.value)
+  {
+    node.count++;
+  }
+
+  if (this.head == node )
+  {
+    this.head.balanceCheck(this);
+  }
+
+  return ret;
 
 };
 
@@ -1186,26 +1169,20 @@ RBTree.prototype.remove = function (value, node = null)
 
 // console.log(tree.isBalanced());
 
-    tree.add(10);
-    tree.add(17);
-    tree.add(6);
-    tree.add(15);
-    tree.add(8);
-    tree.add(3);
-    tree.add(4);
-    tree.add(20);
-    tree.add(18);
 
-    tree.leftRotate(tree.head.right);
-
-    console.log(tree.head.right.value);
-    console.log(tree.head.right.right.value);
-    console.log(tree.head.right.left.value);
+  tree.balancedAdd(100);
+  tree.balancedAdd(50 );
+  tree.balancedAdd(200);
+  tree.balancedAdd(300);
+  tree.balancedAdd(400);
+  tree.balancedAdd(25);
+  tree.balancedAdd(5 );
+  tree.balancedAdd(10);
 
     // console.log(tree.head.right.right.value);
     // console.log(tree.head.right.right.right.value);
 
-    // tree.display();
+    tree.display();
 
   }()
 )

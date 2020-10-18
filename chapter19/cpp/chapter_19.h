@@ -30,6 +30,7 @@ class AVLNode
     void calculateBalance(); // avl rotate
     void leftRotateTranslate(AVLNode *parent, AVLTree   *obj ) ; // avl rotate
     void rightRotateTranslate(AVLNode *parent,  AVLTree *obj  ); // avl rotate
+    void balanceCheck(AVLTree *avlTreeClass); // avl balanced
 
     void whoAmI ()
     {
@@ -70,12 +71,13 @@ class AVLTree
     // void right_rotate(AVLNode *target, AVLNode *node = NULL );
 
 
-    // bool balanced_add(const int &value, AVLNode *node = NULL);
+    bool balancedAdd(const int &value, AVLNode *node = NULL);
     // bool balanced_remove(const int &value, AVLNode *node = NULL);
     // void repair(AVLNode *node = NULL);
 
   private:
     bool removeHelper(AVLNode *node, AVLNode *parent);  // avl remove
+
     // void leftRotateTranslate(AVLNode *parent, std::function< void(int)> ) ; // avl rotate
     // void rightRotateTranslate(AVLNode *parent, std::function< void(int)> ) ; // avl rotate
 
@@ -105,28 +107,17 @@ void avl_remove_test ()
  char buffer [100];
 
 
-  // tree.remove(500);
-    tree.add(10);
-    tree.add(17);
-    tree.add(6);
-    tree.add(15);
-    tree.add(8);
-    tree.add(3);
-    tree.add(4);
-    tree.add(20);
-    tree.add(18);
 
-  tree.leftRotate(tree.head->right);
+  tree.balancedAdd(100);
+  tree.balancedAdd(50 );
+  tree.balancedAdd(200);
+  tree.balancedAdd(300);
+  tree.balancedAdd(400);
+  tree.balancedAdd(25);
+  tree.balancedAdd(5 );
+  tree.balancedAdd(10);
 
-    // console.log(tree.head.left.value);
-    // console.log(tree.head.left.right.value);
-    // console.log(tree.head.left.right.right.value);
-
-  snprintf ( buffer, 100, " data , %d  %d  %d \n", tree.head->right->value, tree.head->right->left->value, tree.head->right->right->value);
-
-
-  printf( "-- %s", buffer);
-  // tree.display();
+  tree.display();
 
 }
 

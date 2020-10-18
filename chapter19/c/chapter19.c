@@ -86,11 +86,84 @@ int inOrderSuccessor (struct AVLTree *node)
   return -1;
 }
 
+int AVLTree_removeHelper(struct AVLTree *node, struct AVLTree **parent)
+{
+
+  void *del;
+  int isRoot = (*parent == node );
+  int successor;
+  int flag = 1;
+
+  if (node->left && node->right)
+  {
+    successor = inOrderSuccessor(node);
+    flag = AVLTree_remove(&node, successor);
+    flag = balanceFlag(node, flag, 1);
+    node->value = successor;
+  }
+
+  else if (node->right)
+  {
+    del = node->right;
+    copy_attributes(node, del);
+    if (!isRoot)
+    {
+      (*parent)->balance++;
+    }
+  }
+
+  else if (node->left)
+  {
+    del = node->left;
+    copy_attributes(node, del);
+    if (!isRoot)
+    {
+      (*parent)->balance--;
+    }
+  }
+
+  else if (node->left == NULL && node->right == NULL)
+  {
+    del = node;
+    if (isRoot)
+    {
+      *parent = NULL;
+    }
+
+    else if ((*parent)->right == node)
+    {
+      (*parent)->balance++;
+      (*parent)->right = NULL;
+
+      if ((*parent)->left)
+      {
+        flag = 0;
+      }
+    }
+
+    else if ((*parent)->left == node)
+    {
+      (*parent)->balance--;
+      (*parent)->left = NULL;
+
+      if ((*parent)->right)
+      {
+        flag = 0;
+      }
+    }
+  }
+
+  if (del)
+  {
+    free(del);
+  }
+
+  return flag;
+}
+
 int AVLTree_remove(struct AVLTree **tree , int value)
 {
-  int successor;
   struct AVLTree *node = *tree;
-  void *del;
   int updateBalanceFlag = 0;
 
   if (node)
@@ -98,36 +171,7 @@ int AVLTree_remove(struct AVLTree **tree , int value)
 
     if (node->value == value)
     {
-      if (node->left && node->right)
-      {
-        successor = inOrderSuccessor(node);
-        updateBalanceFlag = AVLTree_remove(&node, successor);
-        balanceFlag(node, &updateBalanceFlag, 1);   // always right side feedback
-        node->value = successor;
-      }
-
-      else if (node->right)
-      {
-        del = node->right;
-        copy_attributes(node, del);
-        updateBalanceFlag = 1;
-        free(del);
-      }
-
-      else if (node->left)
-      {
-        del = node->left;
-        copy_attributes(node, del);
-        updateBalanceFlag = -1;
-        free(del);
-      }
-
-      else if (node->left == NULL && node->right == NULL)
-      {
-        del = (node);
-        *tree = NULL;
-        free(del);
-      }
+      updateBalanceFlag = AVLTree_removeHelper(node , &node);
     }
 
     else if (value < node->value)
@@ -136,58 +180,13 @@ int AVLTree_remove(struct AVLTree **tree , int value)
       {
         if (node->left->value == value)
         {
-          if (node->left->left && node->left->right)
-          {
-            successor = inOrderSuccessor(node->left);
-            updateBalanceFlag = AVLTree_remove(&node->left, successor) ;
-            balanceFlag(node, &updateBalanceFlag, 1);   // always right side feedback
-            node->left->value = successor;
-          }
-
-           else if (node->left->right)
-          {
-            del = node->left->right;
-            copy_attributes(node->left, del);
-            updateBalanceFlag = -1;
-            free(del);
-            node->balance--;
-
-          }
-
-          else if (node->left->left)
-          {
-            del = node->left->left;
-            copy_attributes(node->left, del);
-            updateBalanceFlag = -1;
-            free(del);
-            node->balance--;
-          }
-
-          else if (node->left->left == NULL && node->left->right == NULL)  // LEAF
-          {
-            del = node->left;
-
-            free(del);
-            node->left = NULL;
-            node->balance--;
-
-            if (node->right)  // delete node has sibling - stop upward balance updates
-            {
-              updateBalanceFlag = 0;
-            }
-            else
-            {
-              updateBalanceFlag = -1;
-            }
-          }
+          updateBalanceFlag = AVLTree_removeHelper(node->left , &node);
         }
 
         else
         {
           updateBalanceFlag = AVLTree_remove(&node->left, value);
-          // printf(" ---%d    %d ----\n  ", node->left->value, node->left->balance);
-          balanceFlag(node, &updateBalanceFlag, -1);   // left side feedback
-          return updateBalanceFlag;
+          updateBalanceFlag = balanceFlag(node, updateBalanceFlag, -1);   // left side feedback
         }
       }
     }
@@ -198,83 +197,34 @@ int AVLTree_remove(struct AVLTree **tree , int value)
       {
         if (node->right->value == value)
         {
-          if (node->right->left && node->right->right)
-          {
-            successor = inOrderSuccessor(node->right);
-            updateBalanceFlag = AVLTree_remove(&node->right, successor) ;  // feedback from deletion descendant
-            balanceFlag(node, &updateBalanceFlag, 1);   // always right side feedback
-            node->right->value = successor;
-          }
-
-          else if (node->right->right)
-          {
-            del = node->right->right;
-            copy_attributes(node->right, del);
-            updateBalanceFlag = 1;
-            free(del);
-            node->balance++;
-
-          }
-
-          else if (node->right->left)
-          {
-            del = node->right->left;
-            copy_attributes(node->right, del);
-            updateBalanceFlag = 1;
-            free(del);
-            node->balance++;
-
-          }
-
-          else if (node->right->left == NULL && node->right->right == NULL)  // LEAF
-          {
-            del = node->right;
-            free(del);
-            node->right = NULL;
-            node->balance++;
-
-            if (node->left)       // deleted node has has sibling - stop upward balance updates
-            {
-              updateBalanceFlag = 0;
-            }
-            else
-            {
-              updateBalanceFlag = 1;
-            }
-          }
+          updateBalanceFlag = AVLTree_removeHelper(node->right , &node);
         }
-
         else
         {
           updateBalanceFlag = AVLTree_remove(&node->right, value);
-          balanceFlag(node, &updateBalanceFlag, 1);     // right side feedback
-          return updateBalanceFlag;
+          updateBalanceFlag = balanceFlag(node, updateBalanceFlag, 1);     // right side feedback
         }
       }
     }
-
   }
 
   return updateBalanceFlag;
 }
 
-void balanceFlag(struct AVLTree *node, int *flag, int newFlag)
+int balanceFlag(struct AVLTree *node, int isValid, int level)
 {
-  if (node && flag)
-  {
+  int prevBalance = node->balance;
 
-    if (*flag != 0)
+  if (isValid)
+  {
+    node->balance += level;
+
+    if (prevBalance == 0)
     {
-      if (AVLTree_balance_feedback_update(node, newFlag) == 0)
-      {
-        *flag = 0;      // turn balance upward update OFF
-      }
-      else
-      {
-        *flag = newFlag;
-      }
+      isValid = 0;
     }
   }
+  return isValid;
 }
 
 int AVLTree_balance_feedback_update(struct AVLTree *node, int code)
@@ -359,7 +309,7 @@ void calBalance(struct AVLTree *node)
 {
   if (node)
   {
-    node->balance = (1 + AVLNode_height(node->left) )  ;
+    node->balance = (1 + AVLNode_height(node->left)) - (1 + AVLNode_height(node->right)) ;
   }
 }
 
@@ -518,6 +468,7 @@ void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target)
           AVLTree_leftRotate_translate(node->right, &node);
       }
       else
+
       {
         AVLTree_leftRotate(&node->right, target);  // recur
       }
@@ -525,48 +476,88 @@ void AVLTree_leftRotate(struct AVLTree **root, struct AVLTree *target)
   }
 }
 
-// int AVLTree_balanced_add(struct AVLTree **tree, int value)
-// {
-//   struct AVLTree *node = *tree;
-//   int updated_subtree = 0;
+void balanceCheck(struct AVLTree *target, struct AVLTree **root)
+{
+  if (target->balance > 1)
+  {
+    AVLTree_rightRotate(root, target);
+  }
 
-//   if (*tree == NULL)
-//   {
-//     *tree = avlnode(value);
-//   }
-//   else
-//   {
+  else if (target->balance < -1)
+  {
+    AVLTree_leftRotate(root, target);
 
-//     if (value < node->value )
-//     {
-//       if (node->left)
-//       {
-//         if (AVLTree_balanced_add(&node->left, value) )
-//         {
-//           if (node->left->balance < -1)
-//           {
-//             AVLTree_left_rotate(&node, node->left);
-//             AVLTree_setNodeBalance(node);
-//           }
-//           else if (node->left->balance > 1)
-//           {
-//             AVLTree_right_rotate(&node, node->left);
-//             AVLTree_setNodeBalance(node);
-//           }
-//           else
-//           {
-//             node->balance++;
-//           }
-//           return node->balance != 0;
-//         }
-//       }
-//       else
-//       {
-//         node->balance++;
-//         node->left = avlnode(value);
-//         return node->balance != 0;
-//       }
-//     }
+  }
+}
+
+int AVLTree_balancedAdd(struct AVLTree **root, int value)
+{
+  int ret = 0;
+  static void *currRoot = NULL;
+
+  if (*root == NULL)
+  {
+    *root = avlnode(value);
+  }
+  else
+  {
+    if (currRoot == NULL)
+    {
+      currRoot = *root;
+    }
+
+    if (value < (*root)->value )
+    {
+      if ((*root)->left)
+      {
+        if (AVLTree_balancedAdd( &(*root)->left, value) == 1)
+        {
+          (*root)->balance++;
+        }
+        balanceCheck((*root)->left, root);
+      }
+      else
+      {
+        (*root)->balance++;
+        (*root)->left = avlnode(value);
+      }
+       ret =  (*root)->balance != 0;
+    }
+
+    else if (value > (*root)->value)
+    {
+      if ((*root)->right)
+      {
+        if (AVLTree_balancedAdd( &(*root)->right, value)  == 1)
+        {
+          (*root)->balance--;
+        }
+        balanceCheck((*root)->right, root);
+      }
+      else
+      {
+        (*root)->balance--;
+        (*root)->right = avlnode(value);
+      }
+      ret =  (*root)->balance != 0;
+    }
+
+    else if (value == (*root)->value)
+    {
+      (*root)->count++;
+    }
+  }
+
+  if (currRoot == *root)
+  {
+    balanceCheck(*root, root); // balance check root
+    currRoot = NULL;
+  }
+
+  return ret;
+}
+
+
 
 //     else if (value > node->value)
 //     {
@@ -1424,7 +1415,7 @@ int RBTree_balance_check(struct RBTree *node)
 
 int main()
 {
-  avl_remove_test_remove_x(50);
+  balanced_add_test();
 }
 
 

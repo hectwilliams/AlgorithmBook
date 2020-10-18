@@ -141,6 +141,12 @@ class AVLNode :
     elif parent.right == self:
       parent.right = promote
 
+  def balanceCheck (self, avlClass):
+    if self.balance > 1:
+      avlClass.rightRotate(self)
+    elif self.balance < -1:
+      avlClass.leftRotate(self)
+
 class AVLTree:
   def __init__(self):
     self.head = None
@@ -271,6 +277,55 @@ class AVLTree:
           node.right.rightRotateTranslate(node, self)
         else:
           self.rightRotate(target, node.right)
+
+  def balancedAdd(self, value, node = None) :
+    ret = 0
+
+    if node == None:
+      node = self.head
+
+    if self.head == None:
+      self.head = AVLNode(value)
+
+    elif value < node.value:
+
+      if node.left:
+
+        if self.balancedAdd(value, node.left) :
+          node.balance += 1
+
+        node.left.balanceCheck(self)
+
+      else:
+        node.balance += 1
+        node.left = AVLNode(value)
+
+      ret =  node.balance != 0
+
+    elif value > node.value:
+
+      if node.right:
+
+        if self.balancedAdd(value, node.right) :
+          node.balance -= 1
+
+        node.right.balanceCheck(self)
+
+      else:
+        node.balance -= 1
+        node.right = AVLNode(value)
+
+      ret = node.balance != 0
+
+    elif value == node.value:
+      node.count += 1
+      ret = 0
+
+    if node == self.head:
+      self.head.balanceCheck(self)
+
+    return ret
+
 
 
 class RBNode:
@@ -562,15 +617,14 @@ data = [
 
 # tree.remove(450)
 
-tree.add(10)
-tree.add(17)
-tree.add(6)
-tree.add(15)
-tree.add(8)
-tree.add(3)
-tree.add(4)
-tree.add(20)
-tree.add(18)
-tree.leftRotate(tree.head.right )
-print(tree.head.right.value , tree.head.right.left.value, tree.head.right.right.value  )
+tree.balancedAdd(100)
+tree.balancedAdd(50 )
+tree.balancedAdd(200)
+tree.balancedAdd(300)
+tree.balancedAdd(400)
+tree.balancedAdd(25)
+tree.balancedAdd(5 )
+tree.balancedAdd(10)
+
 tree.display()
+
