@@ -306,8 +306,6 @@ void AVLNode::calculateBalance()
 }
 
 
-
-
 void AVLNode::leftRotateTranslate(AVLNode *parent,  AVLTree *obj  )  // avl rotate
 {
   AVLNode *promote, *c, *t;
@@ -621,6 +619,47 @@ void AVLNode::rightRotateTranslate(AVLNode *parent,  AVLTree *obj  )
   return flag;
 }
 
+  void AVLTree::repair(AVLNode *node)
+  {
+    if (node == NULL)
+    {
+      node = head;
+      if (!node)
+      {
+        return;
+      }
+    }
+
+    if (node->left)
+    {
+      repair(node->left);
+    }
+
+    if (node->right)
+    {
+      repair(node->right);
+    }
+
+    if (node->left )
+    {
+      while ( abs(node->left->balance) )
+      {
+        node->left->balanceCheck(this);
+      }
+      node->calculateBalance();
+    }
+
+    if (node->right)
+    {
+      while (abs(node->right->balance))
+      {
+        node->right->balanceCheck(this);
+      }
+      node->calculateBalance();
+    }
+
+  }
+
 
 
 int main()
@@ -631,67 +670,6 @@ int main()
 }
 
 
-
-// void AVLTree::repair(AVLNode *node)
-// {
-//   if (node == NULL)
-//   {
-//     node = head;
-//   }
-
-//   if (node)
-//   {
-//     if (node->balance > 0)
-//     {
-//       repair(node->left);
-
-//       if (node->left->balance > 1)
-//       {
-//         right_rotate(node->left);
-//         node->setBalance();
-//       }
-//       else if (node->left->balance < -1)
-//       {
-//         left_rotate(node->left);
-//         node->setBalance();
-//       }
-//     }
-
-//     else if (node->balance < 0)
-//     {
-//       repair(node->right);
-
-//       if (node->right->balance > 1)
-//       {
-//         right_rotate(node->right);
-//         node->setBalance();
-//       }
-//       else if (node->right->balance < -1)
-//       {
-//         left_rotate(node->right);
-//         node->setBalance();
-//       }
-//     }
-
-//     else if (node->balance == 0)
-//     {
-//       return;
-//     }
-
-//     if (node == this->head)
-//     {
-//       if (node->balance > 1)
-//       {
-//         right_rotate(node);
-//       }
-//       else if (node->balance < -1)
-//       {
-//         left_rotate(node);
-//       }
-//     }
-
-//   }
-//  }
 
 
 // bool RBTree::contains (const int &value , RBNode *node)

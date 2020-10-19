@@ -38,8 +38,7 @@ void AVLTree_balanceCheck(struct AVLTree *target, struct AVLTree **parent);
 
 int AVLTree_balancedAdd(struct AVLTree **root, int value);
 int AVLTree_balanceRemove(struct AVLTree **root, int value);
-
-void AVLTree_repair(struct AVLTree **tree);
+void AVLTree_repair(struct AVLTree **root);
 
 struct RBTree
 {

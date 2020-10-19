@@ -8,8 +8,9 @@ class AVLNode :
     self.count = 1
 
   def height (self, node = None):
+
     if node:
-      if bool(node.left) and bool(node.right):
+      if not bool(node.left) and not bool(node.right):
         return 0
       if (node.balance > 0) :
         return 1 + self.height(node.left)
@@ -44,14 +45,14 @@ class AVLNode :
         isValid = 0
     return isValid
 
-  def removeHelper(self, parent, updateRootCallback, removeCallback):
+  def removeHelper(self, parent, AVLClass):
     isRoot = (self == parent)
     successor = None
     flag = True
 
     if self.left != None and self.right != None :
       successor = self.inOrderSuccessor()
-      flag = removeCallback(successor, self)
+      flag = AVLClass.remove(successor, self)
       flag = self.updateBalanceAck(flag , 1)
       self.value = successor
 
@@ -62,13 +63,13 @@ class AVLNode :
 
     elif self.left:
       self.copyAttributes(self.left)
-      if not (isRoot):
+      if not bool(isRoot):
         parent.balance -= 1
 
     elif self.left == None and self.right == None :
 
       if isRoot:
-        updateRootCallback(None)
+        AVLClass.head = None
 
       elif parent.right == self:
         parent.balance += 1
@@ -117,6 +118,7 @@ class AVLNode :
 
   def rightRotateTranslate(self, parent, avlObj) :
     c = t = promote = None
+
     promote = self.left
 
     if self.left.balance < 0 :
@@ -142,10 +144,29 @@ class AVLNode :
       parent.right = promote
 
   def balanceCheck (self, avlClass):
+
     if self.balance > 1:
       avlClass.rightRotate(self)
     elif self.balance < -1:
       avlClass.leftRotate(self)
+
+  def repair (self, avlClass ):
+
+    if self.left:
+      self.left.repair(avlClass)
+
+    if self.right:
+      self.right.repair(avlClass)
+
+    if self.left:
+      while abs(self.left.balance) > 1:
+        self.left.balanceCheck(avlClass)
+      self.calculateBalance()
+
+    if self.right:
+      while abs(self.right.balance) > 1:
+        self.right.balanceCheck(avlClass)
+      self.calculateBalance()
 
 class AVLTree:
   def __init__(self):
@@ -198,21 +219,18 @@ class AVLTree:
   def remove(self, value, node = None):
     flag = False
 
-    def setRoot(val):
-      self.head = val
-
     if node == None:
       node = self.head
       if not node:
         return
 
     if node.value == value:
-      flag = node.removeHelper(node, setRoot, self.remove)
+      flag = node.removeHelper(node, self)
 
     elif value < node.value:
       if node.left:
         if node.left.value == value:
-          flag = node.left.removeHelper(node, setRoot, self.remove)
+          flag = node.left.removeHelper(node, self)
         else:
           flag = self.remove(value, node.left)
           flag = node.updateBalanceAck(flag , -1)
@@ -220,12 +238,10 @@ class AVLTree:
     elif value > node.value:
       if node.right:
         if node.right.value == value:
-          flag = node.right.removeHelper(node, setRoot, self.remove)
+          flag = node.right.removeHelper(node, self)
         else:
           flag = self.remove(value, node.right)
           flag = node.updateBalanceAck(flag ,  1)
-
-    print(node.value, node.balance)
 
     return flag
 
@@ -262,7 +278,6 @@ class AVLTree:
         return
 
     if target.left:
-
       if node == target:
         node.rightRotateTranslate(node, self)
 
@@ -281,16 +296,14 @@ class AVLTree:
   def balancedAdd(self, value, node = None) :
     ret = 0
 
-    if node == None:
+    if not node:
       node = self.head
 
     if self.head == None:
       self.head = AVLNode(value)
 
     elif value < node.value:
-
       if node.left:
-
         if self.balancedAdd(value, node.left) :
           node.balance += 1
 
@@ -319,14 +332,52 @@ class AVLTree:
 
     elif value == node.value:
       node.count += 1
-      ret = 0
+
 
     if node == self.head:
       self.head.balanceCheck(self)
 
     return ret
 
+  def balancedRemove(self, value, node = None):
+    flag = False
 
+    if not node:
+      node = self.head
+      if not node:
+        return
+
+    if node.value == value:
+      flag = node.removeHelper(node, self)
+
+    elif value < node.value:
+
+      if node.left:
+        if node.left.value == value:
+          flag = node.left.removeHelper(node, self)
+        else:
+          flag = self.remove(value, node.left)
+          flag = node.updateBalanceAck(flag , -1)
+
+      node.left.balanceCheck(self)
+
+    elif value > node.value:
+      if node.right:
+        if node.right.value == value:
+          flag = node.right.removeHelper(node, self)
+        else:
+          flag = self.remove(value, node.right)
+          flag = node.updateBalanceAck(flag ,  1)
+
+      node.right.balanceCheck(self)
+
+    if node == self.head:
+      node.balanceCheck(self)
+
+    return flag
+
+  def repair(self):
+    self.head.repair(self)
 
 class RBNode:
   def __init__(self, value):
@@ -605,15 +656,14 @@ class RBTree:
 
 tree = AVLTree()
 data = [
-  100,
-  50,       500,
-  25,      450,        1000,
-  20,     300,  480,   900,   2000,
-  15,    200,          800
+        100,
+        50,       500,
+      25,      450,        1000,
+    20,     300,  480,   900,   2000,
+   15,    200,          800
 ]
 
-# for ele in data:
-# tree.add(ele)
+
 
 # tree.remove(450)
 
@@ -626,5 +676,13 @@ tree.balancedAdd(25)
 tree.balancedAdd(5 )
 tree.balancedAdd(10)
 
+for ele in data:
+  tree.add(ele)
+
+
+# tree.balancedRemove(100)
+# tree.balancedRemove(400)
+# tree.balancedRemove(500)
+tree.repair()
 tree.display()
 

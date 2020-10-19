@@ -532,7 +532,6 @@ AVLTree.prototype.balancedAdd = function (value, node = null)
 };
 
 
-
 AVLTree.prototype.balancedRemove = function (value, node = null)
 {
   let flag = 0;
@@ -550,7 +549,6 @@ AVLTree.prototype.balancedRemove = function (value, node = null)
   {
     flag = node.removeHelper(node, this);
   }
-
   else if (value < node.value)
   {
     if (node.left)
@@ -567,9 +565,7 @@ AVLTree.prototype.balancedRemove = function (value, node = null)
     }
 
     node.left.balanceCheck(this);
-
   }
-
   else if (value >  node.value)
   {
     if (node.right)
@@ -596,59 +592,44 @@ AVLTree.prototype.balancedRemove = function (value, node = null)
   return flag;
 };
 
-AVLTree.prototype.repair = function(node  = null)
+
+AVLTree.prototype.repair = function(node  = null  )
 {
-  if (node == null)
+
+  if (!node)
   {
     node = this.head;
   }
 
   if (node)
   {
-
-    if (node.balance > 0 )
+    if (node.left)
     {
-      this.repair.call(this, node.left);
-
-      if (node.left.balance > 1)
-      {
-        this.rightRotate.call(this, node.left);
-        node.setBalance();
-      }
-      else if (node.left.balance < -1)
-      {
-        this.leftRotate.call(this, node.left);
-        node.setBalance();
-      }
+      this.repair(node.left);
     }
 
-    else if (node.balance < 0)
+    if (node.right)
     {
-      this.repair.call(this, node.right);
-
-      if (node.right.balance > 1)
-      {
-        this.rightRotate.call(this, node.right);
-        node.setBalance();
-      }
-      else if (node.right.balance < -1)
-      {
-        this.leftRotate.call(this, node.right);
-        node.setBalance();
-      }
+      this.repair(node.right);
     }
+  }
 
-    if (node == this.head)
+  if (node.left)
+  {
+    while (node.left.balance > 1 || node.left.balance < -1)
     {
-      if (node.balance > 1)
-      {
-        this.rightRotate.call(this, node);
-      }
-      else if (node.balance < -1)
-      {
-        this.leftRotate.call(this, node);
-      }
+      node.left.balanceCheck(this);
     }
+    node.calculateBalance();
+  }
+
+  if (node.right)
+  {
+    while (node.right.balance > 1 || node.right.balance < -1)
+    {
+      node.right.balanceCheck(this);
+    }
+    node.calculateBalance();
   }
 
 };
@@ -1085,28 +1066,29 @@ RBTree.prototype.remove = function (value, node = null)
       15,    200,          800
     ];
 
-  tree.balancedAdd(100);
-  tree.balancedAdd(50 );
-  tree.balancedAdd(200);
-  tree.balancedAdd(300);
-  tree.balancedAdd(400);
-  tree.balancedAdd(25);
-  tree.balancedAdd(5 );
-  tree.balancedAdd(10);
+  tree.add(100);
+  tree.add(50 );
+  tree.add(200);
+  tree.add(300);
+  tree.add(400);
+  tree.add(25);
+  tree.add(5 );
+  tree.add(10);
 
   data.forEach((ele) => {
-    tree.balancedAdd(ele);
+    tree.add( Math.floor(Math.random()* 1000) );
   });
 
 
-  tree.balancedRemove(100);
-  tree.balancedRemove(400);
-  tree.balancedRemove(500);
+  // tree.balancedRemove(100);
+  // tree.balancedRemove(400);
+  // tree.balancedRemove(500);
 
 
     // console.log(tree.head.right.right.value);
     // console.log(tree.head.right.right.right.value);
 
+    tree.repair();
     tree.head.display();
 
   }()

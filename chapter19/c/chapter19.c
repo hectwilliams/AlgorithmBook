@@ -583,6 +583,7 @@ int AVLTree_balanceRemove(struct AVLTree **root , int value)
       updateBalanceFlag = AVLTree_removeHelper(node , &node);
     }
 
+
     else if (value < node->value)
     {
       if (node->left)
@@ -597,7 +598,7 @@ int AVLTree_balanceRemove(struct AVLTree **root , int value)
           updateBalanceFlag = balanceFlag(node, updateBalanceFlag, -1);   // left side feedback
         }
       }
-        AVLTree_balanceCheck(node->left, node);
+        AVLTree_balanceCheck(node->left, root);
     }
 
     else if (value > node->value)
@@ -614,7 +615,7 @@ int AVLTree_balanceRemove(struct AVLTree **root , int value)
           updateBalanceFlag = balanceFlag(node, updateBalanceFlag, 1);     // right side feedback
         }
       }
-        AVLTree_balanceCheck(node->right,  node);
+        AVLTree_balanceCheck(node->right,  root);
     }
   }
 
@@ -626,135 +627,42 @@ int AVLTree_balanceRemove(struct AVLTree **root , int value)
   return updateBalanceFlag;
 }
 
+void AVLTree_repair(struct AVLTree **root)
+{
+  struct AVLTree *node = *root;
 
-// // int AVLTree_balanced_remove(struct AVLTree **tree, int value)
-// // {
-// //   static struct AVLTree *root_ref = NULL;
-// //   int update_balance_feedback = 0;
-// //   struct AVLTree *node = NULL;
+  if (node)
+  {
+    if (node->left)
+    {
+      AVLTree_repair(& node->left);
+    }
 
+    if (node->right)
+    {
+      AVLTree_repair(& node->right);
+    }
+  }
 
-// //   if (tree == NULL)
-// //   {
-// //     return 0;
-// //   }
+  if (node->left)
+  {
+    while (node->left->balance > 1 || node->left->balance < -1)
+    {
+      AVLTree_balanceCheck(node->left, root);
+    }
+    calBalance(node);
+  }
 
-// //   node = *tree;
+  if (node->right)
+  {
+    while (node->right->balance > 1 || node->right->balance < -1)
+    {
+      AVLTree_balanceCheck(node->right, root);
+    }
+    calBalance(node);
+  }
 
-// //   // store root
-// //   if (root_ref ==  NULL)
-// //   {
-// //     root_ref = *tree;
-// //   }
-
-
-// //   if (node)
-// //   {
-// //     if (node->value == value)
-// //     {
-// //       update_balance_feedback = AVLTree_remove_helper(NULL, tree);
-// //     }
-
-// //     else if ( value < node->value)
-// //     {
-// //       if (node->left)
-// //       {
-// //         if (node->left->value == value)
-// //         {
-// //          update_balance_feedback =  AVLTree_remove_helper(node, &node->left);
-// //         }
-
-// //         else
-// //         {
-// //           update_balance_feedback =  AVLTree_balanced_remove(&node->left, value); // recursion
-// //         }
-
-// //         if (update_balance_feedback)
-// //         {
-// //           if (node->left)
-// //           {
-// //             if (node->left->balance > 1)
-// //             {
-// //               AVLTree_right_rotate(&node, node->left);
-// //               AVLTree_setNodeBalance(node);
-
-// //             }
-
-// //             else if (node->left->balance < -1)
-// //             {
-// //               AVLTree_left_rotate(&node, node->left);
-// //               AVLTree_setNodeBalance(node);
-// //             }
-// //             else
-// //             {
-// //               node->balance--;
-// //             }
-// //           }
-// //           else
-// //           {
-// //             node->balance--;
-// //           }
-// //         }
-// //       }
-// //     }
-
-// //     else if (value > node->value)
-// //     {
-// //       if (node->right)
-// //       {
-// //         if (node->right->value == value)
-// //         {
-// //           update_balance_feedback =  AVLTree_remove_helper(node, &node->right);
-// //         }
-// //         else
-// //         {
-// //           update_balance_feedback =  AVLTree_balanced_remove(&node->right, value);  // recursion
-// //         }
-
-// //         if (update_balance_feedback)
-// //         {
-// //           if (node->right)
-// //           {
-// //             if (node->right->balance > 1)
-// //             {
-// //               AVLTree_right_rotate(&node, node->right);
-// //               AVLTree_setNodeBalance(node);
-// //             }
-
-// //             else if (node->right->balance < -1)
-// //             {
-// //               AVLTree_left_rotate(&node, node->right);
-// //               AVLTree_setNodeBalance(node);
-// //             }
-// //             else
-// //             {
-// //               node->balance++;
-// //             }
-// //           }
-// //           else
-// //           {
-// //             node->balance++;
-// //           }
-// //         }
-// //       }
-// //     }
-// //   }
-
-// //    // reset root;
-// //   if (root_ref ==  node)
-// //   {
-// //     if (node->balance > 1) {
-// //       AVLTree_right_rotate(tree, node) ;
-// //     }
-
-// //     else if (node->balance < -1)
-// //     {
-// //       AVLTree_left_rotate(tree, node);
-// //     }
-
-// //     root_ref = NULL;
-// //   }
-
+}
 
 // //   return update_balance_feedback;
 // // }

@@ -70,8 +70,7 @@ class AVLTree
     bool balancedAdd(const int &value, AVLNode *node = NULL);
     bool balanceRemove(const int &value, AVLNode *node = NULL);
 
-    // bool balanced_remove(const int &value, AVLNode *node = NULL);
-    // void repair(AVLNode *node = NULL);
+    void repair(AVLNode *node = NULL);
 
   private:
     bool removeHelper(AVLNode *node, AVLNode *parent);  // avl remove
@@ -101,26 +100,26 @@ void avl_remove_test ()
 
 
 
-  tree.balancedAdd(100);
-  tree.balancedAdd(50 );
-  tree.balancedAdd(200);
-  tree.balancedAdd(300);
-  tree.balancedAdd(400);
-  tree.balancedAdd(25);
-  tree.balancedAdd(5 );
-  tree.balancedAdd(10);
+  tree.add(100);
+  tree.add(50 );
+  tree.add(200);
+  tree.add(300);
+  tree.add(400);
+  tree.add(25);
+  tree.add(5 );
+  tree.add(10);
 
 
   for (int i = 0; i < sizeof(array) / sizeof(int) ; i++)
   {
-    tree.balancedAdd(array[i]);
+    // tree.add(array[i]);
   }
 
   // tree.balanceRemove(100);
   // tree.balanceRemove(400);
   // tree.balanceRemove(500);
-
   tree.display();
+
 
 }
 
