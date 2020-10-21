@@ -664,80 +664,13 @@ void AVLTree_repair(struct AVLTree **root)
 
 }
 
-// //   return update_balance_feedback;
-// // }
+struct RBTreeObj *rbobj ()
 
-// // void AVLTree_repair(struct AVLTree **tree)
-// // {
-// //   static struct AVLTree *root_ref = NULL;
-// //   struct AVLTree *node;
-
-// //   if (tree == NULL)
-// //   {
-// //     return;
-// //   }
-
-// //   node = *tree;
-
-// //   if (root_ref == NULL)
-// //   {
-// //     root_ref = node;
-// //   }
-
-// //   if (node)
-// //   {
-// //     if (node->balance > 0)
-// //     {
-// //       AVLTree_repair(&node->left);
-
-// //       if (node->left->balance > 1)
-// //       {
-// //         AVLTree_right_rotate(&node, node->left);
-// //         AVLTree_setNodeBalance(node);
-// //       }
-// //       else if (node->left->balance < -1)
-// //       {
-// //         AVLTree_left_rotate(&node, node->left);
-// //         AVLTree_setNodeBalance(node);
-// //       }
-// //     }
-// //     else if (node->balance < 0)
-// //     {
-// //       AVLTree_repair(&node->right);
-
-// //       if (node->right->balance > 1)
-// //       {
-// //         AVLTree_right_rotate(&node, node->right);
-// //         AVLTree_setNodeBalance(node);
-
-// //       }
-// //       else if (node->right->balance < -1)
-// //       {
-// //         AVLTree_left_rotate(&node, node->right);
-// //         AVLTree_setNodeBalance(node);
-// //       }
-// //     }
-
-// //     else if (node->balance == 0)
-// //     {
-// //       return;
-// //     }
-
-// //     if (root_ref == node)
-// //     {
-// //       if (node->balance > 1)
-// //       {
-// //         AVLTree_right_rotate(tree, node);
-// //       }
-// //       else if (node->balance < -1)
-// //       {
-// //         AVLTree_left_rotate(tree, node);
-// //       }
-// //       root_ref = NULL;
-// //     }
-
-// //   }
-// // }
+{
+  struct RBTreeObj *obj = (struct RBTreeObj *) malloc(sizeof(struct RBTreeObj));
+  obj->root = obj->node = NULL;
+  return obj;
+}
 
 struct RBTree *rbnode (const int value)
 {
@@ -749,314 +682,294 @@ struct RBTree *rbnode (const int value)
   return node;
 }
 
-// int RBTree_contains(struct RBTree **tree, const int value )
-// {
-//   struct RBTree *node;
-
-//   if (tree)
-//   {
-//     node = *tree;
-//   }
-
-//   if (node)
-//   {
-//     if (node->value == value)
-//     {
-//       return 1;
-//     }
-
-//     else if (value < node->value)
-//     {
-//       return RBTree_contains(&node->left, value);
-//     }
-
-//     else if (value > node->value)
-//     {
-//       return RBTree_contains(&node->right, value);
-//     }
-//   }
-
-//   return 0;
-// }
-
-int RBTree_add(struct RBTree **tree, const int value)
+int RBTree_contains(struct RBTree **tree, const int value )
 {
-  static struct RBTree **root_ref = NULL;
-  struct RBTree *node = *tree;
-  void *store_root_ptr = NULL;
-  int acc = 0;
+  struct RBTree *node;
 
-  if (*tree == NULL)
+  if (tree)
   {
-    *tree = rbnode(value);
-    (*tree)->color = 0;
-    root_ref = tree;
+    node = *tree;
   }
-  else
+
+  if (node)
   {
-    store_root_ptr = *root_ref;
-
-    if (value < node->value)
+    if (node->value == value)
     {
-      if (node->left)
-      {
-        acc = RBTree_add(&node->left, value);
-        acc += node->left->color == 1;
+      return 1;
+    }
 
-        if (acc == 2 )  // red-black error
-        {
-          acc = 0;
-          if (node->right == NULL)
-          {
-            if (node->left && node->left->left)
-            {
-              RBTree_translate(root_ref, node, 1);
-            }
-            else if (node->left && node->left->right)
-            {
-              RBTree_translate(root_ref, node, 2);
-            }
-          }
-          else if (node->right->color ==  0)
-          {
-            if (node->left && node->left->left)
-            {
-              RBTree_translate(root_ref, node, 1);
-            }
-            else if (node->left && node->left->right)
-            {
-              RBTree_translate(root_ref, node, 2);
-            }
-          }
-          else if (node->right->color)
-          {
-            RBTree_translate(root_ref, node, 0);
-          }
-        }
-      }
-      else
-      {
-        node->left = rbnode(value);
-        acc = 1;
-      }
+    else if (value < node->value)
+    {
+      return RBTree_contains(&node->left, value);
     }
 
     else if (value > node->value)
     {
-      if (node->right)
-      {
-        acc = RBTree_add(&node->right, value);
-
-        acc += node->right->color == 1;
-
-        if (acc == 2 )  // red-black error
-        {
-          acc = 0;
-
-          if (node->left == NULL)
-          {
-            if (node->right && node->right->right)
-            {
-              RBTree_translate(root_ref, node, 3);
-            }
-            else if (node->right && node->right->left)
-            {
-              RBTree_translate(root_ref, node, 4);
-            }
-          }
-
-          else if (node->left->color == 0)
-          {
-            if (node->right && node->right->right)
-            {
-              RBTree_translate(root_ref, node, 3);
-            }
-            else if (node->right && node->right->left)
-            {
-              RBTree_translate(root_ref, node, 4);
-            }
-          }
-
-          else if (node->left->color)
-          {
-            RBTree_translate(root_ref, node, 0);
-          }
-        }
-      }
-      else
-      {
-        node->right = rbnode(value);
-        acc = 1;
-      }
+      return RBTree_contains(&node->right, value);
     }
-
-    else if (value == node->value)
-    {
-      node->count++;
-      acc =  0;
-    }
-
-    if (store_root_ptr != *root_ref)
-    {
-      root_ref = NULL;
-    }
-
-    if (node->color == 0)
-    {
-      acc = 0;
-    }
-
   }
-  return acc;
+
+  return 0;
+}
+
+void RBTree_leftRotate(struct RBTree *target, struct RBTree *parentOfTarget,  struct RBTreeObj *obj)
+{
+  struct RBTree *c, *t;
+
+  c = target->right;
+  t = c->left;
+
+  c->left = target;
+  target->right = t;
+
+  if (target == parentOfTarget)
+  {
+    obj->root = c;
+  }
+  else if (parentOfTarget->left == target)
+  {
+      parentOfTarget->left = c;
+  }
+  else if (parentOfTarget->right == target)
+  {
+      parentOfTarget->right = c;
+  }
+}
+
+void RBTree_rightRotate(struct RBTree *target, struct RBTree *parentOfTarget,  struct RBTreeObj *obj)
+{
+  
+  struct RBTree *c, *t;
+
+
+  c = target->left;
+  t = c->right;
+
+  c->right = target;
+  target->left = t;
+
+  if (target == parentOfTarget)
+  {
+    obj->root = c;
+  }
+  else if (parentOfTarget->left == target)
+  {
+      parentOfTarget->left = c;
+  }
+  else if (parentOfTarget->right == target)
+  {
+      parentOfTarget->right = c;
+  }
+}
+
+int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
+{
+  int redCount = 0;
+
+
+  if ( value < node->value)
+  {
+    if ( node->left)
+    {
+      redCount += RBTree_addhelper(value, node->left, obj ) ;
+    }
+    else
+    {
+      node->left = rbnode(value);
+      return 1 + node->color;
+    }
+  }
+
+  else if (value > node->value)
+  {
+    if ( node->right)
+    {
+      redCount += RBTree_addhelper(value, node->right, obj) ;
+    }
+    else
+    {
+      node->right = rbnode(value);
+      return 1 + node->color;
+    }
+  }
+
+  else if (value == node->value)
+
+  {
+    node->count++;
+  }
+
+  // printf(" value %d   count %d\n" , node->value, redCount);
+
+  RBTree_blackErrorCheck (redCount >= 2 , node, obj);
+
+  if (node->color == 0 || redCount >= 2)
+  {
+    redCount = 0;
+  }
+  else
+  {
+    redCount += node->color;
+  }
+
+  return redCount;
+
 }
 
 
-void RBTree_translate(struct RBTree **root, struct RBTree *node, int rotate_code)
+void RBTree_add(struct RBTreeObj **obj, int value)
 {
-  struct RBTree *c, *gc, *gc_l, *gc_r,*tree, *par = NULL;
 
-  if (node)
+  if (*obj == NULL)
   {
-    par = findParent(  *root, node);
+    *obj = rbobj();
+  }
 
-    switch (rotate_code)
+  if ( (*obj)->root == NULL)
+  {
+    (*obj)->root = rbnode(value);
+  }
+  else
+  {
+    RBTree_addhelper(value, (*obj)->root, *obj );
+  }
+}
+
+
+int RBTree_rotationCode(struct RBTree *target)
+{
+  int rotateTarget = 0;
+
+  if (target->left)
+  {
+
+    if (target->right)
     {
-      case 0:
+      if (target->right->color)
+      {
+        return 5;
+      }
+    }
+    if (target->left->left)
+    {
+      if (target->left->color  && target->left->left->color)
+      {
+        return 1;
+      }
+    }
 
-      node->color = 1;
-      node->left->color = node->right->color  = 0 ;
+    if (target->left->right)
+    {
+      if (target->left->color && target->left->right->color)
+      {
+        return 2;
+      }
+    }
+
+  }
+
+  if (target->right)
+  {
+
+    if (target->left)
+    {
+      if (target->left->color)
+      {
+        return 5;
+      }
+    }
+
+    if (target->right->right)
+    {
+      if (target->right->color  && target->right->right->color)
+      {
+        return 3;
+      }
+    }
+
+    if (target->right->left)
+    {
+      if (target->right->color && target->right->left->color)
+      {
+        return 4;
+      }
+    }
+
+  }
+    return 0;
+}
+
+void RBTree_blackErrorCheck( int hasImbalance , struct RBTree *target , struct RBTreeObj *obj )
+{
+  struct RBTree *promote = NULL, p;
+  int op = 0;
+
+
+  if (hasImbalance)
+  {
+
+    op = RBTree_rotationCode(target);
+
+    printf("operation %s \n ", ((op == 5) ? "color flip" : "rotation") );
+
+    switch (op)
+    {
+    case 1:
+    /* right rotate */
+      promote = target->left;
+
+      printf("right rotate*\n");
+      RBTree_rightRotate(target, findParent(target, obj->root), obj);
       break;
 
-    case  1:
-    // LEEFT LEFT
-      c = node->left;
-      tree = c->right;
+    case 2:
+      promote = target->left->right;
+      /*left rotate -> right rotate*/
 
-      c->right =node;
-      node->left = tree;
+      printf("left rotate*\n");
+      RBTree_leftRotate(target->left, findParent(target->left, obj->root), obj);
 
-      if ( par == NULL)
-      {
-        *root = c;
-      }
-      else if ( par->left == node)
-      {
-        par->left = c;
-      }
-      else if ( par->right == node)
-      {
-        par->right = c;
-      }
-      c ->color = 0;
-      c->left->color = c->right->color = 1;
+      printf("right rotate*\n");
+      RBTree_rightRotate( target , findParent(target, obj->root), obj);
       break;
 
-      case 2:
-      // LEEFT RIGHT
+    case 3:
+      promote = target->right;
+  /* left rotate*/
 
-        c = node->left;
-        gc = node->left->right;
-        gc_l = gc->left;
-        gc_r = gc->right;
+      printf("left rotate*\n");
+      RBTree_leftRotate(target, findParent(target , obj->root), obj);
+      break;
 
-        gc->left = c;
-        gc->right = node;
-        node->left = gc_r;
-        c->right = gc_l;
+    case 4:
+      promote = target->right->left;
+      /* right rotate  --> left rotate */
+      printf("right rotate*\n");
+      RBTree_rightRotate(target->right, findParent(target->right, obj->root), obj);
+      printf("left rotate*\n");
+      RBTree_leftRotate(target, findParent(target, obj->root), obj);
+      break;
 
-        gc->color = 0;
-        c->color = 1;
-        node->color = 1;
+    case 5:
+      target->color ^= 1;
+      target->left->color ^= 1;
+      target->right->color ^= 1;
+      break;
 
-        if ( par == NULL)
-        {
-          *root = gc;
-        }
-        else if ( par->left == node)
-        {
-          par->left = gc;
-        }
-        else if ( par->right == node)
-        {
-          par->right = gc;
-        }
+    default:
+      break;
+    }
 
-        gc ->color = 0;
-        gc->left->color = gc->right->color = 1;
-        break;
-
-      case 3:
-
-        // RIGHT RIGHT
-
-        c = node->right;
-        tree = c->left;
-
-        c->left = node;
-        node->right = tree;
-
-        if ( par == NULL)
-        {
-          *root = c;
-        }
-        else if ( par->left == node)
-        {
-          par->left = c;
-        }
-        else if ( par->right == node)
-        {
-          par->right = c;
-        }
-
-        c ->color = 0;
-        c->left->color = c->right->color = 1;
-
-        break;
-
-      case 4:
-
-      // RIGHT LEFT
-
-        c = node->right;
-        gc = node->right->left;
-        gc_l = gc->left;
-        gc_r = gc->right;
-
-        gc->right = c;
-        gc->left = node;
-        node->right = gc_l;
-        c->left = gc_r;
-
-        if ( par == NULL)
-        {
-          *root = gc;
-        }
-        else if ( par->left == node)
-        {
-          par->left = gc;
-        }
-        else if ( par->right == node)
-        {
-          par->right = gc;
-        }
-        gc ->color = 0;
-        gc->left->color = gc->right->color = 1;
-        break;
-
-      default:
-        break;
+    /* update color */
+    if (promote != NULL)
+    {
+      promote->color = 0;
+      promote->left->color = promote->right->color = 1;
     }
   }
 
-  // ROOT MUST BE BLACK
-  if (*root)
-  {
-    if((*root)->color == 1 )
-    {
-      (*root)->color = 0;
-    }
-  }
-
+  /* root must be black */
+  obj->root->color = 0;
 }
 
 void RBTree_display(struct RBTree *node)
@@ -1077,30 +990,36 @@ void RBTree_display(struct RBTree *node)
   }
 }
 
-struct RBTree *findParent (struct RBTree *tree, struct RBTree *target)
+struct RBTree *findParent (struct RBTree *target , struct RBTree *node)
 {
 
-  if (tree)
+  if (node)
   {
-
-    if (tree->left == target || tree->right == target)
+    if (node == target)
     {
-      return tree;
+      return node;
     }
 
-    if (tree->left)
+    else if (target->value < node->value)
     {
-      if ( target->value  < tree->value)
+      if (node->left == target)
       {
-        return findParent(tree->left, target);
+        return node;
+      }
+      else if (node->left)
+      {
+       return  findParent(target, node->left);
       }
     }
-
-    if (tree->right)
+    else
     {
-      if (target->value > tree->value)
+      if (node->right == target)
       {
-        return findParent(tree->right, target);
+        return node;
+      }
+      else if (node->right)
+      {
+       return  findParent(target, node->right );
       }
     }
   }
@@ -1108,236 +1027,34 @@ struct RBTree *findParent (struct RBTree *tree, struct RBTree *target)
   return NULL;
 }
 
-int RBTree_height_valid(struct RBTree *node, int height)
+int RBTree_height (struct RBTree *node)
 {
-  static int counter = 0;
-  static int valid = 0;
-  static int buffer = 0;
-  int result = 0;
 
   if (node)
   {
-    counter++;
-    height += node->color == 0;
-    RBTree_height_valid(node->left, height);
-    RBTree_height_valid(node->right, height);
-    counter--;
+    return  (node->color == 0) + RBTree_height(node->left);
   }
-  else  // BLACK (NULL)
+  else
   {
-    height += 1;
-
-    if (valid == 0)
-    {
-      buffer = height;
-      valid = 1;
-    }
-    else if (buffer != height)
-    {
-      valid = 0;
-    }
+    return 1;
   }
-
-  if (counter == 0)
-  {
-    buffer = 0;
-    result = valid;
-    valid = 0;
-  }
-
-  return result;
 }
 
-int RBTree_remove_helper(struct RBTree *parent, struct RBTree **target)
+int RBTree_isValid(struct RBTree *node)
 {
-  struct RBTree *node = *target;
-  struct RBTree *successor = NULL, *succesor_parent;
-
-  if (node->count > 1)
-  {
-    node->count--;
-  }
-  else if (node->left == NULL && node->right == NULL)
-  {
-    successor = NULL;
-  }
-  else if (node->left && !node->right)
-  {
-    successor = node->left;
-  }
-  else if (node->right && !node->left)
-  {
-    successor = node->right;
-  }
-  else if (node->right && node->left)
-  {
-    if (node->right->left == NULL)
-    {
-      successor = node->right;
-      successor->left = node->left;
-    }
-    else
-    {
-      succesor_parent = node->right;
-      while (succesor_parent->left->left)
-      {
-        succesor_parent = succesor_parent->left;
-      }
-      successor = succesor_parent->left;
-      succesor_parent->left = succesor_parent->left->left;
-
-      successor->left = node->left;
-      successor->right = node->right;
-      successor->count = node->count;
-    }
-  }
-
-  if (parent == NULL)
-  {
-    *target = successor;
-  }
-  else if (parent->left == node)
-  {
-    parent->left = successor;
-  }
-  else if (parent->right == node)
-  {
-    parent->right = successor;
-  }
-
-  return 0;
+  printf("hight left  %d  height right  %d   ",RBTree_height(node->left)  , RBTree_height(node->right)  );
+  return RBTree_height(node->left) == RBTree_height(node->right);
 }
 
-void RBTree_remove(struct RBTree **tree, int value)
+void RBTree_remove(struct RBTreeObj **obj, int value)
 {
-  struct RBTree *node = NULL;
-  int rebalance_code = 0;
-
-  node = *tree;
-
-  if (node)
-  {
-    if (node->value == value)
-    {
-      RBTree_remove_helper(NULL, tree);
-    }
-    else if ( value < node->value)
-    {
-      if (node->left)
-      {
-        if (node->left->value == value)
-        {
-          RBTree_remove_helper(node, &node->left);
-        }
-        else
-        {
-          RBTree_remove(&node->left, value);
-        }
-      }
-    }
-    else if (value > node->value)
-    {
-      if (node->right)
-      {
-        if (node->right->value == value)
-        {
-          RBTree_remove_helper(node, &node->right);
-        }
-        else
-        {
-          RBTree_remove(&node->right, value);
-        }
-      }
-    }
-
-    rebalance_code = RBTree_balance_check(node);
-    printf("\ncode %d\n", rebalance_code);
-  }
-
 
 
 }
-
-int RBTree_balance_check(struct RBTree *node)
-{
-  if (node)
-  {
-    if (node->left )
-    {
-      if (node->left->color)   // LEFT RED
-      {
-        if (node->left->left)
-        {
-          if (node->left->left->color)
-          {
-            return 1;   // LEFT RED -> LEFT RED
-          }
-
-        }
-
-        if (node->left->right)
-        {
-          if (node->left->right->color)
-          {
-            return 2;  // LEFT RED -> RIGHT RED
-          }
-        }
-      }
-
-    }
-
-    if (node->right)
-    {
-      if (node->right->color)
-      {
-        if (node->right->right)
-        {
-          if (node->right->right->color)
-          {
-            return 3;  // RIGHT RED RIGHT RED
-          }
-        }
-
-        if (node->right->left)
-        {
-          if (node->right->left->color)
-          {
-            return 4;  /// RIGHT RED LEFT RED
-          }
-        }
-      }
-
-    }
-  }
-  return 0;
-}
-
-
-// void rbtree_test()
-// {
-//   struct RBTree *tree = NULL;
-//   int  array[] = {3, 1, 5 , 7, 6, 8, 9, 10};
-//   int size = sizeof(array) / sizeof(int);
-
-//   RBTree_add(&tree, 3);
-//   RBTree_add(&tree, 1);
-//   RBTree_add(&tree, 5);
-//   RBTree_add(&tree, 7);
-//   RBTree_add(&tree, 6);
-//   RBTree_add(&tree, 8);
-//   RBTree_add(&tree, 9);
-//   RBTree_add(&tree, 10);
-//   RBTree_remove(&tree,6);
-//   RBTree_display(tree);
-//   printf("HEAD %d");
-//   // printf ( " balanced red-black tree -> %d \n",  RBTree_height_valid(tree, 0) );
-// }
-
-
 
 int main()
 {
-  balanced_add_test();
+  red_black_tree_test();
 }
 
 

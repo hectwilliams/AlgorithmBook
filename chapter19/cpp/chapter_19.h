@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <functional>
+#include <stdio.h>
 
 
 class AVLTree;
@@ -75,9 +76,6 @@ class AVLTree
   private:
     bool removeHelper(AVLNode *node, AVLNode *parent);  // avl remove
 
-    // void leftRotateTranslate(AVLNode *parent, std::function< void(int)> ) ; // avl rotate
-    // void rightRotateTranslate(AVLNode *parent, std::function< void(int)> ) ; // avl rotate
-
 };
 
 // AVL REMOVE TEST
@@ -94,11 +92,7 @@ void avl_remove_test ()
 
   AVLTree tree;
 
-#include <stdio.h>
-
  char buffer [100];
-
-
 
   tree.add(100);
   tree.add(50 );
@@ -108,63 +102,86 @@ void avl_remove_test ()
   tree.add(25);
   tree.add(5 );
   tree.add(10);
-
-
-  for (int i = 0; i < sizeof(array) / sizeof(int) ; i++)
-  {
-    // tree.add(array[i]);
-  }
-
-  // tree.balanceRemove(100);
-  // tree.balanceRemove(400);
-  // tree.balanceRemove(500);
   tree.display();
-
-
 }
 
-// class RBNode
-// {
-//   friend class RBTree; //  RBTree class can access  node private members
 
-//   public:
-//     bool color;  // 0 -black 1-red
-//     RBNode *left;
-//     RBNode *right;
-//     int count;
-//     int value;
+class RBTree;
 
-//     RBNode (const int &value)
-//     {
-//       this->value = value;
-//       this->count = 1;
-//       this->color = true;
-//       this->left = NULL;
-//       this->right = NULL;
-//     }
-//   private:
-// };
+class RBNode
+{
+  friend class RBTree; //  RBTree class can access  node private members
 
+  public:
+    bool color;  // 0 -black 1-red
+    RBNode *left;
+    RBNode *right;
+    int count;
+    int value;
 
-// class RBTree
-// {
-//   public:
-//     RBNode *root;
-//     RBTree()
-//     {
-//       this->root = NULL;
-//     }
-//     bool contains (const int &value , RBNode *node = NULL);
-//     int add(const int &value, RBNode *node = NULL, RBNode *parent = NULL );
-//     void display (RBNode *node = NULL);
-//     bool remove(const int &value, RBNode *node= NULL);
+    RBNode (const int &value)
+    {
+      this->value = value;
+      this->count = 1;
+      this->color = true;
+      this->left = NULL;
+      this->right = NULL;
+    }
 
-//   private:
-//     void translate(RBNode *node = NULL, RBNode *parent = NULL, int code = -1);
-//     void remove_helper(RBNode *parent, RBNode *node = NULL);
+    void display();
+    int rotationCode ();
+    void leftRotate ( RBNode *parent , RBTree *obj ) ;
+    void rightRotate ( RBNode *parent , RBTree *obj ) ;
+
+  private:
 
 
-// };
+};
+
+
+class RBTree
+{
+
+  public:
+    RBNode *root;
+    RBTree()
+    {
+      this->root = NULL;
+    }
+    bool contains (const int &value , RBNode *node = NULL);
+    void display (RBNode *node = NULL);
+    int add(const int &value, RBNode *node = NULL );
+    void blackHeightErrorHandler (bool hasImbalance, RBNode *target );
+    RBNode *findParent(RBNode * target, RBNode *node = NULL);
+
+};
+
+
+void rb_tree_test ()
+{
+  const int array[] = {
+           100,
+        50,       500,
+      25,      450,        1000,
+    20,     300,  480,   900,   2000,
+   15,    200,          800
+  };
+
+  RBTree tree;
+  char buffer [100];
+  tree.add(3);
+  tree.add(1 );
+  tree.add(5);
+  tree.add(7);
+  tree.add(6);
+  tree.add(8);
+  tree.add(9 );
+  tree.add(10);
+  tree.add(12);
+  tree.add(12333);
+  tree.add(2);
+  tree.display();
+}
 
 
 #endif

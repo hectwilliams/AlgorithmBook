@@ -387,9 +387,88 @@ class RBNode:
     self.value = value
     self.count = 1
 
+  def display(self):
+    if self.left:
+      self.left.display()
+
+    print(self.value, self.color)
+
+    if self.right:
+      self.right.display()
+
+  def rightRotate(self, parent, rbTreeClass) :
+    c = None
+    t = None
+
+    c = self.left
+    t = c.right
+
+    c.right = self
+    self.left = t
+
+    if self == parent:
+      rbTreeClass.root = c
+
+    elif parent.left == self:
+      parent.left = c
+
+    elif parent.right == self:
+      parent.right = c
+
+  def leftRotate(self, parent, rbTreeClass) :
+    c = None
+    t = None
+
+    c = self.right
+    t = c.left
+
+    c.left = self
+    self.right = t
+
+    if self == parent:
+      rbTreeClass.root = c
+
+    elif parent.left == self:
+      parent.left = c
+
+    elif parent.right == self:
+      parent.right = c
+
+  def rotationCode(self):
+
+    if self.left:
+      if self.right :
+        if self.right.color :
+          return 5
+
+      if self.left.left:
+        if self.left.color and self.left.left.color:
+          return 1
+
+      if self.left.right:
+        if self.left.color and self.left.right.color:
+          return 2
+
+    if self.right:
+      if self.left:
+        if self.left.color:
+          return 5
+
+      if self.right.right:
+        if self.right.color and self.right.right.color:
+          return 3
+
+      if self.right.left:
+        if self.right.color and self.right.left.color:
+          return 4
+
+    return 0
+
 class RBTree:
+
   def __init__(self):
     self.root = None
+
   def contains(self, value, node = None ):
     if node == None:
       node = self.root
@@ -402,287 +481,94 @@ class RBTree:
         return self.contains(value, node.right)
     return False
 
-  def __translate (self, node, parent = None, code = -1):
-    c = gc = gc_l = gc_r = tree = None
 
-    #/ function
-    def paint():
-      node.color = 1
-      node.left.color = node.right.color = 0
+  def display(self):
+    self.root.display()
 
-    def ll (): # left left
-      c = node.left
-      tree = c.right
+  def add(self, value, node = None, parent = None):
+    count = 0
 
-      c.right = node
-      node.left = tree
+    if not node :
+      parent = node = self.root
 
-      c.color = 0
-      c.left.color = c.right.color = 1
+    if not self.root :
+      self.root = parent = node = RBNode(value)
 
-      if parent == None:
-        self.root = c
-      elif parent.left == node:
-        parent.left = c
-      elif parent.right == node:
-        parent.right = c
-
-    def lr ():  # left right
-      c = node.left
-      gc = node.left.right
-      gc_l = gc.left
-      gc_r = gc.right
-
-      gc.left = c
-      gc.right = node
-      node.left = gc_r
-      c.right = gc_l
-
-      gc.color = 0
-      gc.left.color = gc.right.color = 1
-
-      if parent == None:
-        self.root = gc
-      elif parent.left == node:
-        parent.left = gc
-      elif parent.right == node:
-        parent.right = gc
-
-    def rr ():
-      c = node.right
-      tree = c.left
-
-      c.left = node
-      node.right = tree
-
-      c.color = 0
-      c.left.color = c.right.color = 1
-
-      if parent == None:
-        self.root = c
-      elif parent.left == node:
-        parent.left = c
-      elif parent.right == node:
-        parent.right = c
-
-
-    def rl ():
-      c = node.right
-      gc = node.right.left
-      gc_l = gc.left
-      gc_r = gc.right
-
-      gc.right = c
-      gc.left = node
-      node.right = gc_l
-      c.left = gc_r
-
-      gc.color = 0
-      gc.left.color = gc.right.color = 1
-
-      if parent == None:
-        self.root = gc
-      elif parent.left == node :
-        parent.left = gc
-      elif parent.right == node :
-        parent.right = gc
-
-
-  # select function
-    case = {
-      0: paint,
-      1: ll,
-      2: lr,
-      3: rr,
-      4: rl
-    }
-
-  # swtich
-    def switcher (arg):
-      func = case.get(arg)  # get callback and call function
-      func()
-  # execute
-    switcher(code)
-
-  # root node must be black
-    if self.root.color:
-      self.root.color = 0
-
-  def add(self, value, node = None , parent = None):
-    acc  = 0
-
-    if self.root == None :
-      self.root = RBNode(value)
-      self.root.color = 0
-    else:
-      if node == None:
-        node  = self.root
-
-      if value < node.value:
-        if node.left:
-          acc = self.add(value, node.left, node)
-          acc += (node.left.color)
-
-          if acc == 2:
-            acc = 0
-            if node.right == None:
-              if node.left and node.left.left:
-                self.__translate(node, parent, 1)
-              elif node.left and node.left.right:
-                self.__translate(node.parent, 2)
-            elif node.right.color == 0  :
-              if node.left and node.left.left:
-                self.__translate(node, parent, 1)
-              elif node.left and node.left.right:
-                self.__translate(node, parent, 2)
-            elif node.right.color:
-              self.__translate(node, parent , 0)
-        else:
-          node.left = RBNode(value)
-          acc = 1
-
-      elif value > node.value:
-        if node.right:
-          acc = self.add(value, node.right, node)
-          acc += (node.right.color)
-          if acc == 2:
-            acc = 0
-            if node.left == None:
-              if node.right and node.right.right:
-                self.__translate(node, parent , 3)
-              elif node.right and node.right.left:
-                self.__translate(node, parent, 4)
-            elif node.left.color == 0:
-              if node.right and node.right.right:
-                self.__translate(node, parent ,3)
-              elif node.right and node.right.left:
-                self.__translate(node, parent, 4)
-            elif node.left.color :
-              self.__translate(node, parent, 0)
-        else:
-          node.right = RBNode(value)
-          acc = 1
-
-      elif value == node.value:
-        node.count += 1
-        acc = 0
-
-      if node.color == 0  :
-        acc = 0
-
-    return acc
-
-
-  def display(self, node = None):
-    if node == None:
-      node = self.root
-    if node :
+    elif value < node.value:
       if node.left:
-        self.display(node.left)
-      print ("value: ", node.value, " ", "color: ", node.color, sep="")
-      if node.right:
-        self.display(node.right)
-
-  def __removeHelper(self, parent = None, node = None) :
-    successor = None
-    parentOfSuccessor = None
-
-    if node.count > 1:
-      node.count -= 1
-    elif not bool(node.right) and not bool(node.left):
-      successor = None
-    elif bool(node.left) and not bool(node.right):
-      successor = node.left
-    elif bool(node.right) and not bool(node.left) :
-      successor = node.right
-    elif bool(node.left) and bool(node.right):
-      if node.right.left == None:
-        successor = node.right
-        successor.left = node.left
+        count += self.add(value, node.left, node)
       else:
-        parentOfSuccessor = node.right
-        while parentOfSuccessor.left.left:
-          parentOfSuccessor = parentOfSuccessor.left
+        node.left = RBNode(value)
+        return 1 + node.color
 
-        successor = parentOfSuccessor.left
-        parentOfSuccessor.left = parentOfSuccessor.left.left
+    elif value > node.value:
+      if node.right:
+        count += self.add(value, node.right, node)
+      else:
+        node.right = RBNode(value)
+        return 1 + node.color
 
-        successor.left = node.left
-        successor.right = node.right
-        successor.count = node.count
+    elif value == node.value:
+      node.count += 1
 
-    if parent == None:
-      self.root = successor
-    elif parent.left == node:
-      parent.left = successor
-    elif parent.right == node:
-      parent.right = successor
+    self.blackHeightErrorHanlder(count >= 2, node, parent)
 
-  def remove(self, value, node = None) :
-    if node == None:
-      node = self.root
+    if node.color == 0 or count >= 2:
+      count = 0
+    else:
+      count += node.color
 
-    if node:
-      if node.value == value:
-        self.__removeHelper(None, node)
-      elif value < node.value:
-        if node.left:
-          if node.left.value == value:
-            self.__removeHelper(node, node.left)
-          else:
-            self.remove(value, node.left)
-      elif value > node.value:
-        if node.right:
-          if node.right.value == value:
-            self.__removeHelper(node, node.right)
-          else:
-            self.remove(value, node.right)
+    return count
 
+  def  blackHeightErrorHanlder(self, hasImbalance, target, parentOfTarget):
+    op = 0
+    promote = None
 
-# tree =  RBTree()
-# tree.add(3)
-# tree.add(1)
-# tree.add(5)
-# tree.add(7)
-# tree.add(6)
-# tree.add(8)
-# tree.add(9)
-# tree.add(10)
+    if hasImbalance:
 
-# tree.remove(6)
+      op = target.rotationCode()
 
-# tree.display()
+      if op == 1:
+        promote = target.left
+        target.rightRotate(parentOfTarget,self)
 
+      if op == 2:
+        promote = target.left.right
+        target.left.leftRotate(target, self)
+        target.rightRotate(parentOfTarget, self)
 
-tree = AVLTree()
-data = [
-        100,
-        50,       500,
-      25,      450,        1000,
-    20,     300,  480,   900,   2000,
-   15,    200,          800
-]
+      if op == 3:
+        promote = target.right
+        target.leftRotate(parentOfTarget, self)
 
+      if op == 4:
+        promote = target.right.left
+        target.right.rightRotate(target, self)
+        target.leftRotate(parentOfTarget, self)
 
+      if op == 5:
+        target.color ^= 1
+        target.left.color ^= 1
+        target.right.color ^= 1
 
-# tree.remove(450)
+    if promote:
+      promote.color = 0
+      promote.left.color = promote.right.color = 1
 
-tree.balancedAdd(100)
-tree.balancedAdd(50 )
-tree.balancedAdd(200)
-tree.balancedAdd(300)
-tree.balancedAdd(400)
-tree.balancedAdd(25)
-tree.balancedAdd(5 )
-tree.balancedAdd(10)
+    self.root.color = 0
 
-for ele in data:
-  tree.add(ele)
+tree =  RBTree()
 
+tree.add(3)
+tree.add(1 )
+tree.add(5)
+tree.add(7)
+tree.add(6)
+tree.add(8)
+tree.add(9 )
+tree.add(10)
+tree.add(12)
+tree.add(12333)
+tree.add(2)
 
-# tree.balancedRemove(100)
-# tree.balancedRemove(400)
-# tree.balancedRemove(500)
-tree.repair()
 tree.display()
-

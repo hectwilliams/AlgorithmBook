@@ -676,253 +676,6 @@ RBTree.prototype.contains = function(value, node = null)
   return false;
 };
 
-RBTree.prototype.translate = function(node, parent = null, code = -1)
-{
-  let c, gc, gc_l, gc_r, tree;
-
-  const selectCode = {
-    0: function(){
-      node.color = 1;
-      node.left.color = node.right.color = 0;
-    },
-
-    1: () =>  {
-      c = node.left;
-      tree = c.right;
-      c.right = node;
-      node.left = tree;
-
-      c.color = 0;
-      c.left.color = c.right.color = 1;
-
-      if (parent == null)
-      {
-        this.root = c;
-      }
-      else if (parent.left == node)
-      {
-        parent.left = c;
-      }
-      else if (parent.right == node)
-      {
-        parent.right = c;
-      }
-
-    } ,
-
-    2: ()=> {
-      c = node.left;
-      gc = node.left.right;
-      gc_l = gc.left;
-      gc_r = gc.right;
-
-      gc.left = c;
-      gc.right = node;
-      node.left = gc_r;
-      c.right = gc_l;
-
-      gc.color = 0;
-      gc.left.color = gc.right.color = 1;
-
-      if ( !parent )
-      {
-        this.root = gc;
-      }
-      else if (parent.left == node)
-      {
-        parent.left = gc;
-      }
-      else if (parent.right == node)
-      {
-        parent.right = gc;
-      }
-
-    } ,
-
-    3:  ()=> {
-      c = node.right;
-      tree = c.left;
-      c.left = node;
-      node.right = tree;
-      c.color = 0;
-      c.left.color = c.right.color = 1;
-      if (parent == null)
-      {
-        this.root = c;
-      }
-      else if (parent.left == node)
-      {
-        parent.left = c;
-      }
-      else if (parent.right == node )
-      {
-        parent.right = c;
-      }
-    } ,
-
-    4:  ()=> {
-
-      c = node.right;
-      gc = node.right.left;
-      gc_l = gc.left;
-      gc_r = gc.right;
-
-      gc.right = c;
-      gc.left = node;
-      node.right = gc_l;
-      c.left = gc_r;
-
-      gc.color = 0;
-      gc.left.color = gc.right.color = 1;
-
-      if (parent == null)
-      {
-        this.root = gc;
-      }
-      else if (parent.left == node )
-      {
-        parent.left = gc;
-      }
-      else if (parent.right == node)
-      {
-        parent.right = gc;
-      }
-
-    }
-
-  };
-
-  if (selectCode[code])
-  {
-    selectCode[code]();
-  }
-
-  if (this.root.color)
-  {
-    this.root.color = 0;
-  }
-
-};
-
-RBTree.prototype.add = function(value, node = null, parent = null)
-{
-  let acc = 0;
-
-  if (this.root === null)
-  {
-    this.root = new RBNode(value);
-    this.root.color = 0;
-  }
-  else
-  {
-    if (node == null)
-    {
-      node = this.root;
-    }
-
-    if (value < node.value)
-    {
-      if (node.left)
-      {
-        acc = this.add.call(this, value, node.left, node);
-        acc += +(node.left.color)
-
-        if (acc == 2)
-        {
-          acc = 0;
-          if (node.right === null)
-          {
-            if (node.left && node.left.left)
-            {
-              this.translate.call(this, node, parent, 1);
-            }
-            else if (node.left && node.left.right)
-            {
-              this.translate.call(this, node, parent, 2);
-            }
-          }
-          else if (node.right.color == 0)
-          {
-            if (node.left && node.left.left)
-            {
-              this.translate.call(this, node, parent, 1);
-            }
-            else if (node.left && node.left.right)
-            {
-              this.translate.call(this, node, parent, 2);
-            }
-          }
-          else if (node.right.color)
-          {
-            this.translate.call(this, node, parent, 0);
-          }
-        }
-      }
-      else
-      {
-        node.left = new RBNode(value);
-        acc = 1;
-      }
-    }
-    else if (value > node.value)
-    {
-      if (node.right)
-      {
-        acc = this.add.call(this, value, node.right, node);
-        acc += (node.right.color);
-
-
-        if (acc == 2)
-        {
-          acc = 0;
-          if (node.left === null)
-          {
-            if (node.right && node.right.right)
-            {
-              this.translate.call(this, node, parent, 3);
-            }
-            else if (node.right && node.right.left)
-            {
-              this.translate.call(this, node, parent, 4);
-            }
-          }
-          else if (node.left.color == 0)
-          {
-            if (node.right && node.right.right)
-            {
-              this.translate.call(this, node, parent, 3);
-            }
-            else if (node.right && node.right.left)
-            {
-              this.translate.call(this, node, parent, 4);
-            }
-          }
-          else if (node.left.color)
-          {
-            this.translate.call(this, node, parent, 0);
-          }
-        }
-      }
-      else
-      {
-        node.right = new RBNode(value);
-        acc = 1;
-      }
-    }
-    else if (value == node.value)
-    {
-      node.count++;
-      acc = 0;
-    }
-
-    if (node.color == 0)
-    {
-      acc = 0;
-    }
-  }
-
-  return acc;
-};
 
 RBTree.prototype.display = function(node = null)
 {
@@ -948,148 +701,264 @@ RBTree.prototype.display = function(node = null)
 
 };
 
-RBTree.prototype.remove_helper = function (parent = null, node = null)
+RBNode.prototype.rightRotate = function(parent, rbtreeClass)
 {
-  let successor = null, parentOfSuccessor = null;
+  let c, t;
 
-  if (node.count > 1)
+  c = this.left;
+  t = c.right;
+
+  c.right = this;
+  this.left = t;
+
+  if (this == parent)
   {
-    node.count--;
+    rbtreeClass.root = c;
   }
-  else if (node.left == null && node.right == null)
+
+  else if (parent.left == this)
   {
-    successor = null;
+    parent.left = c;
   }
-  else if (node.left && node.right == null)
+
+  else if (parent.right == this)
   {
-    successor = node.left;
+    parent.right = c;
   }
-  else if (node.right && node.left == null)
+
+};
+
+RBNode.prototype.leftRotate = function(parent, rbtreeClass)
+{
+  let c, t;
+
+  c = this.right;
+  t = c.left;
+
+  c.left = this;
+  this.right = t;
+
+
+  if (this == parent)
   {
-    successor = node.right;
+    rbtreeClass.root = c;
   }
-  else if (node.right && node.left)
+
+  else if (parent.left == this)
   {
-    if (node.right.left == null)
+    parent.left = c;
+  }
+
+  else if (parent.right == this)
+  {
+    parent.right = c;
+  }
+};
+
+RBNode.prototype.rotationCode = function()
+{
+
+  if (this.left)
+  {
+
+    if (this.right)
     {
-      successor = node.right;
-      successor.left = node.left;
+      if (this.right.color)
+      {
+        return 5;
+      }
+    }
+
+    if (this.left.left)
+    {
+      if (this.left.color && this.left.left.color)
+      {
+        return 1;
+      }
+    }
+
+    if (this.left.right)
+    {
+      if (this.left.color && this.left.right.color)
+      {
+        return 2;
+      }
+    }
+
+  }
+
+  if (this.right )
+  {
+
+    if (this.left)
+    {
+      if (this.left.color)
+      {
+        return 5;
+      }
+    }
+
+    if (this.right.right)
+    {
+      if (this.right.color && this.right.right.color)
+      {
+        return 3;
+      }
+    }
+
+    if (this.right.left)
+    {
+      if (this.right.color && this.right.left.color)
+      {
+        return 4;
+      }
+    }
+
+  }
+
+  return 0;
+
+};
+
+RBTree.prototype.blackHeightErrorHanlder = function(hasImbalance, target, parentOfTarget)
+{
+  let op = 0;
+  let promote = null;
+
+  if (hasImbalance)
+  {
+    op = target.rotationCode();
+  }
+
+  let switcher = {
+    1: () => {
+      promote = target.left;
+      /* right rotate target */
+      target.rightRotate(parentOfTarget, this);
+    },
+
+    2: ()=> {
+      promote = target.left.right;
+      /* left rotate child */
+      target.left.leftRotate(target, this);
+      /* right rotate target */
+      target.rightRotate(parentOfTarget, this);
+    },
+
+    3: () => {
+      promote = target.right;
+      target.leftRotate(parentOfTarget, this);
+    },
+
+    4: () => {
+      promote = target.right.left;
+      /* right rotate child */
+      target.right.rightRotate(target, this);
+      /* left rotate target */
+      target.leftRotate(parentOfTarget, this);
+    },
+
+    5: () => {
+      target.color ^= 1;
+      target.left.color ^=1;
+      target.right.color ^= 1;
+    }
+
+  };
+
+  let functor = switcher[op];
+
+  if (functor )
+  {
+    functor();
+  }
+
+  if (promote != null )
+  {
+    promote.color = 0;
+    promote.left.color = promote.right.color = 1;
+  }
+
+  this.root.color = 0;
+
+};
+
+RBTree.prototype.add = function(value, node = null, parent = null)
+{
+  let count = 0;
+
+  if (node == null)
+  {
+    parent = node = this.root;
+  }
+
+  if (this.root == null)
+  {
+    this.root = parent = node = new RBNode(value);
+  }
+  else if (value < node.value)
+  {
+    if (node.left)
+    {
+      count += this.add(value, node.left, node);
     }
     else
     {
-      parentOfSuccessor = node.right;
-      while (parentOfSuccessor.left.left)
-      {
-        parentOfSuccessor = parentOfSuccessor.left;
-      }
-      successor = parentOfSuccessor.left;
-      parentOfSuccessor.left = parentOfSuccessor.left.left;
-
-      successor.left = node.left;
-      successor.right = node.right;
-      successor.count = node.count;
+      node.left = new RBNode(value);
+      return 1 + node.color;
     }
   }
+  else if (value > node.value)
+  {
+    if (node.right)
+    {
+      count += this.add(value, node.right, node);
+    }
+    else
+    {
+      node.right = new RBNode(value);
+      return 1 + node.color;
+    }
+  }
+  else if (value == node.value)
+  {
+    node.count++;
+  }
 
-  if (parent== null)
+  this.blackHeightErrorHanlder(count >= 2, node, parent) ;
+
+  if (node.color == 0 || count >= 2)
   {
-    this.root = successor;
+    count = 0;
   }
-  else if (parent.left == node)
+  else
   {
-    parent.left = successor;
+    count += node.color;
   }
-  else if (parent.right == node)
-  {
-    parent.right = successor;
-  }
+
+  return count;
 
 };
 
-
-RBTree.prototype.remove = function (value, node = null)
-{
-  if (node == null)
-  {
-    node = this.root;
-  }
-
-  if (node )
-  {
-    if (node.value == value)
-    {
-      this.remove_helper.call(this, null, node);
-    }
-    else if (value < node.value)
-    {
-      if (node.left)
-      {
-        if (node.left.value == value)
-        {
-          this.remove_helper.call(this, node, node.left);
-        }
-        else
-        {
-          this.remove.call(this, value,  node.left)
-        }
-
-      }
-    }
-
-    else if (value > node.value)
-    {
-      if (node.right)
-      {
-        if (node.right.value == value)
-        {
-          this.remove_helper.call(this, node, node.right)
-        }
-        else
-        {
-          this.remove.call(this, value, node.right);
-        }
-      }
-    }
-  }
-};
 
 (
   function()
   {
-    let tree = new AVLTree();
+    let tree = new RBTree();
 
-    let data = [
-      100,
-      50,       500,
-      25,      450,        1000,
-      20,     300,  480,   900,   2000,
-      15,    200,          800
-    ];
+    tree.add(3);
+    tree.add(1 );
+    tree.add(5);
+    tree.add(7);
+    tree.add(6);
+    tree.add(8);
+    tree.add(9 );
+    tree.add(10);
+    tree.add(12);
+    tree.add(12333);
+    tree.add(2);
 
-  tree.add(100);
-  tree.add(50 );
-  tree.add(200);
-  tree.add(300);
-  tree.add(400);
-  tree.add(25);
-  tree.add(5 );
-  tree.add(10);
-
-  data.forEach((ele) => {
-    tree.add( Math.floor(Math.random()* 1000) );
-  });
-
-
-  // tree.balancedRemove(100);
-  // tree.balancedRemove(400);
-  // tree.balancedRemove(500);
-
-
-    // console.log(tree.head.right.right.value);
-    // console.log(tree.head.right.right.right.value);
-
-    tree.repair();
-    tree.head.display();
+    tree.display();
 
   }()
 )
