@@ -738,7 +738,7 @@ void RBTree_leftRotate(struct RBTree *target, struct RBTree *parentOfTarget,  st
 
 void RBTree_rightRotate(struct RBTree *target, struct RBTree *parentOfTarget,  struct RBTreeObj *obj)
 {
-  
+
   struct RBTree *c, *t;
 
 
@@ -771,12 +771,13 @@ int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
   {
     if ( node->left)
     {
-      redCount += RBTree_addhelper(value, node->left, obj ) ;
+      redCount =  RBTree_addhelper(value, node->left, obj ) ;
+      redCount += node->left->color;
     }
     else
     {
       node->left = rbnode(value);
-      return 1 + node->color;
+      return 1 ;
     }
   }
 
@@ -784,12 +785,13 @@ int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
   {
     if ( node->right)
     {
-      redCount += RBTree_addhelper(value, node->right, obj) ;
+      redCount = RBTree_addhelper(value, node->right, obj) ;
+      redCount += node->right->color;
     }
     else
     {
       node->right = rbnode(value);
-      return 1 + node->color;
+      return 1 ;
     }
   }
 
@@ -805,12 +807,13 @@ int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
 
   if (node->color == 0 || redCount >= 2)
   {
-    redCount = 0;
+    return 0;
   }
-  else
+  // else
   {
-    redCount += node->color;
+    // redCount += node->color;
   }
+
 
   return redCount;
 
@@ -838,22 +841,37 @@ void RBTree_add(struct RBTreeObj **obj, int value)
 
 int RBTree_rotationCode(struct RBTree *target)
 {
-  int rotateTarget = 0;
+  int left = 0, right = 0;
+
+  if (target->left == NULL)
+  {
+    left = 0;
+  }
+  else if (target->left->color )
+  {
+    left = 1;
+  }
+
+  if (target->right == NULL)
+  {
+    right = 0;
+  }
+  else if (target->right->color)
+  {
+    right = 1;
+  }
 
   if (target->left)
   {
 
-    if (target->right)
-    {
-      if (target->right->color)
-      {
-        return 5;
-      }
-    }
     if (target->left->left)
     {
       if (target->left->color  && target->left->left->color)
       {
+        if (right)
+        {
+          return 5;
+        }
         return 1;
       }
     }
@@ -862,6 +880,10 @@ int RBTree_rotationCode(struct RBTree *target)
     {
       if (target->left->color && target->left->right->color)
       {
+        if (right)
+        {
+          return 5;
+        }
         return 2;
       }
     }
@@ -871,18 +893,14 @@ int RBTree_rotationCode(struct RBTree *target)
   if (target->right)
   {
 
-    if (target->left)
-    {
-      if (target->left->color)
-      {
-        return 5;
-      }
-    }
-
     if (target->right->right)
     {
       if (target->right->color  && target->right->right->color)
       {
+        if (left)
+        {
+          return 5;
+        }
         return 3;
       }
     }
@@ -891,6 +909,11 @@ int RBTree_rotationCode(struct RBTree *target)
     {
       if (target->right->color && target->right->left->color)
       {
+        if (left )
+        {
+
+          return 5;
+        }
         return 4;
       }
     }
@@ -1042,7 +1065,7 @@ int RBTree_height (struct RBTree *node)
 
 int RBTree_isValid(struct RBTree *node)
 {
-  printf("hight left  %d  height right  %d   ",RBTree_height(node->left)  , RBTree_height(node->right)  );
+  // printf("hight left  %d  height right  %d   ",RBTree_height(node->left)  , RBTree_height(node->right)  );
   return RBTree_height(node->left) == RBTree_height(node->right);
 }
 

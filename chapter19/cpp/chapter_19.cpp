@@ -816,21 +816,38 @@ void RBNode::rightRotate ( RBNode *parent , RBTree *obj )
 
 int RBNode::rotationCode ()
 {
+  int left = 0, right = 0;
+
+  if (this->left == NULL )
+  {
+    left = 0;
+  }
+  else if (this->left->color == 1)
+  {
+    left = 1;
+  }
+
+  if (this->right == NULL)
+  {
+    right = 0;
+  }
+  else if (this->right->color == 1)
+  {
+    right = 1;
+  }
 
   if (this->left)
   {
-    if (this->right)
-    {
-      if (this->right->color)
-      {
-        return 5;
-      }
-    }
+
 
     if (this->left->left)
     {
       if (this->left->color && this->left->left->color)
       {
+          if (right)
+        {
+          return 5;
+        }
         return 1;
       }
     }
@@ -839,6 +856,10 @@ int RBNode::rotationCode ()
     {
       if (this->left->color && this->left->right->color)
       {
+        if (right)
+        {
+          return 5;
+        }
         return 2;
       }
     }
@@ -846,18 +867,16 @@ int RBNode::rotationCode ()
 
   if (this->right)
   {
-    if (this->left)
-    {
-      if (this->left->color)
-      {
-        return 5;
-      }
-    }
+
 
     if (this->right->right)
     {
       if (this->right->color  && this->right->right->color)
       {
+        if (left)
+        {
+          return 5;
+        }
         return 3;
       }
     }
@@ -866,6 +885,10 @@ int RBNode::rotationCode ()
     {
       if (this->right->color && this->right->left->color)
       {
+        if (left)
+        {
+          return 5;
+        }
         return 4;
       }
     }

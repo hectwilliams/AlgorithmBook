@@ -435,31 +435,46 @@ class RBNode:
       parent.right = c
 
   def rotationCode(self):
+    leftColor = rightColor = 0
+
+    if not self.left :
+      leftColor = 0
+    elif self.left.color:
+      leftColor = 1
+
+    if not self.right :
+      rightColor = 0
+    elif self.right.color:
+      rightColor = 1
+
 
     if self.left:
-      if self.right :
-        if self.right.color :
-          return 5
 
       if self.left.left:
         if self.left.color and self.left.left.color:
+          if rightColor:
+            return 5
           return 1
 
       if self.left.right:
         if self.left.color and self.left.right.color:
+          if rightColor:
+            return 5
           return 2
 
     if self.right:
-      if self.left:
-        if self.left.color:
-          return 5
+
 
       if self.right.right:
         if self.right.color and self.right.right.color:
+          if leftColor:
+            return 5
           return 3
 
       if self.right.left:
         if self.right.color and self.right.left.color:
+          if leftColor:
+            return 5
           return 4
 
     return 0
@@ -560,12 +575,12 @@ class RBTree:
 tree =  RBTree()
 
 tree.add(3)
-tree.add(1 )
+tree.add(1)
 tree.add(5)
 tree.add(7)
 tree.add(6)
 tree.add(8)
-tree.add(9 )
+tree.add(9)
 tree.add(10)
 tree.add(12)
 tree.add(12333)

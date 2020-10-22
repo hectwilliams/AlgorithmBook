@@ -691,7 +691,7 @@ RBTree.prototype.display = function(node = null)
       this.display.call (this, node.left)
     }
 
-    console.log(node.value, node.color);
+    console.log( "info:\t ", node.value, node.color);
 
     if (node.right)
     {
@@ -757,22 +757,44 @@ RBNode.prototype.leftRotate = function(parent, rbtreeClass)
 
 RBNode.prototype.rotationCode = function()
 {
+  let no_rotation = 0;
+  let left = 0, right = 0;
+
+  if (this.left == null)
+  {
+    left = 0;
+  }
+
+  else if (this.left.color == 1)
+  {
+    left = 1;
+  }
+
+  if (this.right == null)
+  {
+    right = 0;
+  }
+
+  else if (this.right.color == 1)
+  {
+    right = 1;
+  }
+
+
+
 
   if (this.left)
   {
 
-    if (this.right)
-    {
-      if (this.right.color)
-      {
-        return 5;
-      }
-    }
 
     if (this.left.left)
     {
       if (this.left.color && this.left.left.color)
       {
+        if (right)
+        {
+          return 5;
+        }
         return 1;
       }
     }
@@ -781,6 +803,10 @@ RBNode.prototype.rotationCode = function()
     {
       if (this.left.color && this.left.right.color)
       {
+        if (right)
+        {
+          return 5;
+        }
         return 2;
       }
     }
@@ -790,18 +816,15 @@ RBNode.prototype.rotationCode = function()
   if (this.right )
   {
 
-    if (this.left)
-    {
-      if (this.left.color)
-      {
-        return 5;
-      }
-    }
-
     if (this.right.right)
     {
       if (this.right.color && this.right.right.color)
       {
+        if (left)
+        {
+          return 5;
+        }
+
         return 3;
       }
     }
@@ -810,13 +833,17 @@ RBNode.prototype.rotationCode = function()
     {
       if (this.right.color && this.right.left.color)
       {
+        if (left)
+        {
+          return 5;
+        }
         return 4;
       }
     }
 
   }
 
-  return 0;
+  return no_rotation;
 
 };
 
@@ -847,6 +874,7 @@ RBTree.prototype.blackHeightErrorHanlder = function(hasImbalance, target, parent
 
     3: () => {
       promote = target.right;
+      /* left rotate target */
       target.leftRotate(parentOfTarget, this);
     },
 
@@ -880,6 +908,9 @@ RBTree.prototype.blackHeightErrorHanlder = function(hasImbalance, target, parent
   }
 
   this.root.color = 0;
+  // this.display();
+  // console.log("\n");
+
 
 };
 
@@ -900,46 +931,451 @@ RBTree.prototype.add = function(value, node = null, parent = null)
   {
     if (node.left)
     {
-      count += this.add(value, node.left, node);
+      count  = this.add(value, node.left, node);
+      count += node.left.color;
     }
     else
     {
       node.left = new RBNode(value);
-      return 1 + node.color;
+      return 1 ;
     }
   }
   else if (value > node.value)
   {
     if (node.right)
     {
-      count += this.add(value, node.right, node);
+      count = this.add(value, node.right, node);
+      count += node.right.color;
+
     }
     else
     {
       node.right = new RBNode(value);
-      return 1 + node.color;
+      return 1 ;
     }
   }
   else if (value == node.value)
   {
     node.count++;
+    return 0;
   }
 
+
+  console.log("where ami ", node.value, "count", count)
   this.blackHeightErrorHanlder(count >= 2, node, parent) ;
 
   if (node.color == 0 || count >= 2)
   {
-    count = 0;
+    return 0;
+
   }
-  else
-  {
-    count += node.color;
-  }
+
+  // count = node.color;
 
   return count;
 
 };
 
+RBNode.prototype.successor  = function ()
+{
+
+  let runner = this.right;
+  while (runner.left)
+  {
+    runner = runner.left;
+  }
+
+  return runner.value;
+};
+
+RBNode.prototype.copy = function (src)
+{
+  if (src)
+  {
+    this.left = src.left;
+    this.right = src.right;
+    this.count = src.count;
+    // this.color = src.color;  NOT ALLOWED RED BLACK TREE
+    this.value = src.value;
+  }
+};
+
+RBTree.prototype.findParent = function (target, node = null)
+{
+  if (node == null)
+  {
+    node = this.root;
+  }
+
+  if (node)
+  {
+    if (target.value < node.value)
+    {
+      if (node.left)
+      {
+        if (node.left == target )
+        {
+          return node;
+        }
+        else
+        {
+          this.findParent(target, node.left);
+        }
+      }
+    }
+
+    if (target.value > node.value)
+    {
+      if (node.right)
+      {
+        if (node.right == target)
+        {
+          return node;
+        }
+        else
+        {
+          this.findParent(target, node.right);
+        }
+      }
+    }
+  }
+
+  return null;
+
+};
+
+
+RBTree.prototype.removeHelper = function (target, parent)
+{
+  let hasRed = false;
+  let successor;
+
+  if (target.left && target.right)
+  {
+    successor = target.successor();
+    this.remove(successor);
+    target.value = successor;
+  }
+
+  else if (target.left)
+  {
+
+    if (target.color || target.left.color)
+    {
+      target.color = 0;
+      hasRed = true;
+    }
+
+    target.copy(target.left);
+
+    if (target != this.root && !hasRed)
+    {
+      this.removeHelperBalance (target, 1, parent);
+    }
+
+  }
+
+  else if (target.right)
+  {
+
+    if (target.color || target.right.color)
+    {
+      target.color = 0;
+      hasRed = true;
+    }
+
+    target.copy(target.right)
+
+    if (target != this.root && !hasRed)
+    {
+      this.removeHelperBalance (target, -1, parent);
+    }
+
+  }
+
+  else if ( !target.left && !target.right )
+  {
+
+    if (this.root == target)
+    {
+      this.root = null;
+    }
+
+    else if (parent.left == target)
+    {
+
+      parent.left = null;
+
+      if (!target.color) // leaf node is not red
+      {
+        this.removeHelperBalance (null, 1, parent);
+      }
+
+    }
+
+    else if (parent.right == target   )
+    {
+
+      parent.right = null;
+
+      if (!target.color) // leaf node is not red
+      {
+        this.removeHelperBalance(null, -1, parent);
+      }
+
+    }
+
+  }
+
+};
+
+
+RBTree.prototype.removeHelperBalance = function (u, dir, p)
+{
+  let s;
+  let sibColorLeft, sibColorRight, sibColor;
+
+
+  if (dir == -1)  // update node (i.e. u ) is located at p.right
+  {
+    s = p.left;
+  }
+
+  if (dir == 1)  // update node (i.e. u ) is located at p.left
+  {
+    s = p.right;
+  }
+
+  // find colors of sibling subtree
+
+  sibColor = s.color;
+
+  if (s.left)
+  {
+    sibColorLeft = s.left.color;
+  }
+  else
+  {
+    sibColorLeft = 0;
+  }
+
+  if (s.right)
+  {
+    sibColorRight = s.right.color;
+  }
+  else
+  {
+    sibColorRight = 0;
+  }
+
+  if (sibColor == 0)
+  {
+    // CASE:  sibling black and black children
+
+    if (sibColorLeft == 0 && sibColorRight == 0)
+    {
+      // recolor sibling
+      s.color ^= 1;
+
+      // add black to parent
+      p.color--;
+    }
+
+    // CASE: sibling black w / red child
+    else if (sibColorLeft == 1)
+    {
+
+      if (dir == -1)   // left left case
+      {
+        // set sibling child black
+        s.left.color = 0;
+
+        // swap colors or parent and sibling
+        {
+          let tmp = s.color;
+          s.color = p.color;
+          p.color = tmp;
+        }
+
+        // right rotate parent
+        p.rightRotate( this.findParent(p), this );
+
+
+        // remove double black node (iff node null)
+        if (p.right)
+        {
+          p.right.color--;
+        }
+      }
+
+
+      if (dir == 1)  // right left case
+      {
+        // set sibling  red
+        s.color = 1;
+
+        // set sibling child black
+        s.left.color = 0;
+
+        /// right rotate sibling
+        s.rightRotate(p, this);
+
+        // case 2 ( recursion )
+        this.removeHelperBalance(u, dir, p );  // left rotation or right rotation
+
+      }
+
+    }
+
+    // CASE: sibling black w / red child
+
+    else if (sibColorRight == 1 )
+    {
+
+      if (dir == 1)   // right right case
+      {
+        // set sibling child black
+        s.right.color = 0;
+
+        // swap colors or parent and sibling
+        {
+          let tmp = s.color;
+          s.color = p.color;
+          p.color = tmp;
+        }
+
+        // left rotate parent
+        p.leftRotate( this.findParent(p), this );
+
+        // remove double black node (iff node null)
+        if (p.left)
+        {
+          p.left.color--;
+        }
+      }
+
+      if (dir == -1)  // left right case
+      {
+        // set sibling red
+        s.color = 1;
+
+        // set sibling child black
+        s.right.color = 0;
+
+        // left rotate sibling
+        s.leftRotate(p, this);
+
+        // case 2 (recursion)
+        this.removeHelperBalance(u, dir, p);  // left rotation or right rotation
+      }
+    }
+  }
+
+  // CASE 4: sibling red
+
+  if (sibColor == 1)
+  {
+    // swap colors of parent and sibling
+    {
+      let tmp = s.color;
+      s.color = p.color;
+      p.color = tmp;
+    }
+
+    if (dir == 1)
+    {
+      p.leftRotate( this.findParent(p), this );
+    }
+
+    if (dir == -1)
+    {
+      p.rightRotate(this.findParent(p) , this);
+    }
+
+    // CASE 1,2, or 3 (recursion)
+    this.removeHelperBalance(p.left, 1, p);
+
+  }
+
+};
+
+RBTree.prototype.remove = function (value, node = null, parent = null)
+{
+  if (!node)
+  {
+    parent = node = this.root;
+  }
+
+  if (node)
+  {
+
+    if (value == node.value)
+    {
+      this.removeHelper(node, parent);
+    }
+
+    else if (value < node.value)
+    {
+      this.remove(value, node.left, node);
+    }
+
+    else if (value > node.value)
+    {
+      this.remove(value, node.right, node);
+    }
+
+    if (node.color == -1)
+    {
+      if (node == this.root)
+      {
+        this.root.color = 0;
+      }
+      else
+      {
+        if (parent.left == node)
+        {
+          this.removeHelperBalance(node, 1, parent );   // double black found
+        }
+        else if (parent.right == node)
+        {
+          this.removeHelperBalance(node, - 1, parent );   // double black found
+        }
+      }
+    }
+
+  }
+
+};
+
+
+RBNode.prototype.heights = function (collection = [], curr = [],  count = 0)
+{
+
+  count += this.color == 0;
+
+  if (this.left == null  && this.right == null)  // leaf
+  {
+    count += 1;
+    collection.push(count)
+    curr.push(this.value);
+    console.log(" -- > \t\t", curr);
+  }
+
+  if (this.left)
+  {
+    this.left.heights(collection, curr.concat(this.value),  count);
+  }
+
+  if (this.right)
+  {
+    this.right.heights(collection, curr.concat(this.value),  count);
+  }
+
+  if (curr.length == 0)
+  {
+    console.log(collection);
+  }
+};
 
 (
   function()
@@ -958,7 +1394,11 @@ RBTree.prototype.add = function(value, node = null, parent = null)
     tree.add(12333);
     tree.add(2);
 
+    // tree.remove(12333);
     tree.display();
+
+    tree.root.heights();
+    // console.log(tree.root.value)
 
   }()
 )
