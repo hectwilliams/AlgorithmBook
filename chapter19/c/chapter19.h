@@ -49,11 +49,6 @@ struct RBTree
   int count;
 };
 
-/*
-  double black nodes have color = -1
-  double black NULL nodes have count = -1
-*/
-
 struct RBTreeObj
 {
   struct RBTree *root;
@@ -65,25 +60,27 @@ struct RBTreeObj *rbobj ();
 
 void RBTree_display(struct RBTree *node);
 int RBTree_contains(struct RBTree **tree, const int value);
-// int RBTree_add(struct RBTree **root ,  const int value);
 
 void RBTree_add(struct RBTreeObj **obj, int value);
-int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj); // helper
+int RBTree_addhelper(int value, struct RBTree *node , struct RBTree *parent, struct RBTreeObj *obj); // helper
 int RBTree_height (struct RBTree *node);  // helper
 
 
 void RBTree_leftRotate(struct RBTree *target, struct RBTree *parentOfTarget,  struct RBTreeObj *obj);
 void RBTree_rightRotate(struct RBTree *target, struct RBTree *parentOfTarget  ,struct RBTreeObj *obj);
-void RBTree_blackErrorCheck( int hasImbalance , struct RBTree *target , struct RBTreeObj *obj ); // helper avl add
+void RBTree_blackErrorCheck( int hasImbalance , struct RBTree *target , struct RBTree *parent , struct RBTreeObj *obj ); // helper avl add
 int RBTree_rotationCode(struct RBTree *target); // helper avl add
 
-
 struct RBTree *findParent (struct RBTree *tree, struct RBTree *target);
+
+int RBTree_successor (struct RBTree * node);
+void RBTree_copyAttr (struct RBTree *dest, struct RBTree *src);
 void RBTree_remove(struct RBTreeObj **obj, int value);
-int RBTree_isValid(struct RBTree *node);
+void RBTree_remove_(int value, struct RBTree *node, struct RBTree *parent, struct RBTreeObj *obj);
+void RBTree_remove_helper(struct RBTree *target, struct RBTree *parent, struct RBTreeObj *obj);
+void RBTree_remove_helper_balance(struct RBTree *u, int dir, struct RBTree *p, struct RBTreeObj *obj);
 
-// int RBTree_remove_helper(struct RBTree *parent, struct RBTree **target);
-
+void swap(void *a, void *b, int mode);
 #endif
 
 

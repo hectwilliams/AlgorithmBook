@@ -479,6 +479,20 @@ class RBNode:
 
     return 0
 
+  def successor (self):
+    runner = self.right
+    while runner.left:
+      runner = runner.left
+    return runner.value
+
+  def copy(self, src):
+    if src:
+      self.left = src.left
+      self.right = src.right
+      self.count = src.count
+      self.value = src.value
+
+
 class RBTree:
 
   def __init__(self):
@@ -572,6 +586,256 @@ class RBTree:
 
     self.root.color = 0
 
+  def findParent (self, target, node = None):
+    a = b = None
+
+    if not node :
+      node = self.root
+
+    if node:
+
+      if node.left:
+        a = self.findParent(target, node.left)
+
+      if node.right:
+        b = self.findParent(target, node.right)
+
+      if node.right == target:
+        return node
+
+      if node.left == target:
+        return node
+
+    if a:
+      return a
+
+    return b
+
+
+  def remove (self, value, node = None, parent = None):
+    if not node:
+      parent = node = self.root
+
+    if node:
+
+      if value == node.value :
+
+        if node.count > 1:
+          node.count -= 1
+        else:
+          self.removeHelper(node, parent)
+
+      elif value < node.value and node.left:
+        self.remove(value, node.left, node)
+
+      elif value > node.value and node.right:
+        self.remove (value, node.right, node)
+
+  def removeHelper (self, target, parent) :
+    isDoubleBlack = None
+    successor = None
+
+    if target.left != None and target.right != None :
+
+      successor = target.successor()
+      self.remove(successor)
+      target.value  = successor
+
+    elif target.left:
+      isDoubleBlack = (target.color  or target.left.color)  == 0
+
+      target.copy(target.left)
+
+      if not isDoubleBlack:
+        target.color = 0
+      else:
+        self.removeHelperBalance(target, 1, parent)
+
+    elif target.right:
+      isDoubleBlack = (target.color  or target.right.color)  == 0
+
+      target.copy(target.right)
+
+      if not isDoubleBlack:
+        target.color = 0
+      else:
+        self.removeHelperBalance(target, -1, parent)
+
+    elif (not target.left) and (not target.right):
+
+      isDoubleBlack = target.color == 0
+
+      if self.root == target:
+        self.root = None
+
+      elif parent.left == target:
+        parent.left = None
+
+        if isDoubleBlack:
+          self.removeHelperBalance(None, 1, parent)
+
+      elif parent.right == target:
+        parent.right = None
+
+        if isDoubleBlack:
+          self.removeHelperBalance(None, -1, parent)
+
+  def removeHelperBalance (self, u, dir, p) :
+
+    s = sibColorLeft = sibColorRight = sibColor = None
+
+    if self.root == u:
+      if self.root:
+        self.root.color = 0
+      return
+
+    if dir == -1:
+      s = p.left
+
+    if dir == 1:
+      s = p.right
+
+    if s:
+
+      sibColor = s.color
+
+      if s.left:
+        sibColorLeft = s.left.color
+      else:
+        sibColorLeft = 0
+
+      if s.right:
+        sibColorRight = s.right.color
+      else:
+        sibColorRight = 0
+
+
+    if sibColor == 0:
+
+      if sibColorLeft == 0 and sibColorRight == 0: # CASE: SIBLING BLACK WITH BLACK CHILDREN
+
+        # recolor sibling red
+        s.color  = 1
+
+        # recolor  parent
+        if p.color == 1:
+
+          p.color = 0
+
+        elif p.color == 0:
+
+          u = p
+
+          p = self.findParent(p)
+
+          if p.left == u:
+            dir = 1
+
+          if p.right == u:
+            dir = -1
+
+          return self.removeHelperBalance(u, dir, p)
+
+      elif sibColorLeft == 1 and sibColorRight == 1:
+        if dir == -1:
+
+          # SWAP COLORS OF PARENT AND SIBLING
+          s.color, p.color = p.color, s.color
+
+          # SET SIBLING CHILD BLACK
+          s.left.color = 0
+
+          # RIGHT ROTATE PARENT
+          p.rightRotate(self.findParent(p), self)
+
+        if dir == 1:
+
+          # SWAP COLORS OF PARENT AND SIBLING
+          s.color, p.color = p.color, s.color
+
+          #SET SIBLING CHILD BLACK
+          s.right.color = 0
+
+          #LEFT ROTATE PARENT
+          p.leftRotate(self.findParent(p), self)
+
+      elif sibColorLeft == 1:  # CASE: SIBLING BLACK WITH RED CHILD
+
+        if dir == -1: # left left case
+
+          # SET SIBLING CHILD BLACK
+          s.left.color = 0
+
+          # EXCHANGE COLOR BETWEEN PARENT AND SIBLING
+          s.color, p.color = p.color, s.color
+
+          # RIGHT ROTATE PARENT
+          p.rightRotate(self.findParent(p), self)
+
+        if dir == 1:  # right left case
+
+          # SET SIBLING RED
+          s.color = 1
+
+          # SET SIBLING CHILD BLACK
+          s.left.color = 0
+
+          # RIGHT ROTATE SIBLING
+          s.rightRotate(p, self)
+
+          # case recursion
+          self.removeHelperBalance(u, dir, p)
+
+      elif sibColorRight == 1:  # CASE: SIBLING BLACK WITH RED CHILD
+
+        if dir == 1:  # RIGHT RIGHT CASE
+
+          # SET SIBLING BLACK
+          s.right.color = 0
+
+          # EXCHANGE COLOR BETWEEN SIBLING AND PARENT
+          s.color, p.color = p.color, s.color
+
+          #LEFT ROTATE PARENT
+          p.leftRotate( self.findParent(p) , self)
+
+        if dir == -1 :  # LEFT RIGHT CASE
+
+          # SET SIBLING RED
+          s.color = 1
+
+          # SET SIBLING CHILD BLACK
+          s.right.color = 0
+
+          # LEFT ROTATE SIBLING
+          s.leftRotate(p, self)
+
+          #recursion
+          self.removeHelperBalance(u, dir, p)
+
+    if sibColor == 1:  # CASE: SIBLING RED
+
+      # EXCHANGE PARENT AND SIBLING COLOR
+      s.color, p.color = p.color, s.color
+
+      if dir == 1:
+
+        # LEFT ROTATE PARENT
+        p.leftRotate( self.findParent(p), self)
+
+        # RECURSION
+        return self.removeHelperBalance(p.left, 1, p)
+
+      if dir == -1:
+
+        # RIGHT ROTATE PARENT
+        p.rightRotate(self.findParent(p), self)
+
+        # RECURSION
+        return self.removeHelperBalance(p.right, -1, p)
+
+
+
 tree =  RBTree()
 
 tree.add(3)
@@ -586,4 +850,5 @@ tree.add(12)
 tree.add(12333)
 tree.add(2)
 
+tree.remove(6)
 tree.display()

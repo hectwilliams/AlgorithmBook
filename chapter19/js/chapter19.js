@@ -677,7 +677,7 @@ RBTree.prototype.contains = function(value, node = null)
 };
 
 
-RBTree.prototype.display = function(node = null)
+RBTree.prototype.display = function(node = null, obj = {msg: "" })
 {
   if (node == null)
   {
@@ -688,17 +688,22 @@ RBTree.prototype.display = function(node = null)
   {
     if (node.left )
     {
-      this.display.call (this, node.left)
+      this.display.call (this, node.left, obj)
     }
 
-    console.log( "info:\t ", node.value, node.color);
+    obj.msg +=  JSON.stringify (  { count: node.count , val: node.value, color: node.color} )  + "\n";
 
     if (node.right)
     {
-      this.display.call(this, node.right);
+
+      this.display.call(this, node.right, obj);
     }
   }
 
+  if (this.root == node)
+  {
+    console.log(obj.msg);
+  }
 };
 
 RBNode.prototype.rightRotate = function(parent, rbtreeClass)
@@ -785,8 +790,6 @@ RBNode.prototype.rotationCode = function()
 
   if (this.left)
   {
-
-
     if (this.left.left)
     {
       if (this.left.color && this.left.left.color)
@@ -960,8 +963,6 @@ RBTree.prototype.add = function(value, node = null, parent = null)
     return 0;
   }
 
-
-  console.log("where ami ", node.value, "count", count)
   this.blackHeightErrorHanlder(count >= 2, node, parent) ;
 
   if (node.color == 0 || count >= 2)
@@ -970,11 +971,11 @@ RBTree.prototype.add = function(value, node = null, parent = null)
 
   }
 
-  // count = node.color;
-
   return count;
 
 };
+
+
 
 RBNode.prototype.successor  = function ()
 {
@@ -995,13 +996,17 @@ RBNode.prototype.copy = function (src)
     this.left = src.left;
     this.right = src.right;
     this.count = src.count;
-    // this.color = src.color;  NOT ALLOWED RED BLACK TREE
     this.value = src.value;
+    // this.color = src.color;  NOT ALLOWED RED BLACK TREE
   }
 };
 
+
+
 RBTree.prototype.findParent = function (target, node = null)
 {
+  let a = null, b = null;
+
   if (node == null)
   {
     node = this.root;
@@ -1009,343 +1014,473 @@ RBTree.prototype.findParent = function (target, node = null)
 
   if (node)
   {
-    if (target.value < node.value)
+
+    if (node.left)
     {
-      if (node.left)
-      {
-        if (node.left == target )
-        {
-          return node;
-        }
-        else
-        {
-          this.findParent(target, node.left);
-        }
-      }
+     a =  this.findParent(target, node.left);
     }
 
-    if (target.value > node.value)
+
+    if (node.right)
     {
-      if (node.right)
-      {
-        if (node.right == target)
-        {
-          return node;
-        }
-        else
-        {
-          this.findParent(target, node.right);
-        }
-      }
+      b = this.findParent(target, node.right);
+
+    }
+
+    if (node.right == target )
+    {
+      return node;
+    }
+
+    if (node.left == target)
+    {
+      return node;
     }
   }
 
-  return null;
-
+  return a || b;
 };
 
-
-RBTree.prototype.removeHelper = function (target, parent)
+RBTree.prototype.removeHelper = async function (target, parent)
 {
-  let hasRed = false;
-  let successor;
+  let isDoubleBlack;
+  let callbackMessage = "rebalanced tree";
 
-  if (target.left && target.right)
-  {
-    successor = target.successor();
-    this.remove(successor);
-    target.value = successor;
-  }
+  return new Promise ( (resolve, reject) => {
 
-  else if (target.left)
-  {
-
-    if (target.color || target.left.color)
+    if (target.left != null && target.right != null)
     {
-      target.color = 0;
-      hasRed = true;
+
+      return new Promise ( (resolve2) => {
+        resolve2({newSuccessor : target.successor() , node : target});
+      })
+
+      .then ( (successorshipObj) => {
+
+        this.remove(successorshipObj.newSuccessor)
+
+        .then ( (msg) => {
+
+          // update node w/ new successsor
+          successorshipObj.node.value = successorshipObj.newSuccessor;
+
+          //resolve ack
+          return Promise.resolve(1);
+        })
+
+        .then ((msg) => {
+         return  resolve(callbackMessage + " successorship");
+        })
+
+        .catch((err) => {
+          reject(" successorship error")
+        })
+
+      })
+
     }
 
-    target.copy(target.left);
-
-    if (target != this.root && !hasRed)
-    {
-      this.removeHelperBalance (target, 1, parent);
-    }
-
-  }
-
-  else if (target.right)
-  {
-
-    if (target.color || target.right.color)
-    {
-      target.color = 0;
-      hasRed = true;
-    }
-
-    target.copy(target.right)
-
-    if (target != this.root && !hasRed)
-    {
-      this.removeHelperBalance (target, -1, parent);
-    }
-
-  }
-
-  else if ( !target.left && !target.right )
-  {
-
-    if (this.root == target)
-    {
-      this.root = null;
-    }
-
-    else if (parent.left == target)
+    else if (target.left)
     {
 
-      parent.left = null;
+      isDoubleBlack = (target.color || target.left.color) == 0;
 
-      if (!target.color) // leaf node is not red
+      target.copy(target.left);
+
+      if ( ! isDoubleBlack)
       {
-        this.removeHelperBalance (null, 1, parent);
-      }
-
-    }
-
-    else if (parent.right == target   )
-    {
-
-      parent.right = null;
-
-      if (!target.color) // leaf node is not red
-      {
-        this.removeHelperBalance(null, -1, parent);
-      }
-
-    }
-
-  }
-
-};
-
-
-RBTree.prototype.removeHelperBalance = function (u, dir, p)
-{
-  let s;
-  let sibColorLeft, sibColorRight, sibColor;
-
-
-  if (dir == -1)  // update node (i.e. u ) is located at p.right
-  {
-    s = p.left;
-  }
-
-  if (dir == 1)  // update node (i.e. u ) is located at p.left
-  {
-    s = p.right;
-  }
-
-  // find colors of sibling subtree
-
-  sibColor = s.color;
-
-  if (s.left)
-  {
-    sibColorLeft = s.left.color;
-  }
-  else
-  {
-    sibColorLeft = 0;
-  }
-
-  if (s.right)
-  {
-    sibColorRight = s.right.color;
-  }
-  else
-  {
-    sibColorRight = 0;
-  }
-
-  if (sibColor == 0)
-  {
-    // CASE:  sibling black and black children
-
-    if (sibColorLeft == 0 && sibColorRight == 0)
-    {
-      // recolor sibling
-      s.color ^= 1;
-
-      // add black to parent
-      p.color--;
-    }
-
-    // CASE: sibling black w / red child
-    else if (sibColorLeft == 1)
-    {
-
-      if (dir == -1)   // left left case
-      {
-        // set sibling child black
-        s.left.color = 0;
-
-        // swap colors or parent and sibling
-        {
-          let tmp = s.color;
-          s.color = p.color;
-          p.color = tmp;
-        }
-
-        // right rotate parent
-        p.rightRotate( this.findParent(p), this );
-
-
-        // remove double black node (iff node null)
-        if (p.right)
-        {
-          p.right.color--;
-        }
-      }
-
-
-      if (dir == 1)  // right left case
-      {
-        // set sibling  red
-        s.color = 1;
-
-        // set sibling child black
-        s.left.color = 0;
-
-        /// right rotate sibling
-        s.rightRotate(p, this);
-
-        // case 2 ( recursion )
-        this.removeHelperBalance(u, dir, p );  // left rotation or right rotation
-
-      }
-
-    }
-
-    // CASE: sibling black w / red child
-
-    else if (sibColorRight == 1 )
-    {
-
-      if (dir == 1)   // right right case
-      {
-        // set sibling child black
-        s.right.color = 0;
-
-        // swap colors or parent and sibling
-        {
-          let tmp = s.color;
-          s.color = p.color;
-          p.color = tmp;
-        }
-
-        // left rotate parent
-        p.leftRotate( this.findParent(p), this );
-
-        // remove double black node (iff node null)
-        if (p.left)
-        {
-          p.left.color--;
-        }
-      }
-
-      if (dir == -1)  // left right case
-      {
-        // set sibling red
-        s.color = 1;
-
-        // set sibling child black
-        s.right.color = 0;
-
-        // left rotate sibling
-        s.leftRotate(p, this);
-
-        // case 2 (recursion)
-        this.removeHelperBalance(u, dir, p);  // left rotation or right rotation
-      }
-    }
-  }
-
-  // CASE 4: sibling red
-
-  if (sibColor == 1)
-  {
-    // swap colors of parent and sibling
-    {
-      let tmp = s.color;
-      s.color = p.color;
-      p.color = tmp;
-    }
-
-    if (dir == 1)
-    {
-      p.leftRotate( this.findParent(p), this );
-    }
-
-    if (dir == -1)
-    {
-      p.rightRotate(this.findParent(p) , this);
-    }
-
-    // CASE 1,2, or 3 (recursion)
-    this.removeHelperBalance(p.left, 1, p);
-
-  }
-
-};
-
-RBTree.prototype.remove = function (value, node = null, parent = null)
-{
-  if (!node)
-  {
-    parent = node = this.root;
-  }
-
-  if (node)
-  {
-
-    if (value == node.value)
-    {
-      this.removeHelper(node, parent);
-    }
-
-    else if (value < node.value)
-    {
-      this.remove(value, node.left, node);
-    }
-
-    else if (value > node.value)
-    {
-      this.remove(value, node.right, node);
-    }
-
-    if (node.color == -1)
-    {
-      if (node == this.root)
-      {
-        this.root.color = 0;
+        target.color = 0;
+        return resolve (callbackMessage );
       }
       else
       {
-        if (parent.left == node)
+        resolve (this.removeHelperBalance (target, 1, parent));
+      }
+    }
+
+    else if (target.right)
+    {
+      isDoubleBlack = (target.color || target.right.color) == 0;
+
+      target.copy(target.right)
+
+      if (! isDoubleBlack)
+      {
+        target.color = 0;
+        return resolve (callbackMessage );
+      }
+      else
+      {
+        resolve (this.removeHelperBalance (target, -1, parent));      // ret promise obj
+      }
+    }
+
+    else if ( target.left == null && target.right == null )
+    {
+      isDoubleBlack = (target.color == 0);
+
+      if (this.root == target)
+      {
+        this.root = null;
+        return resolve (callbackMessage );
+      }
+
+      else if (parent.left == target)
+      {
+        parent.left = null;
+
+        if ( !isDoubleBlack  )
         {
-          this.removeHelperBalance(node, 1, parent );   // double black found
+          return resolve (callbackMessage );
         }
-        else if (parent.right == node)
+        else
         {
-          this.removeHelperBalance(node, - 1, parent );   // double black found
+          return resolve( this.removeHelperBalance (null, 1, parent));
+        }
+      }
+
+      else if (parent.right == target )
+      {
+        parent.right = null;
+
+        if ( !isDoubleBlack)
+        {
+          return resolve (callbackMessage );
+        }
+        else
+        {
+          return resolve( this.removeHelperBalance(null, -1, parent));
+        }
+
+      }
+    }
+
+  })
+
+};
+
+
+RBTree.prototype.removeHelperBalance = async  function (u, dir, p)
+{
+
+  let callbackMessage = "rebalanced tree";
+
+  return new Promise ((resolve) => {
+
+    let s = null;
+    let sibColorLeft = 0, sibColorRight = 0, sibColor = 0;
+
+    if (this.root == u && this.root)
+    {
+      this.root.color = 0;
+      return resolve(callbackMessage);
+    }
+
+    if (dir == -1)  // update node (i.e. u ) is located at p.right
+    {
+      s = p.left;
+    }
+
+    if (dir == 1)  // update node (i.e. u ) is located at p.left
+    {
+      s = p.right;
+    }
+
+    // find colors of sibling subtree
+
+    if (s)
+    {
+
+      sibColor = s.color;
+
+      if (s.left)
+      {
+        sibColorLeft = s.left.color;
+      }
+      else
+      {
+        sibColorLeft = 0;
+      }
+
+      if (s.right)
+      {
+        sibColorRight = s.right.color;
+      }
+      else
+      {
+        sibColorRight = 0;
+      }
+    }
+
+    else
+    {
+      return resolve("");
+    }
+
+
+    if (sibColor === 0)
+    {
+      // CASE:  sibling black and black children
+
+      if (sibColorLeft == 0 && sibColorRight == 0)
+      {
+        // recolor sibling to red
+        s.color = 1;
+
+        // red parent recolor
+        if (p.color == 1)
+        {
+          p.color = 0;
+
+          return resolve(callbackMessage);
+        }
+
+        // black parent
+
+        else if (p.color == 0)
+        {
+          u = p;
+
+          p = this.findParent(p);
+
+          if (p.left == u )
+          {
+            dir = 1;
+          }
+
+          if (p.right == u)
+          {
+            dir = -1;
+          }
+
+          return resolve (this.removeHelperBalance(u, dir, p));
+        }
+      }
+
+      else if (sibColorLeft == 1 && sibColorRight == 1)
+      {
+        if (dir == -1)   // left left
+        {
+
+          // swap colors or parent and sibling
+          {
+            let tmp = s.color;
+            s.color = p.color;
+            p.color = tmp;
+          }
+
+          // set sibling child black
+          s.left.color = 0;
+
+          // right rotate parent
+          p.rightRotate( this.findParent(p), this );
+
+          return resolve(callbackMessage);
+
+        }
+
+        if (dir == 1)
+        {
+
+          // swap colors or parent and sibling
+          {
+            let tmp = s.color;
+            s.color = p.color;
+            p.color = tmp;
+          }
+
+           // set sibling child black
+           s.right.color = 0;
+
+          // left rotate parent
+           p.leftRotate(  this.findParent(p), this );
+
+          return resolve(callbackMessage);
+        }
+      }
+
+      // CASE: sibling black w / red child
+      else if (sibColorLeft === 1)
+      {
+
+        if (dir == -1 )   // left left case
+        {
+
+          // set sibling child black
+          s.left.color = 0;
+
+          // swap colors or parent and sibling
+          {
+            let tmp = s.color;
+            s.color = p.color;
+            p.color = tmp;
+          }
+
+          // right rotate parent
+          p.rightRotate( this.findParent(p), this );
+
+          return resolve(callbackMessage);
+
+        }
+
+        if (dir == 1)  // right left case
+        {
+          // set sibling  red
+          s.color = 1;
+
+          // set sibling child black
+          s.left.color = 0;
+
+          /// right rotate sibling
+          s.rightRotate(p, this);
+
+          // case recursion
+          return  resolve(this.removeHelperBalance(u, dir, p ));
+        }
+      }
+
+
+      // CASE: sibling black w / red child
+
+      else if (sibColorRight === 1 )
+      {
+
+        if (dir == 1) // right right case
+        {
+
+          // set sibling child black
+          s.right.color = 0;
+
+          // swap colors or parent and sibling
+          {
+            let tmp = s.color;
+            s.color = p.color;
+            p.color = tmp;
+          }
+
+          // left rotate parent
+          p.leftRotate( this.findParent(p), this );
+
+          return resolve(callbackMessage);
+
+        }
+
+        if (dir == -1)  // left right case
+        {
+          // set sibling red
+          s.color = 1;
+
+          // set sibling child black
+          s.right.color = 0;
+
+          // left rotate sibling
+          s.leftRotate(p, this);
+
+          // case recursion
+          return  resolve (this.removeHelperBalance(u, dir, p));
         }
       }
     }
 
-  }
+    // CASE : sibling red
+
+    else if (sibColor === 1)
+    {
+      // swap colors of parent and sibling
+      {
+        let tmp = s.color;
+        s.color = p.color;
+        p.color = tmp;
+      }
+
+      if (dir == 1)  // sibling on right of parent
+      {
+        // left rotate
+        p.leftRotate( this.findParent(p), this );
+
+        // recursion
+        return resolve(this.removeHelperBalance(p.left, 1, p));
+      }
+
+      if (dir == -1)  // sibling on left of parent
+      {
+        // right rotation
+        p.rightRotate(this.findParent(p), this);
+
+        // case recursion
+        return resolve(this.removeHelperBalance(p.right, -1, p));
+      }
+
+    }
+
+    return resolve(callbackMessage);
+  });
 
 };
+
+
+
+ RBTree.prototype.remove =  async function (value, node = null, parent = null)
+{
+
+  return new Promise ( (resolve, reject) => {
+
+    if (!node)
+    {
+      parent = node = this.root;
+    }
+
+    if (node)
+    {
+
+      if (value == node.value)
+      {
+        if ( node.count > 1)
+        {
+          node.count--;
+          return resolve("multiple occurence of value decrementing count ");
+        }
+        else
+        {
+          return resolve (this.removeHelper(node, parent));
+        }
+      }
+
+      else if (value < node.value)
+      {
+        if (node.left)
+        {
+          resolve (this.remove (value, node.left, node)); // recursion
+        }
+        else
+        {
+          resolve (`warning, value not found (probably removed already )`);
+        }
+      }
+
+      else if (value > node.value)
+      {
+        if (node.right)
+        {
+          resolve (this.remove(value, node.right, node)); // recursion
+        }
+        else
+        {
+          resolve (`wanring, value not found (probably removed already )`);
+        }
+      }
+
+    }
+
+    else
+    {
+      reject("err, tree does not exist");
+    }
+
+  })
+
+};
+
 
 
 RBNode.prototype.heights = function (collection = [], curr = [],  count = 0)
@@ -1358,7 +1493,6 @@ RBNode.prototype.heights = function (collection = [], curr = [],  count = 0)
     count += 1;
     collection.push(count)
     curr.push(this.value);
-    console.log(" -- > \t\t", curr);
   }
 
   if (this.left)
@@ -1373,32 +1507,85 @@ RBNode.prototype.heights = function (collection = [], curr = [],  count = 0)
 
   if (curr.length == 0)
   {
-    console.log(collection);
+    return collection;
   }
 };
 
+RBTree.prototype.isValidRedBlackTree = function ()
+{
+  return this.root.heights().every((element, noop, collection) => {return element == collection[0]}  );
+};
+
+
+RBTree.prototype.removeTest = function( num_elements = 200 /* number of values to add to tree */)
+{
+  let tree = new RBTree();
+  let randomPushedDataFromTestData = [];
+  let treeValues = [];
+
+  // load arrays
+  for (let i = 0; i < num_elements; i++)
+  {
+    let data = Math.round(Math.random() * 1000);
+
+    treeValues.push(data);
+
+    // load random data to test tree
+    if (Math.round(Math.random()) )
+    {
+      randomPushedDataFromTestData.push(data);
+    }
+  }
+
+
+  // chain insertion promises
+  treeValues.reduce( (noop, value, index, array) =>{
+    array[index] = Promise.resolve(tree.add(value));  //insertion
+  }, 0)
+
+  // insert values to tree (async)
+  Promise.all(treeValues)
+
+  // chain remove tree calls
+  randomPushedDataFromTestData.reduce((noop, value, index, array) => {
+     array[index] = Promise.resolve( tree.remove(value));  // remove
+     return null;
+  }, 0)
+
+
+  // remove values from tree  and validate tree (async)
+
+   return Promise.all(randomPushedDataFromTestData)
+
+   .then( (resp) => {
+
+    // console.log(resp); // response/ack per deletion of value
+
+    if (tree.isValidRedBlackTree())
+    {
+      return Promise.resolve("valid tree");
+    }
+    else
+    {
+      return Promise.reject("error: tree is not valid");
+    }
+
+   })
+
+   .catch( err => {return Promise.reject(err) } );
+
+};
+
+
+
+// RED BLACK TREE TEST REMOVAL
 (
   function()
   {
-    let tree = new RBTree();
 
-    tree.add(3);
-    tree.add(1 );
-    tree.add(5);
-    tree.add(7);
-    tree.add(6);
-    tree.add(8);
-    tree.add(9 );
-    tree.add(10);
-    tree.add(12);
-    tree.add(12333);
-    tree.add(2);
-
-    // tree.remove(12333);
-    tree.display();
-
-    tree.root.heights();
-    // console.log(tree.root.value)
-
+    let tree = new RBTree;
+    tree.removeTest(1000)  //load 1000 random values to tree
+    .then( x => console.log(x))
+    .catch( x => console.log(x));
   }()
 )

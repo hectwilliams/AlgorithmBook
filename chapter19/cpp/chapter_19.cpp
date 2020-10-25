@@ -704,13 +704,13 @@ bool RBTree::contains (const int &value , RBNode *node)
   return false;
 }
 
-int RBTree::add(const int &value, RBNode *node )
+int RBTree::add(const int &value, RBNode *node , RBNode *parent)
 {
   int count = 0;
 
   if (node == NULL)
   {
-    node = root;
+    parent = node = root;
   }
 
   if (root == NULL)
@@ -722,12 +722,13 @@ int RBTree::add(const int &value, RBNode *node )
   {
     if (node->left)
     {
-      count += add(value, node->left);
+      count = add(value, node->left, node);
+      count += node->left->color;
     }
     else
     {
       node->left = new RBNode(value);
-      return 1 + node->color;
+      return 1 ;
     }
   }
 
@@ -735,29 +736,28 @@ int RBTree::add(const int &value, RBNode *node )
   {
     if (node->right)
     {
-      count += add(value, node->right);
+      count = add(value, node->right, node);
+      count += node->right->color;
+
     }
     else
     {
       node->right = new RBNode(value);
-      return 1 + node->color;
+      return 1;
     }
   }
 
   else if (value == node->value)
   {
     node->count++;
+    return 0;
   }
 
-  blackHeightErrorHandler(count >= 2, node);
+  blackHeightErrorHandler(count >= 2, node, parent);
 
   if (node->color == 0 || count >= 2)
   {
     count = 0;
-  }
-  else
-  {
-    count += node->color;
   }
 
   return count;
@@ -838,13 +838,11 @@ int RBNode::rotationCode ()
 
   if (this->left)
   {
-
-
     if (this->left->left)
     {
       if (this->left->color && this->left->left->color)
       {
-          if (right)
+        if (right)
         {
           return 5;
         }
@@ -900,56 +898,54 @@ int RBNode::rotationCode ()
 
 RBNode* RBTree::findParent(RBNode * target, RBNode *node)
 {
+  RBNode *a, *b;
+
+  a = b = NULL;
+
   if (node == NULL)
   {
-    node = root;
+    node = this->root;
   }
 
-  if (node == target)
-  {
-    return node;
-  }
-
-  else if (target->value < node->value)
+  if (node)
   {
 
     if (node->left)
     {
-      if (node->left == target)
-      {
-        return node;
-      }
-      else
-      {
-        return findParent(target, node->left);
-      }
+      a = this->findParent(target, node->left);
     }
 
-  }
-
-  else if (target->value > node->value)
-  {
     if (node->right)
     {
-      if (node->right == target )
-      {
-        return node;
-      }
-      else
-      {
-        return findParent(target, node->right);
-
-      }
+      b = this->findParent(target, node->right);
     }
+
+    if (node->right == target)
+    {
+      return node;
+    }
+
+    if (node->left == target)
+    {
+      return node;
+    }
+
   }
 
-  return NULL;
+  if (a)
+  {
+    return a;
+  }
+
+  return b;
+
 }
 
-void RBTree::blackHeightErrorHandler (bool hasImbalance, RBNode *target)
+void RBTree::blackHeightErrorHandler (bool hasImbalance, RBNode *target, RBNode *targetParent)
 {
   int op = 0;
   RBNode *promote = NULL;
+
 
   if (hasImbalance)
   {
@@ -957,12 +953,13 @@ void RBTree::blackHeightErrorHandler (bool hasImbalance, RBNode *target)
 
     switch (op)
     {
-
       case 1:
 
         promote = target->left;
-      // right rotate target
-        target->rightRotate(findParent(target), this);
+
+        // right rotate target
+        target->rightRotate(targetParent, this);
+
         break;
 
       case 2:
@@ -972,7 +969,7 @@ void RBTree::blackHeightErrorHandler (bool hasImbalance, RBNode *target)
         target->left->leftRotate(target, this);
 
       // right rotate target
-        target->rightRotate(findParent(target), this);
+        target->rightRotate(targetParent, this);
 
         break;
 
@@ -980,7 +977,7 @@ void RBTree::blackHeightErrorHandler (bool hasImbalance, RBNode *target)
         promote = target->right;
 
       // left rotate target
-        target->leftRotate(findParent(target), this);
+        target->leftRotate(targetParent, this);
         break;
 
       case 4:
@@ -990,7 +987,7 @@ void RBTree::blackHeightErrorHandler (bool hasImbalance, RBNode *target)
         target->right->rightRotate( target , this );
 
       // left rotate target
-        target->leftRotate( findParent(target) , this );
+        target->leftRotate( targetParent , this );
 
         break;
 
@@ -1012,16 +1009,370 @@ void RBTree::blackHeightErrorHandler (bool hasImbalance, RBNode *target)
   }
 
   root->color = 0;
-
 }
-
-
-
-
 
 void RBTree::display (RBNode *node)
 {
   this->root->display();
+}
+
+int RBNode::successor()
+{
+  RBNode *runner = this->right;
+  while (runner->left)
+  {
+    runner = runner->left;
+  }
+  return runner->value;
+}
+
+void RBNode::copy(const RBNode *src)
+{
+  if (src)
+  {
+    this->left = src->left;
+    this->right = src->right;
+    this->count = src->count;
+    this->value = src->value;
+  }
+}
+
+void RBTree::remove(const int &value, RBNode *node  , RBNode *parent )
+{
+  if (!node)
+  {
+    parent = node = root;
+  }
+
+  if (node)
+  {
+    if (value == node->value)
+    {
+      if (node->count > 1)
+      {
+        node->count--;
+      }
+      else
+      {
+        removeHelper(node, parent);
+      }
+    }
+
+    else if (value < node->value && node->left)
+    {
+      remove(value, node->left, node);
+    }
+
+    else if (value > node->value && node->right)
+    {
+      remove(value, node->right, node);
+    }
+  }
+}
+
+void RBTree::removeHelper(RBNode *target, RBNode *parent)
+{
+  bool isDoubleBlack;
+  int successor;
+
+  if (target->left && target->right)
+  {
+    successor  = target->successor();
+    this->remove(successor);
+    target->value = successor;
+  }
+
+  else if (target->left)
+  {
+    isDoubleBlack = (target->color || target->left->color) == 0;
+    target->copy(target->left);
+
+    if (!isDoubleBlack)
+    {
+      target->color = 0;
+    }
+    else
+    {
+      removeHelperBalance(target, 1, parent);
+    }
+  }
+
+
+  else if (target->right )
+  {
+    isDoubleBlack = (target->color || target->right->color) == 0;
+    target->copy(target->right);
+
+    if (!isDoubleBlack)
+    {
+      target->color = 0;
+    }
+    else
+    {
+      removeHelperBalance(target, -1, parent);
+    }
+  }
+
+  else if ( !target->left && !target->right)
+  {
+    isDoubleBlack = target->color == 0;
+
+    if (this->root == target)
+    {
+      this->root = NULL;
+    }
+
+    else if (parent->left == target)
+    {
+      parent->left = NULL;
+
+      if (isDoubleBlack)
+      {
+        removeHelperBalance(NULL, 1, parent);
+      }
+    }
+
+    else if (parent->right == target)
+    {
+      parent->right = NULL;
+
+      if (isDoubleBlack)
+      {
+        removeHelperBalance (NULL, -1, parent);
+      }
+
+    }
+
+  }
+
+}
+
+void RBTree::removeHelperBalance (RBNode *u, int dir, RBNode *p )
+{
+  RBNode *s;
+  int sibColorLeft, sibColorRight, sibColor;
+  int tmp;
+  RBNode *p_parent = findParent(p);
+
+  if (this->root == u)
+  {
+    if (this->root)
+    {
+      this->root->color = 0;
+    }
+    return;
+  }
+
+  if (dir == -1)
+  {
+    s = p->left;
+  }
+
+  if (dir == 1)
+  {
+    s = p->right;
+  }
+
+  // find coloers of sibling
+
+  if (s)
+  {
+    sibColor = s->color;
+
+    if (s->left)
+    {
+      sibColorLeft = s->left->color;
+    }
+    else
+    {
+      sibColorLeft = 0;
+    }
+
+    if (s->right)
+    {
+      sibColorRight = s->right->color;
+    }
+    else
+    {
+      sibColorRight = 0;
+    }
+  }
+
+  else
+  {
+    return;
+  }
+
+  if (sibColor == 0)
+  {
+
+
+    if (sibColorLeft == 0 && sibColorRight == 0)    /* CASE: SIBLING BLACK WITH BLACK CHILDREN */
+    {
+
+      // recolor sibling red
+      s->color = 1;
+
+      // red parent recolor
+      if (p->color == 1)
+      {
+        p->color = 0;
+      }
+
+      // black parent
+      else if (p->color == 0)
+      {
+        u = p;
+
+        p = this->findParent(p);
+
+        if (p->left == u)
+        {
+          dir = 1;
+        }
+
+        if (p->right == u)
+        {
+          dir = -1;
+        }
+
+        return this->removeHelperBalance(u, dir, p);
+      }
+
+    }
+
+    else if (sibColorLeft == 1 && sibColorRight == 1)
+    {
+      if (dir == -1)
+      {
+        // SWAP COLORS BETWEEN PARENT AND SIBLING
+        s->colorSwap(p);
+
+        // SET SIBLING CHILD BLACK
+        s->left->color = 0;
+
+        // RIGHT ROTATE PARENT
+        p->rightRotate( findParent(p) , this);
+
+      }
+
+      if (dir == 1)
+      {
+        // SWAP COLORS BETWEEN PARENT AND SIBLING
+        s->colorSwap(p);
+
+        // SET SIBLING CHILD BLACK
+        s->right->color = 0;
+
+        // LEFT ROTATE PARENT
+        p->leftRotate( findParent(p) , this) ;
+
+      }
+
+    }
+
+    else if (sibColorLeft == 1)  /* CASE: SIBLING BLACK WITH RED CHILDREN */
+    {
+      if (dir == -1) // LEFT LEFT CASE
+      {
+        // SET SIBLING CHILD BLACK
+        s->left->color = 0;
+
+        // EXCHANGE BETWEEN PARENT AND SIBLING
+        s->colorSwap(p);
+
+        // RIGHT ROTATE PARENT
+        p->rightRotate( findParent(p) , this);
+
+      }
+
+      if (dir == 1) // right left case
+      {
+        // SET SIBLING RED
+        s->color = 1;
+
+        // SET SIBLING CHILD BLACK
+        s->left->color = 0;
+
+        // RIGHT ROTATE SIBLING
+        s->rightRotate(p, this);
+
+        // RECURSION
+        removeHelperBalance(u, dir, p);
+      }
+    }
+
+    else if (sibColorRight == 1)  /* CASE: SIBLING BLACK WITH RED CHILDREN */
+    {
+      if (dir == 1)  // RIGHT RIGHT CASE
+      {
+        // SET SIBLING CHILD BLACK
+        s->right->color = 0;
+
+        // EXCHANGE COLOR BETWEEN PARENT AND SIBLING
+        s->colorSwap(p);
+
+        // LEFT ROTATE PARENT
+        p->leftRotate(findParent(p), this);
+      }
+
+      if (dir == -1)  // LEFT RIGHT CASE
+      {
+        // SET SIBLING RED
+        s->color = 1;
+
+        // SET SIBLING CHILD BLACK
+        s->right->color = 0;
+
+        // LEFT ROTATE SUBLING
+        s->leftRotate(p, this);
+
+        // RECURSION
+        removeHelperBalance(u, dir, p);
+      }
+
+    }
+  }
+
+  if (sibColor == 1)  /* CASE: SIBLING RED */
+  {
+
+    // EXCHANGE PARENT AND SIBLING COLORS
+    s->colorSwap(p);
+
+    // RIGHT IMBALANCE
+    if (dir == 1)
+    {
+      // LEFT ROTATE
+      p->leftRotate(findParent(p), this);
+
+      // RECURSION
+      removeHelperBalance(p->left, 1, p);
+    }
+
+    // LEFT IMBALANCE
+    if (dir == -1 )
+    {
+      // RIGHT ROTATE
+      p->rightRotate(findParent(p), this);
+
+      // RECURSION
+      removeHelperBalance(p->right, -1, p);
+    }
+
+  }
+
+}
+
+void RBNode::colorSwap(RBNode *node)
+{
+  int color;
+  if (node)
+  {
+    color = this->color;
+    this->color = node->color;
+    node->color = color;
+  }
 }
 
 

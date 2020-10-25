@@ -113,7 +113,7 @@ class RBNode
   friend class RBTree; //  RBTree class can access  node private members
 
   public:
-    bool color;  // 0 -black 1-red
+    int color;  // 0 -black 1-red
     RBNode *left;
     RBNode *right;
     int count;
@@ -133,6 +133,10 @@ class RBNode
     void leftRotate ( RBNode *parent , RBTree *obj ) ;
     void rightRotate ( RBNode *parent , RBTree *obj ) ;
 
+    int successor();
+    void copy(const RBNode *src);
+    void colorSwap(RBNode *node);
+
   private:
 
 
@@ -150,25 +154,32 @@ class RBTree
     }
     bool contains (const int &value , RBNode *node = NULL);
     void display (RBNode *node = NULL);
-    int add(const int &value, RBNode *node = NULL );
-    void blackHeightErrorHandler (bool hasImbalance, RBNode *target );
+    int add(const int &value, RBNode *node = NULL , RBNode *parent = NULL);
+    void blackHeightErrorHandler (bool hasImbalance, RBNode *target, RBNode * targetParent );
     RBNode *findParent(RBNode * target, RBNode *node = NULL);
+    void remove(const int &value, RBNode *node = NULL, RBNode *parent = NULL );
 
+    private:
+      void removeHelper(RBNode *target, RBNode *parent);
+      void removeHelperBalance (RBNode *u,  int dir, RBNode *p );
 };
 
 
 void rb_tree_test ()
 {
-  const int array[] = {
-           100,
-        50,       500,
-      25,      450,        1000,
-    20,     300,  480,   900,   2000,
-   15,    200,          800
-  };
+
+  // const int array[] = {
+  //          100,
+  //       50,       500,
+  //     25,      450,        1000,
+  //   20,     300,  480,   900,   2000,
+  //  15,    200,          800
+  // };
+
+  // char buffer [100];
 
   RBTree tree;
-  char buffer [100];
+
   tree.add(3);
   tree.add(1 );
   tree.add(5);
@@ -180,8 +191,11 @@ void rb_tree_test ()
   tree.add(12);
   tree.add(12333);
   tree.add(2);
+
+  tree.remove(6);
+
+
   tree.display();
 }
-
 
 #endif

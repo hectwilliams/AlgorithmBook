@@ -762,7 +762,7 @@ void RBTree_rightRotate(struct RBTree *target, struct RBTree *parentOfTarget,  s
   }
 }
 
-int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
+int RBTree_addhelper(int value, struct RBTree *node , struct RBTree *parent, struct RBTreeObj *obj)
 {
   int redCount = 0;
 
@@ -771,7 +771,7 @@ int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
   {
     if ( node->left)
     {
-      redCount =  RBTree_addhelper(value, node->left, obj ) ;
+      redCount =  RBTree_addhelper(value, node->left, node, obj ) ;
       redCount += node->left->color;
     }
     else
@@ -785,7 +785,7 @@ int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
   {
     if ( node->right)
     {
-      redCount = RBTree_addhelper(value, node->right, obj) ;
+      redCount = RBTree_addhelper(value, node->right, node, obj) ;
       redCount += node->right->color;
     }
     else
@@ -799,21 +799,17 @@ int RBTree_addhelper(int value, struct RBTree *node , struct RBTreeObj *obj)
 
   {
     node->count++;
+    return 0;
   }
 
   // printf(" value %d   count %d\n" , node->value, redCount);
 
-  RBTree_blackErrorCheck (redCount >= 2 , node, obj);
+  RBTree_blackErrorCheck (redCount >= 2 , node, parent,  obj);
 
   if (node->color == 0 || redCount >= 2)
   {
     return 0;
   }
-  // else
-  {
-    // redCount += node->color;
-  }
-
 
   return redCount;
 
@@ -834,7 +830,7 @@ void RBTree_add(struct RBTreeObj **obj, int value)
   }
   else
   {
-    RBTree_addhelper(value, (*obj)->root, *obj );
+    RBTree_addhelper(value, (*obj)->root, (*obj)->root, *obj );
   }
 }
 
@@ -922,7 +918,7 @@ int RBTree_rotationCode(struct RBTree *target)
     return 0;
 }
 
-void RBTree_blackErrorCheck( int hasImbalance , struct RBTree *target , struct RBTreeObj *obj )
+void RBTree_blackErrorCheck( int hasImbalance , struct RBTree *target , struct RBTree *parent , struct RBTreeObj *obj )
 {
   struct RBTree *promote = NULL, p;
   int op = 0;
@@ -930,47 +926,42 @@ void RBTree_blackErrorCheck( int hasImbalance , struct RBTree *target , struct R
 
   if (hasImbalance)
   {
-
     op = RBTree_rotationCode(target);
-
-    printf("operation %s \n ", ((op == 5) ? "color flip" : "rotation") );
 
     switch (op)
     {
     case 1:
-    /* right rotate */
       promote = target->left;
 
-      printf("right rotate*\n");
-      RBTree_rightRotate(target, findParent(target, obj->root), obj);
+      // right rotate target
+      RBTree_rightRotate(target, parent, obj);
       break;
 
     case 2:
       promote = target->left->right;
-      /*left rotate -> right rotate*/
 
-      printf("left rotate*\n");
-      RBTree_leftRotate(target->left, findParent(target->left, obj->root), obj);
+      // left rotate target
+      RBTree_leftRotate(target->left, target, obj);
 
-      printf("right rotate*\n");
-      RBTree_rightRotate( target , findParent(target, obj->root), obj);
+      // right rotate target
+      RBTree_rightRotate( target , parent , obj);
       break;
 
     case 3:
       promote = target->right;
-  /* left rotate*/
 
-      printf("left rotate*\n");
-      RBTree_leftRotate(target, findParent(target , obj->root), obj);
+      // left rotate target
+      RBTree_leftRotate(target, parent, obj);
       break;
 
     case 4:
       promote = target->right->left;
-      /* right rotate  --> left rotate */
-      printf("right rotate*\n");
-      RBTree_rightRotate(target->right, findParent(target->right, obj->root), obj);
-      printf("left rotate*\n");
-      RBTree_leftRotate(target, findParent(target, obj->root), obj);
+
+      // right rotate sibling
+      RBTree_rightRotate(target->right, target, obj);
+
+      // left rotate target
+      RBTree_leftRotate(target, parent, obj);
       break;
 
     case 5:
@@ -1015,65 +1006,426 @@ void RBTree_display(struct RBTree *node)
 
 struct RBTree *findParent (struct RBTree *target , struct RBTree *node)
 {
+  struct RBTree *a = NULL, *b = NULL;
 
-  if (node)
+  if (node->left)
   {
-    if (node == target)
-    {
-      return node;
-    }
-
-    else if (target->value < node->value)
-    {
-      if (node->left == target)
-      {
-        return node;
-      }
-      else if (node->left)
-      {
-       return  findParent(target, node->left);
-      }
-    }
-    else
-    {
-      if (node->right == target)
-      {
-        return node;
-      }
-      else if (node->right)
-      {
-       return  findParent(target, node->right );
-      }
-    }
+    a = findParent(target, node->left);
   }
 
-  return NULL;
+  if (node->right )
+  {
+    b = findParent(target, node->right);
+  }
+
+  if (node->left == target )
+  {
+    return node;
+  }
+
+  if (node->right == target)
+  {
+    return node;
+  }
+
+  if (a)
+  {
+    return a;
+  }
+
+  return b;
+
 }
 
-int RBTree_height (struct RBTree *node)
+int RBTree_successor (struct RBTree * node)
 {
-
   if (node)
   {
-    return  (node->color == 0) + RBTree_height(node->left);
+    node = node->right;
+    while (node->left)
+    {
+      node = node->left;
+    }
+    return node->value;
   }
-  else
-  {
-    return 1;
-  }
+
+  return 0;
+
 }
 
-int RBTree_isValid(struct RBTree *node)
+void RBTree_copyAttr (struct RBTree *dest, struct RBTree *src)
 {
-  // printf("hight left  %d  height right  %d   ",RBTree_height(node->left)  , RBTree_height(node->right)  );
-  return RBTree_height(node->left) == RBTree_height(node->right);
+  if (src && dest)
+  {
+    dest->left = src->left;
+    dest->right = src->right;
+    dest->count = src->count;
+    dest->value = src->value;
+  }
 }
 
 void RBTree_remove(struct RBTreeObj **obj, int value)
 {
+  RBTree_remove_(value, (*obj)->root,  (*obj)->root, *obj);
+}
 
+void RBTree_remove_(int value, struct RBTree *node, struct RBTree *parent, struct RBTreeObj *obj)
+{
+
+  if (node)
+  {
+    if (value == node->value)
+    {
+      if (node->count > 1)
+      {
+        node->count--;
+      }
+      else
+      {
+        RBTree_remove_helper(node, parent, obj);
+      }
+    }
+
+    else if (value < node->value && node->left)
+    {
+      RBTree_remove_(value, node->left ,node,  obj);
+    }
+
+    else if (value > node->value && node->right)
+    {
+      RBTree_remove_(value, node->right, node, obj);
+    }
+
+  }
 
 }
+
+void RBTree_remove_helper(struct RBTree *target, struct RBTree *parent, struct RBTreeObj *obj)
+{
+  int isDoubleBlack;
+  int successor;
+
+  if ( target->left && target->right)
+  {
+    successor = RBTree_successor(target) ;
+    RBTree_remove(&obj, successor);
+    target->value = successor;
+  }
+
+  else if (target->left)
+  {
+    isDoubleBlack = (target->color || target->left->color) == 0;
+    RBTree_copyAttr(target, target->left);
+
+    if ( ! isDoubleBlack )
+    {
+      target->color = 0;
+    }
+    else
+    {
+      RBTree_remove_helper_balance(target, 1, parent, obj);
+    }
+  }
+
+  else if (target->right)
+  {
+    isDoubleBlack = (target->color || target->right->color) == 0;
+    RBTree_copyAttr(target, target->right);
+
+    if ( ! isDoubleBlack )
+    {
+      target->color = 0;
+    }
+    else
+    {
+      RBTree_remove_helper_balance(target, -1, parent, obj);
+    }
+  }
+
+  else if (!target->right && !target->left)
+  {
+    isDoubleBlack = (target->color == 0);
+
+    if (obj->root == target)
+    {
+      obj->root = NULL;
+    }
+
+    else if (parent->left == target)
+    {
+      parent->left = NULL;
+
+      if ( isDoubleBlack )
+      {
+        RBTree_remove_helper_balance(NULL, 1, parent, obj);
+      }
+    }
+
+    else if (parent->right == target)
+    {
+      parent->right = NULL;
+
+      if ( isDoubleBlack )
+      {
+        RBTree_remove_helper_balance(NULL, -1, parent, obj);
+      }
+    }
+  }
+
+}
+
+void RBTree_remove_helper_balance(struct RBTree *u, int dir, struct RBTree *p, struct RBTreeObj *obj)
+{
+  struct RBTree *s = NULL /* sibling node */, *pp /* sparent of parent node */;
+  int sibColorLeft = -1, sibColorRight = -1, sibColor = -1;
+  int tmp = -1;
+
+  if (obj->root == u)
+  {
+    if (obj->root)
+    {
+      obj->root->color = 0;
+    }
+    return;
+  }
+
+  if (dir == -1)
+  {
+    s = p->left;
+  }
+
+  if (dir == 1)
+  {
+    s = p->right;
+  }
+
+
+  // sibling data
+  if (s)
+  {
+
+    sibColor = s->color;
+
+    if (s->left)
+    {
+      sibColorLeft = s->left->color;
+    }
+    else
+    {
+      sibColorLeft = 0;
+    }
+
+    if (s->right)
+    {
+      sibColorRight = s->right->color;
+    }
+    else
+    {
+      sibColorRight = 0;
+    }
+
+  }
+
+
+  if (sibColor == 0)
+  {
+
+    if (sibColorLeft == 0 && sibColorRight == 0)  /* CASE SIBLING BLACK WITH BLACK CHILDREN */
+    {
+      // recolor sibling
+      s->color = 1;
+
+      // red parent
+      if (p->color == 1)
+      {
+        p->color = 0;
+      }
+
+      // black parent
+      else if (p->color == 0)
+      {
+         u = p;
+         p = findParent(p, obj->root);
+
+         if (p->left == u)
+         {
+           dir = 1;
+         }
+
+         if (p->right == u)
+         {
+           dir = -1;
+         }
+
+         return RBTree_remove_helper_balance(u, dir, p, obj);
+      }
+    }
+
+
+    else if (sibColorLeft == 1 && sibColorRight == 1)
+    {
+      if (dir == -1) // LEFT LEFT
+      {
+        // SWAP COLORS OF PARENT AND SIBLING NODE
+        swap(s, p, 0);
+
+        // SET SIBLING CHILD BLACK
+        s->left->color = 0;
+
+        // RIGHT ROTATE PARENT
+        pp = findParent(p, obj->root);
+        RBTree_rightRotate(p, pp, obj);
+
+        return;
+      }
+
+      if (dir == 1) // RIGHT RIGHT
+      {
+        // SWAP COLORS OF PARENT AND SIBLING NODE
+        swap(s, p, 0);
+
+        // SET SIBLING CHILD BLACK
+        s->right->color = 0;
+
+        // LEFT ROTATE PARENT
+        pp = findParent(p, obj->root);
+        RBTree_leftRotate(p, pp, obj);
+
+        return;
+      }
+
+    }
+
+    else if (sibColorLeft == 1)     /* CASE SIBLING BLACK WITH RED CHILD */
+    {
+
+      if (dir == -1)  // LEFT LEFT CASE
+      {
+        // SET SIBLING CHILD BLACK
+        s->left->color = 0;
+
+        // SWAP COLORS BETWEEM PARENT AND SIBLING
+        swap(s, p, 0);
+
+        // RIGHT ROTATION PARENT
+        pp = findParent(p, obj->root) ;
+        RBTree_rightRotate(p, pp, obj);
+        return;
+      }
+
+      if (dir == 1) // right left case
+      {
+        // SET SIBLING RED
+        s->color = 1;
+
+        // SET SIBLING CHILD BLACK
+        s->left->color = 0;
+
+        // RIGHT ROTATE SIBLING
+        RBTree_rightRotate(s, p, obj);
+
+        // CASE RECURSION
+        RBTree_remove_helper_balance(u, dir, p, obj);
+      }
+
+    }
+
+    else if (sibColorRight == 1)  /* CASE SIBLING BLACK WITH RED CHILD */
+    {
+
+      if (dir == 1)  // RIGHT RIGHT CASE
+      {
+        // SET SIBLING CHILD BLACK
+        s->right->color = 0;
+
+        // EXCHANGE BETWEEN COLOR AND PARENT
+        swap(s, p, 0);
+
+        // LEFT ROTATE PARENT
+        pp = findParent(p, obj->root) ;
+        RBTree_leftRotate( p, pp, obj);
+      }
+
+      if (dir == -1)  // left right case
+      {
+        // SET SIBLING RED
+        s->color = 1;
+
+        // SET SIBLING CHILD BLACK
+        s->right->color = 0;
+
+        // LEFT ROTATE SIBLING
+        RBTree_leftRotate(s, p, obj);
+
+        // RECURSION
+        RBTree_remove_helper_balance(u, dir, p, obj);
+      }
+
+    }
+
+  }
+
+  if (sibColor == 1)  /* CASE SIBLING RED */
+  {
+    // EXCHANGE COLORS BETWEEN PARENT AND SIBLING
+    swap(s, p, 0);
+
+
+    // RIGHT IMBALANCE
+    if (dir == 1)
+    {
+
+      // LEFT ROTATE PARENT
+      pp = findParent(p, obj->root);
+      RBTree_leftRotate(p, pp, obj);
+
+      // RECURSION
+      RBTree_remove_helper_balance(p->left, 1, p, obj);
+
+    }
+
+
+    // LEFT IMBALANCE
+    if (dir == -1)
+    {
+      // RIGHT ROTATE PARENT
+      pp = findParent(p, obj->root);
+      RBTree_leftRotate(p, pp, obj);
+
+      //  RECURSION
+      RBTree_remove_helper_balance(p->right, -1, p, obj);
+    }
+
+  }
+
+}
+
+void swap(void *a, void *b, int mode)
+{
+  void *tmp = NULL;
+
+  enum SELECT_MODE {
+    RBNODE_COLORS
+  };
+
+  switch (mode)
+  {
+
+  case RBNODE_COLORS:  // swap RBTree nodes colors
+
+    tmp = & ((struct RBTree* )a)->color ;
+
+    ((struct RBTree*) a)->color =  ((struct RBTree*) b)->color ;
+    ((struct RBTree*) b)->color = *((int *) tmp);
+
+    break;
+
+  default:
+    break;
+  }
+}
+
+
 
 int main()
 {
