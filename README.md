@@ -19,7 +19,7 @@
 15. Trees, Part II (***C++***, ***C***, ***Python***, ***Javascript***)
 16. Tries (***C++***, ***C***, ***Python***, ***Javascript***)
 17. Graphs (***C++***, ***C***, ***Python***, ***Javascript***)
-18. Bit Arithmetic (***C++***)
-19. Trees, Part III (***C++***)
+18. Bit Arithmetic (***C++***, ***C***, ***Python***, ***Javascript***)
+19. Trees, Part III (***C++***, ***C***, ***Python***, ***Javascript***)
 20. ~Spatial, Logic Estimation~
 21. ~Optimization~
