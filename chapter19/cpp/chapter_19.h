@@ -198,4 +198,64 @@ void rb_tree_test ()
   tree.display();
 }
 
+class SplayTree;
+
+class SplayNode
+{
+  friend class SplayTree;
+
+  public:
+    int value;
+    SplayNode *left;
+    SplayNode *right;
+    void display();
+
+    SplayNode (const int &value)
+    {
+      this->value = value;
+    }
+
+  private:
+    void copy(SplayNode *src);
+    int successor();
+    void leftRotate (SplayNode *parent, SplayTree * const splayTreeClass);
+    void rightRotate (SplayNode *parent, SplayTree * const splayTreeClass);
+};
+
+class SplayTree
+{
+  friend class SplayNode;
+
+  private:
+    void  remove_ (int value, SplayNode *node = NULL, SplayNode *parent = NULL);
+    void remove_helper(SplayNode *target, SplayNode *parent);
+    void splay(int value, SplayNode *node , SplayNode *parent );
+    SplayNode *root;
+
+  public:
+    SplayTree & add (const int & value);
+    void  remove (int value, SplayNode *node = NULL, SplayNode *parent = NULL);
+    void display();
+    SplayTree()
+    {
+      root = NULL;
+    }
+};
+
+
+
+void splay_tree_test ()
+{
+  SplayTree tree;
+  tree.add(1);
+  tree.add(2);
+  tree.add(3);
+  tree.add(1);
+  tree.add(6);
+
+  tree.remove(2);
+  tree.display();
+}
+
+
 #endif

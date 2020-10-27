@@ -1578,14 +1578,271 @@ RBTree.prototype.removeTest = function( num_elements = 200 /* number of values t
 
 
 
-// RED BLACK TREE TEST REMOVAL
-(
+// // RED BLACK TREE TEST REMOVAL
+// (
+//   function()
+//   {
+
+//     let tree = new RBTree;
+//     tree.removeTest(1000)  //load 1000 random values to tree
+//     .then( x => console.log(x))
+//     .catch( x => console.log(x));
+//   }()
+// )
+
+
+function SplayNode(value)
+{
+  this.value = value;
+  this.left = null;
+  this.right = null;
+
+  this.display = function()
+  {
+    if (this.left)
+    {
+      this.left.display();
+    }
+
+    console.log(this.value);
+
+    if (this.right)
+    {
+      this.right.display();
+    }
+  };
+}
+
+function SplayTree()
+{
+  this.root = null;
+
+  this.display = function()
+  {
+    if (this.root)
+    {
+      this.root.display();
+    }
+  }
+
+
+  this.remove = function(value, node = null, parent = null )
+  {
+    var removeDriver = function (value, node, parent)
+    {
+      if (!node)
+      {
+        node  = this.root;
+      }
+
+      if (node)
+      {
+        if (value == node.value)
+        {
+          removeTarget.call (this, node, parent);
+        }
+
+        else if (value < node.value && node.left)
+        {
+          removeDriver.call(this, value, node.left, node);
+        }
+
+        else if (value > node.value && node.right)
+        {
+          removeDriver.call(this, value , node.right, node);
+        }
+      }
+    };
+
+    var splay = function(value, node, parent)
+    {
+       if (value == node.value )
+       {
+         return
+       }
+
+       else if (value < node.value && node.left)
+       {
+          splay.call(this, value, node.left, node );
+
+         if (node.left.value != value)
+         {
+           node.rightRotate(parent, this);
+         }
+       }
+
+       else if (value > node.value && node.right)
+       {
+         splay.call(this, value, node.right, node) ;
+
+         if (node.right.value != value)
+         {
+           node.leftRotate(parent, this);
+         }
+       }
+    };
+
+    var removeTarget  = function (target, parent)
+    {
+      if (target.right && target.left)
+      {
+        successor = target.successor();
+        this.remove(successor);
+        target.value = successor;
+      }
+
+      else if (target.right)
+      {
+        target.copy(target.right)
+      }
+
+      else if (target.left)
+      {
+        target.copy(target.left)
+      }
+
+      else if ( ! target.right && ! target.left)
+      {
+        if (!parent)
+        {
+          this.root = null;
+        }
+
+        else if (parent.left == target)
+        {
+          parent.left = null;
+        }
+
+        else if (parent.right == target)
+        {
+          parent.right = null;
+        }
+      }
+    };
+
+    splay.call(this, value, this.root, null);
+    removeDriver.call(this, value, this.root, null);
+
+  };
+
+}
+
+
+SplayTree.prototype.add = function(value)
+{
+  let newRoot = new SplayNode(value);
+
+  if ( ! this.root )
+  {
+    this.root = newRoot;
+  }
+
+  else if (this.root.value < value)
+  {
+    newRoot.left = this.root;
+  }
+
+  else
+  {
+    newRoot.right = this.root;
+  }
+
+  this.root = newRoot;
+
+ };
+
+ SplayNode.prototype.successor = function()
+ {
+   let runner = this.right;
+   while (runner.left)
+   {
+     runner = runner.left;
+   }
+   return runner.value;
+ };
+
+ SplayNode.prototype.copy = function (src)
+ {
+  if (src)
+  {
+    this.right = src.right;
+    this.left = src.left;
+    this.value = src.value;
+  }
+ };
+
+ SplayNode.prototype.leftRotate = function(parent, splayTreeClass)
+ {
+   let c, t;
+
+   c = this.right;
+   t = c.left;
+
+   c.left = this;
+   this.right = t;
+
+   if ( ! parent )
+   {
+     splayTreeClass.root = c;
+   }
+
+   else if (parent.left == this)
+   {
+     parent.left = c;
+   }
+
+   else if (parent.right == this)
+   {
+     parent.right = c;
+   }
+
+ };
+
+ SplayNode.prototype.rightRotate = function(parent, splayTreeClass)
+ {
+   let c;
+   let t;
+
+   c = this.left;
+   t = c.right;
+
+   c.right = this;
+   this.left = t;
+
+   if ( ! parent )
+   {
+     splayTreeClass.root = c;
+   }
+
+   else if (parent.left == this)
+   {
+     parent.left = c;
+   }
+
+   else if (parent.right == this)
+   {
+     parent.right = c;
+   }
+
+ };
+
+
+
+
+
+ (
   function()
   {
+    tree = new SplayTree;
+    tree.add(1);
+    tree.add(2);
+    tree.add(3);
+    tree.add(1);
+    tree.add(6);
+    tree.remove(2);
 
-    let tree = new RBTree;
-    tree.removeTest(1000)  //load 1000 random values to tree
-    .then( x => console.log(x))
-    .catch( x => console.log(x));
+    tree.display();
+    console.log("ROOT", tree.root.value);
+
   }()
-)
+ )

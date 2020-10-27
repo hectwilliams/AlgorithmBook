@@ -1376,7 +1376,242 @@ void RBNode::colorSwap(RBNode *node)
 }
 
 
+void SplayTree::display()
+{
+  if (root)
+  {
+    root->display();
+  }
+}
+
+void SplayNode::display()
+{
+  if (this->left)
+  {
+    this->left->display();
+  }
+
+  std::cout << this->value << '\n';
+
+  if (this->right)
+  {
+    this->right->display();
+  }
+}
+
+
+SplayTree & SplayTree::add (const int & value)
+{
+  SplayNode *newRoot = new SplayNode(value);
+
+  if (root)
+  {
+    if (root->value < value)
+    {
+      newRoot->left = root;
+    }
+
+    else
+    {
+      newRoot->right = root;
+    }
+  }
+
+  root = newRoot;
+
+  return *this;
+}
+
+int SplayNode:: successor()
+{
+  SplayNode *runner = this->right;
+  while (runner->left)
+  {
+    runner = runner->left;
+  }
+  return runner->value;
+}
+
+void SplayNode::copy(SplayNode *src)
+{
+  if (src)
+  {
+    this->left = src->left ;
+    this->right = src->right;
+    this->value = src->value;
+  }
+}
+
+
+void SplayNode::leftRotate (SplayNode *parent, SplayTree * const splayTreeClass)
+{
+  SplayNode *t, *c;
+
+  c = this->right;
+  t = c->left;
+
+  c->left = this;
+  this->right = t;
+
+  if (parent == NULL)
+  {
+    splayTreeClass->root = c;
+  }
+
+  else if (parent->left == this)
+  {
+    parent->left = c;
+  }
+
+  else if (parent->right == this)
+  {
+    parent->right = c;
+  }
+
+}
+
+void SplayNode::rightRotate (SplayNode *parent, SplayTree * const splayTreeClass)
+{
+
+  SplayNode *t, *c;
+
+  c = this->left;
+  t = c->right;
+
+  c->right = this;
+  this->left = t;
+
+  if (parent == NULL)
+  {
+    splayTreeClass->root = c;
+  }
+
+  else if (parent->left == this)
+  {
+    parent->left = c;
+  }
+
+  else if (parent->right == this)
+  {
+    parent->right = c;
+  }
+
+}
+
+void SplayTree::splay(int value, SplayNode *node , SplayNode *parent )
+{
+  if (value == node->value)
+  {
+    return;
+  }
+
+  else if (value < node->value && node->left)
+  {
+    splay(value, node->left, node);
+
+    if (node->left->value != value)
+    {
+      node->rightRotate(parent, this);
+    }
+  }
+
+  else if (value > node->value && node->right)
+  {
+    splay(value, node->right, node);
+
+    if (node->right->value != value)
+    {
+      node->leftRotate(parent, this);
+    }
+  }
+}
+
+void SplayTree::remove (int value, SplayNode *node, SplayNode *parent)
+{
+  splay(value, root, NULL);
+  remove_(value, root, NULL);
+}
+
+void SplayTree::remove_ (int value, SplayNode *node, SplayNode *parent)
+{
+  if (node == NULL)
+  {
+    node = this->root;
+  }
+
+  if (node)
+  {
+    if (value == node->value)
+    {
+      remove_helper(node, parent);
+    }
+
+    else if (value < node->value && node->left)
+    {
+      this->remove_(value, node->left, node);
+    }
+
+    else if (value > node->value && node->right)
+    {
+      this->remove_(value, node->right, node);
+    }
+  }
+}
+
+void SplayTree::remove_helper(SplayNode *target, SplayNode *parent)
+{
+  int successor;
+  void *del = NULL;
+
+  if (target->right && target->left)
+  {
+    successor = target->successor();
+    remove(successor);
+    target->value = successor;
+  }
+
+  else if (target->right)
+  {
+    del = target->right;
+    target->copy(target->right);
+  }
+
+  else if (target->left)
+  {
+    del = target->right;
+    target->copy (target->left);
+  }
+
+  else if (target->right == NULL && target->left == NULL)
+  {
+    del = target;
+
+    if (parent == NULL)
+    {
+      this->root = NULL;
+    }
+
+    else if (parent->left == target)
+    {
+      parent->left = NULL;
+    }
+
+    else if (parent->right == target)
+    {
+      parent->right = NULL;
+    }
+  }
+
+  if (del)
+  {
+    delete(del);
+  }
+
+}
+
+
+
 int main()
 {
-  rb_tree_test();
+  splay_tree_test();
 }

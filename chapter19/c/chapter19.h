@@ -81,6 +81,33 @@ void RBTree_remove_helper(struct RBTree *target, struct RBTree *parent, struct R
 void RBTree_remove_helper_balance(struct RBTree *u, int dir, struct RBTree *p, struct RBTreeObj *obj);
 
 void swap(void *a, void *b, int mode);
-#endif
 
+struct SplayTree
+{
+  int value;
+  struct SplayTree *left;
+  struct SplayTree *right;
+};
+
+int SplayTree_contains (const int value, struct SplayTree *node );
+
+struct SplayTree* splaynode  (const int value );
+
+void SplayTree_add (const int value, struct SplayTree ** root );
+void SplayTree_display (struct SplayTree *node );
+
+void SplayTree_remove (const int value, struct SplayTree **root);
+
+
+int SplayTree_remove_ (const int value, struct SplayTree ** tree, struct SplayTree *parent );
+void SplayTree_remove_helper(struct SplayTree **targetAddr, struct SplayTree *parent);
+
+int SplayTree_successor (struct SplayTree * node);
+void SplayTree_copy (struct SplayTree * dest, struct SplayTree *src);
+void SplayTree_splay(const int value, struct SplayTree **tree, struct SplayTree *parent) ;
+
+void SplayTree_left_rotate(struct SplayTree **targetAddr, struct SplayTree *parent);
+void SplayTree_right_rotate(struct SplayTree **targetAddr, struct SplayTree *parent);
+
+#endif
 

@@ -1425,11 +1425,295 @@ void swap(void *a, void *b, int mode)
   }
 }
 
+struct SplayTree* splaynode  (const int value )
+{
+  struct SplayTree *node = ( struct SplayTree *) malloc( sizeof( struct SplayTree ) );
+  node->left = node->right = NULL;
+  node->value = value;
+  return node;
+}
 
+int SplayTree_contains (const int value, struct SplayTree *node )
+{
+
+  if (value == node->value)
+  {
+    return 1;
+  }
+
+  else if (value < node->value && node->left)
+  {
+    return SplayTree_contains(value, node->left);
+  }
+
+  else if (value > node->value && node->right)
+  {
+    return SplayTree_contains(value, node->right);
+  }
+
+  return 0;
+
+}
+
+void SplayTree_add (const int value, struct SplayTree ** root )
+{
+  struct SplayTree *newRoot;
+
+  if (*root == NULL)
+  {
+    newRoot = splaynode(value);
+  }
+
+  else if ( (*root)->value < value )
+  {
+    newRoot = splaynode(value);
+    newRoot->left = *root;
+  }
+
+  else
+  {
+    newRoot = splaynode(value);
+    newRoot->right = *root;
+  }
+
+  *root = newRoot;
+
+}
+
+void SplayTree_display (struct SplayTree *node )
+{
+  if (node)
+  {
+    if (node->left)
+    {
+      SplayTree_display(node->left);
+    }
+
+    printf( "value %d\n" , node->value);
+
+    if (node->right)
+    {
+      SplayTree_display(node->right);
+    }
+
+  }
+}
+
+int SplayTree_successor (struct SplayTree * node)
+{
+  node = node->right;
+  while (node->left)
+  {
+    node = node->left;
+  }
+  return node->value;
+}
+
+void SplayTree_copy (struct SplayTree * dest, struct SplayTree *src)
+{
+  if ( dest && src )
+  {
+    dest->value = src->value;
+    dest->left = src->left;
+    dest->right = src->right;
+  }
+}
+
+
+void SplayTree_remove_helper(struct SplayTree **targetAddr, struct SplayTree *parent)
+{
+  int successor;
+  void *del = NULL;
+  struct SplayTree *target = *targetAddr;
+
+  if ( target->right && target->left)
+  {
+    // GET SUCCESSOR
+    successor = SplayTree_successor(target);
+
+    // DELETE SUCCESSOR
+    SplayTree_remove_(successor, &target, parent);
+
+    // UPDATE TARGET VALUE
+    target->value = successor;
+  }
+
+  else if (target->left)
+  {
+    // STORE CLONED OBJECT
+    del = target->left;
+
+    // COPY OBJECT
+    SplayTree_copy(target, target->left);
+
+  }
+
+  else if (target->right)
+  {
+    // STORE CLONED OBJECT
+    del = target->right;
+
+    // COPY OBJECT
+    SplayTree_copy(target, target->right);
+  }
+
+  else if (target->right == NULL && target->left == NULL)
+  {
+    del = target;
+
+    if (parent == NULL)
+    {
+      // ROOT == TARGET  --> NULLIFY
+      *targetAddr = NULL;
+    }
+
+    else if (parent->left == target)
+    {
+      // REMOVE LEAF FROM NODE
+      parent->left = NULL;
+    }
+
+    else if (parent->right == target)
+    {
+      // REMOVE LEAF FROM NODE
+      parent->right = NULL;
+    }
+  }
+
+  if (del)
+  {
+    free(del);
+  }
+
+}
+
+void SplayTree_remove (const int value, struct SplayTree **root)
+{
+  SplayTree_splay(value, root, NULL);
+  SplayTree_remove_(value, root, NULL);
+}
+
+void SplayTree_splay(const int value, struct SplayTree **tree, struct SplayTree *parent)
+{
+  struct SplayTree *node = *tree;
+
+  if (value == node->value )
+  {
+    return;
+  }
+
+  else if (value < node->value && node->left)
+  {
+    // RECURSION
+    SplayTree_splay(value, & node->left, node );
+
+    if (node->left->value != value)
+    {
+      // RIGHT ROTATE
+      SplayTree_right_rotate( tree, parent);
+    }
+  }
+
+  else if (value > node->value && node->right)
+  {
+    // RECURSION
+    SplayTree_splay(value, &node->right, node);
+
+    if (node->right->value != value)
+    {
+      // LEFT ROTATE
+      SplayTree_left_rotate( tree, parent);
+    }
+  }
+
+}
+
+
+int SplayTree_remove_ (const int value, struct SplayTree ** tree, struct SplayTree *parent )
+{
+  struct SplayTree *node = *tree;
+
+  if (node)
+  {
+    if (value == node->value)
+    {
+      // REMOVE NODE (I.E VALUE)
+      SplayTree_remove_helper( tree, parent);
+    }
+
+    else if (value < node->value && node->left)
+    {
+      // RECURSION
+      SplayTree_remove_(value, & node->left, node);
+    }
+
+    else if (value > node->value && node->right)
+    {
+      // RECURSION
+      SplayTree_remove_(value, & node->right, node);
+    }
+
+  }
+}
+
+void SplayTree_left_rotate(struct SplayTree **targetAddr, struct SplayTree *parent)
+{
+  struct SplayTree *t, *c;
+  struct SplayTree *target = *targetAddr;
+
+  c = target->right;
+  t = c->left;
+
+  c->left = target;
+  target->right = t;
+
+  if ( parent == NULL  )
+  {
+    *targetAddr = c;
+  }
+
+  else if (parent->left == target)
+  {
+    parent->left = c;
+  }
+
+  else if (parent->right == target )
+  {
+    parent->right = c;
+  }
+
+}
+
+void SplayTree_right_rotate(struct SplayTree **targetAddr, struct SplayTree *parent)
+{
+  struct SplayTree *t, *c;
+  struct SplayTree *target = *targetAddr;
+
+  c = target->left;
+  t = c->right;
+
+  c->right = target;
+  target->left = t;
+
+  if (parent == NULL)
+  {
+    *targetAddr = c;
+  }
+
+  else if (parent->left == target)
+  {
+    parent->left = c;
+  }
+
+  else if (parent->right == target)
+  {
+    parent->right = c;
+  }
+}
 
 int main()
 {
-  red_black_tree_test();
+  splay_tree_test();
 }
 
 

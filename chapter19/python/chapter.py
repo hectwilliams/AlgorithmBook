@@ -835,20 +835,157 @@ class RBTree:
         return self.removeHelperBalance(p.right, -1, p)
 
 
+class SplayNode:
 
-tree =  RBTree()
+  def __init__(self, value):
+    self.left = self.right = None
+    self.value = value
 
+  def display(self):
+    if self.left:
+      self.left.display()
+
+    print("tree value" , self.value)
+
+    if self.right:
+      self.right.display()
+
+  def successor(self):
+    runner  = self.right
+    while runner.left:
+      runner = runner.left
+    return runner.value
+
+  def copy (self, src):
+    if src:
+      self.right = src.right
+      self.left = src.left
+      self.value = src.value
+
+  def leftRotate(self, parent, SplayTreeClass):
+    c = self.right
+    t = c.left
+
+    c.left = self
+    self.right = t
+
+    if not parent:
+      SplayTreeClass.root = c
+
+    elif parent.left == self:
+      parent.left = c
+
+    elif parent.right == self:
+      parent.right = c
+
+  def rightRotate (self, parent, SplayTreeClass):
+    c = self.left
+    t = c.right
+
+    c.right = self
+    self.left = t
+
+    if not parent:
+      SplayTreeClass.root = c
+
+    elif parent.left == self:
+      parent.left = c
+
+    elif parent.right == self:
+      parent.right = c
+
+class SplayTree:
+
+  def __init__(self):
+    self.root = None
+
+  def display(self):
+    if self.root:
+      self.root.display()
+
+  def add(self, value):
+
+    newRoot = SplayNode(value)
+
+    if not self.root:
+      self.root = newRoot
+
+    elif self.root.value < value :
+      newRoot.left = self.root
+
+    else:
+      newRoot.right = self.root
+
+    self.root = newRoot
+
+  def __splay(self, value, node , parent ):
+
+    if value == node.value:
+      return
+
+    elif value < node.value and node.left:
+      self.__splay(value, node.left, node)
+
+      if node.left.value != value:
+        node.rightRotate(parent, self)
+
+    elif value > node.value and node.right:
+      self.__splay(value, node.right, node)
+
+      if node.right.value != value:
+        node.leftRotate(parent, self)
+
+  def __removeTarget(self, target, parent):
+
+    if target.right and target.left:
+      successor = target.successor()
+      self.remove(successor)
+      target.value = successor
+
+    elif target.right:
+      target.copy(target.right)
+
+    elif target.left:
+      target.copy(target.left)
+
+    elif not target.right and not target.left:
+
+      if not parent:
+        self.root = None
+
+      elif parent.left == target :
+        parent.left = None
+
+      elif parent.right == target :
+        parent.right = None
+
+  def __remove(self, value, node, parent):
+
+    if node:
+
+      if value == node.value:
+        self.__removeTarget(  node, parent)
+
+      elif value < node.value and node.left:
+        self.__remove(value, node.left, node)
+
+      elif value > node.value and node.right:
+        self.__remove(value, node.right, node)
+
+  def remove (self, value, node = None, parent = None):
+
+    self.__splay(value, self.root, None)
+    self.__remove(value, self.root, None )
+
+
+
+tree = SplayTree()
+
+tree.add(1)
+tree.add(2)
 tree.add(3)
 tree.add(1)
-tree.add(5)
-tree.add(7)
 tree.add(6)
-tree.add(8)
-tree.add(9)
-tree.add(10)
-tree.add(12)
-tree.add(12333)
-tree.add(2)
 
-tree.remove(6)
+tree.remove(1)
 tree.display()
