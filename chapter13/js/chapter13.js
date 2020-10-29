@@ -53,41 +53,94 @@ const mergeSortedArrays = function (a, b)
   }
 }
 
-const minThreeWayRange = function(collection)
+var minThreeWayRange = function(arrays)
 {
-  let mins = [null, null, null];
-  let result = null;
+  var result = { min : null, max: null, range: null};
+  var orderedList = [];
+  var runner = [];
 
-  for (let i = 0; i< collection.length; i++)
+  while (1)
   {
-    for (let k = 0; k < collection[i].length; k++)
+    let currMinData  = {};
+
+    // GET MIN DATA
+    for (let arrayId = 0; arrayId < arrays.length; arrayId++)
     {
-      if (mins[i] == null || collection[i][k] < mins[i])
+      let arrayPosition;
+      let value;
+
+      if (runner.length < arrays.length)
       {
-        mins[i] = collection[i][k]
+        // ADD RUNNERS
+        runner.push(0);
+      }
+
+      arrayPosition = runner[arrayId];
+
+      if (  arrayPosition < arrays[arrayId].length )
+      {
+        value = arrays[arrayId][arrayPosition];
+
+        if ( Object.keys(currMinData).length == 0 || value < currMinData.val )
+        {
+          currMinData.id = arrayId;
+          currMinData.val = value;
+        }
       }
     }
+
+    if (currMinData.hasOwnProperty('id'))
+    {
+      // UPDATE RUNNERS
+      runner[currMinData.id]++;
+    }
+
+    // ADD TO LIST
+    if (Object.keys(currMinData).length )
+    {
+      orderedList.push(currMinData);
+    }
+    else
+    {
+      // BREAK LOOP
+      break;
+    }
   }
+  console.log(orderedList);
 
-  for (let i = 0; i < 3; i++) {
-    let arr = collection[i];
-    let min_set = mins.slice(0, i).concat(mins.slice(i + 1))
+  // COMPUTE RANGES
+  for (let startIndex = 0; startIndex < orderedList.length; startIndex++)
+  {
+    // CLEAR DATA PAD
+    runner.forEach(  (element, i, collection) => {
+      collection[i] = undefined;
+    });
 
-    arr.forEach( (num, index) =>{
-      if (num > min_set[0] && num < min_set[1])
+    for (let i = startIndex; i < orderedList.length; i++)
+    {
+      runner[orderedList[i].id] = orderedList[i].val;
+
+      if ( runner.every( x => x != undefined ))
       {
-        if (result == null)
-        {
-          result = min_set;
-        }
+        let currRange;
 
-        if (min_set[1] - min_set[0] < result[1] - result[1])
+        // SORT RANGE OF NUMBERS
+        runner.sort( (a, b) => a - b);
+        currRange = runner[runner.length - 1] - runner[0];
+
+        // STORE MIN RANGE
+        if (result.range === null || currRange < result.range)
         {
-          result = min_set;
+          result.max = runner[runner.length - 1];
+          result.min = runner[0];
+          result.range = currRange;
         }
       }
-    });
+
+    }
+
   }
+
   return result;
 }
 
@@ -683,18 +736,9 @@ const median_data_stream_driver = median_data_stream();
 
 const test = function()
 {
-  let heap ;
-  let data = [] ;
-  let data2 = [];
-  for (let i = 0; i< 9 ; i++)
-  {
-    let dataIn = (Math.floor(Math.random() * 100));
-    data2.push(dataIn);
-    let x = median_data_stream_driver(dataIn);
-  }
-  heapSort(data2)
-  console.log(data2)
-
+  collection = [ [1,2,4,15],[3,10,12],[5,10,13,17,23] ]
+  var x = minThreeWayRange(collection);
+  console.log(x);
 }
 
 test();

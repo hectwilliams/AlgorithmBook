@@ -1,3 +1,9 @@
+#include <array>
+#include <string>
+#include <map>
+#include <array>
+#include <utility>
+#include <algorithm>
 #include "chapter_13.h"
 
 std::ostream& operator << (std::ostream &out, const std::vector<int> &vect)
@@ -67,6 +73,110 @@ std::vector<int> merge_sorted_arrays(std::vector<int> a, std::vector<int> b)
 
   return result;
 }
+
+
+struct minRangeData minThreeWayRange (std::vector<std::vector<int> > arrays)
+{
+  struct minRangeData result = {.range = -1};
+  std::vector< std::pair<int, int> > orderedList;
+  std::vector<int> runner;
+  std::array<int, 3> currMinData = {0, 0, 0};
+  int counter;
+  int range;
+  int minData, maxData;
+
+  while (1)
+  {
+    currMinData[ 2 ] = 0; // INIT FLAG
+
+    // GET MIN DATA
+    for (int array_id = 0; array_id < arrays.size() ; array_id++)
+    {
+      // ADD RUNNERS
+      if (runner.size() < arrays.size())
+      {
+        runner.push_back(0);
+      }
+
+      if (runner[array_id] < arrays[array_id].size() )
+      {
+
+        if ( arrays[array_id][ runner[array_id] ] <  currMinData[1] || currMinData[2] == 0)
+        {
+          if (currMinData[2] == 0)
+          {
+            currMinData[2] = 1;
+          }
+
+          currMinData[0] = array_id; // ID
+          currMinData[1] = arrays[array_id][ runner[array_id] ]  ; // VALUE
+        }
+
+      }
+
+    }
+
+    if (currMinData[2])
+    {
+      // UPDATE RUNNERS
+      runner[currMinData[0]]++;
+
+      // ADD TO LIST
+      orderedList.push_back( std::pair<int, int> ( currMinData[0] ,currMinData[1] ) );
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  // COMPUTE RANGES
+
+  for (int startIndex = 0; startIndex < orderedList.size(); startIndex++ )
+  {
+
+    // CLEAR RUNNER PAD
+    for ( int k = 0;  k < runner.size(); k++)
+    {
+      runner[k] = -1;
+    }
+
+    for (int i = startIndex; i < orderedList.size(); i++)
+    {
+      counter = 0;
+
+      // LOAD RUNNER PAD
+      runner[ orderedList[i].first  ] = orderedList[i].second;
+
+      // CHECK RUNNER PAD
+      for ( int k = 0;  k < runner.size(); k++)
+      {
+        counter += ( runner[k] != -1) ;
+      }
+
+      if (counter ==  3 )  // RANGE CAPTURED
+      {
+        minData = *std::min_element( runner.begin(), runner.end());
+        maxData = *std::max_element( runner.begin(), runner.end());
+        range = maxData - minData;
+
+        if (result.range == -1 || range < result.range)
+        {
+          // UPDATE RANGE MIN
+          result.max = minData;
+          result.min = maxData;
+          result.range = range;
+        }
+      }
+
+    }
+
+  }
+
+  return result;
+}
+
+
 
 std::vector<int> intersect_sorted_arrays(std::vector<int> a, std::vector<int> b)
 {
@@ -670,15 +780,63 @@ bool heapify_MinHeap_cb (std::vector<int> &collection, int childIndex, int paren
   return collection[childIndex] <= collection[parentIndex];
 }
 
-
 void MinHeap::display()
 {
   std::cout << std::vector<int>(array.begin() + 1, array.end()) <<'\n';
 }
 
-
-
 int main()
 {
 
+  int a [] = {1,2,4,15};
+  int b [] = {3,10,12} ;
+  int c [] =  {5,10,13,17,23} ;
+
+  std::vector< std::vector<int> > testData;
+
+  for (int row = 0; row <  3; row++ )
+  {
+    int *ptr = NULL;
+    int size = -1;
+
+    switch (row)
+    {
+      case 0:
+        ptr = a;
+        size = sizeof(a) / sizeof(int);
+        break;
+
+      case 1:
+        ptr = b;
+        size = sizeof(b) / sizeof(int);
+        break;
+
+      case 2:
+        ptr = c;
+        size = sizeof(c) / sizeof(int);
+        break;
+
+    }
+
+    if (ptr)
+    {
+      testData.push_back(std::vector<int>());
+
+      for (int i = 0; i < size; i++)
+      {
+        testData.back().push_back(ptr[i]);;
+      }
+
+    }
+
+  }
+
+  auto result = minThreeWayRange( testData);
+  std::cout << result.range << '\n';
+  std::cout << result.min << '\n';
+  std::cout << result.max << '\n';
+
+
+
 }
+

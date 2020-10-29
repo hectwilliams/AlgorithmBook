@@ -63,6 +63,8 @@ int * merge_sorted_arrays (int *a, const int a_size, int *b, const int b_size)
 
 }
 
+// Min_Three_Way_Range (refer to c++ directory)
+
 struct array_obj intersect_sorted_arrays(int *a, const int sizeA, int *b, const int sizeB)
 {
   struct array_obj output;

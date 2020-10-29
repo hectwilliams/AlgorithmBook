@@ -45,24 +45,60 @@ def merge_sorted_arrays (a, b):
       currB += 1
   return result
 
-def min_three_way_range(collection):
-  mins = [None, None, None]
-  result  = None
-  for i, arr in enumerate(collection):
-    for k in range(0, len(arr)):
-      if mins[i] == None or arr[k] < mins[i]:
-        mins[i] = arr[k]
+def min_three_way_range(sorted_arrays):
+  rangeResult = {'min': None, 'max': None, 'range': None}
+  ordered_map = []
+  runner = {}
 
-  for i in range(0, 3):
-    tmp = collection[i]
-    min_subset = mins[0: i] + mins[i + 1: :]
-    for curr in tmp:
-      if (curr > min_subset[0] and curr < min_subset[1]):
-        if result == None:
-          result = min_subset
-        if  min_subset[1] - min_subset[0] < result[1] - result[0]:
-          result = min_subset
-  return result
+  # init  runners for each array
+  for i in range(0, sorted_arrays.__len__()):
+    runner[i] = 0
+
+  # create ordered map list from sorted arrays
+  while (1) :
+    minObject = {}
+
+    for id in runner:
+
+      arrayPos = runner[id]
+
+      if arrayPos < sorted_arrays[id].__len__():
+        value = sorted_arrays[id][arrayPos]
+
+        if not bool(minObject)  or value < minObject['val'] :
+          minObject = {  'id': id , 'val' :  value }
+
+    if bool(minObject):
+      ordered_map.append( {'key': minObject['id'], 'val': minObject['val'] } )
+      runner [ minObject['id'] ] += 1
+    else:
+      break
+
+
+  # find min range(s)
+
+  for startIndex, element in enumerate (ordered_map):
+
+    for key in runner:
+      runner[key] = None
+
+    for i in range(startIndex, ordered_map.__len__() ):
+
+      # store range of values
+      runner[ordered_map[i]['key']] = ordered_map[i]['val']
+
+      if all(  map( lambda sel : runner[sel] != None , runner.keys() )  ) :
+        # sort ranges of values
+        sortedValues = sorted(runner.values())
+        currRange =  sortedValues[-1] - sortedValues[0]
+
+        # store min range
+        if rangeResult['range'] == None or currRange < rangeResult['range'] :
+          rangeResult['min'] = sortedValues[0]
+          rangeResult['max'] = sortedValues[-1]
+          rangeResult['range'] = currRange
+
+  return rangeResult
 
 def intersect_sorted_array (a, b):
   result = []
@@ -304,9 +340,11 @@ class MinHeap:
   @property
   def top(self):
     return self.array[1]
+
   @property
   def empty(self):
     return self.size == 0
+
   def contains(self, value):
     return value in self.array
 
@@ -415,5 +453,7 @@ def heapSort (collection):
 
 
 def test():
-  pass
+  collection = [ [1,2,4,15],[3,10,12],[5,10,13,17,23] ]
+  min_three_way_range(collection)
+
 test()
