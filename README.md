@@ -6,7 +6,7 @@
 2. Fundamentals II (***C++***, ***Python***, ***Java***)
 3. Arrays (***C++***, ***Python***, ***Java***)
 4. Strings And Associative Arrays (***C++***, ***C***, ***Python***,  ***Java***)
-5. Linked List (***C++***, ***C***, ***Python***)
+5. Linked List (***C++***, ***C***, ***Python***, ***Java***)
 6. Queues And Stacks (***C++***, ***C***, ***Python***)
 7. Arrays, Part II (***C***, ***C++***, ***Python***)
 8. Linked List, Part II (***C***, ***C++***, ***Python***)
