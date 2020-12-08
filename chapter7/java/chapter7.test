@@ -1,0 +1,37 @@
+package algo;
+import algo.Chapter7;
+import java.util.ArrayList;
+
+
+public class TestTmp {
+
+
+	
+	public static void main  (String [] args) 
+	{
+		int[] balancepoint_array1 = {1,2,3,4,10};
+		int[] balancepoint_array2 = {1,2,4,2,1};
+		
+		System.out.println(		Chapter7.balancePoint(balancepoint_array1   ) ); // true
+		System.out.println(		Chapter7.balancePoint(balancepoint_array2   ) ); // false
+		
+		int[] balanceIndex1 = {-2,5,7,0,3};
+		int[] balanceIndex2 = {9, 9};
+		
+		System.out.println( Chapter7.balanceIndex(balanceIndex1) );
+		System.out.println( Chapter7.balanceIndex(balanceIndex2) );
+		
+		ArrayList<int[]> tacotruckcustomerlocations = new ArrayList<int[]>();
+		
+		int[] p0 = {10, 0};
+		int[] p1 = {-1, -10};
+		int[] p2 = {2,4};
+		
+		tacotruckcustomerlocations.add(  p0 );
+		tacotruckcustomerlocations.add(  p1 );
+		tacotruckcustomerlocations.add(  p2 );
+		Chapter7.tacoTruck(tacotruckcustomerlocations);
+	}
+}
+
+
