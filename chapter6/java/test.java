@@ -109,10 +109,78 @@ public class Test {
 		System.out.println(reorderThisQueue.dequeue()); //  10 
 		System.out.println(reorderThisQueue.dequeue()); //  30 
 		System.out.println(reorderThisQueue.dequeue()); //  50
-		
+		System.out.println("");
+
 		
 //		System.out.println ( Chapter6.isPalindrome(listQueue3) ) ;
+		Stack  stackparition = new Stack();
+		stackparition.push(0);
+		stackparition.push(-1);
+		stackparition.push(2);
+		stackparition.push(3);
+		stackparition.push(99);
+		stackparition.push(7);
+		stackparition.push(-2);
+		stackparition.push(3);
+		Chapter6.partition(stackparition);
+
+		System.out.println ( stackparition.pop() ) ; // 6
+		System.out.println ( stackparition.pop() ) ; // 2
+		System.out.println ( stackparition.pop() ) ; // 11
+		System.out.println ( stackparition.pop() ) ; // 10
+		System.out.println ( stackparition.pop() ) ; // 4
+		System.out.println ( stackparition.pop() ) ; // 33
+		System.out.println ( stackparition.pop() ) ; // 20
+		System.out.println("");
+		System.out.println("");
+
+		Stack  stack_switchpairs = new Stack();
+		stack_switchpairs.push(7);
+		stack_switchpairs.push(6);
+		stack_switchpairs.push(5);
+		stack_switchpairs.push(4);
+		stack_switchpairs.push(3);
+		stack_switchpairs.push(2);
+		stack_switchpairs.push(1);
+		Chapter6.switchPairs(stack_switchpairs);
+
+		System.out.println ( stack_switchpairs.pop() ) ; // 6
+		System.out.println ( stack_switchpairs.pop() ) ; // 7
+		System.out.println ( stack_switchpairs.pop() ) ; // 4
+		System.out.println ( stack_switchpairs.pop() ) ; // 5
+		System.out.println ( stack_switchpairs.pop() ) ; // 2
+		System.out.println ( stack_switchpairs.pop() ) ; // 3
+		System.out.println ( stack_switchpairs.pop() ) ; // 1
+		System.out.println("");
+		System.out.println("");
 		
+		Stack  stack_issorted = new Stack();
+		stack_issorted.push(7);
+		stack_issorted.push(6);
+		stack_issorted.push(5);
+		stack_issorted.push(4);
+		stack_issorted.push(5);
+		System.out.print( Chapter6.isSorted(stack_issorted) ) ;
+
+		Stack stack_mirror= new Stack();
+		stack_mirror.push(7);
+		stack_mirror.push(5);
+		stack_mirror.push(3);
+		stack_mirror.push(1);
+		Chapter6.mirror(stack_mirror);
+		System.out.println("");
+
+		System.out.println ( stack_mirror.pop() ) ; // 1
+		System.out.println ( stack_mirror.pop() ) ; // 3
+		System.out.println ( stack_mirror.pop() ) ; // 5
+		System.out.println ( stack_mirror.pop() ) ; // 7
+		System.out.println ( stack_mirror.pop() ) ; // 7
+		System.out.println ( stack_mirror.pop() ) ; // 5
+		System.out.println ( stack_mirror.pop() ) ; // 3
+		System.out.println ( stack_mirror.pop() ) ; // 1
+		System.out.println("");
+		
+		System.out.println(Chapter6.weakFinger(2,1));
 
 
 	}

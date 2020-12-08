@@ -1,5 +1,7 @@
 package algo;
 
+import java.nio.file.StandardWatchEventKinds;
+
 public class Chapter6 {
 	
 	private static class SLNode  //no outside access 
@@ -1136,6 +1138,221 @@ public class Chapter6 {
 		
 		
 	
+	}
+	
+	
+	public static void partition (Stack stack) 
+	{
+		/*
+		 * process: 
+		 * 
+		 * S --> Q   (calculate median)
+		 * Q -->  S  (  dequeue data to either queue (ele < origin ) or stack (ele > origin )))  .. origin == 0
+		 * Q --> S (flush remaining stack data to S)
+		 * 
+		 * */
+		Queue queue = new Queue(); 
+		Integer data;
+		int size = 0;
+		
+		if (stack.isEmpty())
+		{
+			return ;
+		}
+		
+//		 * S --> Q   (calculate median)
+
+		while (stack.isEmpty() == false) 
+		{
+			size++;
+			queue.enqueue(stack.pop());
+		}
+		
+	
+//		 * Q -->  S  (  dequeue data to either queue (ele < origin ) or stack (ele > origin ))) 
+
+		while (size-- > 0) 
+		{
+			data = queue.dequeue();
+			
+			if (data > 0) 
+			{
+				stack.push(data);
+			}
+			else 
+			{
+				queue.enqueue(data);
+			}
+		}
+		
+//		 * S --> Q (flush remaining stack data to Q)
+//
+		while (queue.isEmpty() == false)  
+		{
+			stack.push(queue.dequeue());
+		}
+		
+	}
+	
+	public static void switchPairs (Stack stack) 
+	{
+		/*
+		 * process:
+		 *  1) S -> Q 
+		 *  2) rotate (size -2 ) time
+		 *  3) dequeue 2 elements into stack
+		 *  4) repeat until size -2  <=0
+		 *  5) flush queue elements to stack
+		 *   
+		 * */
+		Queue queue = new Queue();
+		int size = 0;
+		
+		if (stack.isEmpty()) 
+		{
+			return;
+		}
+		
+		size = 0;
+		
+		while (stack.isEmpty() == false) 
+		{
+			size++;
+			queue.enqueue(stack.pop());
+		}
+		
+		do 
+		{
+			// rotate
+			for (int i = 0; i < size - 2; i++) 
+			{
+				queue.enqueue(queue.dequeue());		
+			}
+			
+			// dequeue 2 elements 
+			for (int i = 0; i < 2; i++) 
+			{
+				if (queue.isEmpty() == false) 
+				{
+					stack.push(queue.dequeue());
+				}
+			}
+			
+			size-=2; // 2 elements remove from queue
+		}
+		while ( size > 0 );
+			
+		// flush queue 
+		while (queue.isEmpty() == false) 
+		{
+			stack.push(queue.dequeue());
+		}
+	
+	}
+	
+	public static boolean isSorted (Stack stack) 
+	{
+		Stack storage = new Stack();
+		boolean state = false;
+		
+		if (stack.isEmpty()) 
+		{
+			return state;
+		}
+		
+		state = true;
+		
+		// empty stack to  storage
+		while (stack.isEmpty() == false)  
+		{
+			storage.push(stack.pop());
+		}
+		
+		// empty storage  back to stack. Check that stack top is greater than storage top
+		while (storage.isEmpty() == false) 
+		{
+			stack.push(storage.pop());
+			
+			if (storage.isEmpty() == false) 
+			{
+				state &=  stack.top() < storage.top(); 				
+			}
+		}
+		
+		return state;
+	}
+	
+	public static void mirror (Stack stack) 
+	{
+		Queue storageQueue = new Queue();
+		int size = 0;
+		
+		if (stack.isEmpty()) 
+		{
+			return;
+		}
+		
+		// flush data to storage queue
+		while (stack.isEmpty() == false) 
+		{
+			size++;
+			storageQueue.enqueue( stack.pop());
+		}
+		
+		// enqueue to stack and to itself (feedback
+		while (size-- > 0) 
+		{
+			stack.push(storageQueue.front());
+			storageQueue.enqueue(storageQueue.dequeue());
+		}
+		
+		// flush stack to storage queue
+		
+		while (stack.isEmpty() == false) 
+		{
+			storageQueue.enqueue(stack.pop());
+		}
+		
+		// flush queue data to stack
+		while (storageQueue.isEmpty() == false) 
+		{
+			stack.push(storageQueue.dequeue());
+		}
+	}
+	
+	public static int weakFinger (int finger, int usagecount)
+	{
+		int count = 0;
+		int currFinger = 1;
+		int acc = 0;
+		
+		if (finger <= 0 || finger > 5 || usagecount < 0 ) 
+		{
+			return count;
+		}
+		
+		while  ( !(usagecount == 0 && currFinger == finger)  ) 
+		{	
+			switch (currFinger) 
+			{
+				case 5:
+					acc = -1;
+					break;
+				case 1:
+					acc = 1;
+					break;
+			}
+		
+			if (finger == currFinger) 
+			{
+				usagecount--;
+			}
+			
+			count++;				
+			currFinger +=  acc;
+		}
+		
+		return count;
 	}
 	
 	public static void main(String agrs[]) 
