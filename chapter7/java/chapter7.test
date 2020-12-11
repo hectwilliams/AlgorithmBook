@@ -1,5 +1,5 @@
 package algo;
-import algo.Chapter7;
+//import algo.Chapter7;
 import java.util.ArrayList;
 
 
@@ -31,7 +31,131 @@ public class TestTmp {
 		tacotruckcustomerlocations.add(  p1 );
 		tacotruckcustomerlocations.add(  p2 );
 		Chapter7.tacoTruck(tacotruckcustomerlocations);
+		System.out.println("");
+		
+		int[] arraybinarysearch = {1, 2, 3, 4, 5, 6, 7, 8};
+		
+		System.out.println(Chapter7.binarySearch(arraybinarysearch, 9));
+		System.out.println("");
+		
+		String[] minrotatedarray = {"Gigli", "Jay is cool", "Mavis", "Phoebe", "Thurber", "Anna", "Celeste", "Elon"};
+		System.out.println( Chapter7.minofSortedRotated(minrotatedarray) );
+		System.out.println("");
+
+		String binsearchstr = " &-0379DEFXZ[abcz|";
+		System.out.println(Chapter7.stringBinarySearch(binsearchstr , 'N')); // false
+		System.out.println(Chapter7.stringBinarySearch(binsearchstr , 'c')); // true
+		System.out.println("");
+		
+		
+		ArrayList<Integer> removedupsarray = new ArrayList<Integer>();
+		removedupsarray.add(1);
+		removedupsarray.add(2);
+		removedupsarray.add(1);
+		removedupsarray.add(3);
+		removedupsarray.add(4);
+		removedupsarray.add(2);
+		removedupsarray.add(5);
+		removedupsarray.add(5);
+
+		Chapter7.removeDups(removedupsarray);
+		for (Integer retVal: removedupsarray) 
+			System.out.print(retVal + ", ");
+		
+		
+		System.out.println("");
+		
+		int[] modearray = {1,2,1,2,4,2,5};
+		System.out.print(Chapter7.mode(modearray));
+		System.out.println("");
+		System.out.println("");
+
+		int[] abuffercopy =  {1,2,3,4,5,6,7,8, 9};
+		int[] bbuffercopy =  {0, 0,0 ,0 ,0 ,0};
+		Chapter7.arrBufferCopy_fifth(abuffercopy, abuffercopy, 1, 3, 3);
+		for (Integer retVal: abuffercopy) 
+			System.out.print(retVal + ", ");
+		System.out.println("");
+		
+		System.out.println("");
+		int sigmaNum = 3;
+		System.out.println( Chapter7.iSigma(sigmaNum) );
+		
+		sigmaNum = 4;
+		System.out.println( Chapter7.iSigma(sigmaNum) );
+		
+		System.out.println("");
+		
+		int product = 3;
+		System.out.println( Chapter7.factorial(product) );
+		
+		product = 4;
+		System.out.println( Chapter7.factorial(product) );
+		
+		
+		System.out.println("");
+		
+		int fibnum = 1;
+		System.out.println( Chapter7.fibonacci(fibnum) );
+		
+		fibnum = 5;
+		System.out.println( Chapter7.fibonacci(fibnum) );
+		
+		System.out.println("");
+		int tribnum = 1;
+		System.out.println( Chapter7.tribonacci(tribnum));
+		
+		tribnum = 6;
+		System.out.println( Chapter7.tribonacci(tribnum));
+		System.out.println("");
+		
+		int[] mediansortedarray0 = {1, 5, 9};
+		int[] mediansortedarray1 = {1, 2, 3, 4, 5};
+		
+		System.out.println (Chapter7.medianOfSortedArrays(mediansortedarray0, mediansortedarray1));
+		
+		
+		System.out.println("");
+
+		int [] missingValuearray0 = {3, 0, 1};
+		int [] missingValuearray1 = {2, -4, 0, -3, -2, 1};
+		System.out.println( Chapter7.missingValue(missingValuearray0));
+		System.out.println( Chapter7.missingValue(missingValuearray1));
+		System.out.println("");
+
+		
+		int [] heights = {3, 1, 1, 4, 2};
+		System.out.println( Chapter7.rainTerraces(heights));
+		System.out.println("");
+		
+		int lastDigitBase = 3;
+		int lastDigitExp = 4;
+		System.out.println( Chapter7.lastDigitofAtoTheB(lastDigitBase, lastDigitExp ));
+		System.out.println("");
+
+		int [][] image = {
+				{12, 34, 45, 56},
+				{98, 87, 76, 65}, 
+				{56, 67, 78, 89},
+				{54, 43, 32, 21}
+			};
+		int [][] target = {
+				{67, 78},
+				{43, 32}
+		};
+		System.out.println( Chapter7.matrixSearch(image, target ));
+		System.out.println("");
+		
+		int maxSubArray0[] = {1, 2, -4, 3, -2, 3, -1};
+		int maxSubArray1[] = {-1,-2,-4,-3,-2,-3};
+
+		System.out.println( Chapter7.maxOfSubarraySum(maxSubArray1 ));
+		System.out.println("");
+
+
 	}
+
+	
 }
 
 
