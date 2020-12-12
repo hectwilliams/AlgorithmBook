@@ -7,11 +7,12 @@ public class Chapter5 {
 	{
 		Integer value;
 		Node next;
+		Node child;
 		
 		Node(int val)
 		{
 			this.value = val;
-			next = null;
+			child = next = null;
 		}
 	}
 	
