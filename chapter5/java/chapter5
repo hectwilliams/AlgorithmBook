@@ -3,7 +3,7 @@ package algo;
 
 public class Chapter5 {
 	
-	static final class Node<T> // node object 
+	public static final class Node<T> // node object 
 	{
 		T value;
 		Node<T> next;
@@ -15,11 +15,11 @@ public class Chapter5 {
 		}
 	}
 	
-	static final class  List<T> 
+	public static  class  List<T> 
 	{
 	
 		
-		final Node<T> addFront(Node<T> ptr, T value) 
+		public final Node<T> addFront(Node<T> ptr, T value) 
 		{
 			Node<T> node = new Node<T>(value);
 			
@@ -31,7 +31,7 @@ public class Chapter5 {
 			return node;
 		}
 		
-		final boolean contains (Node<T> ptr, T val)
+		public final boolean contains (Node<T> ptr, T val)
 		{
 			while (ptr != null) 
 			{
@@ -43,7 +43,7 @@ public class Chapter5 {
 			return false;
 		}
 		
-		final Node<T> removeFront (Node<T> ptr) 
+		public final Node<T> removeFront (Node<T> ptr) 
 		{
 			if (ptr != null) 
 			{
@@ -52,7 +52,7 @@ public class Chapter5 {
 			return ptr;
 		}
 		
-		final T front(Node<T> ptr) 
+		public final T front(Node<T> ptr) 
 		{
 			if (ptr != null) 
 			{
@@ -199,8 +199,9 @@ public class Chapter5 {
 			return null;
 		}
 		
-		final Node<T> removeBack (Node<T> ptr) 
+		public final Node<T> removeBack (Node<T> ptr) 
 		{
+			Node<T> result = null;
 			if (ptr != null) 
 			{
 				if (ptr.next != null) 
@@ -209,14 +210,14 @@ public class Chapter5 {
 					{
 						ptr = ptr.next;
 					}
-					
+					result= ptr.next;
 					ptr.next = null;
 				}
 			}
-			return null;
+			return result;
 		}
 		
-		final void addBack (Node<T> ptr, T value) 
+		public final void addBack (Node<T> ptr, T value) 
 		{
 			
 			if (ptr == null) 
@@ -773,7 +774,7 @@ public class Chapter5 {
 			}
 		}
 		
-		final void dedupeWithOutBuffer(Node<T> ptr)   // NLogN runtime
+		final void dedupeWithOutBuffer(Node<T> ptr)   // (N^2/2 or N^2 worst case ) runtime
 		{
 			Node<T> walk;
 			compareInterface<T> cmprInterface = (Node<T>  a,  Node<T> b) -> {
