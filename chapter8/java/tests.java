@@ -1,5 +1,5 @@
 package algo;
-import algo.Chapter8;
+import algo.Chapter8.*;
 import algo.Chapter5.*;
 
 public class Tests {
@@ -7,7 +7,7 @@ public class Tests {
 	
 	private static void reverseTest()
 	{
-		Chapter8.SList llist0 = new Chapter8.SList();
+		SList llist0 = new SList();
 		
 		llist0.pushFront(4);
 		llist0.pushFront(3);
@@ -23,7 +23,7 @@ public class Tests {
 	
 	private static void KthLastNodeTest()
 	{
-		Chapter8.SList llist0 = new Chapter8.SList();
+		SList llist0 = new SList();
 		
 		llist0.pushFront(4);
 		llist0.pushFront(3);
@@ -37,7 +37,7 @@ public class Tests {
 	
 	private static void shiftRightTest()
 	{
-		Chapter8.SList llist0 = new Chapter8.SList();
+		SList llist0 = new SList();
 		
 		llist0.pushFront(4);
 		llist0.pushFront(3);
@@ -50,7 +50,7 @@ public class Tests {
 	
 	private static void shiftLeftTest()
 	{
-		Chapter8.SList llist0 = new Chapter8.SList();
+		SList llist0 = new SList();
 		
 		llist0.pushFront(4);
 		llist0.pushFront(3);
@@ -63,7 +63,7 @@ public class Tests {
 
 	private static void isPalindromeTest()
 	{
-		Chapter8.SList llist0 = new Chapter8.SList();
+		SList llist0 = new SList();
 		
 		llist0.pushFront(1);
 		llist0.pushFront(2);
@@ -76,12 +76,12 @@ public class Tests {
 
 	private static void sumNumeralsTest()
 	{
-		Chapter8.SList llist0 = new Chapter8.SList();
+		SList llist0 = new SList();
 		llist0.pushFront(1);
 		llist0.pushFront(0);
 		llist0.pushFront(2);
 		
-		Chapter8.SList llist1 = new Chapter8.SList();
+		SList llist1 = new SList();
 		llist1.pushFront(4);
 		llist1.pushFront(8);
 
@@ -90,18 +90,18 @@ public class Tests {
 	
 	private static void flattenChildrenTest()
 	{
-		Chapter8.SList list0 = new Chapter8.SList();
+		SList list0 = new SList();
 		list0.pushFront(5);
 		list0.pushFront(4);
 		list0.pushFront(3);
 		list0.pushFront(2);
 		
-		Chapter8.SList list1 = new Chapter8.SList();
+		SList list1 = new SList();
 		list1.pushFront(50);
 		list1.pushFront(20);
 		list1.pushFront(10);
 		
-		Chapter8.SList list2 = new Chapter8.SList();
+		SList list2 = new SList();
 		list2.pushFront(300);
 		list2.pushFront(200);
 		list2.pushFront(100);
@@ -152,7 +152,7 @@ public class Tests {
 		Node circularList = Chapter8.setUpLoop(5, 3);
 		System.out.println(Chapter8.hasLoop(circularList));
 		
-		Chapter8.SList list1 = new Chapter8.SList();
+		SList list1 = new SList();
 		list1.pushFront(50);
 		list1.pushFront(20);
 		list1.pushFront(10);
@@ -181,7 +181,7 @@ public class Tests {
 	{
 		Node circularList = Chapter8.setUpLoop(7, 3);
 		
-		Chapter8.SList list = new Chapter8.SList();
+		SList list = new SList();
 		list.pushFront(5);
 		list.pushFront(4);
 		list.pushFront(3);
@@ -193,7 +193,7 @@ public class Tests {
 
 	private static void swapPairsTest()
 	{
-		Chapter8.SList objLL = new Chapter8.SList();
+		SList objLL = new SList();
 		objLL.pushFront(6);
 
 		objLL.pushFront(5);
@@ -207,9 +207,138 @@ public class Tests {
 		objLL.display();
 	}
 	
+	private static void DLClassTest ()
+	{
+		DList dlist = new DList();
+		
+		dlist.push(22);
+		dlist.push(21);
+
+		dlist.push(23);
+//		System.out.println(dlist.pop());
+		System.out.println(dlist.back());
+		System.out.println(dlist.contains(3423));
+		System.out.println(dlist.size());
+
+		dlist.display();
+	}
+	
+	private static void prependValueTest( ) 
+	{
+		DList dlist = new DList();
+		dlist.push(22);
+		dlist.push(21);
+		dlist.push(23);
+		Chapter8.prependValue(dlist, 300, 23);
+		dlist.display();
+
+	}
+	
+	private static void appendValueValueTest( ) 
+	{
+		DList dlist = new DList();
+		dlist.push(22);
+		dlist.push(21);
+		dlist.push(23);
+		Chapter8.appendValue(dlist, 300, 23);
+		Chapter8.appendValue(dlist, 300, 22);
+
+		dlist.display();
+	}
+	
+	private static void kthToLastValueTest( ) 
+	{
+		DList dlist = new DList();
+		dlist.push(22);
+		dlist.push(21);
+		dlist.push(23);
+		System.out.println( dlist.kthToLastValue(1));
+	}
+	
+//	private static void deleteMiddleNodeTest ( )  // changed DLNode .next attribute to public to run function
+//	{
+//		DList dlist = new DList();
+//		dlist.push(22);
+//		dlist.push(21);
+//		dlist.push(23);
+//		dlist.display();
+//		Chapter8.deleteMiddleNode(dlist.getHead().next);
+//		dlist.display();
+//	}
+	
+//	private static void isValidTest ( )  // changed DLNode .next attribute to public to run function
+//	{
+//		DList dlist = new DList();
+//		dlist.push(22);
+//		dlist.push(21);
+//		dlist.push(23);
+//		dlist.getTail().next = dlist.getHead();
+//		dlist.getHead().prev = dlist.getTail();
+//		System.out.println( dlist.isValid());
+//	}
+	
+	private static void partitionTest () 
+	{
+		DList dlist = new DList();
+		dlist.push(27);
+		dlist.push(26);
+		dlist.push(23);
+		dlist.push(7);
+
+		dlist.push(8);
+
+		dlist.push(7);
+
+		dlist.push(10);
+		dlist.push(3);
+		dlist.push(13);
+		dlist.push(1);
+		
+		dlist.display();
+		Chapter8.partition(dlist, 7);
+		dlist.display();
+
+	}
+	
+	private static void palindromeTest ()
+	{
+		DList dlist = new DList();
+		dlist.push(7);
+		dlist.push(27);
+		dlist.push(27);
+		dlist.push(7);
+		System.out.println(dlist.palindrome()); // true
+		
+		DList dlist2 = new DList();
+		dlist2.push(7);
+		dlist2.push(27);
+		dlist2.push(24);
+		dlist2.push(7);
+		System.out.println(dlist2.palindrome()); // false
+
+	}
+	
+	private static void reverseDlistTest ()
+	{
+		DList dlist = new DList();
+		dlist.push(7);
+		dlist.push(4);
+		dlist.push(2);
+		dlist.push(1);
+		dlist.display();
+		dlist.reverse(); // true
+		dlist.display();
+
+		
+	}
+	
+	
 	public static void main  (String [] args) 
 	{
-		swapPairsTest();
+		reverseDlistTest();
 	}
+	
+	
+
 
 }

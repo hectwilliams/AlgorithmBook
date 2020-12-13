@@ -3,7 +3,7 @@ import algo.Chapter5.*;
 
 public class Chapter8 {
 	
-	public static class SList
+	public  static class SList
 	{
 		Node head;
 		
@@ -90,7 +90,7 @@ public class Chapter8 {
 			 *  [2]  [1] [4] [3] [6]
 			 *  insert after 6
 			 *  [2]  [1] [4] [3] [6] [5]
-			 *  
+			 *  ...
 			 *  
 			 * */
 			Node buffer, runner;
@@ -615,7 +615,580 @@ public class Chapter8 {
 	}
 	
 	
+	public static class DLNode 
+	{
+		private int val;
+		private DLNode prev;
+		private DLNode next;
+		
+		DLNode(int val)
+		{
+			this.val = val;
+			prev = next = null;
+		}
+	}
+	
+	public static class DList 
+	{
+		private DLNode head;
+		private DLNode tail;
+		DList () 
+		{
+			head = tail = null;
+		}
+		
+		public void push (int value) 
+		{
+			DLNode node = new DLNode(value);
+			if (head == null) 
+			{
+				head = tail = node;
+			}
+			else 
+			{
+				node.next = head;
+				head.prev = node;
+				head = node;
+			}
+		}
+		
+		public void display()
+		{
+			DLNode node = head;
+			System.out.print("doubly list:\t");
 
+			while (node != null) 
+			{
+				System.out.print(node.val + ",");
+				node = node.next;
+			}
+			System.out.println("");
+
+		}
+		
+		public Integer pop()
+		{
+			Integer poppedData = null;
+			
+			if (head != null) 
+			{
+				poppedData = head.val;
+				head = head.next;
+				head.prev = null;
+				if (head == null) 
+				{
+					tail = null;
+				}
+			}
+			return poppedData;
+		}
+		
+		public Integer front()
+		{
+			if (head != null ) 
+			{
+				return head.val;
+			}
+			return null;
+		}
+		
+		public Integer back()
+		{
+			if (tail != null ) 
+			{
+				return tail.val;
+			}
+			return null;
+		}
+		
+		public boolean contains (int value)
+		{
+			DLNode runnerForward, runnerBack;
+			boolean hasCrossed = false;
+			
+			runnerBack = tail;
+			runnerForward = head;
+			
+			while (!hasCrossed ) 
+			{
+				if (runnerBack.val == value || runnerForward.val == value) 
+				{
+					return true;
+				}
+				
+				hasCrossed = (runnerBack.next != runnerForward) || (runnerBack == runnerForward);
+
+				runnerBack = runnerBack.prev;
+				runnerForward = runnerForward.next;
+				
+			}
+			return false;
+		}
+		
+		public int size()
+		{
+			int counter = 0;
+			DLNode runner = head;
+			
+			while(runner != null) 
+			{
+				counter++;
+				runner = runner.next;
+			}
+			return counter;
+		}
+		
+		private void setHead (DLNode list) 
+		{
+			head = list;
+		}
+		private void setTail (DLNode list) 
+		{
+			tail = list;
+		}
+		
+		public Integer kthToLastValue(int k) 
+		{
+			DLNode runner = tail;
+			int data = 0;
+			while (runner != null && k > 0) 
+			{
+				k--;
+				data = runner.val;
+				runner = runner.prev;
+			}
+			
+			if (k == 0)
+			{
+				return data;
+			}
+			
+			return null;
+		}
+		
+		public DLNode getHead ()
+		{
+			return head;
+		}
+		
+		public DLNode getTail ()
+		{
+			return tail;
+		}
+		
+		
+		public boolean isValid ()
+		{
+			DLNode runnerFoward, runnerRewind, runnerFowardChild, runnerRewindChild;
+			int sel = 0;
+			
+			if (head == null)
+			{
+				return false;
+			}
+			
+			runnerRewind = runnerRewindChild = tail;
+			runnerFoward = runnerFowardChild = head;
+			
+			while (runnerRewind != null && runnerFoward != null)
+			{
+				// (forward runner child lags parent )
+				sel = (sel + 1) % 2;
+				
+				if (runnerFowardChild != null)
+				{
+					if (sel == 0)
+					{
+						runnerFowardChild = runnerFowardChild.next;						
+					}
+				}
+				if (runnerFoward != null)
+				{
+					runnerFoward = runnerFoward.next;
+				}
+				
+				// (backward runner child lags parent)
+
+				if (runnerRewindChild != null)
+				{
+					if (sel == 0)
+					{
+						runnerRewindChild = runnerRewindChild.next;						
+					}
+				}
+				if (runnerRewind != null)
+				{
+					runnerRewind = runnerRewind.next;
+				}
+				
+				// valid tests 
+				
+				if (runnerFoward == runnerFowardChild)
+				{
+					return false;
+				}
+				
+				if (runnerRewind == runnerRewindChild) 
+				{
+					return false;
+				}
+					
+			}
+			
+			
+			return true;
+		}
+		
+		public boolean palindrome() 
+		{
+//			assuming list is valid ( to handle ambiguity child followers are need to lag forward/rewind runners to find possible loops )
+			DLNode runnerFoward, runnerRewind;
+			boolean crossed = false;
+			boolean isMatch = true;
+			
+			if (head == null)
+			{
+				return false;
+			}
+			
+			runnerFoward = head;
+			runnerRewind = tail;
+			
+			while (!crossed) 
+			{
+				
+				crossed = (runnerFoward == runnerRewind) || (runnerRewind.next == runnerFoward);
+				isMatch &= runnerFoward.val == runnerRewind.val;
+				
+				if (runnerFoward != null) 
+				{
+					runnerFoward = runnerFoward.next;
+				}
+				
+				if (runnerRewind != null) 
+				{
+					runnerRewind = runnerRewind.prev;
+				}
+			}
+
+			return isMatch;
+		}
+		
+		public void reverse()
+		{
+			
+			/* 
+			 * 
+			 * [node] [node] [plucked] [oldtail]
+			 * [node] [node]  [oldtail] [plucked]
+			 * [node] [plucked] [oldtail] [previously set]
+			 * [node] [oldtail] [previously set]  [previously set]
+			 * [oldtail] [previously set] [previously set]  [previously set]
+			 * */
+			
+			DLNode runnerRewind, pluckedNode;
+
+			if (head == null) 
+			{
+				return;
+			}
+			runnerRewind = tail;
+			
+			while (runnerRewind != head ) 
+			{
+				pluckedNode = runnerRewind.prev; // previous node is popped and relocated 
+
+				if (pluckedNode == head) 
+				{
+					head = runnerRewind;
+					head.prev = null;
+				}
+				else 
+				{
+					runnerRewind.prev = pluckedNode.prev;
+					runnerRewind.prev.next = runnerRewind;
+					pluckedNode.next = pluckedNode.prev = null;
+				}
+				
+				tail.next = pluckedNode;
+				pluckedNode.prev = tail;
+				tail = tail.next;
+				tail.next = null;
+				
+			}
+			
+		}
+		
+		public DLNode loopStart ()
+		{
+			DLNode runnerFoward, runnerRewind, runnerFowardChild, runnerRewindChild, runnerForwardLoop , runnerRewindLoop, result;
+			int sel = 0;
+			int fowardLoopSize = 0;
+			int rewindLoopSize = 0;
+			if (head == null)
+			{
+				return null;
+			}
+			
+			runnerRewind = runnerRewindChild = tail;
+			runnerFoward = runnerFowardChild = head;
+			result = runnerRewindLoop = runnerForwardLoop = runnerRewindChild = runnerRewindLoop = null;
+			
+			while (runnerRewind != null && runnerFoward != null)
+			{
+				// (forward runner child lags parent )
+				sel = (sel + 1) % 2;
+				
+				if (runnerFowardChild != null)
+				{
+					if (sel == 0)
+					{
+						runnerFowardChild = runnerFowardChild.next;						
+					}
+				}
+				if (runnerFoward != null)
+				{
+					runnerFoward = runnerFoward.next;
+				}
+				
+				// (backward runner child lags parent)
+
+				if (runnerRewindChild != null)
+				{
+					if (sel == 0)
+					{
+						runnerRewindChild = runnerRewindChild.next;						
+					}
+				}
+				if (runnerRewind != null)
+				{
+					runnerRewind = runnerRewind.next;
+				}
+				
+				// valid tests 
+				
+				if (runnerFoward == runnerFowardChild)
+				{
+					runnerForwardLoop =  runnerFowardChild;
+					break;
+				}
+				
+				if (runnerRewind == runnerRewindChild) 
+				{
+					runnerRewindLoop  =  runnerRewindChild;
+					break;
+				}
+					
+			}
+			
+			if (runnerRewindLoop != null) 
+			{
+				// calculate length of loop
+				runnerRewind = runnerRewindLoop;
+				do 
+				{
+					rewindLoopSize++;
+					runnerRewind = runnerRewind.prev;
+				}
+				while(runnerRewind != runnerRewindLoop);
+			
+				// find loop ptr 
+				runnerRewind = tail;
+				runnerRewindChild = null;
+				
+				while (runnerRewindChild != runnerRewind) // exit when child finds
+				{
+					runnerRewindChild = runnerRewind;
+					for (int i = 0; i < rewindLoopSize; i++) 
+					{
+						result = runnerRewindChild;
+						runnerRewindChild = runnerRewindChild.prev;
+					}
+					
+					runnerRewind = runnerRewind.prev; // traverse list 
+				}
+				
+				return result;
+			}
+			
+			if (runnerForwardLoop != null) 
+			{
+				// calculate length of loop 
+				
+				runnerFoward = runnerForwardLoop;
+				do 
+				{
+					fowardLoopSize++;
+					runnerFoward = runnerFoward.next;
+				}
+				while(runnerFoward != runnerForwardLoop);
+				
+				// find loop ptr 
+				
+				runnerFoward = head;
+				runnerFowardChild = null;
+				while (runnerFowardChild != runnerFoward) 
+				{
+					runnerFowardChild = runnerFoward;
+					for (int i = 0; i < fowardLoopSize; i++) 
+					{
+						result = runnerFowardChild;
+						runnerFowardChild = runnerFowardChild.next;
+					}
+					
+					runnerFoward = runnerFoward.next; 		
+				}
+				return result;
+
+			}
+			
+			return null;
+		}
+		
+		public void breakLoop ()
+		{
+			DLNode feedbackDLNode = this.loopStart();
+			if (feedbackDLNode != null) 
+			{
+				feedbackDLNode.next = null;
+			}
+		}
+		
+		public void repair ()
+		{
+			DLNode feedbackDLNode;
+			
+			while (!this.isValid()) 
+			{
+				feedbackDLNode = this.loopStart();
+				feedbackDLNode.next = null;
+			}
+		}
+	}
+	
+	public static void prependValue (DList obj, int newVal, int val)
+	{
+		/* ex. new val = 2 | val = 9
+		 * [9] [5] [8] [9]
+		 * [2] [9] [8] [2] [9]
+		 * 
+		 * */
+		DLNode runner = obj.head, newNode;
+		
+		if (newVal == val) 
+		{
+			return;
+		}
+		while (runner != null) 
+		{
+			if (runner.val == val)
+			{
+				newNode = new DLNode(newVal);
+				runner.prev = newNode;
+				newNode.next = runner;
+				if (runner == obj.head) 
+				{
+					obj.setHead(newNode);						
+				}
+				
+			}
+			runner = runner.next;
+		}
+	}
+	
+	public static void appendValue (DList obj, int newVal, int val)
+	{
+		/* ex. new val = 2 | val = 9
+		 * [9] [5] [8] [9]
+		 * [[9 [2]  [8] [9]  [2]
+		 * 
+		 * */
+		DLNode runner = obj.tail, newNode;
+		
+		if (newVal == val) 
+		{
+			return;
+		}
+		
+		while (runner != null) 
+		{
+			if (runner.val == val)
+			{
+				newNode = new DLNode(newVal);
+				newNode.next = runner.next;
+				runner.next = newNode;
+				if (runner == obj.tail) 
+				{
+					obj.setTail(newNode);						
+				}
+				
+			}
+			runner = runner.prev;
+		}
+	}
+	
+	public  static void deleteMiddleNode (DLNode node)
+	{
+		/* remove 8
+		 *  [5] [8] [9]
+		 *    [5] [9] 
+		 * 
+		 * */
+		
+		if (node == null || node.prev == null || node.next == null) 
+		{
+			return;
+		}
+		node.prev.next = node.next;
+	}
+	
+	public static void partition(DList obj, int val)
+	{
+		DLNode pivot = null, runner, pluckedNode;
+		
+		runner = obj.head;
+		
+		while (runner != null) 
+		{
+			if (runner.val < val ) 
+			{
+				if (runner != obj.head) 
+				{
+					// move to head of list
+					pluckedNode = runner;
+					runner = runner.prev.next = runner.next;
+					
+					pluckedNode.next = obj.head;
+					obj.head.prev = pluckedNode;
+					obj.head = (pluckedNode );	
+				}
+			
+			}
+			
+			else if (runner.val == val) 
+			{
+				if (pivot == null) 
+				{
+					pivot = runner;
+				}
+				else  if (runner.prev.val != val)  // watch for twins!
+				{
+					pluckedNode = runner;
+					runner = runner.prev.next = runner.next;
+					runner = runner.prev; // important!
+					pluckedNode.next = pivot.next;
+					pivot.next = pluckedNode;
+				}
+			}
+				
+			
+			
+			runner = runner.next;
+
+		}
+	}
+	
+	
 	
 }
 
