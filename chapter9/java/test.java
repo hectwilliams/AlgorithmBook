@@ -189,19 +189,24 @@ public class Test {
 	
 	public static void allValidNPairsOfParensTest()
 	{
-		int test = 30;
+		int test = 2;
 		ArrayList<String> collection = Chapter9.allValidNPairsOfParens(test);
 		for (String s: collection)
 		{
-			System.out.print(s + ",");
-			System.out.println("");	
+			System.out.println(s + ",");
 		}
 		
 		System.out.println("");	
 	}
 	
+	public static void towerOfHanoiTest () 
+	{
+		int moves = Chapter9.towerOfHanoi();
+		System.out.println(" number of moves to relocate disks " + moves);
+	}
+	
 	public static void main(String args[])
 	{
-		sumOfSquaresTest();
+		towerOfHanoiTest();
 	}
 }

@@ -1,6 +1,8 @@
 package algo;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 import algo.Chapter5.Node; // node
 public class Chapter9 {
@@ -787,16 +789,265 @@ public class Chapter9 {
 		return array;
 	}
 	
-	private static void allValidNPairsOfParensSolver(int numOfPairs, ArrayList<String> arrayCache, String bufferCache) 
+	private static boolean parenIsValid(String str)
 	{
+		int openBraceCount , closeBraceCount;
 		
+		openBraceCount = closeBraceCount = 0;
+		
+		for (String retVal: str.split("") )
+		{
+			if (retVal.charAt(0) == '{')
+			{
+				if (closeBraceCount > openBraceCount) 
+				{
+					return false;
+				}
+				openBraceCount++;
+			}
+			
+			if (retVal.charAt(0) == '}')
+			{
+				closeBraceCount++;
+			}
+		}
+		
+		if (openBraceCount != closeBraceCount) 
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	private static void allValidNPairsOfParensSolver(final int numOfParenthesis, ArrayList<String> arrayCache, String bufferCache) 
+	{
+		String bufferCopy = "";
+		char[] possibleValues = {'{', '}'};
+		
+		if (bufferCache != null) 
+		{
+			if (bufferCache.length() == numOfParenthesis)
+			{
+				if (parenIsValid(bufferCache))
+				{
+					arrayCache.add(bufferCache);
+				}
+				return;
+			}
+		}
+		
+		for (int i = 0; i < possibleValues.length; i++) 
+		{
+			if (bufferCache != null) 
+			{
+				bufferCopy = "" + bufferCache;
+			}
+			
+			// add value 
+			bufferCopy += "" + possibleValues[i];
+			
+			//recursion
+			allValidNPairsOfParensSolver(numOfParenthesis, arrayCache, bufferCopy);
+		}
 	}
 	
 	public static ArrayList<String> allValidNPairsOfParens(int numOfPairs) 
 	{
 		ArrayList<String> array = new ArrayList<String>();
-		allValidNPairsOfParensSolver(numOfPairs, array, null);
+		allValidNPairsOfParensSolver( (int) Math.pow(numOfPairs, 2), array, null);
 		return array;
+	}
+	
+	private static boolean isEqual (Stack<Integer> a, Stack<Integer> b) 
+	{
+		
+		Stack<Integer> tmpStack;
+		boolean hasEqualStack = false;
+		
+		if (a.size() != b.size()) 
+		{
+			return hasEqualStack;
+		}
+		
+		tmpStack =  new Stack<Integer>();
+		
+		
+		while ( !a.isEmpty() && !b.isEmpty() ) 
+		{
+			tmpStack.push(a.pop()); // first push to a
+			tmpStack.push(b.pop()); 
+		}
+		
+		hasEqualStack = true;
+		
+		
+		while ( !tmpStack.isEmpty() ) 
+		{
+			b.push(tmpStack.pop()); // first pop b
+			a.push(tmpStack.pop());
+			hasEqualStack &= (a.peek() == b.peek());
+		}
+		
+		return hasEqualStack;
+		
+	}
+	
+	private static boolean towerOfHanoiTestMove (int srcID, int destID, ArrayList<Stack<Integer>> towers, HashMap<Integer, ArrayList<Stack<Integer>> > map )
+	{
+		Stack<Integer> src, dest;
+		
+		src = towers.get(srcID);
+		dest = towers.get(destID);
+		
+		if (src.size() == 0 ) 
+		{
+			return false;  
+		}
+		
+		if ( (src.size() != 0) && ( dest.size() != 0) ) 
+		{
+			if (src.peek() > dest.peek()) 
+			{
+				return false;
+			}
+		}
+		
+		/* If the program accessed this tower state  return caller */
+		for (Stack<Integer> retStack: map.get(srcID)) 
+		{
+			if (isEqual (retStack, src) )  
+			{
+				return false;
+			}
+		}
+		
+		map.get(srcID).add(copyStack(src)); // copy stack to table
+		dest.add(src.pop()); // pop src to dest tower
+
+		return true;
+		
+	}
+	
+	private static Stack<Integer> copyStack (Stack<Integer> stack)
+	{
+		Stack<Integer> clone = new Stack<Integer>();
+		Stack<Integer> buffer = new Stack<Integer>();
+		Integer data;
+		
+		while (!stack.isEmpty() ) 
+		{
+			buffer.push(stack.pop());
+		}
+		
+		while (!buffer.isEmpty()) 
+		{
+			data = buffer.pop();
+			clone.push(data);
+			stack.push(data);
+		}
+		return clone;
+	}
+	
+	private static ArrayList<Stack<Integer>> copyStackArray ( ArrayList<Stack<Integer>>  towers)
+	{
+		ArrayList<Stack<Integer>> cloneStackArray = new ArrayList<Stack<Integer>>();
+		Stack<Integer> copiedStack;
+		for (int i = 0; i <  towers.size(); i++) 
+		{
+			copiedStack = copyStack ( towers.get(i) );
+			cloneStackArray.add(copiedStack); 
+		}
+		return cloneStackArray;
+	}
+	
+	private static HashMap<Integer, ArrayList<Stack<Integer>> >  copyMap( HashMap<Integer, ArrayList<Stack<Integer>>> map)
+	{
+
+		HashMap<Integer, ArrayList<Stack<Integer>> > clonedMap = new HashMap<Integer, ArrayList<Stack<Integer>> >();
+		for (Integer key: map.keySet())
+		{
+			clonedMap.put(key, copyStackArray(map.get(key)));
+		}
+		
+		return clonedMap;
+	}
+	
+	private static class towerOfHanoiSolverMeta
+	{
+		boolean done;
+		int numOfIterations;
+		towerOfHanoiSolverMeta() 
+		{
+			done = false;
+			numOfIterations = 10;
+		}
+	}
+	
+	private static void  towerOfHanoiSolver(ArrayList<Stack<Integer>> towers, HashMap<Integer, ArrayList<Stack<Integer>> > map, towerOfHanoiSolverMeta meta, int iteration) // point to 'sel' tower 
+	{
+		ArrayList<Stack<Integer>> cloneTower;
+		HashMap<Integer, ArrayList<Stack<Integer>>> cloneMap;
+		int destID;
+		int srcID ;
+		
+		if (meta.done) 
+		{
+			return;
+		}
+		
+		if (towers.get(2).size() == 3)
+		{
+			meta.done = true;
+			meta.numOfIterations = iteration;
+			return;
+		}
+	
+		for (srcID = 0; srcID < 3; srcID++)  // select tower 
+		{
+			for (int offset = 1; offset <= 2; offset++) // possible moves 
+			{
+				destID = (srcID + offset) % 3; //  move src data to dest 
+				cloneMap = copyMap(map); // deep copy objects 
+				cloneTower = copyStackArray(towers); // deep copy objects 
+				
+				if (towerOfHanoiTestMove(srcID, destID, cloneTower, cloneMap )) 
+				{
+					towerOfHanoiSolver(cloneTower, cloneMap, meta, iteration + 1);
+				}
+			}
+		}
+		
+
+	}
+	
+	public static int towerOfHanoi()
+	{
+		ArrayList<Stack<Integer>> towers = new ArrayList<Stack<Integer>>();
+		HashMap<Integer, ArrayList<Stack<Integer>> > map = new HashMap<Integer, ArrayList<Stack<Integer>> >();
+		towerOfHanoiSolverMeta meta = new towerOfHanoiSolverMeta();
+		
+		//set up map
+		for (int i = 0; i < 3; i++) 
+		{
+			map.put(i, new ArrayList<Stack<Integer>>());
+		}
+		
+		// set up towers
+		Stack<Integer> stack0 = new Stack<Integer>();
+		Stack<Integer> stack1 = new Stack<Integer>();
+		Stack<Integer> stack2 = new Stack<Integer>();
+
+		stack0.push(3);
+		stack0.push(2);
+		stack0.push(1);
+		
+		towers.add(stack0);
+		towers.add(stack1);
+		towers.add(stack2);
+		
+		towerOfHanoiSolver (towers, map, meta, 0);
+		
+		return meta.numOfIterations;
 	}
 
 }
