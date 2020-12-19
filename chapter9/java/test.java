@@ -205,8 +205,87 @@ public class Test {
 		System.out.println(" number of moves to relocate disks " + moves);
 	}
 	
+	public static void ipAddressesTest() 
+	{
+		String addr = "255255255";
+		ArrayList<String> collection = Chapter9.ipAddresses(addr);
+		for (String s: collection)
+		{
+			System.out.println(s + ",");
+		}
+	}
+	
+	public static void generateAllPossibleCoinChangeTest () 
+	{
+		int cents = 5;
+		ArrayList<String> collection = Chapter9.generateAllPossibleCoinChange(cents);
+		for (String s: collection)
+		{
+			System.out.println(s + ",");
+		}
+	}
+	
+	public static void isChessMoveSafeTest () 
+	{
+		int [] intendedMove= {7,0};
+		ArrayList<int[]> queens = new ArrayList<int[]>();
+		int [] queen0 = {3, 7};
+		int [] queen1 = {6, 7};
+		int [] queen2 = {6, 1};
+
+		queens.add( queen0 );
+		queens.add( queen1 );
+		queens.add( queen2 );
+
+		System.out.println("valid move: " + Chapter9.isChessMoveSafe(intendedMove, queens));
+	}
+	
+	public static void allSafeChessSquaresTest () 
+	{
+		ArrayList<int[]> queens = new ArrayList<int[]>();
+		int [] queen0 = {3, 7};
+		int [] queen1 = {6, 7};
+		int [] queen2 = {6, 1};
+
+		queens.add( queen0 );
+		queens.add( queen1 );
+		queens.add( queen2 );
+
+		ArrayList<int[]> collection = Chapter9.allSafeChessSquares( queens);
+		
+		System.out.print("chess squares not threatened by queen: " );
+		for (int[] pos: collection)
+		{
+			System.out.print("[" + pos[0] + "," + pos[1] + "]");
+		}
+		System.out.println("");
+	}
+	
+	public static void eightQueensTest () 
+	{
+		ArrayList<ArrayList<int[]>> collection = Chapter9.eightQueens();
+		boolean enPrint = false;
+		System.out.println("numbers of chessboards allowing 8 queens: " + collection.size());
+		if (enPrint) 
+		{
+			for (ArrayList<int[]> array: collection)
+			{
+				System.out.print("[");
+				for (int[] pos: array)
+				{
+					System.out.print( "[" + pos[0] + "," + pos[1] + "]");
+				}
+				System.out.println("]");
+				Chapter9.displayQueensOnBoard(8, array);
+			}
+			
+			System.out.println("");	
+		}
+	
+	}
+	
 	public static void main(String args[])
 	{
-		towerOfHanoiTest();
+		eightQueensTest();
 	}
 }

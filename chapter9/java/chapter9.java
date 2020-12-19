@@ -2,6 +2,7 @@ package algo;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Stack;
 
 import algo.Chapter5.Node; // node
@@ -1016,8 +1017,6 @@ public class Chapter9 {
 				}
 			}
 		}
-		
-
 	}
 	
 	public static int towerOfHanoi()
@@ -1048,6 +1047,538 @@ public class Chapter9 {
 		towerOfHanoiSolver (towers, map, meta, 0);
 		
 		return meta.numOfIterations;
+	}
+	
+	private static int sum(ArrayList<Integer> list) 
+	{
+		int sum = 0;
+		
+		if (list == null) 
+		{
+			return sum;
+		}
+		
+		for (int i = 0; i < list.size(); i++) 
+		{
+			sum += list.get(i);
+		}
+		return sum;
+	}
+	public static void   ipAddressesSolver (final String addr, ArrayList<String>  addrList , ArrayList<Integer> arrayCache) 
+	{
+		String newEntry;
+		int currSum;
+		ArrayList<Integer> arrayCopy; 
+		int pos;
+		int[] possibleValues = {1, 2, 3};
+		
+		if (arrayCache != null) 
+		{
+			if (arrayCache.size() == 4)
+			{
+				// add decimal points (i.e. translate into valid ip address)
+				
+				newEntry ="";
+				pos = 0;
+				for (Integer numOfChars: arrayCache ) 
+				{
+					if (!newEntry.isEmpty()) 
+					{
+						newEntry += '.';
+					}
+					newEntry += addr.substring(pos, pos + numOfChars);
+					pos += numOfChars;
+				}
+				addrList.add(newEntry);
+			}
+		}
+
+		currSum = sum(arrayCache);
+		
+		for ( int retVal: possibleValues )  
+		{
+			if (currSum + retVal <= 9) 
+			{
+				arrayCopy = new ArrayList<Integer>();
+				
+				// copy array 
+				if (arrayCache != null) 
+				{
+					for (int data: arrayCache) 
+					{
+						arrayCopy.add( data);
+					}	
+				}
+				
+				// add number
+				arrayCopy.add(retVal);
+				
+				ipAddressesSolver(addr, addrList, arrayCopy);
+			}
+		}
+		
+	}
+	
+	public static ArrayList<String> ipAddresses (String addr) 
+	{
+		ArrayList<String> collection = new  ArrayList<String>();
+		ipAddressesSolver(addr, collection, null);
+		return collection;
+	}
+	
+	private static void generateAllPossibleCoinChangeSolver (int cents, final int [] possibleCoins, ArrayList<String> coinsCache, int [] bufferCache)
+	{
+		int [] bufferCopy;
+		String str;
+		
+		if (cents == 0) 
+		{
+			// load string data 
+			str = "";
+			for (int i = 0; i < bufferCache.length; i++) 
+			{
+				switch (i) 
+				{
+				case 0:
+					str += "Pennies: ";
+					break;
+				case 1:
+					str += "Nickels: " ;
+					break;
+				case 2:
+					str += "Dimes: ";
+					break;
+				case 3:                
+					str += "Quarters: "; 
+					break;
+				}
+				str += bufferCache[i] + " \t";
+			}
+			
+			// add coin change string to coinCache
+			coinsCache.add(str);
+			
+			return;
+		}
+		
+		for (int i = 0; i < possibleCoins.length; i++) 
+		{
+			if (cents - possibleCoins[i] >= 0 ) 
+			{
+				bufferCopy = new int[possibleCoins.length];
+
+				if (bufferCache != null) 
+				{	
+					// copy buffer
+					for (int k =  0; k < bufferCache.length; k++)
+					{
+						bufferCopy[i] = bufferCache[i];
+					}
+				}
+				
+				// add coin
+				bufferCopy[i]++;
+				
+				generateAllPossibleCoinChangeSolver(cents -  possibleCoins[i], possibleCoins, coinsCache, bufferCopy);
+			}
+		}
+	}
+	
+	public static ArrayList<String> generateAllPossibleCoinChange (int cents) 
+	{
+		 ArrayList<String> collection = new  ArrayList<String>();
+		int [] coins = {1, 5, 10, 25};
+
+		 generateAllPossibleCoinChangeSolver(cents,coins, collection, null);
+		 return collection;
+	}
+	
+	public static void printChessBoard (String [][] board)
+	{
+		if (board == null ) 
+		{
+			return;
+		}
+		System.out.println("");
+
+		for (int r = 0; r < board.length; r++) 
+		{
+			for (int c = 0; c < board[r].length; c++) 
+			{
+				System.out.print("[" + board[r][c] +"]");
+			}
+			System.out.println("");
+
+		}
+		System.out.println("");
+
+	}
+	
+	private static String[][] generateChessBoard (int n)
+	{
+		String[][] board = new String[n][n];
+		
+		for (int r = 0; r < board.length; r++) 
+		{
+			for (int c = 0; c < board[r].length; c++) 
+			{
+				board[r][c] = " ";
+			}
+		}
+		return board;
+	}
+	
+	public static boolean isChessMoveSafe (int [] intendedMove, ArrayList<int[] > queens ) // [r][c]
+	{
+		
+		/*
+		 * Chess Notes :
+		 * 
+		 *  [row, col]
+		 * 	[0,0] [0,1] [0,2] [0,3] [0,4] [0,5] [0,6] [0,7] 
+		 * 	[1,0] [1,1] [1,2] [1,3] [1,4] [1,5] [1,6] [1,7] 
+		 * 	[2,0] [2,1] [2,2] [2,3] [2,4] [2,5] [2,6] [2,7] 
+		 * 	[3,0] [3,1] [3,2] [3,3] [3,4] [3,5] [3,6] [3,7] 
+		 * 	[4,0] [4,1] [4,2] [4,3] [4,4] [4,5] [4,6] [4,7] 
+		 * 	[5,0] [5,1] [5,2] [5,3] [5,4] [5,5] [5,6] [5,7] 
+		 * 	[6,0] [6,1] [6,2] [6,3] [6,4] [6,5] [6,6] [6,7] 
+		 * 	[7,0] [7,1] [7,2] [7,3] [7,4] [7,5] [7,6] [7,7] 
+		 *      
+		 *                 
+		 *   Diagonal  diff
+		 *  [0]   [-1]  [-2]  [-3]  [-4]  [-5]  [-6]  [-7] 
+		 * 	[1]   [0]   [-1]  [-2]  [-3]  [-4]  [-5]  [-6] 
+		 * 	[2]   [1]   [0]   [-1]  [-2]  [-3]  [-4]  [-5] 
+		 * 	[3]   [2]   [1]   [0]   [-1]  [-2]  [-3]  [-4] 
+		 * 	[4]   [3]   [2]   [1]   [0]   [-1]  [-2]  [-3] 
+		 * 	[5]   [4]   [3]   [2]   [1]   [0]   [-1]  [-2] 
+		 * 	[6]   [5]   [4]   [3]   [2]   [1]   [0]   [-1] 
+		 * 	[7]   [6]   [5]   [4]   [3]   [2]   [1]   [0] 
+		 *  
+		 *  
+		 *  [0]   [1]   [2]   [3]   [4]   [5]   [6]   [7] 
+		 *  [1]   [2]   [3]   [4]   [5]   [6]   [7]   [0]
+		 * 	[2]   [3]   [4]   [5]   [6]   [7]   [0]   [1]
+		 * 	[3]   [4]   [5]   [6]   [7]   [0]   [1]	  [2]
+		 * 	[4]   [5]   [6]   [7]   [0]   [1]	[2]   [3]
+		 * 	[5]   [6]   [7]   [0]   [1]	  [2]   [3]   [4]
+		 * 	[6]   [7]   [0]   [1]	[2]   [3]   [4]   [5]
+		 * 	[7]   [0]   [1]	  [2]   [3]   [4]   [5]   [6]
+ 		 *  
+ 		 *  
+			example queens:
+			[x][x][x][q][x][x][x][x]     [x][x][x][x][q][x][x][x]      [x][x][x][x][x][q][x][x]   [x][x][x][x][x][x][q][x]                        
+			[ ][ ][x][x][x][ ][ ][ ]     [ ][ ][ ][x][x][x][ ][ ]      [ ][ ][ ][ ][x][x][x][ ]   [ ][ ][ ][ ][ ][x][x][x]                        
+			[ ][x][ ][x][ ][x][ ][ ]     [ ][ ][x][ ][x][ ][x][ ]      [ ][ ][ ][x][ ][x][ ][x]   [ ][ ][ ][ ][x][ ][x][ ]                        
+			[x][ ][ ][x][ ][ ][x][ ]     [ ][x][ ][ ][x][ ][ ][x]      [ ][ ][x][ ][ ][x][ ][ ]   [ ][ ][ ][x][ ][ ][x][ ]                        
+			[ ][ ][ ][x][ ][ ][ ][x]     [x][ ][ ][ ][x][ ][ ][ ]      [ ][x][ ][ ][ ][x][ ][ ]   [ ][ ][x][ ][ ][ ][x][ ]                        
+			[ ][ ][ ][x][ ][ ][ ][ ]     [ ][ ][ ][ ][x][ ][ ][ ]      [x][ ][ ][ ][ ][x][ ][ ]   [ ][x][ ][ ][ ][ ][x][ ]                        
+			[ ][ ][ ][x][ ][ ][ ][ ]     [ ][ ][ ][ ][x][ ][ ][ ]      [ ][ ][ ][ ][ ][x][ ][ ]   [x][ ][ ][ ][ ][ ][x][ ]                        
+			[ ][ ][ ][x][ ][ ][ ][ ]     [ ][ ][ ][ ][x][ ][ ][ ]      [ ][ ][ ][ ][ ][x][ ][ ]   [ ][ ][ ][ ][ ][ ][x][ ]                        
+                                                                                                                                      
+		 * */
+		
+		String[][] board;
+		boolean isValid;
+		
+		if (queens.size() == 0) 
+		{
+			return true;
+		}
+		
+		board = generateChessBoard(8);
+		isValid = true;
+//		board[intendedMove[0]][intendedMove[1]] = "i";
+
+		for (int[] queen : queens) 
+		{
+			
+			// queen's position 
+			if (intendedMove[0] == queen[0] && intendedMove[1] == intendedMove[1])
+			{
+				return false;
+			}
+			// left diagonal test
+			if (  (queen[0] - queen[1]) ==  (intendedMove[0] - intendedMove[1]) ) 
+			{
+				return false;
+			}
+			
+			// right diagonal test
+			if ( (queen[0] + queen[1])  ==  (intendedMove[0] + intendedMove[1]) ) 
+			{
+				return false;
+			}
+			
+			// row test
+			if (queen[0] == intendedMove[0])
+			{
+				return false;
+			}
+			
+			// col test
+			if (queen[1] == intendedMove[1])
+			{
+				return false;
+			}	
+//			board[queen[0]][queen[1]] = "x";
+
+		}
+		
+//		printChessBoard(board);
+
+		return isValid;
+		
+	}
+	
+	public static ArrayList<int[]> allSafeChessSquares(ArrayList<int[]> queens)
+	{
+		final int n = 8;
+		String[][] board;
+		ArrayList<int[]> positionList;
+		int[] data;
+
+		board = generateChessBoard(n);
+		positionList = new ArrayList<int[]>();
+		
+		for (int[] queen : queens) 
+		{
+			QueenSolverPaintBoard(board, queen);
+		}   
+		
+		// add available squares 
+		for (int r = 0; r < n; r++)
+		{
+			for (int c = 0; c < n; c++) 
+			{
+				if (board[r][c] == " ")
+				{
+					data = new int[2];
+					data[0] = r;
+					data[1] = c;
+					positionList.add(data);
+				}
+			}
+		}
+		
+//		printChessBoard(board);
+
+		return positionList;
+	}
+	
+	private static String[][] copy2DArray (String [][] array2D )
+	{
+		int rows, cols;
+		
+		rows = array2D.length;
+		cols = array2D[0].length;
+		String[][] clone = new String[rows][cols];
+		
+		for (int r = 0; r < rows; r++)
+		{
+			for (int c  = 0; c < cols; c++) 
+			{
+				clone[r][c] = array2D[r][c];
+			}
+		}
+		return clone;
+	}
+	
+	private static ArrayList<int[]> copyList ( ArrayList<int[]> list)
+	{
+		ArrayList<int[]> clone = new ArrayList<int[]>();
+		int [] data;
+		
+		for (int i = 0; i < list.size(); i++) 
+		{
+			data = new int[2];
+			data[0] = list.get(i)[0];
+			data[1] = list.get(i)[1];
+			clone.add(data);
+		}
+		
+		return clone;
+	}
+	
+	private static void QueenSolverPaintBoard (String [][] board , int [] queen)
+	{
+		// left diagonal top
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0 <= pos[1] && pos[1] < 8)  ; pos[0]--, pos[1]-- )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}
+		}
+	
+		// left diagonal bottom
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0 <= pos[1] && pos[1] < 8) ; pos[0]++, pos[1]++ )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}		
+		}	
+		
+		// right diagonal top
+		for (Integer[] pos = {queen[0], queen[1] }; (0 <=pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[0]--, pos[1]++ )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}		
+		}	
+		
+		// right diagonal bottom
+		for (Integer[] pos = {queen[0], queen[1] }; (0 <= pos[0] && pos[0] < 8) && (0 <= pos[1] && pos[1] < 8) ; pos[0]++, pos[1]-- )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}			
+		}
+		
+		// horizontal left
+		for (Integer[] pos = {queen[0], queen[1] }; (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[1]-- )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}			
+		}
+		
+		// horizontal right
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[1]++ )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}			
+		}
+		
+		// vertical top
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[0]-- )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}			
+		}
+		
+		// vertical bottom
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[0]++ )
+		{
+			if (board[pos[0]][pos[1]] != "q")
+			{
+				board[pos[0]][pos[1]] = "x";
+			}			
+		}
+		
+		board[queen[0]][queen[1]] = "q";
+	}
+	
+	public static void displayQueensOnBoard (int n, ArrayList<int[]> list) 
+	{
+		String [][] board = new String [n][n];
+		
+		for (int i = 0; i < n; i++) 
+		{
+			for (int j = 0; j < n; j++) 
+			{
+				board[i][j] =" ";
+			}
+		}
+		
+		for (int[] pos: list) 
+		{
+			board[pos[0]][pos[1]] = "x";
+		}
+		
+		printChessBoard(board);
+		
+	}
+	
+	private static int[] filter (int[] src, int index) 
+	{
+		int[] dest = new int[src.length - 1];
+		int pos = 0;
+		for (int i = 0; i < src.length; i++) 
+		{
+			if (i == index) 
+			{
+				continue;
+			}
+			dest[pos++] = src[i];
+		}
+		return dest;
+	}
+
+	public static void eightQueensSolver (final int n, ArrayList<ArrayList<int[]>> arrayCache, int[] availableRows, String [][] board,  ArrayList<int[]> queensCache)
+	{
+		String [][] boardCopy = null;
+		ArrayList<int[]> bufferCopy = null;
+		int[] remainingRows = null;
+		int[] newPos;
+		
+		if (queensCache == null) 
+		{
+			bufferCopy = new ArrayList<int[]>();
+			board   = generateChessBoard(n);
+			availableRows = new int[n];
+			for (int i = 0; i < availableRows.length; i++) 
+			{
+				availableRows[i] = i;
+			}
+			queensCache = new ArrayList<int[]>();
+		}
+		
+		if (queensCache.size() == n ) 
+		{
+			arrayCache.add(copyList(queensCache)); 
+			return;
+		}	
+		
+		for (int i = 0; i < availableRows.length; i++) 
+		{
+			for (int j = 0 ; j < n; j++) 
+			{
+				newPos = new int[2]; 
+				
+				// queen placement
+				newPos[0] = i;
+				newPos[1] = j;
+	
+				bufferCopy = copyList(queensCache);  
+
+				// filter 
+				remainingRows = filter(availableRows, i);
+				
+				// check board 
+				if (board[newPos[0]][newPos[1]] != " ")
+				{
+					continue;
+				}
+
+				// set queen 
+				if (isChessMoveSafe(newPos, bufferCopy))  // new position safe? 
+				{
+					bufferCopy.add(newPos);   // add queen to list 
+					boardCopy = copy2DArray(board);
+					QueenSolverPaintBoard(boardCopy, newPos);
+					eightQueensSolver(n, arrayCache, remainingRows,  boardCopy, bufferCopy);	
+				}
+			}
+
+		}	
+	}
+	
+	public static ArrayList<ArrayList<int[]>> eightQueens ()
+	{
+		final int n = 8;
+		
+		ArrayList<ArrayList<int[]>> array = new ArrayList<ArrayList<int[]>>();
+		eightQueensSolver(n,array, null, null, null);
+		return array;
 	}
 
 }
