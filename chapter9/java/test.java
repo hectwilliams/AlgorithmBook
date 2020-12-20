@@ -284,8 +284,35 @@ public class Test {
 	
 	}
 	
+	public static void nQueensTest() 
+	{
+		/*
+		 * n = 13  : 31 seconds 
+		 * n = 14  : 2 min 40 sec
+		 * n = 15  : N/A
+		 * */
+		 
+		int n = 15;
+		int rows = n;
+		int cols=  n;
+		ArrayList<ArrayList<int[]>> collection = Chapter9.nQueens(n, rows, cols);
+		
+		System.out.println("numbers of chessboards allowing " + n+ " queens " + collection.size() );
+		for (ArrayList<int[]> array: collection)
+		{
+
+			System.out.print("[");
+			for (int[] pos: array)
+			{
+				System.out.print( "[" + pos[0] + "," + pos[1] + "]");
+			}
+			System.out.println("]");
+		
+		}
+	}
+	
 	public static void main(String args[])
 	{
-		eightQueensTest();
+		nQueensTest();
 	}
 }

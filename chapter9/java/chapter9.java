@@ -1211,16 +1211,15 @@ public class Chapter9 {
 
 		}
 		System.out.println("");
-
 	}
 	
-	private static String[][] generateChessBoard (int n)
+	private static String[][] generateChessBoard (int rows, int cols)
 	{
-		String[][] board = new String[n][n];
+		String[][] board = new String[rows][cols];
 		
-		for (int r = 0; r < board.length; r++) 
+		for (int r = 0; r < rows; r++) 
 		{
-			for (int c = 0; c < board[r].length; c++) 
+			for (int c = 0; c < cols; c++) 
 			{
 				board[r][c] = " ";
 			}
@@ -1286,7 +1285,7 @@ public class Chapter9 {
 			return true;
 		}
 		
-		board = generateChessBoard(8);
+		board = generateChessBoard(8, 8);
 		isValid = true;
 //		board[intendedMove[0]][intendedMove[1]] = "i";
 
@@ -1338,12 +1337,12 @@ public class Chapter9 {
 		ArrayList<int[]> positionList;
 		int[] data;
 
-		board = generateChessBoard(n);
+		board = generateChessBoard(n, n);
 		positionList = new ArrayList<int[]>();
 		
 		for (int[] queen : queens) 
 		{
-			QueenSolverPaintBoard(board, queen);
+			QueenSolverPaintBoard(8, board, queen);
 		}   
 		
 		// add available squares 
@@ -1400,10 +1399,10 @@ public class Chapter9 {
 		return clone;
 	}
 	
-	private static void QueenSolverPaintBoard (String [][] board , int [] queen)
+	private static void QueenSolverPaintBoard (int n, String [][] board , int [] queen)
 	{
 		// left diagonal top
-		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0 <= pos[1] && pos[1] < 8)  ; pos[0]--, pos[1]-- )
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < n) && (0 <= pos[1] && pos[1] < n)  ; pos[0]--, pos[1]-- )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1412,7 +1411,7 @@ public class Chapter9 {
 		}
 	
 		// left diagonal bottom
-		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0 <= pos[1] && pos[1] < 8) ; pos[0]++, pos[1]++ )
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < n) && (0 <= pos[1] && pos[1] < n) ; pos[0]++, pos[1]++ )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1421,7 +1420,7 @@ public class Chapter9 {
 		}	
 		
 		// right diagonal top
-		for (Integer[] pos = {queen[0], queen[1] }; (0 <=pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[0]--, pos[1]++ )
+		for (Integer[] pos = {queen[0], queen[1] }; (0 <=pos[0] && pos[0] < n) && (0  <= pos[1] && pos[1] < n) ; pos[0]--, pos[1]++ )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1430,7 +1429,7 @@ public class Chapter9 {
 		}	
 		
 		// right diagonal bottom
-		for (Integer[] pos = {queen[0], queen[1] }; (0 <= pos[0] && pos[0] < 8) && (0 <= pos[1] && pos[1] < 8) ; pos[0]++, pos[1]-- )
+		for (Integer[] pos = {queen[0], queen[1] }; (0 <= pos[0] && pos[0] < n) && (0 <= pos[1] && pos[1] < n) ; pos[0]++, pos[1]-- )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1439,7 +1438,7 @@ public class Chapter9 {
 		}
 		
 		// horizontal left
-		for (Integer[] pos = {queen[0], queen[1] }; (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[1]-- )
+		for (Integer[] pos = {queen[0], queen[1] }; (0 <= pos[0] && pos[0] < n) && (0  <= pos[1] && pos[1] < n) ; pos[1]-- )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1448,7 +1447,7 @@ public class Chapter9 {
 		}
 		
 		// horizontal right
-		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[1]++ )
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < n) && (0  <= pos[1] && pos[1] < n) ; pos[1]++ )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1457,7 +1456,7 @@ public class Chapter9 {
 		}
 		
 		// vertical top
-		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[0]-- )
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < n) && (0  <= pos[1] && pos[1] < n) ; pos[0]-- )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1466,7 +1465,7 @@ public class Chapter9 {
 		}
 		
 		// vertical bottom
-		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < 8) && (0  <= pos[1] && pos[1] < 8) ; pos[0]++ )
+		for (Integer[] pos = {queen[0], queen[1] };  (0 <= pos[0] && pos[0] < n) && (0  <= pos[1] && pos[1] < n) ; pos[0]++ )
 		{
 			if (board[pos[0]][pos[1]] != "q")
 			{
@@ -1502,6 +1501,7 @@ public class Chapter9 {
 	{
 		int[] dest = new int[src.length - 1];
 		int pos = 0;
+		
 		for (int i = 0; i < src.length; i++) 
 		{
 			if (i == index) 
@@ -1513,7 +1513,7 @@ public class Chapter9 {
 		return dest;
 	}
 
-	public static void eightQueensSolver (final int n, ArrayList<ArrayList<int[]>> arrayCache, int[] availableRows, String [][] board,  ArrayList<int[]> queensCache)
+	private static void eightQueensSolver (final int n, ArrayList<ArrayList<int[]>> arrayCache, int[] availableRows, String [][] board,  ArrayList<int[]> queensCache)
 	{
 		String [][] boardCopy = null;
 		ArrayList<int[]> bufferCopy = null;
@@ -1523,7 +1523,7 @@ public class Chapter9 {
 		if (queensCache == null) 
 		{
 			bufferCopy = new ArrayList<int[]>();
-			board   = generateChessBoard(n);
+			board   = generateChessBoard(n, n);
 			availableRows = new int[n];
 			for (int i = 0; i < availableRows.length; i++) 
 			{
@@ -1564,11 +1564,10 @@ public class Chapter9 {
 				{
 					bufferCopy.add(newPos);   // add queen to list 
 					boardCopy = copy2DArray(board);
-					QueenSolverPaintBoard(boardCopy, newPos);
+					QueenSolverPaintBoard(8, boardCopy, newPos);
 					eightQueensSolver(n, arrayCache, remainingRows,  boardCopy, bufferCopy);	
 				}
 			}
-
 		}	
 	}
 	
@@ -1579,6 +1578,62 @@ public class Chapter9 {
 		ArrayList<ArrayList<int[]>> array = new ArrayList<ArrayList<int[]>>();
 		eightQueensSolver(n,array, null, null, null);
 		return array;
+	}
+	
+	private static void nQueensSolver (final int n, final int rows, final int cols, ArrayList<ArrayList<int[]>> arrayCache, String [][] board,  ArrayList<int[]> queensCache)
+	{
+		String [][] boardCopy = null;
+		ArrayList<int[]> bufferQueens = null;
+		int[] newPos;
+		
+		if (queensCache == null) 
+		{
+			bufferQueens = new ArrayList<int[]>();
+			board   = generateChessBoard(rows, cols);
+			queensCache = new ArrayList<int[]>();
+		}
+		
+		if (queensCache.size() == n) 
+		{
+			arrayCache.add(copyList(queensCache)); 
+			return;
+		}	
+			
+		for (int i = queensCache.size() ; i < queensCache.size() + 1; i++)  // row 
+		{
+			for (int j = 0; j < n; j++) // col search
+			{
+				newPos = new int[2]; 
+				// queen placement
+				newPos[0] = i;
+				newPos[1] = j;
+			
+				bufferQueens = copyList(queensCache);  
+				
+				// check board 
+				if (board[newPos[0]][newPos[1]] != " ")
+				{
+					continue;
+				}
+				
+				// set queen 
+				if (isChessMoveSafe(newPos, bufferQueens))  // new position safe? 
+				{
+					bufferQueens.add(newPos);   // add queen to list 
+					boardCopy = copy2DArray(board); // copy current chess board 
+					QueenSolverPaintBoard(n, boardCopy, newPos); // update chess board (set new queen)
+					nQueensSolver(n, rows, cols, arrayCache, boardCopy, bufferQueens);
+				}
+			}
+		}
+	}
+	
+	
+	public static ArrayList<ArrayList<int[]>> nQueens(int n, int rows, int cols)
+	{
+		ArrayList<ArrayList<int[]>> array = new ArrayList<ArrayList<int[]>>();
+		nQueensSolver(n, rows, cols, array,  null, null);
+		return array;	
 	}
 
 }
