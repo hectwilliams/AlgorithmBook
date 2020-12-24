@@ -370,7 +370,7 @@ public class Chapter10 {
 		System.out.println("] ");
 	}
 	
-	public static void  optimalSequenceSolver (String[] strings, ArrayList<String[]> solCache, String [] buffer , int row, int col) // GEEZ THIS WAS TOUGH TO WRAP AROUND !
+	private static void  optimalSequenceSolver (String[] strings, ArrayList<String[]> solCache, String [] buffer , int row, int col) // GEEZ THIS WAS TOUGH TO WRAP AROUND !
 	{
 		
 	/* primary order controlled by first column of each array entry 
@@ -384,7 +384,6 @@ public class Chapter10 {
 	 	order must be retained  in remaining columns
 		[ AR,EA,GA,] invalid
 	    [ AA,EA,GE,] valid 
-		
 	*/
 		
 		String [] copyBuffer, copyStrings;
@@ -461,15 +460,1104 @@ public class Chapter10 {
 				
 				optimalSequenceSolver(copyStrings, solCache, copyBuffer, row + 1, col );
 			}
-			
 		}
 	}
 
 	public static ArrayList<String[]> optimalSequence (String[] array) 
 	{
 		ArrayList<String[]> sols = new ArrayList<String[]>();
-		optimalSequenceSolver(array, sols,null, 0, 0);
+		optimalSequenceSolver(array, sols, null, 0, 0);
 		return sols;
+	}
+	
+	public static String dedupe (String str) 
+	{
+		String slicedString = "";
+		boolean dupFound = false;
+		
+		if (str.length() == 0) 
+		{
+			return  "";
+		}
+		for (int k = 1; k < str.length(); k++) 
+		{
+			slicedString += str.charAt(k);
+			dupFound |= str.charAt(0) == str.charAt(k);
+		}
+		
+		if (!dupFound)
+		{
+			return str.charAt(0) + dedupe(slicedString);
+		}
+		
+		return dedupe(slicedString) ;
+	}
+	
+	public static int firstUniqueLetter (String str)
+	{
+		int i = -1;
+		int counter = 0;
+		
+		
+		for (int p = 0; p < str.length(); p++) 
+		{
+			counter = 0;
+			
+			for (i =  0; i < str.length(); i++) 
+			{
+				
+				if (p == i) 
+				{
+					continue;
+				}
+				
+				if ( str.charAt(p) == str.charAt(i) )	
+				{
+					counter++;
+				}	
+			}
+			
+			if (counter == 0) 
+			{
+				return p;
+			}
+		}
+		
+		return -1;
+	}
+	
+	public static String uniqueLetters (String str) 
+	{
+		int counter = 0;
+		String buffer = "";
+		
+		if (str.length() == 0) 
+		{
+			return "";
+		}
+		
+		for (int  i= 1; i < str.length() ; i++ ) 
+		{
+			if (str.charAt(0) != str.charAt(i))
+			{
+				buffer += str.charAt(i);
+			}
+			
+			if (str.charAt(0) == str.charAt(i))
+			{
+				counter++;
+			}
+		}
+
+		if (counter == 0)
+		{
+			return str.charAt(0) + uniqueLetters(buffer);
+		}
+		
+		return uniqueLetters(buffer);
+			
+	}
+	
+
+	public static String numToString (double num) 
+	{
+		/*
+		 * decimal precision limit of 5  0.xxxxx. 
+		 * 
+		 * */
+		
+		int whole = 0;
+		int n = 10;
+		int val = 0;
+		double buf;
+		double decOne = 0.1;
+		double currDecimal = 0.0;
+		String decimalStr = "";
+		String wholeStr = "";
+		int threshold = 0;
+
+		// calculate whole region 
+		buf = num;
+		n = 0;
+		while ((int) buf !=0)
+		{
+			val = ((int) buf) % 10;
+			whole += (int) Math.pow(10, n++) * val;
+			buf /= 10;
+			wholeStr = val + wholeStr;
+		}
+		
+		// calculate fractional region  
+
+		buf = num;
+		n = 10;
+		while ( threshold < 15 && (num - currDecimal - whole) != 0) 
+		{
+			threshold++;
+			val = 0;
+			buf = num;
+			while ( ((int) (buf*n) % 10) != 0)
+			{
+				buf -=  decOne ;
+				val++;
+			}
+			currDecimal += val * decOne;
+			decOne /= 10;
+			n *= 10;
+			decimalStr += val;
+		}
+		
+		if (wholeStr.length() == 0) 
+		{
+			wholeStr = "0";
+		}
+		
+		if (decimalStr.length() == 0) 
+		{
+			decimalStr = "0";
+		}
+		return wholeStr + "." + decimalStr;
+		
+	}
+	
+	private static String parserNumber(String s , boolean isDecimal)
+	{
+		String result = "";
+		int realIndex;
+		char c;
+		
+		for (int i = 0; i < s.length() && !isDecimal; i++) 
+		{
+			c = s.charAt(i);
+			
+			realIndex = 2 - i;
+			
+			switch(realIndex)
+			{
+			
+			case 2:
+				if (c == '1') 
+				{
+					result = "one";
+				}
+				
+				if (c == '2') 
+				{
+					result = "two";
+				}
+				
+				if (c == '3') 
+				{
+					result = "three";
+				}
+				
+				if (c == '4') 
+				{
+					result = "four";
+				}
+				
+				if (c == '5') 
+				{
+					result = "five";
+				}
+				
+				if (c == '6')
+				{
+					result = "six";
+				}
+				
+				if (c == '7') 
+				{
+					result = "seven";
+				}
+				
+				if (c == '8') 
+				{
+					result = "eight";
+				}
+				
+				if (c == '9') 
+				{
+					result = "nine";
+				}
+				
+				break;
+			case 1:
+				
+				if (c == '1')
+				{
+				
+					
+					if (result == "one") 
+					{
+						result = "eleven";
+					}
+					
+					if (result == "two")
+					{
+						result = "twelve";
+					}
+					
+					if (result == "three")
+					{
+						result = "thirteen";
+					}
+					
+					if (result == "four")
+					{
+						result = "fourteen";
+					}
+					
+					if (result == "five")
+					{
+						result = "fifteen";
+					}
+					
+					if (result == "six")
+					{
+						result = "sixteen";
+					}
+					
+					if (result == "seven")
+					{
+						result = "seventeen";
+					}
+				
+					if (result == "eight")
+					{
+						result = "eighteen";
+					}
+					
+					if (result == "nine")
+					{
+						result = "nineteen";
+					}
+				}
+				
+				if (c == '2')
+				{
+					result = "twenty " + result;
+				}
+				
+				if (c == '3')
+				{
+					result = "thirty " + result;
+				}
+				
+				if (c == '4') 
+				{
+					result = "fourty " + result;
+				}
+				
+				if (c == '5') 
+				{
+					result = "fifty " + result;
+				}
+				
+				if (c == '6')
+				{
+					result = "sixty " + result;
+				}
+				
+				if (c == '7') 
+				{
+					result = "seventy " + result;
+				}
+				
+				if (c == '8') 
+				{
+					result = "eighty " + result;
+				}
+				
+				if (c == '9') 
+				{
+					result = "ninety " + result;
+				}
+				
+				break;
+			
+			case 0:
+				
+				if (c ==  '1')
+				{
+					result = "one hundred " + result;
+				}
+				
+				if (c == '2') 
+				{
+					result = "two hundred " + result;
+				}
+				
+				if (c == '3') 
+				{
+					result = "three hundred " + result;
+				}
+				
+				if (c == '4') 
+				{
+					result = "four hundred " + result;
+				}
+				
+				if (c == '5') 
+				{
+					result = "five hundred " + result;
+				}
+				
+				if (c == '6') 
+				{
+					result = "six hundred " + result;
+				}
+				
+				if (c == '7')
+				{
+					result = "seven hundred " + result;
+				}
+				
+				if (c == '8') 
+				{
+					result = "eight hundred " + result;
+				}
+				
+				if (c == '9')
+				{
+					result = "nine hundred " + result;
+				}
+				
+				break;
+				
+
+			}
+			System.out.println("result:  " + result);
+
+		}
+		
+		
+		for (int i = 0 ; i < s.length() && isDecimal; i++) 
+		{
+			c = s.charAt(i);
+			
+			if (c == '0') 
+			{
+				result += "zero ";
+			}
+			
+			if (c == '1') 
+			{
+				result += "one ";
+			}
+			
+			if (c == '2') 
+			{
+				result += "two ";
+			}
+			
+			if (c == '3') 
+			{
+				result += "three ";
+			}
+			
+			if (c == '4') 
+			{
+				result += "four ";
+			}
+			
+			if (c == '5') 
+			{
+				result += "five ";
+			}
+			
+			if (c == '6')
+			{
+				result += "six ";
+			}
+			
+			if (c == '7') 
+			{
+				result += "seven ";
+			}
+			
+			if (c == '8') 
+			{
+				result += "eight ";
+			}
+			
+			if (c == '9') 
+			{
+				result += "nine ";
+			}
+		}
+
+		return result;
+	}
+	
+	public static String numToText (double number)
+	{
+		final String[] metricNumbers = {"Thousand", "Million", "Billion", "Trillion", "Quadrillion"};
+		String w = "";
+		String d = "";
+		String buffer = "";
+		String tmp = "";
+		int metricIndex = -1;
+		int i = 0;
+		String strData = numToString(number);
+		
+		// process whole section
+		{
+			while (strData.charAt(i) != '.') 
+			{
+				w += strData.charAt(i);
+				i++;
+			}
+			
+			for (int k = 0; k < w.length(); k++) 
+			{
+				buffer += w.charAt(k);
+	
+				if (buffer.length() == 3) 
+				{
+					tmp += parserNumber(buffer, false);
+					metricIndex++;
+					buffer = "";
+					
+					if (k + 1 < w.length())
+					{
+						tmp = metricNumbers[metricIndex] + " " +  tmp;
+					}
+				}
+			}	
+			
+			if (buffer.length() != 0) 
+			{
+				tmp = parserNumber(buffer, false) + " " + tmp;
+			}
+			
+		}
+		
+		// process decimal section
+		{
+			i++;
+			while (i < strData.length()) 
+			{
+				d += strData.charAt(i);
+				i++;
+			}
+			
+			d = parserNumber(d, true);
+		}
+		
+		return  tmp +  "and " + d;
+	}
+	
+	public static boolean isPermutation (String s1, String s2)
+	{
+		int count;
+		
+		if (s1.length() != s2.length()) 
+		{
+			return false;
+		}
+		
+		for (int i = 0; i < s1.length(); i++) 
+		{
+			count = 0;
+			
+			if (s1.charAt(i) == s2.charAt(0)) 
+			{
+				for (int offset = 0; offset < s1.length(); offset++) 
+				{
+					if (s1.charAt( (i + offset)  % s1.length()) == s2.charAt(offset ) )
+					{
+						count++;
+					}
+				}
+			
+				if (count == s1.length())
+				{
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public static boolean isPangram (String s)
+	{
+		String buffer = "";
+		int k = 0;
+		char c;
+		
+		if (s.length() == 0) 
+		{
+			return false;
+		}
+		
+		// lowercase
+		s = s.toLowerCase();
+		
+		for (int i = 0; i < s.length(); i++) 
+		{
+			c = s.charAt(i);
+			for (k = 0; k < buffer.length(); k++) 
+			{
+				if (c == buffer.charAt(k) ) 
+				{
+					break;
+				}
+			}
+			
+			if (buffer.length() == 0 || k == buffer.length())   // k search completed with no match!
+			{
+				if ( 97 <= c && 122 >= c ) 
+				{
+					buffer += c;
+					
+				}
+			}
+		}
+		return buffer.length() == 26;
+	}
+
+	public static boolean perfectPangram (String s)
+	{
+		String buffer = "";
+		char c;
+		int index;
+		int [] map = new int[26];
+		int count = 0;
+		
+		if (s.length() == 0) 
+		{
+			return false;
+		}
+		
+		// lowercase
+		s = s.toLowerCase();
+		
+		for (int i = 0; i < s.length(); i++) 
+		{
+			c = s.charAt(i);
+			if ( 97 <= c && c <= 122) 
+			{
+				index = (int)c - 97;
+				if (map[index] == 0) 
+				{
+					count++;
+					map [index]++; 
+				}
+				
+				else 
+				{
+					return false;
+				}	
+			}
+			
+		}
+		
+		return count == 26;
+	}
+	
+	
+	private static void allPermutationsSolver (String s, ArrayList<String> cache, String buffer)
+	{
+		String bufferCopy;
+		String sCopy;
+		
+		if (buffer == null) 
+		{
+			buffer = "";
+		}
+		
+		if (s.length() == 0) 
+		{
+			cache.add(buffer);
+		}
+		
+		for (int i = 0;  i < s.length(); i++) 
+		{
+			//copy string (filter)
+			sCopy = "";
+			for (int k = 0; k < s.length(); k++)
+			{
+				if (k == i) 
+				{
+					continue;
+				}
+				sCopy += s.charAt(k);
+			}
+			
+			// copy buffer 
+			bufferCopy = "";
+			for (int k = 0; k< buffer.length(); k++) 
+			{
+				bufferCopy += buffer.charAt(k);
+			}
+			bufferCopy += s.charAt(i);
+			
+			allPermutationsSolver(sCopy, cache, bufferCopy);
+		}
+	}
+	
+	public static String[] allPermutations (String s)
+	{
+		String[] array;
+		int size = 1;
+		ArrayList<String> mem = new ArrayList<String>();	
+		
+		for (int i = s.length() ; i > 0; i-- ) 
+		{
+			size *= i; 
+		}
+		
+		allPermutationsSolver(s, mem, null);
+		array = new String[size];
+		
+		for (int i = 0; i < mem.size(); i++) 
+		{
+			array[i] = mem.get(i);
+		}
+		
+		return array;
+	}
+	
+	private static void printArray(int [] arr) 
+	{
+		System.out.print("[");
+		for (int ret: arr)
+		{
+			System.out.print(ret + ",");
+		}
+		System.out.println("]");
+	}
+	
+	private static void bestTimeBuyAndSellStockSolver (int [] arr, int buy, int sell, int max[])
+	{
+		
+		/*
+		 * {6, 4, 6, 5, 9, 7, 6, 12, 2, 6, 11, 2, 4}
+		 * 
+		 *  buy(6)
+		 *  	sell(4)
+		 *  	sell(6)
+		 *  	sell(5)
+		 *  	sell(9)
+		 *  	sell(7)
+		 *  	sell(6)
+		 *  	sell(12)
+		 *  	sell(2)
+		 *  	sell(6)
+		 *  	sell(11)
+		 *  	sell(2)
+		 *  	sell(4)
+		 *
+		 * buy(4)
+		 *		sell(6)
+		 *  	sell(5)
+		 *  	sell(9)
+		 *  	sell(7)
+		 *  	sell(6)
+		 *  	sell(12)
+		 *  	sell(2)
+		 *  	sell(6)
+		 *  	sell(11)
+		 *  	sell(2)
+		 *  	sell(4)		  
+		 * 
+		 * buy(6)
+ 				sell(5)
+		 *  	sell(9)
+		 *  	sell(7)
+		 *  	sell(6)
+		 *  	sell(12)
+		 *  	sell(2)
+		 *  	sell(6)
+		 *  	sell(11)
+		 *  	sell(2)
+		 *  	sell(4)			  
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * */
+		
+		int [] arrCopy;
+		int price;
+		int rcvdBuy = buy;
+		int rcvdSell = sell;
+		int n = 0;
+		
+		if (buy != 0 && sell != 0) 
+		{
+			price = sell - buy;
+			if (price > max[0])
+			{
+				max[0] = price;
+			}
+			return;
+		}
+		
+		if (arr.length == 0) 
+		{
+			return;
+		}
+		
+		for (int i = 0; i < arr.length; i++) 
+		{	
+			n = 0;
+			
+			if (buy == 0) 
+			{
+				buy = arr[i];
+			}
+			else if (sell == 0) 
+			{
+				sell = arr[i];
+			}
+			
+			arrCopy = new int[arr.length - i - 1];
+			for (int k =  i + 1; k < arr.length; k++)
+			{
+				arrCopy[n++] = arr[k];
+			}
+			
+			bestTimeBuyAndSellStockSolver(arrCopy, buy, sell , max);
+			
+			buy = rcvdBuy;
+			sell = rcvdSell;
+		}
+		
+	}
+	
+	
+	private static void bestTimeBuyAndSellStockSolver2 (int [] arr, int max[], ArrayList<Integer> buffer)
+	{
+		int [] arrCopy;
+		int price = 0;
+		int n = 0;
+		int sell = 0;
+		int buy = 0;
+		ArrayList<Integer> copyBuffer;
+		
+		if (arr.length == 0) 
+		{
+			if (buffer.size() % 2 == 0) 
+			{
+				for (int i = 0; i < buffer.size(); i++) 
+				{
+					if (i % 2 == 0)
+					{
+						buy += buffer.get(i);
+					}
+					
+					if (i % 2 == 1)
+					{
+						sell += buffer.get(i);
+					}
+				}
+				price = sell - buy;
+				
+				if (price > max[0])
+				{
+					max[0] = price;
+				}
+			}
+			return;
+		}
+
+		if (buffer == null)  
+		{
+			buffer = new ArrayList<Integer>();
+		}
+
+		for (int i = 0; i < arr.length; i++) 
+		{	
+			n = 0;
+			
+			arrCopy = new int[arr.length - i - 1];
+			for (int k =  i + 1; k < arr.length; k++)
+			{
+				arrCopy[n++] = arr[k];
+			}
+			
+			copyBuffer = new ArrayList<Integer>();
+			
+			for (Integer retVal: buffer)
+			{
+				copyBuffer.add( retVal);
+			}
+			
+			if (copyBuffer.size() % 2 == 0) // buy stock  
+			{
+				copyBuffer.add(arr[i]);
+			}
+			
+			else if (copyBuffer.size() % 2 == 1)  // sell stock
+			{
+				copyBuffer.add(arr[i]);
+			}
+			
+			bestTimeBuyAndSellStockSolver2(arrCopy, max, copyBuffer);
+		}
+	}
+	
+	private static void bestTimeBuyAndSellStockSolver3 (int [] arr, int transaction, int max[], ArrayList<Integer> buffer)
+	{
+		int [] arrCopy;
+		int price = 0;
+		int n = 0;
+		int sell = 0;
+		int buy = 0;
+		ArrayList<Integer> copyBuffer;
+		
+		
+		if (buffer == null)
+		{
+			buffer = new ArrayList<Integer>();
+		}
+		
+		if ( (arr.length == 0) || (buffer.size() == transaction * 2) ) 
+		{
+			if (buffer.size() % 2 == 0) 
+			{
+				for (int i = 0; i < buffer.size(); i++) 
+				{
+					if (i % 2 == 0)
+					{
+						buy += buffer.get(i);
+					}
+					
+					if (i % 2 == 1)
+					{
+						sell += buffer.get(i);
+					}
+				}
+				price = sell - buy;
+				
+				if (price > max[0])
+				{
+					max[0] = price;
+				}
+			}
+			return;
+		}
+
+		for (int i = 0; i < arr.length; i++) 
+		{	
+			n = 0;
+			
+			arrCopy = new int[arr.length - i - 1];
+			for (int k =  i + 1; k < arr.length; k++)
+			{
+				arrCopy[n++] = arr[k];
+			}
+			
+			
+			
+			copyBuffer = new ArrayList<Integer>();
+			
+			for (Integer retVal: buffer)
+			{
+				copyBuffer.add( retVal);
+			}
+			
+			if (copyBuffer.size() % 2 == 0) // buy stock  
+			{
+				copyBuffer.add(arr[i]);
+			}
+			
+			else if (copyBuffer.size() % 2 == 1)  // sell stock
+			{
+				copyBuffer.add(arr[i]);
+			}
+			
+			bestTimeBuyAndSellStockSolver3(arrCopy, transaction, max, copyBuffer);
+		}
+	}
+
+	public static int bestTimeBuyAndSellStock(int[] arr)
+	{
+		int max[] = new int[1];
+		bestTimeBuyAndSellStockSolver3(arr, 2, max, null);
+		return max[0];
+	}
+	
+	public static boolean areStringLooselyInterleaved(String s1, String s2, String s3)
+	{
+		String buffer = "";
+		
+		if (s1.length() + s2.length() != s3.length()) 
+		{
+			return false;
+		}
+		
+		buffer = interleaveStrings(s1, s2);
+		return buffer.compareTo(s3) == 0;
+	}
+	
+	private static String interleaveStrings(String s1, String s2) 
+	{
+		String buffer;
+		buffer = "";
+		int pos[] = new int[2];
+
+		while (buffer.length() != s1.length()+s2.length())
+		{
+			if (pos[0] < s1.length())
+			{
+				buffer += s1.charAt(pos[0]++);
+			}
+			
+			if (pos[1] < s2.length())
+			{
+				buffer += s2.charAt(pos[1]++);
+			}
+		}
+		return buffer;
+	}
+	
+	public static ArrayList<String>  allLooselyInterleavedStrings (String s1, String s2)
+	{
+		ArrayList<String> mem = new ArrayList<String>();
+		
+		// concat
+		mem.add(s1 + s2);
+		mem.add(s2 + s1);
+		
+		// injection
+		mem.add( s1.charAt(0) + s2 + s1.charAt(s1.length() - 1) ) ;
+		mem.add( s2.charAt(0) + s1 + s2.charAt(s2.length() - 1) ) ;
+
+		// interleave
+		mem.add( interleaveStrings(s1, s2));
+		mem.add( interleaveStrings(s2, s1));
+		
+		return mem;
+	}
+	
+	private static boolean isPalindrome (String s)
+	{
+		int pos[] = {0, s.length() - 1};
+		
+		while (pos[0] <= pos[1]) 
+		{
+			if (s.charAt(pos[0]++) != s.charAt(pos[1]--) )
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	public static int makeStringPalindrome (String s)
+	{
+		String buffer;
+		if (isPalindrome(s))
+		{
+			return -1;
+		}
+		
+		for (int i = 0; i < s.length(); i++) 
+		{
+			buffer = "";
+			for (int k = 0; k < s.length(); k++) 
+			{
+				if (k == i) 
+				{
+					continue;
+				}
+				buffer += s.charAt(k);
+			}
+			
+			if (isPalindrome(buffer))
+			{
+				return i;
+			}
+		}
+		
+		return -1;
+	}
+	
+	public static String makeStringPalindomeAdd (String s)
+	{
+		String buffer;
+
+		s.toLowerCase();
+		
+		for (int i = 0; i < s.length(); i++) 
+		{
+			for (char c = 'a'; c <= 'z'; c++ ) 
+			{
+				buffer = "";
+				for (int k = 0; k < s.length(); k++) 
+				{
+					if (k == i) 
+					{
+						buffer += c;
+					}
+					
+					buffer += s.charAt(k);
+				}
+
+				if (isPalindrome(buffer)) 
+				{
+					return "" + c;
+				}
+			}
+		}
+		
+		return "";
+	}
+	
+	
+	public static String stringEncode (String s) 
+	{
+		char c;
+		int count = 0;
+		String result = "";
+		
+		for (int i = 0; i < s.length(); i++) 
+		{
+			c = s.charAt(i);
+			
+			if ( i + 1 >= s.length() ) // discontinuity
+			{
+				result += c  + String.valueOf(count + 1) ;
+				count= 0;
+			}
+			
+			if (count != 0)
+			{
+				if (c != s.charAt(i - 1) )  // discontinuity
+				{
+					result += s.charAt(i - 1) + String.valueOf(count) ;
+					count= 0;
+				}
+			}
+			count++;
+		}
+		
+		return result;
+	}
+	
+	public static String stringDecode (String s) 
+	{
+		String result = "";
+		char c;
+		int count; 
+		
+		for (int i = 0; i < s.length(); i +=2 ) 
+		{
+			c = s.charAt(i);
+			count = Integer.valueOf(   s.charAt(i  + 1) + "");
+			do
+			{
+				result += c;
+			}
+			while (--count > 0);
+		}
+		
+		return result;
 	}
 	
 }
