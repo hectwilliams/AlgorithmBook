@@ -1,7 +1,5 @@
 package algo;
 
-import java.nio.file.StandardWatchEventKinds;
-
 public class Chapter6 {
 	
 	private static class SLNode  //no outside access 
@@ -275,7 +273,6 @@ public class Chapter6 {
 			}
 			return count;
 		}
-	
 	}
 
 	public static boolean compareQueues (Queue a, Queue b) 
