@@ -4,12 +4,11 @@ import java.util.ArrayList;
 
 public class Chapter11 
 {
-	
 	public static class BTNode
 	{
 		private int val;
-		private BTNode left;
-		private BTNode right;
+		public BTNode left;
+		public BTNode right;
 		private int count;
 		
 		BTNode(int value)
