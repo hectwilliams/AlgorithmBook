@@ -6,7 +6,7 @@ public class Chapter11
 {
 	public static class BTNode
 	{
-		private int val;
+		public int val;
 		public BTNode left;
 		public BTNode right;
 		private int count;
