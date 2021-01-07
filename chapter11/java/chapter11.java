@@ -2,6 +2,8 @@ package algo;
 
 import java.util.ArrayList;
 
+import algo.Chapter11.BTNode;
+
 public class Chapter11 
 {
 	public static class BTNode
@@ -740,6 +742,71 @@ public class Chapter11
 			
 			return null;
 			
+		}
+		
+		public BST partitionAroundValue (int value) 
+		{
+			BST tree = new BST();
+			BTNode node, parentNode;
+			
+			if (root == null) 
+			{
+				return tree ;
+			}
+			
+			//analyze root 
+			if (root.val == value)
+			{
+				tree.root = root;
+				root = null;
+			}
+			else 
+			{
+			// analyze root descendants 
+				node = root;
+				parentNode = null;
+				do 
+				{
+					if (node.left!= null)
+					{
+						if (value < node.val)
+						{
+							parentNode = node;
+							node = node.left;
+							continue;
+						}
+					}
+					
+					if (node.right != null) 
+					{
+						if (value >= node.val) 
+						{
+							parentNode = node;
+							node = node.right;
+							continue;
+						}
+					}
+					
+					break; // break here
+				}
+				while (node.val != value);	
+				
+				tree.root = node;
+				if (parentNode.left == node)
+				{
+					parentNode.left = null;
+				}
+				
+				if (parentNode.right == node) 
+				{
+					parentNode.right = null;
+				}
+			}
+			
+			return tree;
+
+			
+
 		}
 		
 	}
