@@ -514,4 +514,92 @@ public class Chapter15
 		
 		return numResult;
 	}
+	
+	public static ArrayList<Integer> valuesForLayer(BST tree, int layer)
+	{
+		ArrayList<BTNode> buffer = new ArrayList<BTNode>();
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		ArrayList<BTNode> tmp = null;
+		BTNode node;
+		int currLayer = 0;
+		
+		if (tree.root == null)
+		{
+			return null;
+		}
+		
+		buffer.add(tree.root);
+		
+		while(currLayer <= layer)
+		{
+			tmp = new ArrayList<BTNode>();
+			result.clear();
+			
+			while (!buffer.isEmpty())
+			{
+				node = buffer.remove(0);
+				
+				if (node.left!= null)
+				{
+					tmp.add(node.left);
+				}
+				
+				if (node.right != null)
+				{
+					tmp.add(node.right);
+				}
+				
+				result.add(node.val);
+			}
+			
+			currLayer++;
+			buffer = tmp;
+		}
+		
+		return result;
+	}
+	
+	public static ArrayList<ArrayList<Integer>> layersArrays(BST tree)
+	{
+		ArrayList<BTNode> buffer = new ArrayList<BTNode>(), tmp = null;
+		ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
+		BTNode node;
+		
+		if (tree.root == null)
+		{
+			return null;
+		}
+		
+		buffer.add(tree.root);
+		tmp = buffer; 
+		
+		while(!tmp.isEmpty() )
+		{
+			tmp = new ArrayList<BTNode>();
+			result.add(new ArrayList<Integer>() );
+			
+			while (!buffer.isEmpty())
+			{
+				node = buffer.remove(0);
+				
+				if (node.left!= null)
+				{
+					tmp.add(node.left);
+				}
+				
+				if (node.right != null)
+				{
+					tmp.add(node.right);
+				}
+				
+				result.get(result.size() - 1).add(node.val);
+			}
+			
+			buffer = tmp;
+		}
+		
+		return result;
+		
+	}
+	
 }
