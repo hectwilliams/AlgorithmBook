@@ -692,47 +692,539 @@ public class Chapter17
 		}
 	}
 	
-	public static boolean someoneOnInsider(ALGraph undirgraph, String myVertexID, String[] vertexIDs)
+	public static String someoneOnInsider(ALGraph undirgraph, String myVertexID, String[] companyVertexIDList)
 	{
 		HashSet<String> visited = new HashSet<String>();
 		ArrayList<GraphNode> stackLite = new ArrayList<GraphNode>();	
-		GraphNode node;
+		GraphNode producerNode, consumerNode;
 		
-		if (undirgraph.edgeMap.containsKey(myVertexID) == false)
+		if (!undirgraph.edgeMap.containsKey(myVertexID))
 		{
-			return false;
+			return "Insider: none";
 		}
 		
-		// search my connections
-		for ( int i = 1; i < undirgraph.edgeMap.get( myVertexID ).size(); i++ )
+		for ( int i = 0; i < companyVertexIDList.length; i++ ) // iterate company id(vertex) list
 		{
 			stackLite.clear();
-			stackLite.add(undirgraph.edgeMap.get( myVertexID ).get(i));
 			
-			while (!stackLite.isEmpty()) 
+			if (!undirgraph.edgeMap.containsKey(companyVertexIDList[i])) // employee not in my social network?
 			{
-				node = stackLite.remove(0);
-				
-				// add node's edges to list
-				// add
+				continue;
 			}
 			
+			if (myVertexID.compareTo(companyVertexIDList[i]) == 0 ) // myVertexID cannot be an employee
+			{
+				continue;
+			}
+			
+			stackLite.add(undirgraph.edgeMap.get(companyVertexIDList[i]).get(0)); 	// add employee(from company list) node to stack 
+			
+			while (!stackLite.isEmpty()) 
+			{				
+				producerNode = stackLite.remove(0);
+				
+				if (visited.contains(producerNode.id))
+				{
+					continue;
+				}
+				
+				visited.add(producerNode.id);
+				
+				for (int k = 1; k < undirgraph.edgeMap.get(producerNode.id).size(); k++)  //iterate node (employee's) connections
+				{
+					consumerNode = undirgraph.edgeMap.get(producerNode.id).get(k);
+					
+					// employee at company knows me!
+					if ( consumerNode.id == myVertexID )  // consumer(MY node) <- producer(Employee node)
+					{
+						return "Insider: " + producerNode.id;
+					}
+					stackLite.add(0,  consumerNode );  
+				}
+			}
+		}
+		return "Insider: none";
+	}
+	
+	public static String someoneOnInsiderSecond(ALGraph undirgraph, String myVertexID, String[] companyVertexIDList)
+	{
+		GraphNode producerNode, consumerNode;
+		String msg = "Contact: None, Insider: None";
+		HashSet<String> visited = new HashSet<String>();
+		ArrayList<GraphNode> stackLite = new ArrayList<GraphNode>();	
+		
+		/* 
+		 * optimization: Add company IDs to Set variable visited
+		 */
+		 
+		for (String retString: companyVertexIDList)
+		{
+			visited.add(retString);
+		}
+		
+		if (!undirgraph.edgeMap.containsKey(myVertexID))
+		{
+			return msg;
+		}
+		
+		// search social network graph
+		stackLite.add(undirgraph.edgeMap.get(myVertexID).get(0)); // start search from myVertexID		
+		
+		while (!stackLite.isEmpty()) 
+		{				
+			producerNode = stackLite.remove(0);
+			
+			if (visited.contains(producerNode.id))
+			{
+				continue;
+			}
+			
+			visited.add(producerNode.id);
+
+			for (int k = 1; k < undirgraph.edgeMap.get(producerNode.id).size(); k++) 
+			{
+				consumerNode = undirgraph.edgeMap.get(producerNode.id).get(k);
+				
+				// someone in my social network knows someone in the company
+				if ( visited.contains(consumerNode.id))  // producer(node in my social network ) -> consumer(Employee node)
+				{
+					return "Contact: " + producerNode.id +  "Insider: " + consumerNode.id ;
+
+				}
+				stackLite.add(0, consumerNode ); 
+			}
+		}
+		
+		return msg;
+	}
+	
+	public static ArrayList<String> vertexIsReachable (ALGraph ugraph, String vertexID1, String vertexID2)
+	{
+		GraphNode producerNode, consumerNode;
+		HashSet<String> visited = new HashSet<String>();
+		ArrayList<String> path = new ArrayList<String>();
+		ArrayList<GraphNode> stackNodes = new ArrayList<GraphNode>();	
+		
+		if (!ugraph.edgeMap.containsKey(vertexID1))
+		{
+			return path;
+		}
+		
+		// root data
+		stackNodes.add(ugraph.edgeMap.get(vertexID1).get(0)); // add adjacent node to stack
+
+		while (!stackNodes.isEmpty()) 
+		{				
+			producerNode = stackNodes.remove(0);
+			
+			if (visited.contains(producerNode.id))
+			{
+				continue;
+			}
+			
+			visited.add(producerNode.id);
+			path.add(producerNode.id);
+			
+			if (producerNode.id.compareTo(vertexID2) == 0 )
+			{
+				return path;
+			}
+
+			for (int k = 1; k < ugraph.edgeMap.get(producerNode.id).size(); k++) 
+			{
+				consumerNode = ugraph.edgeMap.get(producerNode.id).get(k);
+				
+				stackNodes.add(0, consumerNode ); 
+			}
+		}
+		
+		path.clear();
+		
+		return path;
+	}
+	
+	public static ArrayList<ArrayList<String>> allPaths (ALGraph ugraph, String vertexID1, String vertexID2)
+	{
+		ArrayList<String> currWalk, copyWalk;
+		GraphNode producerNode, consumerNode = null;	
+		HashSet<String> visited = new HashSet<String>();
+		ArrayList<GraphNode> stackNodes = new ArrayList<GraphNode>();	
+		ArrayList<ArrayList<String>> stackPaths = new ArrayList<ArrayList<String>>();	
+		ArrayList<ArrayList<String>> allPaths = new ArrayList<ArrayList<String>>();
+		
+		if (!ugraph.edgeMap.containsKey(vertexID1))
+		{
+			return allPaths;
+		}
+		
+		// root data
+		stackNodes.add( ugraph.edgeMap.get(vertexID1).get(0));
+		stackPaths.add(new ArrayList<String>());
+		
+		// search and load paths
+		while (!stackNodes.isEmpty())
+		{
+			producerNode = stackNodes.remove(0);
+			currWalk = stackPaths.remove(0);
+			
+			if (!currWalk.isEmpty())
+			{
+				if (producerNode.id.compareTo(vertexID2) == 0) // traversed vertexID2 node 
+				{
+					currWalk.add(producerNode.id); // add end id to list
+					allPaths.add(currWalk); // add path to list  
+					continue;
+				}
+			} 
+			
+			if (visited.contains(producerNode.id))
+			{
+				continue;
+			}
+			
+			visited.add(producerNode.id);
+			currWalk.add(producerNode.id);
+			
+			for (int k = 1; k < ugraph.edgeMap.get(producerNode.id).size(); k++) 
+			{
+				//copy current walked(i.e. traversed) path  
+				copyWalk = new ArrayList<String>();
+				for (String retVal: currWalk)
+				{
+					copyWalk.add(retVal);
+				}
+				
+				consumerNode = ugraph.edgeMap.get(producerNode.id).get(k);
+				
+				stackNodes.add(0, consumerNode);
+				stackPaths.add(0, copyWalk);
+			}
+		}
+		
+		return allPaths;
+	}
+	
+	public static ArrayList<String> shortestPath (ALGraph ugraph, String vertexID1, String vertexID2)
+	{
+		ArrayList<String> currWalk, copyWalk, path;
+		GraphNode producerNode, consumerNode;	
+		HashSet<String> visited = new HashSet<String>();
+		ArrayList<GraphNode> queueNodes = new ArrayList<GraphNode>();	
+		ArrayList<ArrayList<String>> queuePaths = new ArrayList<ArrayList<String>>();	
+
+		if (!ugraph.edgeMap.containsKey(vertexID1))
+		{
+			return null;
+		}
+		
+		path = null;
+		currWalk = new ArrayList<String>();
+		producerNode = ugraph.edgeMap.get(vertexID1).get(0);
+		
+		queueNodes.add(producerNode);
+		queuePaths.add(currWalk);
+		
+		while ( !queueNodes.isEmpty() )
+		{
+			producerNode = queueNodes.remove(0);
+			currWalk = queuePaths.remove(0);
+			
+			currWalk.add(producerNode.id);
+			
+			if (!visited.contains(producerNode.id))
+			{
+				visited.add(producerNode.id);
+				queueNodes.add(producerNode);
+				
+				if (producerNode.id == vertexID2) // first(shortest) valid path!!
+				{
+					return currWalk;
+				}
+				
+				for (int i = 1; i < ugraph.edgeMap.get(producerNode.id).size(); i++ ) 
+				{
+					copyWalk = new ArrayList<String>();
+					for (String retString : currWalk)
+					{
+						copyWalk.add(retString);
+					}
+					
+					consumerNode = ugraph.edgeMap.get(producerNode.id).get(i);
+					
+					queueNodes.add(consumerNode);
+					queuePaths.add(copyWalk);
+				}	
+			}
 			
 		}
-		return false;
-	}
-	
-	public static String someoneOnInsiderV2(ALGraph undirgraph, String myVertexID, String[] vertexIDs)
-	{
-		String contactINfo = "";
 		
-		return contactINfo;
+		return path;
 	}
 	
-	public static boolean vertexIsReachable (ALGraph ugraph, String vertexID1, String vertexID2)
+	public static ArrayList<String> gimmieThreeSteps (ALGraph ugraph, String vertexID)
 	{
+		GraphNode node = null;	
+		HashSet<String> visited = new HashSet<String>();
+		ArrayList<String> idList = new ArrayList<String>();
+		ArrayList<GraphNode> queueLite = new ArrayList<GraphNode>();
+		ArrayList<GraphNode> nextLayer = new ArrayList<GraphNode>();	
+		int layer = 0;
 		
-		return false;
+		if (!ugraph.edgeMap.containsKey(vertexID))
+		{
+			return idList;
+		}
+		
+		queueLite.add( ugraph.edgeMap.get(vertexID).get(0) );
+		
+		while (!queueLite.isEmpty() && layer < 3)
+		{
+			node = queueLite.remove(0);
+			
+			if (visited.contains(node.id))
+			{
+				continue;
+			}
+			
+			visited.add(node.id);
+
+			for (int i = 1; i < ugraph.edgeMap.get(node.id).size(); i++ ) 
+			{
+				node = ugraph.edgeMap.get(vertexID).get(i);
+				nextLayer.add(node);
+				idList.add(node.id);
+			}
+			
+			if (queueLite.isEmpty()) 
+			{
+				queueLite  = nextLayer;
+				nextLayer =  new ArrayList<GraphNode>();
+				layer++;
+			}
+		}
+		
+		while (!nextLayer.isEmpty())  // nextLayer array not empty !
+		{
+			idList.add(nextLayer.remove(0).id);
+		}
+		
+		return idList;
 	}
 	
+	public static ArrayList<String> easyToGetThere (ALGraph dirgraph)
+	{
+		GraphNode node, consumerNode, producerNode;	
+		HashSet<String> visited = new HashSet<String>();
+		ArrayList<String> vertices = new ArrayList<String>();
+		ArrayList<GraphNode> queueLite = new ArrayList<GraphNode>();	
+		HashMap<String, int[]> table = new HashMap<String, int[]>();
+		
+		for (String currID: dirgraph.edgeMap.keySet())
+		{
+			queueLite.clear();
+			
+			producerNode = dirgraph.edgeMap.get(currID).get(0);
+			queueLite.add(producerNode);  
+			
+			while (!queueLite.isEmpty())
+			{
+				node = queueLite.remove(0);
+				
+				if (visited.contains(node.id))
+				{
+					continue;
+				}
+				
+				visited.add(node.id);
+
+				for (int k = 1; k < dirgraph.edgeMap.get(node.id).size(); k++) 
+				{
+					consumerNode = dirgraph.edgeMap.get(node.id).get(k);
+					
+					if (!table.containsKey(consumerNode.id)) 
+					{
+						table.put(consumerNode.id, new int[2]);
+					}
+					
+					table.get(consumerNode.id)[1]++; // increment incoming edge 
+					
+					queueLite.add(consumerNode);
+				}
+			}
+		}
+		
+		for ( String producerID: dirgraph.edgeMap.keySet())
+		{
+			producerNode = dirgraph.edgeMap.get(producerID).get(0);
+			
+			if (!table.containsKey(producerNode.id))
+			{
+				table.put(producerNode.id, new int[2]);
+			}
+			
+			table.get(producerNode.id)[0] = dirgraph.edgeMap.get(producerNode.id).size() - 1 ; // 0th placeholder is not available  ( outgoing edge size )
+			
+			if (table.get(producerNode.id)[1] > table.get(producerNode.id)[0])
+			{
+				vertices.add(producerNode.id);
+			}
+		}
+		
+		return vertices;
+	}
+	
+	public static boolean isDAG (ALGraph graph)
+	{
+		boolean hasHead, hasTail;
+		GraphNode consumerNode, producerNode, node;	
+		HashSet <String> removedTable = new HashSet<String>();
+		HashMap<String, int[]> table = new HashMap<String, int[]>();
+		
+		for (String vertexID: graph.edgeMap.keySet())
+		{
+			if (removedTable.contains(vertexID)) // vertex does not have single incoming/outgoing edges
+			{
+				return false;
+			}
+			
+			producerNode = graph.edgeMap.get(vertexID).get(0);
+			
+			if (!table.containsKey(producerNode.id))
+			{
+				table.put(producerNode.id, new int[2]);
+			}
+			
+			table.get(producerNode.id)[0]++; //outgoing count
+			
+			if (table.get(producerNode.id)[0] > 1) // too many outputs from producer node
+			{
+				return false;
+			}
+			
+			if( table.get(producerNode.id)[0] == 1 && table.get(producerNode.id)[1] == 1)
+			{
+				removedTable.add(producerNode.id);
+			}
+			
+			for (int i = 1; i < graph.edgeMap.get(producerNode.id).size(); i++)
+			{
+				consumerNode = graph.edgeMap.get(producerNode.id).get(i);
+				
+				if (!table.containsKey(consumerNode.id))
+				{
+					table.put(consumerNode.id, new int[2]);
+				}
+				
+				table.get(consumerNode.id)[1]++; // incoming count
+				
+				if (table.get(consumerNode.id)[1] > 1) // too many inputs to consumer node
+				{
+					return false;
+				}
+				
+				if( table.get(consumerNode.id)[0] == 1 && table.get(consumerNode.id)[1] == 1)
+				{
+					removedTable.add(consumerNode.id);
+				}
+			}
+		}
+		
+		// expect two vertexID leftover in table
+		
+		hasHead = hasTail = false;
+		
+		if (table.size() == 2)
+		{
+			for (String vertexID: table.keySet())
+			{
+				node = graph.edgeMap.get(vertexID).get(0);
+				
+				if( table.get(node.id)[0] == 1 && table.get(node.id)[1] == 0)
+				{
+					producerNode = node;
+					hasHead = !hasHead;
+				}
+				
+				if( table.get(node.id)[0] == 0 && table.get(node.id)[1] == 1)
+				{
+					consumerNode = node;
+					hasTail = !hasTail;
+				}
+			}
+		}
+		
+		return hasHead && hasTail;
+	}
+	
+	/* assumes input parameter is valid DAG*/
+	public static ArrayList<String> DAGToArray (ALGraph graphDAG)  
+	{
+		ArrayList<String> array;	
+		GraphNode consumerNode, producerNode, node;	
+		ArrayList<GraphNode> stackNodes;	
+		HashMap<String, int[]> table;
+		
+		producerNode = consumerNode = null;
+		table = new HashMap<String, int[]>();
+		stackNodes = new ArrayList<GraphNode>();
+		
+		for (String vertexID: graphDAG.edgeMap.keySet())
+		{
+			producerNode = graphDAG.edgeMap.get(vertexID).get(0);
+			
+			if (!table.containsKey(producerNode.id))
+			{
+				table.put(producerNode.id, new int[2]);
+			}
+			
+			table.get(producerNode.id)[0]++; //outgoing count
+			
+			if( table.get(producerNode.id)[0] == 1 && table.get(producerNode.id)[1] == 1)  // single incoming/outgoing edges
+			{
+				table.remove(producerNode.id);
+			}
+			
+			for (int i = 1; i < graphDAG.edgeMap.get(producerNode.id).size(); i++)
+			{
+				consumerNode = graphDAG.edgeMap.get(producerNode.id).get(i);
+				
+				if (!table.containsKey(consumerNode.id))
+				{
+					table.put(consumerNode.id, new int[2]);
+				}
+				
+				table.get(consumerNode.id)[1]++; // incoming count
+				
+				if( table.get(consumerNode.id)[0] == 1 && table.get(consumerNode.id)[1] == 1)  // single incoming/outgoing edges
+				{
+					table.remove(consumerNode.id);
+				}
+			}
+		}
+		
+		for (String vertexID: table.keySet())
+		{
+			node = graphDAG.edgeMap.get(vertexID).get(0);
+			if( table.get(node.id)[0] == 1 && table.get(node.id)[1] == 0)
+			{
+				stackNodes.add(node);
+			}
+		}
+		
+		// load array 
+		array = new ArrayList<String>();
+		while (!stackNodes.isEmpty())
+		{
+			producerNode = stackNodes.remove(0);
+			array.add(producerNode.id);
+			
+			if (graphDAG.edgeMap.get(producerNode.id).size() - 1 == 1)
+			{
+				consumerNode = graphDAG.edgeMap.get(producerNode.id).get(1);
+				stackNodes.add(consumerNode);
+			}
+		}
+		
+		return array;
+	}
 }
