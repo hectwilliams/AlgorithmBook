@@ -1,0 +1,830 @@
+package algo;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+
+public class Chapter19 {
+	
+	public static class AVLNode<T>
+	{
+		T value;
+		AVLNode<T> left;
+		AVLNode<T> right;
+		int count;
+		int balance;
+		
+		public AVLNode(T value) 
+		{
+			this.value = value;
+			left = right = null;
+			count = 1;
+			balance = 0;
+		}
+		
+		public int height ()
+		{
+			int height = 0;
+			AVLNode<T> node;
+			ArrayList<AVLNode<T>> buffer =  new ArrayList<AVLNode<T>> ();
+			ArrayList<AVLNode<T>> queueNodes = new ArrayList< AVLNode<T> > ();
+			
+			queueNodes.add(this);
+			
+			while (!queueNodes.isEmpty())
+			{
+				node = queueNodes.remove(0);
+				
+				if (node.left != null)
+				{
+					buffer.add(node.left);
+				}
+				
+				if (node.right != null)
+				{
+					buffer.add(node.right);
+				}
+				
+				if (queueNodes.isEmpty() && !buffer.isEmpty())
+				{
+					queueNodes = buffer;
+					buffer = new ArrayList< AVLNode<T>>();
+					height++;
+				}
+			}
+			
+			return height;
+		}
+		
+		public boolean isBalanced()
+		{
+			return ! (Math.abs( this.balance ) > 1 );
+		}
+	}
+	
+
+
+	public static class AVLTree<T>
+	{
+		AVLNode<T> head;
+		
+		public AVLTree()
+		{
+			head = null;
+		}
+		
+		public void printLayers () 
+		{
+			ArrayList<AVLNode<T>> queueNode = new ArrayList<AVLNode<T>>();
+			ArrayList<AVLNode<T>> buffer = new ArrayList<AVLNode<T>>();
+			AVLNode<T> node;
+			
+			if (head == null)
+			{
+				return;
+			}
+			
+			queueNode.add(head);
+			
+			while (!queueNode.isEmpty())
+			{
+				node = queueNode.remove(0);
+				
+				System.out.print(" [" + "value = " + node.value + " count = " + node.count + " balance = " + node.balance + "],");
+//				System.out.print("[" + node.value + "]" + ",");
+
+				if (node.left != null)
+				{
+					buffer.add(node.left);
+				}
+				
+				if (node.right != null)
+				{
+					buffer.add(node.right);
+				}
+				
+				if (queueNode.isEmpty() && !buffer.isEmpty())
+				{
+					System.out.println();
+					queueNode = buffer;
+					buffer = new ArrayList<AVLNode<T>>();
+				}
+			}
+			System.out.println();
+			System.out.println();
+
+		}
+		
+		public int height ()
+		{
+			if (head == null)
+			{
+				return 0;
+			}
+			
+			return head.height();
+		}
+		
+		public boolean isBalanced()
+		{
+			if (head == null)
+			{
+				return false;
+			}
+			
+			return head.isBalanced();
+		}
+		
+
+		public int compareType( T a, T b) 
+		{
+		
+			if ( a instanceof String ) 
+			{
+				return  ( (String) a ).compareTo(  (String) b);
+			}
+			
+			if ( a instanceof Number )
+			{
+				if (a instanceof Double)
+				{
+					  return ( (Double) a ).compareTo( (Double)  b);
+				}
+				
+				if (a instanceof Integer) 
+				{
+					return ( (Integer) a ).compareTo( (Integer)  b);
+				}
+			}
+
+			return 0;
+		}
+		
+		public void add (T value)
+		{
+			AVLNode<T> node, parentOfAddedNode;
+			ArrayList<AVLNode<T>> path = new ArrayList<AVLNode<T>>();
+			
+			if (head != null)
+			{
+				node = head;
+
+				do
+				{
+					path.add(node);
+					if ( compareType(value, node.value)  == 0 )
+					{
+						node.count++;
+					}
+					else if ( compareType(value, node.value) < 0 )
+					{
+						if (node.left != null)
+						{
+							node = node.left;
+						}
+						else
+						{
+							node = node.left = new AVLNode<T>(value);
+						}
+					}
+					else if ( compareType(value, node.value) > 0 )
+					{
+						if (node.right != null)
+						{
+							node = node.right;
+						}
+						else
+						{
+							node = node.right = new AVLNode<T>(value);
+						}
+					}
+				}
+				while (node.value != value);
+				
+				// update balance 
+				if (node.count == 1) // new value added 
+				{
+					parentOfAddedNode = path.get(path.size() - 1);
+					
+					// update balance along path
+					if (parentOfAddedNode.left == null ^ parentOfAddedNode.right == null)
+					{
+						balanceUpdatePath(path, value, true);
+					}
+					
+					// update balance to 0
+					if (parentOfAddedNode.left != null && parentOfAddedNode.right != null)
+					{
+						parentOfAddedNode.balance = 0;
+					}		
+				}
+			
+			}
+			
+			if (head == null)
+			{
+				head = new AVLNode<T>(value);
+				return;
+			}
+		}
+		
+		private void balanceUpdatePath (ArrayList<AVLNode<T>> path, T regulator, boolean nodeWasAdded)
+		{
+			for (AVLNode<T> retNode: path)
+			{
+				if (compareType(regulator, retNode.value) < 0)
+				{
+					if (nodeWasAdded)
+					{
+						retNode.balance++;
+					}
+					
+					if(!nodeWasAdded)
+					{
+						retNode.balance--;
+					}
+				}
+				
+				if (compareType(regulator, retNode.value) > 0)
+				{
+					
+					if (nodeWasAdded)
+					{
+						retNode.balance--;
+					}
+					
+					if(!nodeWasAdded)
+					{
+						retNode.balance++;
+					}
+				}
+			}
+		}
+		
+		public void remove (T value)
+		{
+			AVLNode<T> node, parentOfRemovedNode, descendantNode;
+			ArrayList<AVLNode<T>> path = new ArrayList<AVLNode<T>>();
+			T tmp;
+			
+			if (head == null)
+			{
+				return;
+			}
+			
+			node = head;
+			
+			do
+			{
+				if (node == null)
+				{
+					return;
+				}
+				
+				if ( compareType(value, node.value)  == 0 )
+				{
+					break;
+				}
+				
+				path.add(node);
+				
+				if ( compareType(value, node.value) < 0 )
+				{
+					node = node.left;
+				}
+				else if ( compareType(value, node.value) > 0 )
+				{
+					node = node.right;
+				}
+			}
+			while (node.value != value );
+			
+			
+			if (node.left == null && node.right == null) // leaf deletion 
+			{
+				if (node != head)
+				{
+					parentOfRemovedNode = path.get(path.size() - 1);
+					
+					if (parentOfRemovedNode.left == node)
+					{
+						parentOfRemovedNode.left = null;
+					}
+					
+					if (parentOfRemovedNode.right == node) 
+					{
+						parentOfRemovedNode.right = null;
+					}
+					
+					if (parentOfRemovedNode.right == null && parentOfRemovedNode.left == null)  // parent removed only child
+					{
+						balanceUpdatePath(path, value, false);
+					}
+					
+					if (parentOfRemovedNode.right == null ^ parentOfRemovedNode.left == null)  // parent previously removed 1 child
+					{
+						if (parentOfRemovedNode.left == null)
+						{
+							parentOfRemovedNode.balance--;
+						}
+						
+						else if (parentOfRemovedNode.right == null) 
+						{
+							parentOfRemovedNode.balance++;
+						}
+						
+					}
+				}
+				
+				if (node == head)
+				{
+					head = null;
+				}
+			}
+			
+			else if (node.left == null && node.right != null) //  delete parent with single child 
+			{
+				if (!path.isEmpty())
+				{
+					balanceUpdatePath(path, value, false);
+				}
+				node.value = node.right.value;
+				node.left = node.right.left;
+				node.balance = node.right.balance;
+				node.right = node.right.right;
+			}
+			
+			else if (node.right == null && node.left != null) //  delete parent with single child 
+			{
+				if (!path.isEmpty())
+				{
+					balanceUpdatePath(path, value, false);
+				}
+				
+				node.value = node.left.value;
+				node.right = node.left.right;
+				node.balance = node.left.balance;
+				node.left = node.left.left;
+			}
+			
+			else if (node.right != null && node.left != null) // full subtree  
+			{
+				descendantNode = node.right;
+				
+				while (descendantNode.left != null)
+				{
+					descendantNode = descendantNode.left;
+				}
+				
+				tmp = descendantNode.value;
+				
+				// delete descendant node 
+				this.remove(tmp);
+				
+				// update  parent node of subtree 
+				node.value = tmp;
+			}
+		}
+		
+		public void rotateLeft (AVLNode<T> node)
+		{
+			AVLNode<T> tnode /* traversed node */ , p/* parent */,  gp = null /* grandparent */ ,  c /* replaced child of parent*/,  s = null /* child's left child(i.e. subtree) */;
+			ArrayList<AVLNode<T>> path = new ArrayList<AVLNode<T>>();
+			
+			if (head != null)
+			{
+				tnode = head;
+
+				while (tnode != node)
+				{
+					path.add(tnode);
+					
+					if (tnode == null)
+					{
+						return;
+					}
+					
+					if ( compareType(node.value, tnode.value) < 0 )
+					{
+						tnode = tnode.left;
+					}
+					else if ( compareType(node.value, tnode.value) > 0 )
+					{
+						tnode = tnode.right;
+					}
+				}
+				
+				p = tnode;
+				c = tnode.right;
+				
+				if (c != null)
+				{
+					s = c.left;
+					c.left = p;
+				}
+				
+				p.right = s;
+				
+				if ( !path.isEmpty() )
+				{ 
+					gp = path.get(path.size() - 1);
+					
+					if (gp.right == p)
+					{
+						gp.right = c;
+					}
+					
+					if (gp.left == p)
+					{
+						gp.left = c;
+					}
+					
+				}
+				
+				if ( path.isEmpty() )
+				{
+					head = c;
+				}
+				
+				// update balance 
+				if (p != null)
+				{
+					p.balance = ( p.left == null ? 0 :  1 + p.left.height() ) -  ( p.right == null ?  0 :  1 + p.right.height() ) ;
+				}
+				if (c !=null)
+				{
+					c.balance =  ( c.left == null ? 0 :  1+ c.left.height()) - ( c.right == null ? 0 :  1 + c.right.height() );
+				}
+				if (gp != null)
+				{
+					gp.balance =  ( gp.left == null ? 0 :  1+ gp.left.height()) - ( gp.right == null ? 0 :  1 + gp.right.height() );
+				}
+			}
+		}
+		
+		public void rotateRight (AVLNode<T> node)
+		{
+			AVLNode<T> tnode /* traversed node */ , p/* parent */,  gp = null /* grandparent */ ,  c /* replaced child of parent*/,  s = null /* child's left child(i.e. subtree) */;
+			ArrayList<AVLNode<T>> path = new ArrayList<AVLNode<T>>();
+			
+			if (head != null)
+			{
+				tnode = head;
+
+				while (tnode != node)
+				{
+					
+					if (tnode == null)
+					{
+						return;
+					}
+					
+					path.add(tnode);
+
+					
+					if ( compareType(node.value, tnode.value) < 0 )
+					{
+						tnode = tnode.left;
+					}
+					else if ( compareType(node.value, tnode.value) > 0 )
+					{
+						tnode = tnode.right;
+					}
+					
+				}
+				
+				p = tnode;
+				c = tnode.left;
+				
+				if (c != null)
+				{
+					s = c.right;
+					c.right = p;
+				}
+				
+				p.left = s;
+				
+				if ( !path.isEmpty() )
+				{ 
+					gp = path.get(path.size() - 1);
+					
+					if (gp.right == p)
+					{
+						gp.right = c;
+					}
+					
+					if (gp.left == p)
+					{
+						gp.left = c;
+					}
+				}
+				
+				if ( path.isEmpty() )
+				{
+					head = c;
+				}
+				
+				// update balance 
+				if (p != null)
+				{
+					p.balance = ( p.left == null ? 0 :  1 + p.left.height() ) -  ( p.right == null ?  0 :  1 + p.right.height() ) ;
+				}
+				if (c != null)
+				{
+					c.balance =  ( c.left == null ? 0 :  1+ c.left.height()) - ( c.right == null ? 0 :  1 + c.right.height() );
+				}
+				if (gp != null)
+				{
+					gp.balance =  ( gp.left == null ? 0 :  1+ gp.left.height()) - ( gp.right == null ? 0 :  1 + gp.right.height() );
+				}
+
+			}
+		}
+		
+		public void balancedAdd(T value)
+		{
+			AVLNode<T> node, parentOfAddedNode;
+			ArrayList<AVLNode<T>> path = new ArrayList<AVLNode<T>>();
+			
+			if (head != null)
+			{
+				node = head;
+
+				do
+				{
+					path.add(node);
+					
+					if ( compareType(value, node.value)  == 0 )
+					{
+						node.count++;
+					}
+					else if ( compareType(value, node.value) < 0 )
+					{
+						if (node.left != null)
+						{
+							node = node.left;
+						}
+						else
+						{
+							node = node.left = new AVLNode<T>(value);
+						}
+					}
+					else if ( compareType(value, node.value) > 0 )
+					{
+						if (node.right != null)
+						{
+							node = node.right;
+						}
+						else
+						{
+							node = node.right = new AVLNode<T>(value);
+						}
+					}
+				}
+				while (node.value != value);
+				
+				// update balance 
+				if (node.count == 1) // new value added 
+				{
+					parentOfAddedNode = path.get(path.size() - 1);
+					
+					// update balance along path
+					if (parentOfAddedNode.left == null ^ parentOfAddedNode.right == null)
+					{
+						balanceUpdatePath(path, value, true);
+					}
+					
+					// update balance to 0
+					if (parentOfAddedNode.left != null && parentOfAddedNode.right != null)
+					{
+						parentOfAddedNode.balance = 0;
+					}		
+					
+					for (int i = path.size() - 1; i >= 0; i--)  // iterate path in reverse (back trace)
+					{
+						node = path.get(i);
+						rotationParser(node);
+					}
+				}
+			}
+			
+			if (head == null)
+			{
+				head = new AVLNode<T>(value);
+			}
+		}
+		
+		private void rotationParser (AVLNode<T> node)
+		{
+			// re-balance 
+			if (node.balance < -1)  // right side imbalance 
+			{
+				if (node.right.balance <  0) //  right right side imbalance 
+				{
+					rotateLeft(node);
+				}
+				
+				else   //  right left side imbalance 
+				{
+					rotateRight(node.right);
+					rotateLeft(node);
+				}
+			}
+			
+			else if (node.balance > 1)  // left side imbalance 
+			{
+				if (node.left.balance > 0) // left left side imbalance
+				{
+					rotateRight(node);
+				}
+				else // left right side imbalance 
+				{
+					rotateLeft(node.left);
+					rotateRight(node);
+				}
+			}	
+		}
+		
+		public void balancedRemove (T value)
+		{
+			AVLNode<T> node, parentOfRemovedNode, descendantNode;
+			ArrayList<AVLNode<T>> path = new ArrayList<AVLNode<T>>();
+			T tmp;
+			
+			if (head == null)
+			{
+				return;
+			}
+			
+			node = head;
+			
+			do
+			{
+				if (node == null)
+				{
+					return;
+				}
+				
+				if ( compareType(value, node.value)  == 0 )
+				{
+					break;
+				}
+				
+				path.add(node);
+				
+				if ( compareType(value, node.value) < 0 )
+				{
+					node = node.left;
+				}
+				else if ( compareType(value, node.value) > 0 )
+				{
+					node = node.right;
+				}
+			}
+			while (node.value != value );
+			
+			
+			if (node.left == null && node.right == null) // leaf deletion 
+			{
+				if (node != head)
+				{
+					parentOfRemovedNode = path.get(path.size() - 1);
+					
+					if (parentOfRemovedNode.left == node)
+					{
+						parentOfRemovedNode.left = null;
+					}
+					
+					if (parentOfRemovedNode.right == node) 
+					{
+						parentOfRemovedNode.right = null;
+					}
+					
+					if (parentOfRemovedNode.right == null && parentOfRemovedNode.left == null)  // parent removed only child
+					{
+						balanceUpdatePath(path, value, false);
+					}
+					
+					if (parentOfRemovedNode.right == null ^ parentOfRemovedNode.left == null)  // parent previously removed 1 child
+					{
+						if (parentOfRemovedNode.left == null)
+						{
+							parentOfRemovedNode.balance--;
+						}
+						
+						else if (parentOfRemovedNode.right == null) 
+						{
+							parentOfRemovedNode.balance++;
+						}
+						
+					}
+				}
+				
+				if (node == head)
+				{
+					head = null;
+				}
+			}
+			
+			else if (node.left == null && node.right != null) //  delete parent with single child 
+			{
+				if (!path.isEmpty())
+				{
+					balanceUpdatePath(path, value, false);
+				}
+				node.value = node.right.value;
+				node.left = node.right.left;
+				node.balance = node.right.balance;
+				node.right = node.right.right;
+			}
+			
+			else if (node.right == null && node.left != null) //  delete parent with single child 
+			{
+				if (!path.isEmpty())
+				{
+					balanceUpdatePath(path, value, false);
+				}
+				
+				node.value = node.left.value;
+				node.right = node.left.right;
+				node.balance = node.left.balance;
+				node.left = node.left.left;
+			}
+			
+			else if (node.right != null && node.left != null) // full subtree  
+			{
+				descendantNode = node.right;
+				
+				while (descendantNode.left != null)
+				{
+					descendantNode = descendantNode.left;
+				}
+				
+				tmp = descendantNode.value;
+				
+				// delete descendant node 
+				this.remove(tmp);
+				
+				// update  parent node of subtree 
+				node.value = tmp;
+			}
+			
+			
+			for (int i = path.size() - 1; i >= 0; i--)
+			{
+				node = path.get(i);
+				
+				if (!node.isBalanced())
+				{
+					rotationParser(node);
+				}
+			}
+		}
+			
+		public void repair () 
+		{
+			int end = 0;
+			int start = 0;
+			AVLNode<T> node;
+			ArrayList<AVLNode<T>> queue = new ArrayList<AVLNode<T>>();
+			ArrayList<AVLNode<T>> imbalancedNodes = new ArrayList<AVLNode<T>>();
+
+			if (head == null)
+			{
+				return;
+			}
+			
+			queue.add(head);
+			end++;
+			
+			while (end != start)
+			{
+				node = queue.get(start++);
+				
+				if (node.left != null)
+				{
+					queue.add(node.left);
+					end++;
+				}
+				
+				if (node.right != null)
+				{
+					queue.add(node.right);
+					end++;
+				}
+				
+				if ( !node.isBalanced() )
+				{
+					imbalancedNodes.add(node);
+				}
+			}
+			
+			for (int i = imbalancedNodes.size() - 1; i >= 0; i--)
+			{
+				rotationParser(imbalancedNodes.get(i));
+
+			}
+		}
+		
+	}
+	
+}

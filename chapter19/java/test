@@ -1,0 +1,110 @@
+package algo;
+import algo.Chapter19.*;
+
+import java.util.ArrayList;
+import java.util.Random;
+public class Test 
+{
+	
+	public static void AVLBasicTest () 
+	{
+		AVLTree<Integer> tree = new AVLTree<Integer>();
+		int[] array =  {10, 7, 20, 15, 25, 23};
+		
+		for (int retVal: array)
+		{
+			tree.add(retVal);
+		}
+		
+		tree.remove(10);
+		tree.remove(15);
+		tree.printLayers();
+		tree.rotateLeft(tree.head);
+		tree.printLayers();
+	}
+	
+	public static void AVLBalancedTest () 
+	{
+		AVLTree<Integer> tree = new AVLTree<Integer>();
+		int[] array =  {10, 7, 20, 15, 25, 23};
+		
+		
+		for (int retVal: array)
+		{
+			tree.balancedAdd(retVal);
+		}
+		tree.printLayers();
+
+	}
+	
+	public static void AVLBalancedRandomDataTest () 
+	{
+		AVLTree<Integer> tree = new AVLTree<Integer>();
+		Random rand = new Random();
+		int NUM_ELEMENTS = 50;
+		
+		for (int i = 0 ; i < NUM_ELEMENTS ; i++)
+		{
+			tree.balancedAdd(rand.nextInt() % 100);
+		}
+		tree.printLayers();
+	}
+	
+	
+	public static void AVLBalancedRemoveTest ()
+	{
+		Random rand = new Random();
+		int NUM_ELEMENTS = 50, data;
+		AVLTree<Integer> tree = new AVLTree<Integer>();
+		ArrayList<Integer> removeList = new ArrayList<Integer>();
+		
+		for (int i = 0 ; i < NUM_ELEMENTS ; i++)
+		{
+			data = rand.nextInt() % 100;
+			if (i % 5 == 0)
+			{
+				removeList.add(data);
+			}
+			tree.balancedAdd(data);
+		}
+		
+		System.out.println("BEFORE BALANCED REMOVAL");
+		tree.printLayers();
+		System.out.println();
+		
+		for (int retRemoveValue: removeList)
+		{
+			tree.balancedRemove(retRemoveValue);  // balanced remove
+		}
+		
+		System.out.println("AFTER BALANCED REMOVAL");
+		tree.printLayers();
+	}
+	
+	public static void AVLRepairTest ()
+	{
+		AVLTree<Integer> tree = new AVLTree<Integer>();
+		Random rand = new Random();
+		int NUM_ELEMENTS = 50;
+		
+		for (int i = 0 ; i < NUM_ELEMENTS ; i++)
+		{
+			tree.add(rand.nextInt() % 100);
+		}
+		System.out.println("BEFORE REPAIR");
+		tree.printLayers();
+		System.out.println();
+		
+		tree.repair(); // repair tree
+		
+		System.out.println("AFTER REPAIR");
+		tree.printLayers();
+	}
+
+
+	public static void main(String args[])
+	{
+		AVLBalancedRemoveTest();
+	}
+	
+}  
