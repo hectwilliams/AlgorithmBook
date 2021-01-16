@@ -101,10 +101,27 @@ public class Test
 		tree.printLayers();
 	}
 
-
+	public static void RBTreeTest() 
+	{
+		RBTree<Integer> tree = new RBTree<Integer>();
+		tree.add(3);
+		tree.add(1);
+		tree.add(5);
+		tree.add(7);
+		tree.add(6);
+		tree.add(8);
+		tree.add(9);
+		tree.add(10);
+		tree.remove(9);
+		tree.remove(10);
+		tree.remove(7);
+		tree.printLayers();
+		tree.printBlackHeights();
+	}
+	
 	public static void main(String args[])
 	{
-		AVLBalancedRemoveTest();
+		RBTreeTest();
 	}
 	
 }  

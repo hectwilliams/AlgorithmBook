@@ -1,7 +1,6 @@
 package algo;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class Chapter19 {
 	
@@ -821,7 +820,831 @@ public class Chapter19 {
 			for (int i = imbalancedNodes.size() - 1; i >= 0; i--)
 			{
 				rotationParser(imbalancedNodes.get(i));
+			}
+		}
+	}
 
+	public static class RBTree<T>
+	{
+		enum COLOR 
+		{
+			RED,
+			BLACK
+		}
+		
+		public static class RBNode<T>
+		{
+			COLOR color;
+			RBNode<T> left;
+			RBNode<T> right;
+			T val;
+			int count;
+			
+			RBNode(T value)
+			{
+				this.val = value;
+				color = COLOR.RED; // red initially!
+				left = right = null;
+				this.count = 1;
+			}
+		}
+		
+		private int compareType( T a, T b) 
+		{
+		
+			if ( a instanceof String ) 
+			{
+				return  ( (String) a ).compareTo(  (String) b);
+			}
+			
+			if ( a instanceof Number )
+			{
+				if (a instanceof Double)
+				{
+					  return ( (Double) a ).compareTo( (Double)  b);
+				}
+				
+				if (a instanceof Integer) 
+				{
+					return ( (Integer) a ).compareTo( (Integer)  b);
+				}
+			}
+
+			return 0;
+		}
+		
+		public void rotateLeft (RBNode<T> node)
+		{
+			RBNode<T> tnode /* traversed node */ , p/* parent */,  gp = null /* grandparent */ ,  c /* replaced child of parent*/,  s = null /* child's left child(i.e. subtree) */;
+			ArrayList<RBNode<T>> path = new ArrayList<RBNode<T>>();
+			
+			if (root != null)
+			{
+				tnode = root;
+
+				while (tnode != node)
+				{
+					path.add(tnode);
+					
+					if (tnode == null)
+					{
+						return;
+					}
+					
+					if ( compareType(node.val, tnode.val) < 0 )
+					{
+						tnode = tnode.left;
+					}
+					else if ( compareType(node.val, tnode.val) > 0 )
+					{
+						tnode = tnode.right;
+					}
+				}
+				
+				p = tnode;
+				c = tnode.right;
+				
+				if (c != null)
+				{
+					s = c.left;
+					c.left = p;
+				}
+				
+				p.right = s;
+				
+				if ( !path.isEmpty() )
+				{ 
+					gp = path.get(path.size() - 1);
+					
+					if (gp.right == p)
+					{
+						gp.right = c;
+					}
+					
+					if (gp.left == p)
+					{
+						gp.left = c;
+					}
+					
+				}
+				
+				if ( path.isEmpty() )
+				{
+					root = c;
+				}
+			}
+		}
+		
+		public void rotateRight (RBNode<T> node)
+		{
+			RBNode<T> tnode /* traversed node */ , p/* parent */,  gp = null /* grandparent */ ,  c /* replaced child of parent*/,  s = null /* child's left child(i.e. subtree) */;
+			ArrayList<RBNode<T>> path = new ArrayList<RBNode<T>>();
+			
+			if (root != null)
+			{
+				tnode = root;
+
+				while (tnode != node)
+				{
+					
+					if (tnode == null)
+					{
+						return;
+					}
+					
+					path.add(tnode);
+
+					
+					if ( compareType(node.val, tnode.val) < 0 )
+					{
+						tnode = tnode.left;
+					}
+					else if ( compareType(node.val, tnode.val) > 0 )
+					{
+						tnode = tnode.right;
+					}
+					
+				}
+				
+				p = tnode;
+				c = tnode.left;
+				
+				if (c != null)
+				{
+					s = c.right;
+					c.right = p;
+				}
+				
+				p.left = s;
+				
+				if ( !path.isEmpty() )
+				{ 
+					gp = path.get(path.size() - 1);
+					
+					if (gp.right == p)
+					{
+						gp.right = c;
+					}
+					
+					if (gp.left == p)
+					{
+						gp.left = c;
+					}
+				}
+				
+				if ( path.isEmpty() )
+				{
+					root = c;
+				}
+			}
+		}
+		
+		RBNode<T> root;
+		
+		RBTree ()
+		{
+			root = null;
+		}
+		
+		public boolean contains ( T value)
+		{
+			RBNode<T> node;
+			
+			node = root; 
+			
+			while (node != null)
+			{
+				if ( compareType(value, node.val) == 0)
+				{
+					return true;
+				}
+				
+				else if ( compareType(value, node.val) < 0)
+				{
+					node = node.left;
+				}
+				
+				else if ( compareType(value, node.val) > 0)
+				{
+					node = node.right;
+				}
+			}
+			
+			return false;
+		}
+
+		
+		public void add( T value)
+		{
+			/*
+			 * 
+			 * red aunt  (color flip)
+			 * black aunt (rotate)
+			 * 
+			 * */
+			
+			RBNode<T> node, p /* parent*/, a /*aunt*/, gp /*grandparent*/;
+			ArrayList<RBNode<T>> path = new ArrayList<RBNode<T>>();
+
+			if (root != null)
+			{
+				node = root;
+				
+				do
+				{
+					path.add(node);
+					
+					if (compareType(value, node.val)  ==  0)
+					{
+						node.count++;
+					}
+					
+					else if (compareType(value, node.val)  < 0)
+					{
+						if (node.left != null)
+						{
+							node = node.left;
+						}
+						else
+						{
+							node = node.left = new RBNode<T>(value);
+						}
+					}
+					
+					else if (compareType(value, node.val) > 0)
+					{
+						if (node.right != null)
+						{
+							node = node.right;
+						}
+						else 
+						{
+							node = node.right = new RBNode<T>(value);
+						}
+					}
+				}
+				while (node.val != value);
+				
+				if (node.count == 1) // new entry !!
+				{
+					for (int i = path.size() - 1; i >=0; i--)
+					{
+						gp = path.get(i);
+						
+						if (gp.left != null)
+						{
+							if (gp.left.right != null)
+							{
+								if (gp.left.color == COLOR.RED && gp.left.right.color == COLOR.RED)
+								{
+									repaint(gp /*grandparent*/, gp.left /*parent*/, gp.right /*aunt*/, gp.left.right /* child*/);
+									continue;
+								}
+							}
+							
+							if (gp.left.left != null)
+							{
+								if (gp.left.color == COLOR.RED && gp.left.left.color == COLOR.RED)
+								{
+									repaint(gp /*grandparent*/, gp.left /*parent*/, gp.right /*aunt*/ , gp.left.left  /* child*/ );
+									continue;
+								}
+							}
+						}
+						
+						if (gp.right != null)
+						{
+							if (gp.right.left != null)
+							{
+								if (gp.right.color == COLOR.RED && gp.right.left.color == COLOR.RED)
+								{
+									repaint(gp /*grandparent*/, gp.right /*parent*/, gp.left /*aunt*/, gp.right.left /* child*/);
+									continue;
+								}
+							}
+							
+							if (gp.right.right != null)
+							{
+								if (gp.right.color == COLOR.RED && gp.right.right.color == COLOR.RED)
+								{
+									repaint(gp /*grandparent*/, gp.right /*parent*/, gp.left /*aunt*/ , gp.right.right /* child*/);
+									continue;
+								}
+							}
+						}
+					}
+					
+				}
+			}
+			
+			if (root == null)
+			{
+				root = new RBNode<T>(value);
+				root.color = COLOR.BLACK;
+			}
+		}
+		
+		public void remove ( T value) // FUN!!! :( 
+		{
+			T tmp;
+			RBNode<T> node, parentOfRemovedNode, descendantNode;
+			ArrayList<RBNode<T>> path = new ArrayList<RBNode<T>>();
+			int doubleBlackLocation = 0; // -1 left   1 right 
+			
+			if (root == null)
+			{
+				return;
+			}
+			
+			node = root;
+			
+			do
+			{
+			
+				
+				if ( compareType(value, node.val)  == 0 )
+				{
+					break;
+				}
+				
+				path.add(node);
+				
+				if ( compareType(value, node.val) < 0 )
+				{
+					node = node.left;
+				}
+				else if ( compareType(value, node.val) > 0 )
+				{
+					node = node.right;
+				}
+				
+				if (node == null)
+				{
+					return;
+				}
+			}
+			while (node.val != value );
+			
+			if (node.left == null && node.right == null) // leaf deletion 
+			{
+				if (node != root)
+				{
+					
+					parentOfRemovedNode = path.get(path.size() - 1);
+
+					if (parentOfRemovedNode.left == node)
+					{
+						if (node.color == COLOR.BLACK)
+						{
+							doubleBlackLocation = -1;
+	
+						}
+						parentOfRemovedNode.left = null;
+					}
+					
+					if (parentOfRemovedNode.right == node) 
+					{
+
+						if (node.color == COLOR.BLACK)
+						{
+							doubleBlackLocation = 1;
+						}
+						parentOfRemovedNode.right = null;
+						
+					}
+				}
+				
+				else if (node == root)
+				{
+					root = null;
+				}
+				
+			}
+			else if (node.left == null && node.right != null) //  delete parent with single child 
+			{
+				parentOfRemovedNode = path.get(path.size() - 1);
+				
+				if (node.color == COLOR.RED || node.right.color == COLOR.RED)
+				{
+					node.color = COLOR.BLACK;
+				}
+				else
+				{
+					if (parentOfRemovedNode.left == node)
+					{
+						doubleBlackLocation = -1;
+					}
+					
+					if (parentOfRemovedNode.right == node)
+					{
+						doubleBlackLocation = 1;
+					}
+				}
+				
+				node.val = node.right.val;
+				node.left = node.right.left;
+				node.right = node.right.right;
+			}
+			else if (node.right == null && node.left != null) //  delete parent with single child 
+			{
+				parentOfRemovedNode = path.get(path.size() - 1);
+				
+				if (node.color == COLOR.RED || node.right.color == COLOR.RED)
+				{
+					node.color = COLOR.BLACK;
+				}
+				else
+				{
+					if (parentOfRemovedNode.left == node)
+					{
+						doubleBlackLocation = -1;
+					}
+					
+					if (parentOfRemovedNode.right == node)
+					{
+						doubleBlackLocation = 1;
+					}
+				}
+				
+				node.val = node.left.val;
+				node.right = node.left.right;
+				node.left = node.left.left;
+			}
+			else if (node.right != null && node.left != null) // full subtree  
+			{
+				descendantNode = node.right;
+				
+				while (descendantNode.left != null)
+				{
+					descendantNode = descendantNode.left;
+				}
+				
+				tmp = descendantNode.val;
+				
+				// delete descendant node 
+				this.remove(tmp);
+				
+				// update  parent node of subtree 
+				node.val = tmp;
+			}
+
+			removeHelperDoubleBlackSolver(path, doubleBlackLocation);
+		}
+		
+		private void removeHelperDoubleBlackSolver (ArrayList<RBNode<T>> path, int locationOfDoubleBlack /* left-of-parent(-1)  right-of-parent(1) */)  
+		{
+			RBNode<T> gp/* grandparent*/, p /* parent */, s /* sibling*/, r /* replacement (i.e. double black ) */;
+			int pathIndex = path.size() - 1;
+			boolean hasBlackSibling = false;
+			boolean siblingLeftChildIsRed = false;
+			boolean siblingRightChildIsRed = false;
+			
+			if (locationOfDoubleBlack == 0)
+			{
+				return;
+			}
+			
+			p = s = r = null;
+
+			while ( pathIndex < path.size() )
+			{
+				p = path.get(pathIndex);
+				hasBlackSibling = siblingLeftChildIsRed = siblingRightChildIsRed = false;
+
+				if (locationOfDoubleBlack == -1)    
+				{	
+					/* 
+					 * 
+					 * 
+					 *    p 
+					 *   / \
+					 *  r   s
+					 *  
+					 *  
+					 */
+					r = p.left;													
+					s = p.right;
+				}
+				
+				if (locationOfDoubleBlack == 1)
+				{
+					/* 
+					 * 
+					 * 
+					 *    p 
+					 *   / \
+					 *  s   r
+					 *  
+					 * 
+					 */
+					r = p.right;
+					s = p.left;
+				}
+				
+				if (s == null)
+				{
+					break;
+				}
+				
+				if (s.color == COLOR.BLACK)
+				{
+					hasBlackSibling = true;
+				}
+				
+				if (hasBlackSibling)
+				{
+
+					if (s.left != null) 
+					{
+						siblingLeftChildIsRed = (s.left.color == COLOR.RED);
+					}
+					
+					if (s.right!= null) 
+					{
+						siblingRightChildIsRed = (s.right.color == COLOR.RED);
+					}
+					
+					if (siblingLeftChildIsRed || siblingRightChildIsRed)  // at least one red sibling
+					{
+						if (p.right == s)
+						{
+							if (siblingRightChildIsRed) // right right 
+							{
+								// re-color sibling.right to black
+								s.right.color = COLOR.BLACK;
+								
+								// left rotate parent 
+								rotateLeft(p);
+							}
+							else if (siblingLeftChildIsRed) // right left 
+							{
+								// re-color sibling.left  to black 
+								s.left.color = COLOR.BLACK;
+								
+								// re-color sibling to red 
+								s.color = COLOR.RED;
+								// right rotate sibling
+								rotateRight(s);
+								
+								// re-color sibling to black
+								s.color = COLOR.BLACK;
+								// left rotate parent 
+								rotateLeft(p);
+							}
+						}
+						
+						else if (p.left == s)
+						{
+							if ( siblingLeftChildIsRed ) // left left
+							{
+								// 	re-color sibling.left to black
+								s.left.color = COLOR.BLACK;
+								
+								//	right rotate parent
+								rotateRight(p);
+							}
+							else if ( siblingRightChildIsRed ) //  left right
+							{
+								// re-color sibling.right to black
+								s.right.color = COLOR.BLACK;
+								
+								// re-color sibling to red 
+								s.color = COLOR.RED;
+								// left rotate sibling 
+								rotateLeft(s);
+								
+								// re-color sibling to black
+								s.color = COLOR.BLACK;
+								// right rotate parent
+								rotateRight(p);
+							}		
+						}	
+						
+						break;
+					}
+					
+					if (!siblingLeftChildIsRed && !siblingRightChildIsRed)  // black children (children of sibling are all black)
+					{
+						s.color = COLOR.RED;
+						
+						if (p.color == COLOR.RED || p == root) 
+						{
+							p.color = COLOR.BLACK;
+							
+							break;
+						}
+						
+						else 
+						{
+							//  update  locationOfDoubleBlack continuing re-balancing moving up tree 
+							gp = path.get(pathIndex - 1);
+							if (gp.left == p) // grandparent(next parent) points to old parent(i.e. next double black node)
+							{
+								locationOfDoubleBlack = -1;
+							}
+							
+							if (gp.right == p) // grandparent(next parent) points to old parent(i.e. next double black node)
+							{
+								locationOfDoubleBlack = 1;
+							}
+							
+						}
+					}
+				}
+				
+				if (!hasBlackSibling)
+				{
+					if (s != null)
+					{
+						s.color = COLOR.BLACK;
+						p.color = COLOR.RED;
+						
+						if (p.left == s)
+						{
+							rotateRight(p);
+							locationOfDoubleBlack = 1; // sibling( next parent) points to old parent(i.e. next double black node)
+						}
+						else if (p.right == s)
+						{
+							rotateLeft(p);
+							locationOfDoubleBlack = -1; // sibling( next parent) points to old parent(i.e. next double black node)
+						}
+						
+						// add sibling to path list 
+						path.add(s);
+						// update pathIndex
+						pathIndex++;
+						
+						continue; 
+					}
+				}
+				pathIndex--;
+			}
+		}
+		
+		private void repaint (RBNode<T> gp, RBNode<T> p, RBNode<T> a, RBNode<T> c)
+		{
+			if (a == null || a.color == COLOR.BLACK)  
+			{
+				if (gp.left == p)
+				{
+					if (gp.left.right == c) // gp -> left -> right imbalance
+					{
+						rotateLeft(gp.left);
+						rotateRight(gp);
+						
+						c.color = COLOR.BLACK;
+						gp.color = p.color = COLOR.RED;
+					}
+					else if (gp.left.left == c)  // gp -> left -> left imbalance
+					{
+						rotateRight(gp);
+						
+						p.color = COLOR.BLACK;
+						gp.color = c.color = COLOR.RED;
+					}
+				}
+				
+				else if (gp.right == p)
+				{
+					if (gp.right.left == c) // gp -> right -> left imbalance
+					{
+						rotateRight(gp.right);
+						rotateLeft(gp);
+						
+						c.color = COLOR.BLACK;
+						gp.color = p.color = COLOR.RED;
+					}
+					else if (gp.right.right == c)  // gp -> right -> right imbalance
+					{
+						rotateLeft(gp);
+						
+						p.color = COLOR.BLACK;
+						gp.color = c.color = COLOR.RED;
+					}
+				}
+			}
+			
+			else if (a.color == COLOR.RED)
+			{
+				// color flip aunt and parent 
+				a.color = p.color = COLOR.BLACK;
+				
+				// flip grandparent 
+				if (gp.color == COLOR.BLACK)
+				{
+					gp.color = COLOR.RED;
+				}
+				else 
+				{
+					gp.color = COLOR.BLACK;
+				}
+			}
+			
+			if (gp == root)
+			{
+				gp.color = COLOR.BLACK;
+			}
+		}
+		
+		public void printLayers () 
+		{
+			RBNode<T> node;
+			ArrayList<RBNode<T>> buffer = new ArrayList<RBNode<T>>();
+			ArrayList<RBNode<T>> queueNode = new ArrayList<RBNode<T>>();
+			
+			if (root == null)
+			{
+				return;
+			}
+			
+			queueNode.add(root);
+			
+			while (!queueNode.isEmpty())
+			{
+				node = queueNode.remove(0);
+				
+				System.out.print(" [" + "value = " + node.val + "(" + node.color + ")" +  "],");
+
+				if (node.left != null)
+				{
+					buffer.add(node.left);
+				}
+				
+				if (node.right != null)
+				{
+					buffer.add(node.right);
+				}
+				
+				if (queueNode.isEmpty() && !buffer.isEmpty())
+				{
+					System.out.println("");   
+					
+					queueNode = buffer;
+					buffer = new ArrayList<RBNode<T>>();
+				}
+			}
+			System.out.println();
+			System.out.println();
+		}
+		
+		public void printBlackHeights () 
+		{
+			RBNode<T> node;
+			ArrayList<RBNode<T>> stackNodes = new ArrayList<RBNode<T>>();
+			ArrayList<RBNode<T>> copyWalk, currWalk = new ArrayList<RBNode<T>>();
+			ArrayList< ArrayList<RBNode<T>> > stackColorsPath = new ArrayList< ArrayList<RBNode<T>> >();
+			
+			if (root == null)
+			{
+				return;
+			}
+			
+			stackNodes.add(root);
+			currWalk.add(root);
+			
+			stackColorsPath.add(currWalk);
+			
+			while (!stackNodes.isEmpty() )
+			{
+				node = stackNodes.remove(0);
+				currWalk = stackColorsPath.remove(0);
+				
+				if (node.right != null)
+				{
+					stackNodes.add(0, node.right);
+					copyWalk = new ArrayList< RBNode<T> >();
+					for (RBNode<T> retNode: currWalk)
+					{
+						copyWalk.add(retNode);
+					}
+					copyWalk.add(node.right);
+					
+					stackColorsPath.add(0,copyWalk);
+				}
+				
+				if (node.left != null)
+				{
+					stackNodes.add(0, node.left);
+					
+					copyWalk = new ArrayList< RBNode<T> >();
+					for (RBNode<T> retNode: currWalk)
+					{
+						copyWalk.add(retNode);
+					}
+					copyWalk.add(node.left);
+					
+					stackColorsPath.add(0,copyWalk);
+				}
+				
+				if (node.left == null && node.right == null)
+				{
+					for (RBNode<T> retNode: currWalk)
+					{
+						System.out.print(retNode.color + ",");
+					}
+					System.out.println();
+				}
 			}
 		}
 		
