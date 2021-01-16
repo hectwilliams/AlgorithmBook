@@ -112,16 +112,38 @@ public class Test
 		tree.add(8);
 		tree.add(9);
 		tree.add(10);
+		
 		tree.remove(9);
 		tree.remove(10);
 		tree.remove(7);
+		
 		tree.printLayers();
 		tree.printBlackHeights();
 	}
 	
+	public static void SplayTreeTest () 
+	{
+		SplayTree<Integer> tree = new SplayTree<Integer>();
+		tree.add(10);
+		tree.add(3);
+		tree.add(5);
+		tree.add(1);	
+		tree.add(100);
+		System.out.println ("----");
+
+		tree.remove(1);
+		tree.printLayers();
+
+		System.out.println("has value 10 " + tree.contains(11) );
+		System.out.println ("----");
+
+		tree.printLayers();
+
+	}
+	
 	public static void main(String args[])
 	{
-		RBTreeTest();
+		SplayTreeTest();
 	}
 	
 }  
