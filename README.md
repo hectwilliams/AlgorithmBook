@@ -18,8 +18,8 @@
 14. Hashes (***C++***, ***Python***, ***Javascript***, ***Java***)
 15. Trees, Part II (***C++***, ***C***, ***Python***, ***Javascript***, ***Java***)
 16. Tries (***C++***, ***C***, ***Python***, ***Javascript***, ***Java***)
-17. Graphs (***C++***, ***C***, ***Python***, ***Javascript***)
+17. Graphs (***C++***, ***C***, ***Python***, ***Javascript***,  ***Java***)
 18. Bit Arithmetic (***C++***, ***C***, ***Python***, ***Javascript***)
-19. Trees, Part III (***C++***, ***C***, ***Python***, ***Javascript***)
+19. Trees, Part III (***C++***, ***C***, ***Python***, ***Javascript***,  ***Java***)
 20. ~Spatial, Logic Estimation~
 21. ~Optimization~
