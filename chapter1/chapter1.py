@@ -1,6 +1,6 @@
 import copy
 import math
-import random 
+import random
 
 def setme():
   myNumber = 42
@@ -125,7 +125,7 @@ def value_gt_than_2nd(arr):
     return count
   for val in arr:
     if val > arr[1]:
-      count = count + 1  
+      count = count + 1
   return count
 
 def values_greather_than_second (*list_of_arrays):
@@ -135,7 +135,7 @@ def values_greather_than_second (*list_of_arrays):
   for i, ele in enumerate(list_of_arrays[0]):
     if ele > list_of_arrays[0][1]:
       result.append(ele)
-  return result 
+  return result
 
 def this_len_that_value (num1, num2):
   res = []
@@ -146,7 +146,7 @@ def this_len_that_value (num1, num2):
   return res
 
 def fit_value(*collection):
-  length = len(collection) 
+  length = len(collection)
   if length > 0:
     if collection[0] > length:
       print('Too Big')
@@ -156,7 +156,7 @@ def fit_value(*collection):
       print('Just Right')
 
 def fahrenheit_to_celcius(f):
-  return (f - 32) * (5/9) 
+  return (f - 32) * (5/9)
 
 def fahrenheit_to_celcius(c):
   return ((9/5) * c) + 32
@@ -165,7 +165,7 @@ def biggie_size(arr):
   for i, ele in enumerate(arr):
     if ele >= 0:
       arr[i] = 'Big'
-  return arr; 
+  return arr;
 
 def previous_lengths (strings):
   for i in range(len(strings) - 1, 0, -1):
@@ -189,18 +189,18 @@ def add_seven_to_most (arr):
   result.append(arr[0])
   for i  in range(1, len(arr)):
     result.append(arr[i] + 7)
-  return result 
+  return result
 
 def print_one_return_another(arr):
   firstOddValue = None
   buffer = [None, None]
-  
+
   for i in range (0, len(arr) - 1 ):
     buffer = arr[i : i + 2]
     for val in arr:
       if firstOddValue is None:
         if buffer[0] % 2:
-          firstOddValue = buffer[0] 
+          firstOddValue = buffer[0]
         elif buffer[1] % 2:
           firstOddValue = buffer[1]
   print(buffer[0])
@@ -209,8 +209,8 @@ def print_one_return_another(arr):
 def reverse_array (arr):
   result = []
   for i in range(len(arr) - 1, -1, -1):
-    result.append(arr[i]) 
-  return result 
+    result.append(arr[i])
+  return result
 
 def double_vision(arr):
   deepCopyArr = copy.deepcopy(arr)
@@ -222,7 +222,7 @@ def outlook_negative(arr):
   result = copy.deepcopy(arr)
   for i, ele in enumerate(arr):
     result[i] = (-1 * ele if (ele > 0) else  ele)
-  return result 
+  return result
 
 def count_positives(arr):
   count = 0
@@ -230,7 +230,7 @@ def count_positives(arr):
   for i in range (0, len(arr)) :
    count = +( arr[i] > 0) + count;
    if (length - 1 == i) :
-     arr[i] = count 
+     arr[i] = count
      return arr
 
 def always_hungry(arr):
@@ -255,18 +255,18 @@ def even_and_odds(arr):
     if evenCounter == 3:
       print('Even more so!')
       evenCounter = 0
-    if oddCounter > 0 and evenCounter > 0 : 
+    if oddCounter > 0 and evenCounter > 0 :
        evenCounter = 0
-       oddCounter = 0;   
+       oddCounter = 0;
 
 def swap_towards_center (arr):
   length = len(arr)
   for i in range (0, int(math.floor(length/2))):
     if (i + 1 % 2):
-      tmp = arr[i] 
+      tmp = arr[i]
       arr[i] = arr[length - 1 - i ]
       arr[length - 1 - i] = tmp
-  return arr 
+  return arr
 
 def incr_seconds(arr):
   for i in range(0, len(arr)):
@@ -287,7 +287,7 @@ def math_help(m, b):
   return -b/m
 
 def whatHappensToday ():
-  n  = 100 * (random.random()) 
+  n  = 100 * (random.random())
   if n  <= 10 :
     print('volcanos')
   if n >  10 and n <= 25:
@@ -298,7 +298,7 @@ def whatHappensToday ():
     print('blizzards')
   if n > 70 and n <= 100:
     print('meteors')
-    
+
 def what_really_happened_today ():
   index = 0
   disaster_test = {
@@ -308,10 +308,10 @@ def what_really_happened_today ():
     "blizzards": False,
     "meteors": False
   }
-  
+
   probablities = [10, 15, 20, 25, 30]
   for key, value in disaster_test.items():
-    if random.random()* 100  <= probablities[index]:  
+    if random.random()* 100  <= probablities[index]:
       disaster_test[key] = True
     index = index + 1
   print(disaster_test)
@@ -339,8 +339,8 @@ def letter_grade_accurate(grade):
   if data[1] < 95:
     if data[1] % 10 < 3:
       data[3] = '-' + data[3]
-    if data[1] % 10 > 7: 
-      data[3] = '+' + data[3] 
+    if data[1] % 10 > 7:
+      data[3] = '+' + data[3]
   return data
 
 print( letter_grade_accurate(78))
