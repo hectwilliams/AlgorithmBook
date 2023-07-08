@@ -486,3 +486,227 @@ def towers_of_hanoi():
                 continue
 
 print('{}'.format(towers_of_hanoi()))
+
+def ip_addresses(digits):
+
+    class address_node:
+        def __init__(self, addr = "") -> None:
+            self.addr0 = addr 
+            self.addr1 = addr 
+            self.addr2 = addr 
+            self.addr3 = addr 
+            self.prev_nodes = []
+
+    def valid_move_addr(queue_list, new_node, raw_address):
+        s = new_node.addr0 + new_node.addr1 + new_node.addr2 + new_node.addr3
+
+        # sustain order 
+        for i, c  in enumerate(s):
+            if c  != raw_address[i]:
+                return False 
+
+        # length matches 
+        
+        if len(new_node.addr0)  > 3 or len(new_node.addr1)  > 3 or len(new_node.addr2)  > 3 or len(new_node.addr3)  > 3:
+            return False 
+        
+        # new node or step in path does not go back to an old step 
+        for parent_node in  queue_list :
+            if parent_node.addr0 == new_node.addr0 and  parent_node.addr1 == new_node.addr1 and parent_node.addr2 == new_node.addr2 and parent_node.addr3 == new_node.addr3 :
+                return False 
+            
+            for child_node in parent_node.prev_nodes:
+                if child_node.addr0 == new_node.addr0 and  child_node.addr1 == new_node.addr1 and child_node.addr2 == new_node.addr2 and child_node.addr3 == new_node.addr3 :
+                    return False 
+
+        return True 
+        
+
+    def copy_node (current_node):
+        c_copy = address_node()
+        c_copy.addr0 = current_node.addr0
+        c_copy.addr1 = current_node.addr1
+        c_copy.addr2 = current_node.addr2
+        c_copy.addr3 = current_node.addr3
+        c_copy.prev_nodes = current_node.prev_nodes + []
+        return c_copy
+    
+    queue = []
+    result_address = []
+
+    # init the queue 
+    queue.append( address_node() )
+    
+    # run queue 
+    while queue:
+        node = queue.pop(0)
+        print('{}.{}.{}.{}'.format(node.addr0 , node.addr1 , node.addr2 , node.addr3))
+        
+        if  len(node.addr0 + node.addr1 + node.addr2 + node.addr3) == 9:
+            result_address.append(node.addr0 + '.' + node.addr1 + '.' + node.addr2 + '.' + node.addr3)
+            continue
+
+        for digit in digits:
+
+            # add digit to addr0
+            new_node = copy_node(node)
+            new_node.addr0 += digit
+            new_node.prev_nodes += [node]
+            if valid_move_addr([node] + queue, new_node, digits):
+                queue.append(new_node)
+
+            # add digit to addr1
+            new_node = copy_node(node)
+            new_node.addr1 += digit
+            new_node.prev_nodes += [node]
+            if valid_move_addr([node] + queue, new_node, digits):
+                queue.append(new_node)
+
+            # add digit to addr2
+            new_node = copy_node(node)
+            new_node.addr2 += digit
+            new_node.prev_nodes += [node]
+            if valid_move_addr([node] + queue, new_node, digits):
+                queue.append(new_node)
+
+            # add digit to addr3
+            new_node = copy_node(node)
+            new_node.addr3 += digit
+            new_node.prev_nodes += [node]
+            if valid_move_addr([node] + queue, new_node, digits):
+                queue.append(new_node)
+            
+
+    return result_address
+
+digits = "255255255"
+# print('{}'.format(ip_addresses(digits)))
+
+def uneven_digits(number):
+    
+    class uneven_node:
+        def __init__(self, value = None ):
+            self.prev = []
+
+            if value != None :
+                self.is_neg = value < 0
+                self.val = str(value)[1 : :] if self.is_neg else str(value)
+            else :
+                self.is_neg = None  
+                self.val = None 
+                
+    def valid_update(queue_list, new_node):
+        
+        if len(new_node.val) == 0:
+            return False 
+        
+        for parent_node in queue_list:
+            if parent_node.val == new_node.val:
+                return False 
+            for child_node in parent_node.prev:
+                if child_node.val == new_node.val:
+                    return False 
+        return True 
+
+    def copy_node(parent):
+        c_node = uneven_node()
+        c_node.prev = parent.prev + []
+        c_node.is_neg = parent.is_neg 
+        c_node.val = parent.val
+        return c_node 
+    
+    def valid_uneven(string):
+        for i in string:
+            if (int(i) % 2 == 0):
+                return False 
+        return True 
+    
+    queue = [uneven_node(number)]
+    result = 0
+
+    while queue:
+        node = queue.pop() 
+
+        if valid_uneven(node.val):
+            if abs(result) < abs(int(node.val)):
+                result = int(node.val)
+                if node.is_neg:
+                    result *= -1
+        
+        for i in range(len(node.val)):
+            new_node = copy_node(node)
+            new_node.prev += [node] 
+            new_node.val = new_node.val[0: i] + new_node.val[i + 1: : ]
+            if valid_update(queue + [node] , new_node):
+                queue.append(new_node)
+        
+    return result 
+
+num = -1845
+print('{}'.format(uneven_digits(num)))
+
+def generate_all_possible_coin_change(amount):
+    class coin_node:
+        def __init__(self, value = -1):
+            self.value = value 
+            self.dimes = 0
+            self.nickels = 0
+            self.pennies = 0
+            self.quarters = 0
+            self.prev = []
+
+    def copy_node(parent):
+        c_copy = coin_node()
+        c_copy.value = parent.value 
+        c_copy.dimes = parent.dimes 
+        c_copy.nickels = parent.nickels 
+        c_copy.pennies = parent.pennies 
+        c_copy.quarters = parent.quarters 
+        c_copy.prev = parent.prev + []
+        return c_copy
+    
+    def valid_coins(queue_list, new_node):
+        if new_node.value < 0:
+            return False 
+        
+        for parent_node in queue_list:
+            if parent_node.dimes == new_node.dimes and parent_node.nickels == new_node.nickels and parent_node.pennies == new_node.pennies and parent_node.quarters == new_node.quarters:
+                return False 
+            for child_node in parent_node.prev:
+                if child_node.dimes == new_node.dimes and child_node.nickels == new_node.nickels and child_node.pennies == new_node.pennies and child_node.quarters == new_node.quarters:
+                    return False 
+        return True 
+    
+    queue = [coin_node(amount)]
+    coin_table = {'pennies':1, 'nickels':5,'dimes': 10,'quarters': 25}
+    possible_way = []
+    
+    while queue:
+        node = queue.pop(0)
+        if node.value == 0:
+            possible_way.append((node.pennies, node.nickels, node.dimes, node.quarters))
+        
+        for coin in coin_table.keys():
+            new_node = copy_node(node)
+            new_node.prev += [node]
+            new_node.value -= coin_table[coin]
+            
+            if coin == 'pennies':
+                new_node.pennies += 1
+             
+            if coin == 'nickels':
+                new_node.nickels += 1
+            
+            if coin == 'dimes':
+                new_node.dimes += 1
+            
+            if coin == 'quarters':
+                new_node.quarters += 1
+                
+            if valid_coins(queue + [node], new_node):
+                queue.append(new_node)
+    return possible_way
+
+number = 10
+print('{}'.format(generate_all_possible_coin_change(number)))
+
