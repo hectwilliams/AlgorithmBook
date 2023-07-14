@@ -1190,3 +1190,218 @@ arr =  ["dne","ail","dalein"]
 print('{}'.format(str_loosely_interleave( arr[0] , arr[1] , arr[2]) ))
 arr =  ["dne","ail","ddaanneeiill"]
 print('{}'.format(str_loosely_interleave( arr[0] , arr[1] , arr[2]) ))
+
+
+
+'''
+0               1                   0               1
+
+A               Ay                  Ayb
+(byz)           (bz)                (z)
+
+'''
+def all_loosely_interleaved (s1, s2):
+    class str_node:
+        def __init__(self, s = ""):
+            self.s = s
+            self.arr = [s1, s2]
+            self.col = 0
+
+    def clone(parent):
+        c_node = str_node()
+        c_node.s = parent.s 
+        c_node.arr = parent.arr + []
+        c_node.col = parent.col 
+        return c_node 
+    
+    queue = [   
+        str_node(),
+        str_node()
+     ]
+    
+    # swap the second entry strings 
+    queue[-1].arr[0], queue[-1].arr[1] = queue[-1].arr[1], queue[-1].arr[0]
+
+    interleave_results = []
+
+    while queue:
+
+        node = queue.pop(0)
+        if len(node.arr[0])  > 0  and len(node.arr[1])  > 0:
+            new_node = clone(node)
+            new_node.s += new_node.arr[new_node.col][0]
+            new_node.arr[new_node.col] = new_node.arr[new_node.col][1 : :]
+
+            interleave_ = new_node.s + new_node.arr[0] + new_node.arr[1]  
+            interleave_results.append(interleave_)
+
+            new_node.col = (new_node.col + 1) % 2
+
+            queue.append(new_node)
+
+    return interleave_results 
+ 
+
+s1 = "ab"
+s2 = "yz"
+print( '{}'.format(all_loosely_interleaved(s1, s2)) )
+
+
+def make_string_palindrome_remove_one(s1):
+    
+    def is_palindrome(s):
+    
+        l = len(s) // 2
+        for i in range(l):
+            if s[i] != s[ len(s) - i - 1]:
+                return False 
+        return True 
+
+    class p_node:
+        def __init__(self, s = ""):
+            self.s = s
+            self.pos = -1
+
+    def clone(parent):
+        c_node = p_node()
+        c_node.s = parent.s 
+        c_node.pos = parent.pos 
+        return c_node
+    
+    queue = [ p_node(s1) ]
+    while queue:
+        node = queue.pop(0)
+
+        if is_palindrome(node.s):
+            return node.pos 
+
+        new_node =  clone(node)           
+        new_node.pos += 1
+        new_node.s = new_node.s[0 : new_node.pos ] + new_node.s[ new_node.pos + 1 : : ]
+        queue.append(new_node)
+    
+s1 = "bub"
+print('{}'.format(make_string_palindrome_remove_one(s1)))
+
+def make_string_palindrome_add_one(s1):
+        
+    def is_palindrome(s):
+    
+        l = len(s) // 2
+        for i in range(l):
+            if s[i] != s[ len(s) - i - 1]:
+                return False 
+        return True 
+
+    class p_node:
+        def __init__(self, s = ""):
+            self.s = s
+            self.char =  ""
+
+    def clone(parent):
+        c_node = p_node()
+        c_node.s = parent.s 
+        c_node.char = parent.char
+        return c_node
+    
+    queue = [ p_node(s1) ]
+    
+    while queue:
+        node = queue.pop(0)
+        
+        if is_palindrome(node.s):
+            return node.char
+        
+        if node.s == s1:
+            for i in range(97, 123):
+                c = chr(i)
+                for k in range(len(node.s) + 1):
+                    new_node = clone(node)
+                    new_node.s = node.s[0:k] + c + node.s[ k : :] 
+                    new_node.char = c
+                    queue.append(new_node)
+    
+
+s1 = "tutu"
+print('{}'.format(make_string_palindrome_add_one(s1)))
+
+def str_encode(s):
+    
+    class encode_node:
+        def __init__(self,s= "" ):
+            self.s = s
+            self.count  = 0
+            self.char = "" 
+            self.data_ready = False 
+    
+    def clone(parent):
+        c_node = encode_node()
+        c_node.s = parent.s 
+        c_node.char = parent.char 
+        c_node.data_ready = parent.data_ready
+        c_node.count = parent.count
+        return c_node 
+    
+    queue = [encode_node(s)]
+    encode_out = ""
+
+    while queue:
+
+        node = queue.pop(0) 
+
+        if node.data_ready:
+            encode_out += node.char + str(node.count)
+            node.count = 0
+            node.data_ready = False 
+        
+        if node.s :
+            node.char = node.s[0]
+            node.s = node.s[1 : :]
+            
+            if len(node.s) == 0:
+                node.data_ready = True 
+            elif node.char != node.s[0]:
+                node.data_ready = True 
+            
+            node.count += 1
+
+            new_node = clone(node)
+            queue.append(new_node)
+
+
+    return encode_out
+s = 'aaaabbcddd'
+print('{}'.format(str_encode(s)))
+
+
+def decode(s):
+    
+    class decode_node:
+        def __init__(self, s =  ""):
+            self.s = s
+    
+    def clone(parent):
+        c_node = decode_node()
+        c_node.s = parent.s 
+        return c_node 
+    
+    q = [decode_node(s)]
+    decoded = ""
+    while q:
+        node = q.pop(0)
+
+        if not node.s :
+            return decoded
+        
+        # read two chars 
+        code, count = list(node.s[0 : 2])
+        node.s = node.s[2 : :]
+        decoded += code * int(count)
+        new_node = clone(node)
+        q.append(new_node)
+        
+    return decoded 
+
+s = 'a3b2c1d3'
+print('{}'.format(decode(s)))
+
