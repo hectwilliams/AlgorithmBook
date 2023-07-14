@@ -128,6 +128,42 @@ class BST:
         
         return abs( left - right) <= 1
 
+    def min_height(self):
+        class h_node:
+            def __init__(self, parent = None):
+                self.bst_node = parent 
+                self.height = 0
+        
+        if self.root == None:
+            return 0
+        
+        queue = [h_node(self.root)]
+        
+        min_height = None 
+
+        while queue:
+            node = queue.pop()
+
+            if node.bst_node.left == None and node.bst_node.right == None:
+                if min_height == None:
+                    min_height = node.height
+                if node.height < min_height:
+                    min_height = node.height 
+
+            if node.bst_node.left:
+                new_node  = h_node(node.bst_node.left)
+                new_node.height = node.height + 1
+                queue.append(new_node)
+
+            if node.bst_node.right:
+                new_node = h_node(node.bst_node.right)
+                new_node.height = node.height + 1
+                queue.append(new_node)
+        
+        return min_height
+
+
+
 bst = BST() 
 bst.add(22)
 bst.add(22)
@@ -169,14 +205,16 @@ def array_to_bst(arr):
             arr = arr[0: mid - 1] + arr[mid + 1 : :]
     return bst 
 
-arr = [1,2,3,4,5] 
+arr = [1,2,3,4,5,6,6] 
 tree_ = array_to_bst(arr)
 
-print('{}'.format(tree_.root.val))  #3
-print('{}'.format(tree_.root.right.val))  #4
-print('{}'.format(tree_.root.right.right.val)) # 5
-print('{}'.format(tree_.root.left.val)) # 2
-print('{}'.format(tree_.root.left.left.val)) # 1
+print('{} {}'.format('root', tree_.root.val))  #3
+print('{} {} '.format( 'right' , tree_.root.right.val))  #4
+print('{} {} '.format('right right',tree_.root.right.right.val)) # 5
+print('{} {} '.format( 'left', tree_.root.left.val)) # 2
+print('{} {} '.format('left left', tree_.root.left.left.val)) # 1
+
+print('min_height -  {} jump units'.format( tree_.min_height())) 
 
 def closest_common_ancestor(bst, val_1, val_2):
 
@@ -213,3 +251,127 @@ tree_ = array_to_bst(arr)
 low = 0
 high = 1.1
 print('{} {}'.format('closest ancestor val', closest_common_ancestor(tree_ , low , high )))
+
+# order the node 
+def bst_to_array(bst):
+    class search_node :
+        def __init__(self, parent = None):
+            self.bst_node = parent
+            self.has_eval_left = False 
+    
+    stack = [search_node(bst.root)]
+    result = [] 
+
+    while stack:
+        s_node = stack.pop() 
+
+        if s_node.bst_node.left and s_node.has_eval_left == False:
+            s_node.has_eval_left = True 
+            stack.append(s_node)
+
+            new_node = search_node(s_node.bst_node.left)
+            stack.append(new_node)
+            continue 
+        
+
+        result.append(s_node.bst_node.val)
+
+
+        if s_node.bst_node.right:
+            new_node = search_node(s_node.bst_node.right)
+            stack.append(new_node)
+
+
+
+    return result 
+
+arr = [0,1,1.2,2,3,4,5] 
+bst_tree = array_to_bst(arr)
+print('{}'.format(bst_to_array(bst_tree))) 
+
+# array return can be used to reproduce tree 
+def bst_pre_order(bst):
+    class search_node:
+        def __init__(self, parent = None ):
+            self.bst_node = parent 
+    stack = []
+    result = []
+
+    if bst.root == None:
+        return result 
+    
+    stack.append(search_node(bst.root))
+
+    while stack:
+        node = stack.pop() 
+
+        if node:
+            result +=  [node.bst_node.val]
+
+            if node.bst_node.right: 
+                new_node = search_node(node.bst_node.right)
+                stack.append(new_node)
+
+            if node.bst_node.left:
+                new_node = search_node(node.bst_node.left)
+                stack.append(new_node)     
+    return result 
+
+arr = [0,1,1.2,2,3,4,5] 
+bst_tree = array_to_bst(arr)
+print('{}'.format(bst_pre_order(bst_tree))) 
+
+
+def bst_post_order(bst):
+
+    class search_node:
+        def __init__(self, parent = None) :
+            self.bst_node = parent 
+            self.eval_left = False 
+            self.eval_right = False 
+
+    stack = []
+    result = [] 
+
+    if bst.root == None: 
+        return result 
+    
+    stack.append(search_node(bst.root))
+
+    while stack:
+        
+        node = stack.pop()
+
+        if node:
+
+            if node.bst_node.left == None:
+                node.eval_left = True 
+
+            if node.bst_node.right == None:
+                node.eval_right = True 
+            
+
+            if node.bst_node.left and node.eval_left == False :
+                node.eval_left = True 
+                stack.append(node)
+                new_node = search_node(node.bst_node.left)
+                stack.append(new_node)
+                continue 
+
+            elif node.bst_node.right and node.eval_right == False :
+                node.eval_right = True 
+                stack.append(node)
+                new_node = search_node(node.bst_node.right)
+                stack.append(new_node)
+                continue 
+            
+            if (node.bst_node.left  == None and node.bst_node.right == None) or ( node.eval_right == True and node.eval_left == True ) :
+                result.append(node.bst_node.val)
+                
+    return result
+
+arr = [0,1,1.2,2,3,4,5] 
+bst_tree = array_to_bst(arr)
+print('{}'.format(bst_post_order(bst_tree))) 
+
+# fun using path discovery
