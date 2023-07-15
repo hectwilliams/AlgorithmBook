@@ -159,10 +159,71 @@ class BST:
                 new_node = h_node(node.bst_node.right)
                 new_node.height = node.height + 1
                 queue.append(new_node)
-        
+
         return min_height
 
+    def remove(self, val):
+        node = self.root 
+        prev = None 
+        
+        if node == None:
+            return node
+        
+        while node:
 
+            if node.val == val:
+
+                # delete root 
+                if prev == None:
+                    if node.right == None:
+                        self.right = node.left
+                    elif node.left == None:
+                        self.root = node.right 
+                    else:
+                        left_root_node = node.left 
+                        right_root_node = node.right 
+                        left_right_detached_node = node.left.right 
+                        right_left_deep_node = self.root 
+                        right_left_deep_node = right_left_deep_node.right 
+                        while right_left_deep_node.left :
+                            right_left_deep_node = right_left_deep_node.left 
+                        left_root_node.right = right_root_node
+                        right_left_deep_node.left = left_right_detached_node
+                        self.root = left_root_node 
+                        del(node)
+
+                        break 
+
+                # left delete ( right rotate)
+                elif prev.left == node:         
+                    left_right_detached_node = node.left.right
+                    
+                    if node.right == None:
+                        node.right = left_right_detached_node 
+                    else:
+                        right_left_deep_node = node.right
+                        while right_left_deep_node.left:
+                            right_left_deep_node = right_left_deep_node.left 
+                        right_left_deep_node.left = left_right_detached_node 
+                        node.left.right = node.right 
+                    prev.left = node.left
+                    del(node)
+                    break 
+
+                # right delete (left roatate) 
+                elif prev.right == node:
+                    pass 
+
+            elif val <  node.val and node.left !=  None :
+                
+                prev = node 
+                node = node.left 
+
+            elif val > node.val and  node.right != None :
+                prev = node 
+                node = node.right 
+
+        
 
 bst = BST() 
 bst.add(22)
@@ -349,7 +410,6 @@ def bst_post_order(bst):
 
             if node.bst_node.right == None:
                 node.eval_right = True 
-            
 
             if node.bst_node.left and node.eval_left == False :
                 node.eval_left = True 
@@ -375,3 +435,15 @@ bst_tree = array_to_bst(arr)
 print('{}'.format(bst_post_order(bst_tree))) 
 
 # fun using path discovery
+
+# remove root 
+arr = [0,1,1.2,2,3,4,5] 
+bst_tree = array_to_bst(arr)
+bst_tree.remove(2)
+print('Removed root value of 2, expect 1.2 ---- Solution = {}'.format(bst_tree.root.val))
+
+# remove root 
+arr = [0,1,1.2,2,3,4,5] 
+bst_tree = array_to_bst(arr)
+bst_tree.remove(1.2)
+print('Removed value of 1.2, =  1 value was promoted {}'.format(bst_tree.root.left.val))
