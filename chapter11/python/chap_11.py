@@ -172,6 +172,18 @@ class BST:
         while node:
 
             if node.val == val:
+                
+                # leaf
+                if node.left  == None and node.right == None:
+                    
+                    if self.root == node:
+                        self.root = None 
+                    elif prev.left == node:
+                        prev.left = None 
+                    elif prev.right == node:
+                        prev.right = None 
+                    del(node)
+                    break
 
                 # delete root 
                 if prev == None:
@@ -191,11 +203,11 @@ class BST:
                         right_left_deep_node.left = left_right_detached_node
                         self.root = left_root_node 
                         del(node)
-
                         break 
 
                 # left delete ( right rotate)
                 elif prev.left == node:         
+
                     left_right_detached_node = node.left.right
                     
                     if node.right == None:
@@ -205,14 +217,25 @@ class BST:
                         while right_left_deep_node.left:
                             right_left_deep_node = right_left_deep_node.left 
                         right_left_deep_node.left = left_right_detached_node 
-                        node.left.right = node.right 
                     prev.left = node.left
                     del(node)
                     break 
 
                 # right delete (left roatate) 
                 elif prev.right == node:
-                    pass 
+                    right_left_detach_node = node.right.left
+                    prev.right = node.right
+
+                    if node.left == None:
+                        node.left = right_left_detach_node
+                    else:
+                        left_right_deep_node = node.left
+                        while left_right_deep_node.right:
+                            left_right_deep_node = left_right_deep_node.right 
+                        left_right_deep_node.right = right_left_detach_node 
+                    prev.right = node.right 
+                    del(node)
+                    break
 
             elif val <  node.val and node.left !=  None :
                 
@@ -223,7 +246,9 @@ class BST:
                 prev = node 
                 node = node.right 
 
-        
+            # value not found 
+            else:
+                node = node.left 
 
 bst = BST() 
 bst.add(22)
@@ -446,4 +471,10 @@ print('Removed root value of 2, expect 1.2 ---- Solution = {}'.format(bst_tree.r
 arr = [0,1,1.2,2,3,4,5] 
 bst_tree = array_to_bst(arr)
 bst_tree.remove(1.2)
-print('Removed value of 1.2, =  1 value was promoted {}'.format(bst_tree.root.left.val))
+bst_tree.remove(2)
+bst_tree.remove(3)
+bst_tree.remove(4)
+bst_tree.remove(4)
+bst_tree.remove(5)
+
+print('Removed value of 1.2 =  1 value was promoted {}'.format(bst_tree.root.left.val))
