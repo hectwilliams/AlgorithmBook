@@ -1,10 +1,11 @@
-
+import re
 
 class BTNode:
     def __init__(self, val):
         self.val = val
         self.left = None   # less than 
         self.right = None  # greater than or equal 
+        self.parent = None 
 
 class BST:
     def __init__(self):
@@ -24,11 +25,14 @@ class BST:
                 if val >= node.val:
                     node = node.right 
                     if node == None:
+                        
                         prev.right = bt_node  
+                        prev.right.parent = prev
                 else:
                     node = node.left 
                     if node == None:
                         prev.left = bt_node
+                        prev.left.parent = prev
 
     def contains(self, val):
         node = self.root 
@@ -249,6 +253,286 @@ class BST:
             # value not found 
             else:
                 node = node.left 
+
+
+    def remove_all(self):
+
+        if self.root == None:
+            return None 
+        
+        stackA = [self.root]
+        stackB = []
+        
+        while  stackA or stackB:
+            
+            # stack A has priority 
+            if stackA:
+                node = stackA.pop()
+            elif stackB:
+                node = stackB.pop() 
+
+            if node:
+                if node.left :
+                    stackA.append(node.left) 
+                if node.right:
+                    stackB.append(node.right)
+            
+            print('delete ', node.val, end=' ')
+            node.left = None
+            node.right = None 
+            del(node)
+
+
+        print('delete ', self.root.val, )
+        del(self.root)
+
+        self.root = None 
+        self.right = None 
+        self.left = None 
+    
+    def is_valid(self):
+        histo = {}
+
+        if self.root == None:
+            return None 
+        
+        q = [self.root]
+
+        while q:
+
+            node = q.pop(0)
+            res = re.compile(r'0x.+[^\>]').search(str(node))  # match character class 
+            key = 'addr_' + str(node)[res.span()[0] + 2 : res.span()[1]]
+
+            if key not in  histo :
+                histo[key] = 0
+                
+            histo[key] += 1
+
+            if histo[key] > 1:
+                return False 
+
+            if node.left:
+                if not (node.left.val < node.val):
+                    return False 
+                q.append(node.left)  
+            
+            if node.right:
+                if not (node.right.val >= node.val ):
+                    return False 
+                q.append(node.right)
+        
+        return True 
+
+    
+    def add_without_dupes(self, val):
+        prev = None 
+        node = self.root 
+
+        if node == None:
+            self.root = BTNode(val)
+        else:
+            while node:
+
+                if node.val == val:
+                    return False 
+
+                if node.left:
+                    if val < node.val: 
+                        node = node.left 
+                        continue
+                if node.right :
+                    if val > node.val:
+                        node = node.right 
+                        continue 
+                if node == None:
+                    if val < prev.val:
+                        prev.left = BTNode(val)
+                        prev.left.parent = prev
+                    if val > prev.val:
+                        prev.right = BTNode(val)
+                        prev.right.parent = prev 
+                    break 
+        return True 
+
+
+    def val_before(self, val):
+        node = self.root 
+
+        if node == None:
+            return None 
+        
+        while node:
+
+            if node.val == val:
+                if node.parent:
+                    return node.parent.val 
+                else:
+                    return None 
+            
+            if node.right == None and node.left == None:
+                if node.parent:
+                    return node.parent.val 
+                else:
+                    return node.val 
+            
+            if node.parent:
+                if val > node.val and val < node.parent.val:
+                    return None 
+            
+            if node.parent:
+                if val > node.parent.val and val < node.val:
+                    return None
+            
+            
+            
+            if node.left:
+                if val < node.val:
+                    node = node.left 
+                    continue
+            
+            if node.right:
+                if val > node.val:
+                    node = node.right 
+                    continue
+                
+        return None 
+        
+    def val_after(self, val):
+        node = self.root
+
+        if node == None:
+            return None 
+        
+        while node:
+
+            if node.val == val:
+                
+                if node.right:
+                    return node.right.val 
+                else:
+                    return None 
+            
+            if node.right == None and node.left == None:
+                return None 
+            
+            if node.left:
+                if val > node.left.val and val < node.val:
+                    return node.val
+                
+                if val < node.val:
+                    node = node.left 
+                    continue 
+
+            if node.right:
+                if val < node.right.val and val > node.val:
+                    return node.right.val
+                
+                if val > node.val:
+                    node = node.right 
+                    continue 
+
+    def closest_value(self, val):
+        class closest_node:
+            def __init__(self, node):
+                self.bst_node = node 
+                self.path = []
+        
+        def clone(parent):
+            c_node = closest_node(parent)
+            c_node.bst_node = parent.bst_node
+            c_node.path = parent.path + []
+            return c_node 
+        
+        if self.root == None:
+            return None 
+        
+        queue = [closest_node(self.root)]
+        
+        delta = None 
+
+        while queue:
+            
+            node = queue.pop(0) 
+
+            if node.bst_node.val == val:
+                return node.bst_node.val
+            
+            if delta == None:
+                delta = abs(val - node.bst_node.val)
+            elif abs(val - node.bst_node.val) < delta:
+                delta = abs(val - node.bst_node.val)
+                
+            if node.bst_node.right:
+                
+                if val > node.bst_node.val :
+                    new_node = clone(node)
+                    new_node.path += [node]
+                    new_node.bst_node = new_node.bst_node.right 
+
+                    if abs(val - node.bst_node.right.val) < delta:
+                        queue.append(new_node)
+            
+            if node.bst_node.left:
+                if val < node.bst_node.val:
+                    new_node = clone(node)
+                    new_node.path += [node]
+                    new_node.bst_node = new_node.bst_node.left 
+                    if abs(val - new_node.bst_node.left.val) < delta:
+                        queue.append(new_node)  
+        
+        return node.bst_node.val
+
+    def tree_path_sums (self):
+        class sum_node:
+            def __init__(self, node):
+                self.path = [] 
+                self.bst_node = node
+                self.at_leaf = False 
+        
+        def clone(parent):
+            c_node = sum_node(parent)
+            c_node.path = parent.path +  []
+            c_node.bst_node = parent.bst_node 
+            return c_node 
+
+        if self.root ==  None:
+            return None 
+        
+        q = [ sum_node(self.root) ]
+
+        paths = []
+        
+        while q:
+
+            node = q.pop(0)
+
+            if node:    
+
+                if node.at_leaf:
+                    paths.append( list(map( lambda node_: node_.bst_node.val ,  node.path) ))
+                    continue
+
+                if node.bst_node.left:
+                    new_node = clone (node)
+                    new_node.path += [node]
+                    new_node.bst_node = new_node.bst_node.left
+                    q.append(new_node)
+                                    
+                if node.bst_node.right:
+                    new_node = clone (node)
+                    new_node.path += [node]
+                    new_node.bst_node = new_node.bst_node.right
+                    q.append(new_node)
+
+                # left node  or non full nodes 
+                if node.bst_node.right == None and node.bst_node.left == None   or node.bst_node.right == None and node.bst_node.left or node.bst_node.right and node.bst_node.left == None :
+                    new_node = clone(node) 
+                    new_node.path += [node]
+                    new_node.at_leaf = True 
+                    q.append(new_node)
+
+        return paths 
 
 bst = BST() 
 bst.add(22)
@@ -478,3 +762,121 @@ bst_tree.remove(4)
 bst_tree.remove(5)
 
 print('Removed value of 1.2 =  1 value was promoted {}'.format(bst_tree.root.left.val))
+
+# remove root 
+arr = [0,1,1.2,2,3,4,5] 
+bst_tree = array_to_bst(arr)
+# print('Removed all {}', bst_tree.remove_all())
+print('is valid  {}', bst_tree.is_valid())
+
+
+#traverse_reverse_in_order 
+def traverse_reverse_in_order ( bst):
+    class search_node:
+        def __init__(self, parent):
+            self.right_eval = False 
+            self.bst_node = parent
+    
+    if bst.root == None:
+        return None 
+    stack = [search_node(bst.root)]
+    result = [] 
+    while stack:
+        node = stack.pop()
+        
+        
+        if node.right_eval == False :
+            if node.bst_node.right:
+                node.right_eval = True 
+                stack.append(node)
+                new_node = search_node(node.bst_node.right)
+                stack.append(new_node)
+                continue 
+        
+        result.append(node.bst_node.val)
+
+        if node.bst_node.left:
+            new_node = search_node(node.bst_node.left)
+            stack.append(new_node)
+    
+    return result
+
+# remove root 
+arr = [0,1,1.2,2,3,4,5] 
+bst_tree = array_to_bst(arr)
+# print('Removed all {}', bst_tree.remove_all())
+print('{}', traverse_reverse_in_order(bst_tree) )
+print('{}', bst_tree.val_after(0.3) )
+print('{}'.format( bst_tree.closest_value(29) ) )
+
+print('{}'.format( bst_tree.tree_path_sums() ) )
+
+
+def left_side_binary(bst):
+    
+    class buffer_node :
+        def __init__(self, node):
+            self.bst_node = node
+            self.path = [] 
+            self.is_leaf = False 
+    
+    def clone(bt_node):
+        c_node = buffer_node(bt_node)
+        c_node.path = node.path + []
+        c_node.is_leaf = node.is_leaf 
+        return c_node
+    
+    stackA = []
+    stackB = []
+    paths = [] 
+    values_seen_on_left = []
+    if bst.root == None:
+        return None 
+    
+    stackA = [ buffer_node(bst.root) ]
+
+    while stackA or stackB :
+        
+        if stackA :
+            node = stackA.pop()
+        
+        elif stackB :
+            node = stackB.pop()
+
+        if node:
+
+            if node.is_leaf:
+                paths.append(  list(map( lambda node_: node_.bst_node.val,   node.path ) )  )
+                continue 
+
+            if node.bst_node.left:
+                new_node = clone(node.bst_node.left)
+                new_node.path += [node]
+                stackA.append(new_node)
+
+            if node.bst_node.right:
+                new_node = clone(node.bst_node.right)
+                new_node.path += [node]
+                stackB.append(new_node)
+
+            if node.bst_node.right == None and node.bst_node.left == None :
+                new_node = clone(None)
+                new_node.is_leaf = True 
+                new_node.path += [node]
+                stackA.append(new_node)
+                continue 
+
+    
+    start = 0
+    for array_path in paths:
+        for number_seen in array_path[start : :] :
+            values_seen_on_left.append(number_seen)
+        start = len(array_path)
+
+    return values_seen_on_left
+
+arr = [100, 90, 125, 200, 300, 400, 80, 93, 91]
+tree = BST()
+for num in arr:
+    tree.add(num)
+print('{}'.format(left_side_binary(tree)))
