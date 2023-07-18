@@ -1,3 +1,5 @@
+import math
+
 def selection_sort(arr):
     min_index = 0
     walk = 0
@@ -140,3 +142,101 @@ def quick_sort(arr):
 
 arr = [15,4,9,2,5,3]
 print( 'quick sort {} '.format(quick_sort(arr)) )
+
+
+def pancake_sort (arr):
+
+    current_max = None 
+    pancake_index = None 
+    # run until current_stack_length != 1
+
+    for iter in range( len(arr) - 1 ):
+        
+        # find min
+        for i in range( len(arr) - iter ):
+
+            if current_max == None:
+                current_max = arr[i]
+                pancake_index = i
+
+            if arr[i] > current_max :
+                current_max = arr[i]
+                pancake_index = i
+
+    # move min to top  ( reverse of field )
+        rev_len = pancake_index  + 1
+        rev_len_half = rev_len  // 2
+        for rev_index in range(rev_len_half):
+            arr[rev_index] , arr[ pancake_index - rev_index ]  = arr[ pancake_index - rev_index] , arr[rev_index] 
+        
+    # flip min to base (base is dynamically changing or moving up as larger pancakes are added to bottom)
+        rev_len = len(arr) - iter
+        rev_len_half = rev_len // 2
+
+        for rev_index in range(rev_len_half):
+            arr[rev_index] , arr[rev_len - rev_index - 1 ] = arr[ rev_len - rev_index  - 1 ] , arr[rev_index]
+            
+        current_max = None 
+
+    return arr
+arr = [15,4,9,2,5,3]
+print( 'pancake sort {} '.format(pancake_sort(arr)) )
+
+def radix_sort(arr):
+    class sort_node:
+        def __init__(self, number, idx):
+            self.value = number
+            self.index = idx
+
+    table = {
+        0:  [],
+        1:  [], 
+        2:  [],
+        3:  [], 
+        4:  [],
+        5:  [],
+        6:  [],
+        7:  [], 
+        8:  [], 
+        9:  []
+    }
+
+    max_width = 0 
+    count = 0
+
+    for number in arr:
+        
+        digit =  int((number * 10**count) % 10)
+        table[digit].append( sort_node(number, 0) )
+        
+        if ( math.log10(number) > max_width ):
+            max_width = math.log10(number) 
+
+    max_width = math.floor(max_width)
+    
+    for i in range(1, max_width):
+
+        current_index = i - 1
+
+        for key_index in table:
+
+            arr = table[key_index]
+
+            while arr:
+                if arr[0].index == current_index:
+                    node = arr.pop(0)
+                    digit = int(node.value / 10**i)  % 10
+                    node.index += 1
+                    table[digit].append(node)
+                else:
+                    break
+    
+    arr = [] 
+    for key in table:
+        for node in table[key]:
+            arr.append(node.value)
+    
+    return arr 
+
+arr = [152,4,9,2,5,3]
+print('radix_sort {} '.format(radix_sort(arr)))
