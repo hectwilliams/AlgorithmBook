@@ -868,3 +868,51 @@ class BST:
             'left_root' : left_root,
             'right_root' : right_root
         }
+    
+
+    """
+            50
+
+            /  \
+          30    100 
+
+            100
+            50 * (visited)
+            30   <- pop here 
+
+    """
+def kth_largest(tree, k):
+    class search_node:
+        def __init__(self, node):
+            self.curr = node
+            self.visited = False 
+
+    if tree.root == None or k <= 0:
+        return None 
+    
+    q = [search_node(tree.root)]
+    arr = [] 
+
+    while q:
+
+        node = q.pop()
+        
+        if (node.curr.left == None and node.curr.right == None ) or ( node.visited ):
+            arr.append(node.curr.val)
+        
+        else:
+            node.visited = True 
+
+            if node.curr.right:
+                q.append(search_node(node.curr.right))
+                q.append(node)
+
+            if node.curr.left:
+                q.append(search_node(node.curr.left))
+
+    if k < len(arr):
+        return arr[-k]
+
+    return None 
+
+            
