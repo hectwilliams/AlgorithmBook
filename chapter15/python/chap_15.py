@@ -9,4 +9,5 @@ for num in arr:
 # print(bst_obj.smallest_distance())
 # print(bst_obj.partition(44))
 
-print (bst.kth_largest(bst_obj, 2) )
+# print (bst.kth_largest(bst_obj, 2) )
+print (bst.layer_array(bst_obj, 2) )

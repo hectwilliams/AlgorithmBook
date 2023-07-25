@@ -916,3 +916,56 @@ def kth_largest(tree, k):
     return None 
 
             
+def values_for_layer(tree, layer):
+    class s_node:
+        def __init__(self, node, d = 0):
+            self.depth = d 
+            self.curr = node 
+    table = [] 
+
+    if tree.root == None:
+        return None 
+
+    q = [s_node(tree.root)]
+
+    while q: 
+        node = q.pop()
+
+        if len(table)  == node.depth:
+            table.append([] )
+        table[node.depth].append(node.curr.val) 
+
+        if node.curr.left:
+            q.append(s_node(node.curr.left, node.depth + 1))
+
+        if node.curr.right :
+            q.append(s_node(node.curr.right, node.depth + 1))
+
+    return table[layer]
+
+def layer_array(tree, layer):
+    class s_node:
+        def __init__(self, node, d = 0):
+            self.depth = d 
+            self.curr = node 
+    table = [] 
+
+    if tree.root == None:
+        return None 
+
+    q = [s_node(tree.root)]
+
+    while q: 
+        node = q.pop()
+
+        if len(table)  == node.depth:
+            table.append([] )
+        table[node.depth].append(node.curr.val) 
+
+        if node.curr.left:
+            q.append(s_node(node.curr.left, node.depth + 1))
+
+        if node.curr.right :
+            q.append(s_node(node.curr.right, node.depth + 1))
+
+    return table
