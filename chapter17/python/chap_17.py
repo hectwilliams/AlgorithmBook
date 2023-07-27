@@ -145,7 +145,6 @@ node1 = el_graph.add_vertex('a')
 node2 = el_graph.add_vertex('b')
 
 el_graph.add_edge(node1, node2, 0.50)
-
 print(el_graph.get_edge_value(node1, node2))    
-print(el_graph.set_edge_value(node1, node2, 10))    
+print(el_graph.set_edge_value(node1, node2, 10))     
 print(el_graph.get_edge_value(node1, node2))    
