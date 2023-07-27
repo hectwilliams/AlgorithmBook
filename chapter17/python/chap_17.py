@@ -298,3 +298,124 @@ am_graph.set_vertex_value(node1, 'T')
 am_graph.add_edge(node1, node2, 22)
 print(am_graph.map)
 print(am_graph.neighbors(node1))
+
+class ALGraph:
+    
+    def __init__(self):
+        self.list = []
+        self.nodes = []
+
+    def add_vertex (self, value):
+        idx = -1 
+
+        # search for available slot in list 
+        for i in range(len(self.list) ):
+            if self.list[i] == None:
+                idx = i
+                break 
+            
+        # dynamically grow allocated array 
+        if idx == -1:
+            idx = len(self.list)
+            self.list.append([])
+            self.nodes.append(value)
+
+        # use available slot 
+        else:
+            self.list[idx] = [] 
+            self.nodes[idx] = value
+        
+        return idx 
+    
+    def remove_vertex(self, node_id):
+        if node_id < len(self.list):
+            if self.list[node_id] != None :
+                self.list[node_id] = None 
+                self.nodes[node_id] = None 
+                return True
+        return False 
+
+    def get_vertex_value (self, node_id):
+        if node_id < len(self.list):
+            if self.list[node_id] != None:
+                return self.nodes[node_id]
+        return None 
+    
+    def add_edges (self, id1, id2):
+        if id1 < len(self.list) and id2 < len(self.list):
+            if self.list[id1] != None and self.list[id2] != None:
+                found_edge = -1
+                for edge_info in self.list[id1]:
+                    if edge_info[0] == id2:
+                        found_edge = 1
+                if found_edge == -1:
+                    self.list[id1].append([id2,0  ])   # [id, edge_weight]
+                    return True 
+                
+        return False 
+
+    def remove_edges(self, node_id):
+        if node_id < len(self.list):
+            if self.list[node_id] != None:
+                self.list[node_id].clear()
+    
+    def remove_edge (self, node1_id, node2_id):
+        if node1_id < len(self.list) and node2_id < len(self.list):
+            if self.list[node1_id] != None  and self.list[node2_id] != None:
+                walk = 0
+                while walk < len(self.list[node1_id]):              
+                    if self.list[node1_id][walk][0] == node2_id: # [id *, edge_weight]
+                        self.list[node1_id].pop(walk)
+                        return True 
+                    else:
+                        walk += 1
+        return False 
+    
+
+    def get_edge_value (self, node1_id, node2_id ) :
+        if node1_id < len(self.list) and node2_id < len(self.list):
+            if self.list[node1_id] != None  and self.list[node2_id] != None:
+                idx = -1
+                for i in range(len(self.list[node1_id])):
+                    if self.list[node1_id][i][0] == node2_id:
+                        return self.list[node1_id][i][1]
+        return None  
+    
+    def set_edge_value (self, node1_id, node2_id, value ) :
+        if node1_id < len(self.list) and node2_id < len(self.list):
+            if self.list[node1_id] != None  and self.list[node2_id] != None:
+                idx = -1
+                for i in range(len(self.list[node1_id])):
+                    if self.list[node1_id][i][0] == node2_id:
+                         self.list[node1_id][i][1] = value
+                         return True 
+        return None  
+    
+    def adjacent(self, node1_id, node2_id):
+        if node1_id < len(self.list) and node2_id < len(self.list):
+            if self.list[node1_id] != None  and self.list[node2_id] != None:
+                for edge_info in self.list[node1_id]:
+                    if edge_info[0] == node2_id:
+                        return True
+        return None       
+
+    
+    def neighbors(self, node1_id):
+        result = [] 
+        if node1_id < len(self.list) :
+            if self.list[node1_id] != None :
+                for edge_info in self.list[node1_id]:
+                    result.append(edge_info[0] )
+        return result 
+    
+al_graph = ALGraph()
+node1 = al_graph.add_vertex('A')
+node2 = al_graph.add_vertex('B')
+print(node1, node2)
+
+print(al_graph.get_vertex_value(node2))
+print(al_graph.add_edges(node1, node2))
+# print(al_graph.remove_edge(node1, node2))
+print( al_graph.get_edge_value(node1, node2) )
+print( al_graph.neighbors(node1) )
+print(al_graph.list)
