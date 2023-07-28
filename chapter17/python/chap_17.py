@@ -448,6 +448,13 @@ graph.add_edge(penny_id, sam_id, 1)
 print('hector id: {}\t sam_id: {} \t penny id: {}'.format(hector_id, sam_id, penny_id))
 print(graph.list)
 
+# friend sam -> Roger
+roger_id = graph.add_vertex('Roger')
+graph.add_edge(sam_id, roger_id, 1)
+graph.add_edge(roger_id, sam_id, 1)
+print(graph.list)
+
+
 # [
 #         [
 #             # hector -> sam 1 distance
@@ -564,7 +571,67 @@ def vertex_is_reachable(algraph: ALGraph, id1, id2):
     return False 
 
 def all_paths(algraph: ALGraph, id1, id2):
-    return vertex_is_reachable_helper_dfs(algraph, id1, id2)  #  SOLUTION [[0, 2], [0, 1, 2]]
+    return vertex_is_reachable_helper_dfs(algraph, id1, id2)  #  SOLUTION  [[0, 1, 2], [1, 2], [2]]
 
 print('paths to {} --> {}'.format(penny_id, all_paths(graph, hector_id, penny_id)))
 
+
+# BREADTH FIRST SEARCH 
+def paths_from_id(algraph: ALGraph, id1):
+    class search_node:
+        def __init__(self, next_route = None):
+            self.path = [] 
+            self.next_route = next_route 
+
+    # does id1 and id2 exist in graph?
+    if id1 < len(algraph.nodes):
+        if algraph.nodes[id1] == None:
+            return []
+    
+    queue = [ search_node(id1 ) ]
+    paths = []
+
+    while queue:
+
+        node = queue.pop(0) 
+
+        if node.next_route == None:
+
+            # remove shorter paths  of current path 
+            walk_idx = 0 
+
+            while walk_idx < len(paths):
+                sub_route_arr = paths[walk_idx]
+                size = len(sub_route_arr)
+
+                if sub_route_arr == node.path[0 : size]:
+                    paths.pop(walk_idx)
+                else:
+                    walk_idx += 1
+            
+            paths.append(node.path)
+
+        else :
+
+            # walk to next path or start 
+            curr_id = node.next_route
+            path = node.path + [curr_id]
+
+            if algraph.nodes[curr_id]:
+                for route_info in algraph.list[curr_id] :
+                    next_id = route_info[0]
+                    
+                    if next_id not in node.path:
+                        new_node = search_node(next_id)
+                        new_node.path = path
+                        queue.append(new_node)
+                    else:
+                        # end of line 
+                        new_node = search_node(None)
+                        new_node.path = path
+                        queue.append(new_node)
+
+
+    return paths 
+
+print('paths --> {}'.format( paths_from_id(graph, hector_id)))
