@@ -495,3 +495,76 @@ uber_employee_ids = [sam_id, penny_id]
 print('{} -> {}'.format('friends at uber', someone_on_the_inside(graph, my_id, uber_employee_ids )))   # friends at UBER  -> ['Sam'] 
 
 
+# DEPTH FIRST SEARCH  
+def vertex_is_reachable_helper_dfs(algraph: ALGraph, id1, id2):
+    class search_node:
+        def __init__(self, possible_routes = []):
+            self.path = [] 
+            self.possible_routes = possible_routes 
+
+    # does id1 and id2 exist in graph?
+    if id1 < len(algraph.nodes):
+        if algraph.nodes[id1] == None:
+            return []
+    
+    if id2 < len(algraph.nodes):
+        if algraph.nodes[id2] == None:
+            return []
+    
+    if id2 < id1 :
+        index_range = list(range(id1, id2 - 1, -1))
+    else :
+        index_range = list(range(id1, id2 + 1, 1))
+    
+    queue = [ search_node(index_range ) ]
+    paths = []
+
+    while queue:
+
+        node = queue.pop(0) 
+
+        if not node.possible_routes:
+            if node.path and node.path[-1] == id2:
+                paths.append(node.path)
+
+        else :
+
+            # walk to next path 
+            curr_id = node.possible_routes.pop(0)
+            path = node.path + [curr_id]
+            possible_routes = []
+            
+            ## add visited or prev state with reduced number of possible routes back into queue 
+            queue.insert(0, node)
+            
+            ## does the node exist
+            if algraph.nodes[curr_id]:
+
+                for route_info in algraph.list[curr_id] :
+                    next_id = route_info[0]
+                    if next_id not in node.path:
+                        possible_routes.append(next_id)
+                    else:
+                        # revisited ids  :( 
+                        pass 
+                
+                new_node = search_node(possible_routes)
+                new_node.path = path
+
+                #update indices 
+                queue.insert(0, new_node)
+    
+    return paths 
+
+def vertex_is_reachable(algraph: ALGraph, id1, id2):
+    paths  = vertex_is_reachable_helper_dfs(algraph, id1, id2)
+    
+    if paths:
+        return len(paths) > 0
+    return False 
+
+def all_paths(algraph: ALGraph, id1, id2):
+    return vertex_is_reachable_helper_dfs(algraph, id1, id2)  #  SOLUTION [[0, 2], [0, 1, 2]]
+
+print('paths to {} --> {}'.format(penny_id, all_paths(graph, hector_id, penny_id)))
+
