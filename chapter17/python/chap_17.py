@@ -341,7 +341,13 @@ class ALGraph:
                 return self.nodes[node_id]
         return None 
     
-    def add_edges (self, id1, id2):
+    def set_vertex_value (self, node_id, value):
+        if node_id < len(self.list):
+            if self.list[node_id] != None:
+                self.nodes[node_id] = value
+        return None 
+    
+    def add_edge (self, id1, id2, value = 0):
         if id1 < len(self.list) and id2 < len(self.list):
             if self.list[id1] != None and self.list[id2] != None:
                 found_edge = -1
@@ -349,7 +355,7 @@ class ALGraph:
                     if edge_info[0] == id2:
                         found_edge = 1
                 if found_edge == -1:
-                    self.list[id1].append([id2,0  ])   # [id, edge_weight]
+                    self.list[id1].append([id2,value  ])   # [id, edge_weight]
                     return True 
                 
         return False 
@@ -408,14 +414,84 @@ class ALGraph:
                     result.append(edge_info[0] )
         return result 
     
-al_graph = ALGraph()
-node1 = al_graph.add_vertex('A')
-node2 = al_graph.add_vertex('B')
-print(node1, node2)
+# al_graph = ALGraph()
+# node1 = al_graph.add_vertex('A')
+# node2 = al_graph.add_vertex('B')
+# print(node1, node2)
 
-print(al_graph.get_vertex_value(node2))
-print(al_graph.add_edges(node1, node2))
-# print(al_graph.remove_edge(node1, node2))
-print( al_graph.get_edge_value(node1, node2) )
-print( al_graph.neighbors(node1) )
-print(al_graph.list)
+# print(al_graph.get_vertex_value(node2))
+# print(al_graph.add_edge(node1, node2))
+# # print(al_graph.remove_edge(node1, node2))
+# print( al_graph.get_edge_value(node1, node2) )
+# print( al_graph.neighbors(node1) )
+# print(al_graph.list)
+
+
+# SIMPLE SOCIAL MEDIA 
+
+print('social media')
+al_graph = ALGraph() 
+graph = ALGraph()
+hector_id = graph.add_vertex('Hector')
+sam_id = graph.add_vertex('Sam')
+
+# friend hector -> Sam 
+graph.add_edge(hector_id, sam_id, 1)
+graph.add_edge(sam_id, hector_id, 1)
+print('hector id: {}\t sam_id: {} '.format(hector_id, sam_id))
+print(graph.list)
+
+# friend sam -> Penny
+penny_id = graph.add_vertex('Penny')
+graph.add_edge(sam_id, penny_id, 1)
+graph.add_edge(penny_id, sam_id, 1)
+print('hector id: {}\t sam_id: {} \t penny id: {}'.format(hector_id, sam_id, penny_id))
+print(graph.list)
+
+# [
+#         [
+#             # hector -> sam 1 distance
+#             [1, 1]
+#         ],   
+        
+#         [
+#             # sam -> hector 1 distance
+#             [0, 1], 
+
+#             # sam -> penny 1 distance
+#             [2, 1]
+#         ],   
+        
+#         [
+#             # penny -> sam distance 
+#             [1, 1]
+#         ]
+# ]
+
+# distance map 
+# hector  sam  penny 
+#    <------>
+#      1
+#   <------------->
+#         2
+#
+
+def someone_on_the_inside(algraph :ALGraph, my_id, employee_ids):
+    friends_at_company = []
+    # my id's connections 
+    my_walk_info_list = graph.list[my_id]
+
+    for my_walk_info in my_walk_info_list:
+      
+        for employee_id in employee_ids:
+            # my connection (friend)   # company id
+            if my_walk_info[0] == employee_id:
+                friends_at_company.append(employee_id)
+
+    return list(map(lambda node_id : algraph.nodes[node_id] , friends_at_company))
+
+my_id = hector_id 
+uber_employee_ids = [sam_id, penny_id]
+print('{} -> {}'.format('friends at uber', someone_on_the_inside(graph, my_id, uber_employee_ids )))   # friends at UBER  -> ['Sam'] 
+
+
