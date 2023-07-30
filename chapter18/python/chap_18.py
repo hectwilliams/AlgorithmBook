@@ -212,7 +212,6 @@ def reorder_word_fragnents (arr) :
         new_node = word_node( node.list,  node.arr_index, node.index, node.ordered)
 
         if node.index == len( node.list[0][0]) :
-            print(node.kill)
             return list ( map( lambda arr_ele: arr_ele[0] , node.list ) )
         
         else:
@@ -279,10 +278,12 @@ def reorder_word_fragnents (arr) :
             
             queue.insert(0, new_node)
 
-           
+print('** REORDER FRAGMENTS SOL')           
             
-arr = ["XD?E","BDE?","?A?E"]
-# arr = ["BQX?","XD?E"]
-print(reorder_word_fragnents (arr) )
+arr1 = ["XD?E","BDE?","?A?E"]
+arr2 = ["BQX?","XD?E"]
+print(reorder_word_fragnents (arr1) )
+print(reorder_word_fragnents (arr2) )
+print('** REORDER FRAGMENTS SOL END ')           
 
 
