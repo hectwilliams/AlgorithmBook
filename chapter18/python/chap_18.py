@@ -212,6 +212,7 @@ def reorder_word_fragnents (arr) :
         new_node = word_node( node.list,  node.arr_index, node.index, node.ordered)
 
         if node.index == len( node.list[0][0]) :
+            print(node.kill)
             return list ( map( lambda arr_ele: arr_ele[0] , node.list ) )
         
         else:
@@ -232,8 +233,6 @@ def reorder_word_fragnents (arr) :
                 
                 new_node.list[new_node.arr_index][0] = new_node.list[node.arr_index][0][0: new_node.index] + wild_card_char + new_node.list[new_node.arr_index][0][new_node.index + 1 : :] 
                 
-                # print('UPDATED ' , 'arr-index', new_node.arr_index, 'INDEEX', 'col-index', new_node.index, new_node.list)
-            
 
             valid_chars = True 
 
@@ -243,7 +242,7 @@ def reorder_word_fragnents (arr) :
                 valid_chars = valid_chars and ( test_char != '?'  )
 
             if valid_chars :
-                
+                    
                 # more than one sort is an invalid construct or path 
 
                     # unsorted_arr 
@@ -258,13 +257,18 @@ def reorder_word_fragnents (arr) :
                     for arr_ele in new_node.list:
                         sorted_arr += arr_ele[0]
 
+                    if sorted_arr == unsorted_arr:
+                        new_node.ordered = True 
+                        # print('SORTED HERE', new_node.list,  'col', new_node.index, 'arr', new_node.arr_index,)
+
                     if sorted_arr != unsorted_arr:
                         if new_node.ordered == False:
                             new_node.ordered = True 
                             # print('SORTED HERE', new_node.list,  'col', new_node.index, 'arr', new_node.arr_index,)
                         else :
+                            # sorted 
                             new_node.kill = True 
-                            # print('ERROPR')
+                            # print('JUMP OR PATH ERROR')
 
             if new_node.kill:
                 continue
@@ -278,6 +282,7 @@ def reorder_word_fragnents (arr) :
            
             
 arr = ["XD?E","BDE?","?A?E"]
+# arr = ["BQX?","XD?E"]
 print(reorder_word_fragnents (arr) )
 
 
