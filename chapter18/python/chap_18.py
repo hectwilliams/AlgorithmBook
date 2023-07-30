@@ -169,62 +169,115 @@ print(' {} '.format( bin_str_to_value(binary_str) ) )
 
 def reorder_word_fragnents (arr) :
     class word_node:
-        def __init__(self, words, possible_words = []):
-            self.ordered = False 
-            self.index = 0
-            self.data_bucket = []
+        def __init__(self, data, arr_index = 0, word_index = 0 , ordered = False  ):
+            self.ordered = ordered 
+            self.index = word_index
             self.list = []
+            self.CHARS = []
+            self.arr_index = arr_index
+            self.kill = False 
 
-            if not possible_words:
-
-                # A-Z 
-                chars = [] 
-                for num in range(65, 90):
-                    chars.append(  chr(num) )
+            # A-Z 
+            for num in range(65, 90):
+                self.CHARS.append(  chr(num) )
+            
+            
+            if type(data[0]) == str  :
                 
-                # possible chars
-                for i in range(len(arr)):
-                    self.data_bucket.append( chars + [] )
+                for i in range(len(data)):
+                    self.list.append(   []  )
+                    self.list[i].append( data[i]  )
+                    self.list[i].append( self.CHARS + []  )
 
-            else :
-                 
-                 for possible_word in possible_words:
-                     self.data_bucket.append( possible_word + [] )
+            else:
 
-            for word in words:
-                self.list.append( word + [] )
+                for i in range(len( data)):
+                    self.list.append(  [  data[i][0]  , data[i][1] + [] ]  )
 
-
-    queue = [word_node(arr + [])]
+    queue = [ word_node(arr + []) ]
 
     while queue:
         
         node = queue.pop(0)
 
-        for i in range( len(node.list) ):
-            
-            word = node.list[i]
+        # step to next array element
+        if node.arr_index == len(node.list) :
+            node.arr_index = 0
+            # step to next work element 
+            node.index += 1
+            # print('DEBUG: NEW POS', node.index, node.arr_index)
+        
 
-            c = node.list[i][node.index]
+        # clone node 
+        new_node = word_node( node.list,  node.arr_index, node.index, node.ordered)
+
+        if node.index == len( node.list[0][0]) :
+            return list ( map( lambda arr_ele: arr_ele[0] , node.list ) )
+        
+        else:
+            
+       
+                    
+            wild_card_char = None 
+
+                
+            c = node.list[ node.arr_index ][0][node.index] # 0 index is string
 
             if c == '?':
+
+                wild_card_char = node.list[node.arr_index][1].pop(0) # 1 index is array of possible characters 
+
+                # insert current node back to stack 
+                queue.append(node)
                 
-                node.list[i] = node.list[i][0: node.index] + node.data_bucket[i].pop(0) + node.list[i][node.index + 1 : :] 
-                # insert current node back to stack
-                queue.insert(0, node)
+                new_node.list[new_node.arr_index][0] = new_node.list[node.arr_index][0][0: new_node.index] + wild_card_char + new_node.list[new_node.arr_index][0][new_node.index + 1 : :] 
+                
+                # print('UPDATED ' , 'arr-index', new_node.arr_index, 'INDEEX', 'col-index', new_node.index, new_node.list)
+            
 
-                # new node
-                new_node = word_node( node.list, node.data_bucket )
-                new_node.index = node.index + 1 
-                if not new_node.ordered:
+            valid_chars = True 
 
-                    pass
-                queue.insert(0, new_node)
+            for arr_ele in new_node.list:
+                test_word = arr_ele[0]
+                test_char  = test_word[new_node.index] # 0 index is string
+                valid_chars = valid_chars and ( test_char != '?'  )
 
-                return 
+            if valid_chars :
+                
+                # more than one sort is an invalid construct or path 
 
+                    # unsorted_arr 
+                    unsorted_arr = ""
+                    for arr_ele in new_node.list:
+                        unsorted_arr += arr_ele[0]
+
+                    new_node.list.sort( key= lambda arr_ele: arr_ele[0][new_node.index] ) # 0 index is string
+
+                    # sorted_arr  
+                    sorted_arr = ""
+                    for arr_ele in new_node.list:
+                        sorted_arr += arr_ele[0]
+
+                    if sorted_arr != unsorted_arr:
+                        if new_node.ordered == False:
+                            new_node.ordered = True 
+                            # print('SORTED HERE', new_node.list,  'col', new_node.index, 'arr', new_node.arr_index,)
+                        else :
+                            new_node.kill = True 
+                            # print('ERROPR')
+
+            if new_node.kill:
+                continue
+
+
+
+            new_node.arr_index = node.arr_index + 1
+            
+            queue.insert(0, new_node)
+
+           
             
 arr = ["XD?E","BDE?","?A?E"]
-reorder_word_fragnents (arr)
+print(reorder_word_fragnents (arr) )
 
 
