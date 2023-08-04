@@ -388,3 +388,65 @@ print(' {}  '.format(  test) )
 # Ox78
 # OxAB
 #  [18, 69, 120, 171]  
+
+def encode_bit_num (bit_val, bit_number, val_32_bit) :
+
+    curr_bit = (val_32_bit & (1 << bit_number)) >> bit_number
+
+    if bit_val != curr_bit:
+        if bit_val == 0 :
+            bits = ~ ( 1 << bit_number )  # 11101111111
+            val_32_bit &= bits   
+        else :
+            val_32_bit |= ( 1 << bit_number )
+
+    return val_32_bit
+
+print( ' {} '.format( encode_bit_num(1, 22, 1) ) )
+print( ' {} '.format( encode_bit_num(0, 3 , 0x18) ) )
+
+def decode_bit_num(bit_number, val_32_bit):
+    curr_bit =   ( val_32_bit & ( 1 << bit_number) ) >> bit_number 
+    return curr_bit 
+
+def radix_sort_2 (arr):
+    class radix_node:
+        def __init__(self, num):
+            self.power_index = 0
+            self.number = num
+
+    table  = []
+
+    for i in range(32):
+        table.append([])
+    
+    for arr_ele in arr:
+        table[0].insert( 0, arr_ele )
+
+    for bit_num in range(32):
+
+        buffer_head = []  # new entries to array index 
+
+        for k in range(31,  -1 , -1) :
+            
+            values_arr = table[k]
+            
+            walk = 0
+            
+            while walk < len(values_arr):
+                if ((values_arr[walk] & ( 1 << bit_num )) >> bit_num ) == 1:
+                    buffer_head.insert(0, values_arr.pop(walk))
+                else:
+                    walk += 1 
+
+        table[bit_num] = buffer_head +  table[bit_num]
+    
+    # reduce block 
+    walk = 0
+    for _ in range(1,32):
+        table[0] += table.pop(1)
+    
+    return table[0]
+
+arr = [2,1,3,4, 66, 12029, 100]
+print(' {}  '.format(radix_sort_2(arr)))
