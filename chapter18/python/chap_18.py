@@ -6,24 +6,14 @@ def dec2_to_oct_str(value):
     is_negative = value < 0
 
     value = abs(value)
-    octals_count = 0
-
-    # find exponent count ( highest power required )
-    while RADIX ** octals_count < value:
-        octals_count += 1
     
-    if octals_count == 0:
-         return ""
-    
-    while value:
+    while value :
         
-        octals_count -= 1
+        factor = value % RADIX
 
-        factor = value  //  RADIX ** octals_count
+        value =  value // RADIX
 
-        value  = value - (factor * RADIX ** octals_count)    # i.e. -> factor * 8**Exponent 
-
-        res_string  = res_string  + str(factor) 
+        res_string  = str(factor)  +  res_string  
 
     return '{}0o{}'.format( '-' if is_negative else '',  res_string)  
 
@@ -46,8 +36,8 @@ def oct_str_to_value(str_number : str):
         index += 1
     return value 
 
-octal_str = '0o4213' 
-print(' {} '.format( oct_str_to_value(octal_str) ))
+octal_str = '0o4210' 
+print(' oct to string  {} '.format( oct_str_to_value(octal_str) ))
 
 def dec2_hex_str(value):
     res_string = ""
@@ -55,24 +45,33 @@ def dec2_hex_str(value):
     is_negative = value < 0
 
     value = abs(value)
-    octals_count = 0
-
-    # find exponent count ( highest power required )
-    while RADIX ** octals_count < value:
-        octals_count += 1
     
-    if octals_count == 0:
-         return ""
-    
-    while value:
+    while value :
         
-        octals_count -= 1
+        factor = value % RADIX
 
-        factor = value  //  RADIX ** octals_count
+        if factor == 15:
+            factor = 'F'
+        
+        elif factor == 14:
+            factor = 'E'
+        
+        elif factor == 13:
+            factor = 'D'
+        
+        elif factor == 12:
+            factor = 'C'
+        
+        elif factor == 11:
+            factor = 'B'
+        
+        elif factor == 10:
+            factor = 'A'
 
-        value  = value - (factor * RADIX ** octals_count)    # i.e. -> factor * 8**Exponent 
 
-        res_string  = res_string  + str(factor) 
+        value =  value // RADIX
+
+        res_string  = str(factor)  +  res_string  
 
     return '{}Ox{}'.format( '-' if is_negative else '',  res_string) 
 
@@ -121,24 +120,14 @@ def dec2_bin_str(value):
     is_negative = value < 0
 
     value = abs(value)
-    octals_count = 0
 
-    # find exponent count ( highest power required )
-    while RADIX ** octals_count < value:
-        octals_count += 1
-    
-    if octals_count == 0:
-         return ""
-    
-    while value:
+    while value :
         
-        octals_count -= 1
+        factor = value % RADIX
 
-        factor = value  //  RADIX ** octals_count
+        value =  value // RADIX
 
-        value  = value - (factor * RADIX ** octals_count)    # i.e. -> factor * 8**Exponent 
-
-        res_string  = res_string  + str(factor) 
+        res_string  = str(factor)  +  res_string  
 
     return '{}0b{}'.format( '-' if is_negative else '',  res_string) 
 
@@ -287,3 +276,115 @@ print(reorder_word_fragnents (arr2) )
 print('** REORDER FRAGMENTS SOL END ')           
 
 
+def count_in_binary(number):
+    count = 0
+
+    while number:
+
+        count += 1
+
+        number = number >> 1
+
+    return count 
+
+num = 100
+print(' {} {} '.format( count_in_binary(100) , 1 ))
+
+def count_set_bits (number):
+    count = 0
+    
+    while number :
+
+        count += int (number % 2 ==1)
+
+        number = number >> 1
+    return count 
+
+num = 1023
+print('count_set bits {}'.format( count_set_bits(num) ))   
+
+def count_set_bits_opt(number):
+
+    map_to_4_bit = [
+        0,  #0b_0000
+        1,  #0b_0001
+        1,
+        2,
+        1,
+        2,
+        2,
+        3,
+        1,
+        2,
+        2,
+        3,
+        2,
+        3,
+        3,
+        4, # 0b_1111
+    ]
+
+    count = 0 
+
+    stride = 0XF
+
+    while number:
+        count += map_to_4_bit [stride & number ]
+        number = number >> 4
+    
+    return count 
+
+num = 1023
+print(' {} '.format(count_set_bits_opt(num)))
+
+def reverse_bits (number, bit_width = 32):
+    result = 0 
+
+    for i in range(bit_width - 1, -1, -1):
+        result += pow(2, i) * int (number % 2 == 1) 
+        number = number  >> 1 # right shift 
+    return result 
+
+input  = 0b01100110011001101111000011110000
+expect = 0b00001111000011110110011001100110
+result = reverse_bits(input)
+print(' input {}  -- output == expect {} '.format( input, result == expect  ) )
+
+def encode_bytes_to_32 (array):
+    result = 0
+    byte_size = 8 
+
+    for i in range(len(array)):
+        value = array[i] 
+        byte_index = len(array) - 1  - i 
+        result  =  result | (value <<  byte_index * byte_size )  # | (or)
+    return result 
+
+expect = 0xF0C39659
+arr =  [0xF0, 0xC3, 0x96, 0x59]
+res = encode_bytes_to_32(arr)
+print(' {}   {}'.format(  res, expect == res ) )
+
+def decode_32_to_bytes (hex_number):
+    byte_index = 3 
+    arr = [] 
+    byte_size = 8 
+
+    while byte_index >= 0:
+        byte_data = hex_number & ( 0xFF << byte_index * byte_size ) 
+        byte_data = byte_data >> byte_index * byte_size    # shift down 
+        arr.append( byte_data  )
+        byte_index -= 1 
+    return arr 
+
+data = 306542763 # 0x124578AB
+test = decode_32_to_bytes (data)
+
+print(' {}  '.format(  test) )
+
+# solution 
+# Ox12
+# Ox45
+# Ox78
+# OxAB
+#  [18, 69, 120, 171]  
