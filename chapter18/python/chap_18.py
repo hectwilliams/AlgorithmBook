@@ -345,10 +345,10 @@ def reverse_bits (number, bit_width = 32):
         number = number  >> 1 # right shift 
     return result 
 
-input  = 0b01100110011001101111000011110000
+input_  = 0b01100110011001101111000011110000
 expect = 0b00001111000011110110011001100110
-result = reverse_bits(input)
-print(' input {}  -- output == expect {} '.format( input, result == expect  ) )
+result = reverse_bits(input_)
+print(' input {}  -- output == expect {} '.format( input_, result == expect  ) )
 
 def encode_bytes_to_32 (array):
     result = 0
@@ -450,3 +450,12 @@ def radix_sort_2 (arr):
 
 arr = [2,1,3,4, 66, 12029, 100]
 print(' {}  '.format(radix_sort_2(arr)))
+print()
+
+# TODO
+def sprinklers():
+    rcvd = input("{}\n{}\n\{}\n{}\n{}".format('RAIN_SENS- [1]', 'SENS_OVERRIDE- [2]', 'SYS_TEST- [3]', 'SYS_DISABLE- [4]', 'Enter id or ids space delimited you want enabled to alter system behavior  (ex. 1 2 ): '))
+    rcvd = (''.join(rcvd)).split(' ')
+    rcvd = list ( map( lambda ele: int(ele), rcvd) )
+sprinklers()
+
