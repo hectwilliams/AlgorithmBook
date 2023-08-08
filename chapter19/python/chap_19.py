@@ -23,7 +23,6 @@ class AVL_NODE:
 
         while queue:
             node = queue.pop(0)
-            print(node.tree_node.val, 'search', node.tree_node.left)
             if node.depth > result_height:
                  result_height = node.depth 
 
@@ -159,19 +158,21 @@ class AVL_TREE:
 
                     curr = nodes.pop() 
                     
-                    left = curr.left 
-                    if left:
-                        left = left.height()  + 1
-                    else:
-                        left = 0 
-                         
-                    right = curr.right
-                    if right:
-                        right = -right.height()  -1
-                    else: 
-                        right = 0 
+                    if curr: 
 
-                    curr.balance = left + right  
+                        left = curr.left 
+                        if left:
+                            left = left.height()  + 1
+                        else:
+                            left = 0 
+                            
+                        right = curr.right
+                        if right:
+                            right = -right.height()  -1
+                        else: 
+                            right = 0 
+
+                        curr.balance = left + right  
                     
                 break 
 
@@ -316,11 +317,9 @@ class AVL_TREE:
                 curr.balance = left + right 
     
     def balanced_add(self, value):
-        nodes = []
 
         self.add(value)
 
-        print(self.head.val, "head value")
         if self.head.balance > 1 :
             
             if self.head.left.balance > 0 :
@@ -378,6 +377,37 @@ class AVL_TREE:
         for ele in arr:
             print('{}\n'.format(ele))
 
+    def balanced_remove(self, value):
+
+        self.remove(value)
+
+        while abs(self.head.balance) > 1 :
+            
+            if self.head.balance > 1 :
+            
+                if self.head.left.balance > 0 :
+                    # right rotate 
+                    self.rotate_right(self.head)
+                
+                if self.head.left.balance < 0 :
+                    # left rotoate child 
+                    self.rotate_left(self.head.left)
+                    # right rotate paremt 
+                    self.rotate_right(self.head)
+            
+            if self.head.balance < -1:
+
+                if self.head.right.balance < 0 :
+                    # left rottate 
+                    self.rotate_left(self.head)
+                
+                if self.head.right.balance > 0:
+                    #right rotate child 
+                    self.rotate_right(self.head.left)
+                    # left rotate parent 
+                    self.rotate_left(self.head)
+
+
 
 tree = AVL_TREE()
 tree.balanced_add(40)
@@ -387,6 +417,11 @@ tree.balanced_add(70)
 tree.balanced_add(77)
 tree.balanced_add(77)
 tree.balanced_add(89)
+
+tree.balanced_remove(40)
+tree.balanced_remove(89)
+tree.balanced_remove(77)
+tree.balanced_remove(77)
 
 tree.display_tree()
 
