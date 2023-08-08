@@ -187,6 +187,72 @@ class AVL_TREE:
             else :
                 node = None  
         
+    def rotate_left(self, target_node):
+        
+        class search_node:
+            def __init__(self, current, prev_list = []):
+                self.tree_node = current
+                self.tree_node_prev = prev_list
+        
+        node = None 
+        demote_node = None 
+        promote_node = None 
+
+        if self.head == None:
+            return 
+        
+        if self.head.right == None:
+            return 
+        
+        queue = [  search_node(self.head)  ]
+
+        while queue:
+
+            node = queue.pop(0)
+            
+            if node.tree_node == target_node:
+                demote_node = node.tree_node
+                promote_node = node.tree_node.right 
+                grand_child = None 
+
+                if promote_node:
+                    grand_child = promote_node.left 
+                    demote_node.right = grand_child 
+                    promote_node.left = demote_node
+
+                if len(node.tree_node_prev) == 0:
+                    self.head = promote_node
+
+                elif node.tree_node_prev[-1].right == demote_node:
+                    node.tree_node_prev[-1].right = promote_node
+
+                elif node.tree_node_prev[-1].left == demote_node:
+                    node.tree_node_prev[-1].left = promote_node
+                
+                break 
+                    
+            if node.tree_node.left:
+                queue.append( search_node(node.tree_node.left, node.tree_node_prev +  [node.tree_node]  ) )
+            
+            if node.tree_node.right:
+                queue.append( search_node(node.tree_node.right,     node.tree_node_prev +  [node.tree_node]  ) )
+
+        # update balance 
+        if node:
+            node.tree_node_prev.extend([demote_node, promote_node])
+            while node.tree_node_prev:
+                curr = node.tree_node_prev.pop()
+                left = curr.left 
+                right = curr.right 
+                if left:
+                    left = left.height() + 1
+                else:
+                    left = 0 
+                if right:
+                    right = -right.height() - 1
+                else:
+                    right = 0 
+                curr.balance = left + right 
 
 
 tree = AVL_TREE()
@@ -197,7 +263,10 @@ tree.add(70)
 tree.add(32)
 tree.add(21)
 
-tree.remove(40)
-print(tree.head.val, tree.head.balance)
+# tree.remove(40)
 print(tree.head.left.val, tree.head.left.balance)
 print(tree.head.left.left.val, tree.head.left.left.balance)
+tree.rotate_left(tree.head)
+tree.rotate_left(tree.head)
+
+print(tree.head.val, tree.head.balance)
