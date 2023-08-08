@@ -314,22 +314,91 @@ class AVL_TREE:
                 else:
                     right = 0 
                 curr.balance = left + right 
-                
+    
+    def balanced_add(self, value):
+        nodes = []
+
+        self.add(value)
+
+        print(self.head.val, "head value")
+        if self.head.balance > 1 :
+            
+            if self.head.left.balance > 0 :
+                # right rotate 
+                self.rotate_right(self.head)
+            
+            if self.head.left.balance < 0 :
+                # left rotoate child 
+                self.rotate_left(self.head.left)
+                # right rotate paremt 
+                self.rotate_right(self.head)
+            
+        if self.head.balance < -1:
+
+            if self.head.right.balance < 0 :
+                # left rottate 
+                self.rotate_left(self.head)
+            
+            if self.head.right.balance > 0:
+                #right rotate child 
+                self.rotate_right(self.head.left)
+
+                # left rotate parent 
+                self.rotate_left(self.head)
+        
+    def display_tree(self): 
+        
+        class s_node:
+            def __init__(self, parent, depth = 0):
+                self.curr = parent
+                self.depth = depth 
+
+        if self.head == None:
+            return 
+        
+        queue = [s_node(self.head)]
+        arr = []
+
+        while queue:
+            
+            node = queue.pop(0) 
+
+            if len(arr) == node.depth:
+                arr.append([])
+            
+            arr[node.depth].append(node.curr.val)
+
+            if node.curr.left:
+                queue.append( s_node(node.curr.left, node.depth + 1) )
+
+            if node.curr.right:
+                queue.append( s_node(node.curr.right, node.depth + 1) )
+
+
+        for ele in arr:
+            print('{}\n'.format(ele))
+
 
 tree = AVL_TREE()
-tree.add(40)
-tree.add(22)
-tree.add(62)
-tree.add(70)
-tree.add(32)
-tree.add(21)
+tree.balanced_add(40)
+tree.balanced_add(22)
+tree.balanced_add(62)
+tree.balanced_add(70)
+tree.balanced_add(77)
+tree.balanced_add(77)
+tree.balanced_add(89)
+
+tree.display_tree()
+
+# tree.balanced_add(21)
 
 # tree.remove(40)
-print(tree.head.left.val, tree.head.left.balance)
-print(tree.head.left.left.val, tree.head.left.left.balance)
-tree.rotate_right(tree.head)
+# print(tree.head.left.val, tree.head.left.balance)
+# print(tree.head.left.left.val, tree.head.left.left.balance)
+# tree.rotate_right(tree.head)
 # tree.rotate_left(tree.head)
 
-print(tree.head.val, tree.head.balance)
-print(tree.head.right.val, tree.head.right.balance)
-print(tree.head.right.right.val, tree.head.right.right.balance)
+# print(tree.head.val, tree.head.balance)
+
+# print(tree.head.right.val, tree.head.right.balance)
+# print(tree.head.right.right.val, tree.head.right.right.balance)
