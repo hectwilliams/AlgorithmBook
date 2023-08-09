@@ -425,6 +425,22 @@ tree.balanced_remove(77)
 
 tree.display_tree()
 
+class RB_Node:
+    def __init__(self, value):
+        self.value = value
+        self.color = 'red'
+
+class RB_Tree:
+   
+    def __init__(self):
+        self.root = None 
+
+    def add(self, value):
+        if self.root == None:
+            self.root = RB_Node(value)
+            self.root.color = 'black'
+        
+
 # tree.balanced_add(21)
 
 # tree.remove(40)
