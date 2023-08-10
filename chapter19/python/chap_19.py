@@ -1,4 +1,5 @@
 # AVL TREEE 
+import random 
 
 class AVL_NODE:
     def __init__(self, value):
@@ -429,27 +430,357 @@ class RB_Node:
     def __init__(self, value):
         self.value = value
         self.color = 'red'
+        self.left = None 
+        self.right = None 
 
 class RB_Tree:
+
    
     def __init__(self):
         self.root = None 
 
+    def rotate_left(self, target_node):
+        
+        class search_node:
+            def __init__(self, current, prev_list = []):
+                self.tree_node = current
+                self.tree_node_prev = prev_list
+        
+        node = None 
+        demote_node = None 
+        promote_node = None 
+
+        if self.root == None:
+            return 
+        
+        if self.root.right == None:
+            return 
+        
+        queue = [  search_node(self.root)  ]
+
+        while queue:
+
+            node = queue.pop(0)
+            
+            if node.tree_node == target_node:
+                demote_node = node.tree_node
+                promote_node = node.tree_node.right 
+                grand_child = None 
+
+                if promote_node:
+                    grand_child = promote_node.left 
+                    demote_node.right = grand_child 
+                    promote_node.left = demote_node
+
+                if len(node.tree_node_prev) == 0:
+                    self.root = promote_node
+
+                elif node.tree_node_prev[-1].right == demote_node:
+                    node.tree_node_prev[-1].right = promote_node
+
+                elif node.tree_node_prev[-1].left == demote_node:
+                    node.tree_node_prev[-1].left = promote_node
+                
+                break 
+                    
+            if node.tree_node.left:
+                queue.append( search_node(node.tree_node.left, node.tree_node_prev +  [node.tree_node]  ) )
+            
+            if node.tree_node.right:
+                queue.append( search_node(node.tree_node.right,     node.tree_node_prev +  [node.tree_node]  ) )
+
+    def rotate_right (self, target_node):
+        class search_node:
+            def __init__(self, current, prev_list = []):
+                self.tree_node = current 
+                self.tree_node_prev = prev_list
+        node = None 
+        demote_node = None 
+        promote_node = None 
+
+        if self.root == None:
+            return 
+        if self.root.left == None :
+            return 
+        
+        queue = [search_node(self.root)]
+
+        while queue:
+            node = queue.pop(0)
+
+            if node.tree_node == target_node:
+                demote_node = node.tree_node
+                promote_node = node.tree_node.left
+                grand_child = None 
+
+                if promote_node:
+                    grand_child = promote_node.right
+                    demote_node.left = grand_child 
+                    promote_node.right = demote_node
+                
+                if len(node.tree_node_prev) == 0:
+                    self.root = promote_node 
+                elif node.tree_node_prev[-1].right == demote_node:
+                    node.tree_node_prev[-1].right = promote_node 
+                elif node.tree_node_prev[-1].left == demote_node:
+                    node.tree_node_prev[-1].left = promote_node 
+                
+                break 
+
+            if node.tree_node.left:
+                queue.append(search_node(node.tree_node.left, node.tree_node_prev + [node.tree_node]) )
+            
+            if node.tree_node.right:
+                queue.append(search_node(node.tree_node.right, node.tree_node_prev + [node.tree_node]) )
+        
     def add(self, value):
+
+        class search_node:
+            def __init__(self, parent, path = []):
+                self.tree_node = parent
+                self.path = path
+        
+        def black_node_check_valid(parent):
+            # path search
+            stackA = [search_node(parent.root)]
+            stackB = []
+            node = None 
+            all_paths = [] 
+            while stackA or stackB:
+
+                if stackA:
+                    node = stackA.pop(0)
+                else:
+                    node = stackB.pop(0)
+
+                if node.tree_node.left:
+                    if node.tree_node.color =='red' and node.tree_node.left.color == 'red':
+                        return False
+                    stackA.append (search_node(node.tree_node.left, node.path + [node.tree_node] ) )
+
+                if node.tree_node.right:
+                    if node.tree_node.color =='red' and node.tree_node.right.color == 'red':
+                        return False
+                    stackB.append (search_node(node.tree_node.right, node.path + [node.tree_node] ) )
+                
+                
+                if node.tree_node.left == None and node.tree_node.right == None:
+                    all_paths.append(node.path + [node.tree_node])
+
+
+            # map to color --> to black count  per paths
+            if all_paths:
+                all_paths = list(
+                        map( lambda node_list:   
+                            list(map(  lambda node_: node_.color , node_list) ).count('black')
+                        , all_paths )
+                    )
+                
+            return all(color_count == all_paths[0] for color_count in all_paths ) 
+
+
+
+        node_path = []
+        
         if self.root == None:
             self.root = RB_Node(value)
             self.root.color = 'black'
+
+        else:
+
+            node = self.root 
+
+            while node:
+                
+                if value < node.value:
+
+                    node_path.append(node)
+
+                    if node.left:
+                        node = node.left 
+                    else:
+                        node.left = RB_Node(value)
+                        # if node_path[-1].color == 'red':
+                            # node.left.color = 'black'
+                        node_path.append(node.left) # complete the path
+                        node  =  None 
+
+                elif value > node.value:
+
+                    node_path.append(node)
+                    
+                    if node.right:
+                        node = node.right 
+                    else:                
+                        node.right = RB_Node(value)
+                        # if node_path[-1].color == 'red':
+                            # node.right.color = 'black'
+                        node_path.append(node.right) # complete the path
+                        node  =  None 
+            
+            #rebelance block 
+            while not black_node_check_valid(self) :
+
+                if len(node_path)   < 3:
+                    return
+
+                child = node_path[-1]
+                parent = node_path[-2]
+                grand_parent = node_path[-3]
+                aunt = grand_parent.right if grand_parent.left == parent else grand_parent.left 
+                great_grand_parent = None 
+
+                # algorithm provided by  https://www.programiz.com/dsa/red-black-tree
+                
+                if parent == grand_parent.left:
+
+                    gp_right_node_color = 'black'
+
+                    if aunt: # on right 
+                        if aunt.color == 'red':
+                            gp_right_node_color = 'red'
+                    
+                    # case 1.a
+                    if gp_right_node_color == 'red':
+                        parent.color = 'black' # gp.left
+                        aunt.color = 'black' # gp.right
+                        grand_parent.color = 'red'
+
+                        # promote gp to new child node by dropping child node and parent node 
+                        node_path.pop() # pop child node 
+                        node_path.pop() # pop parent node 
+                    
+                    # case 2
+                    elif parent.right == child and parent.color == 'red' and child.color == 'red':
+                        self.rotate_left(parent) # child promoted to parent
+                        node_path[-1] , node_path[-2] = node_path[-2] , node_path[-1]  # swap parent and child 
+                        child = node_path[-1]
+                        parent = node_path[-2]
+
+                        if black_node_check_valid(self):
+                            break 
+                    
+                    # case 3
+                    elif parent.left == child  and parent.color =='red' and child.color == 'red':
+                        parent.color = 'black'
+                        grand_parent.color = 'red'
+                        self.rotate_right(grand_parent)
+
+                        node_path.pop() # pop child (parent is child node on next loop)
+                        node_path.pop() # pop parent node 
+                    
+
+                elif parent == grand_parent.right:
+
+                    gp_left_node_color = 'black'
+
+                    if aunt: # on left
+                        if aunt.color == 'red':
+                            gp_left_node_color = 'red'
+                    
+                    # case 1
+                    if gp_left_node_color == 'red':
+                        parent.color = 'black'
+                        aunt.color = 'black'
+                        grand_parent.color = 'red'
+                        
+                        # promote gp to new child node by dropping child node and parent node 
+                        node_path.pop() # pop child node 
+                        node_path.pop() # pop parent node 
+                    
+                    # case 2
+                    elif parent.left == child and parent.color == 'red' and child.color == 'red':
+                        self.rotate_right(parent) # child promoted to parent
+                        node_path[-1] , node_path[-2] = node_path[-2] , node_path[-1]  # swap parent and child 
+                        child = node_path[-1]
+                        parent = node_path[-2]
+
+                        if black_node_check_valid(self):
+                            break 
+
+                    # case 3
+                    elif parent.right == child and parent.color == 'red' and child.color == 'red':
+
+                        parent.color = 'black'
+                        grand_parent.color = 'red'
+                        self.rotate_left(grand_parent)
+                        
+                        node_path.pop() # pop child (parent is child node on next loop)
+                        node_path.pop() # pop parent node 
+
+            self.root.color = 'black'            
+                
+
+    def contains(self, value):
+        if self.root == None:
+            return None 
+
+        queue = [self.root]
+
+        while queue:
+            node = queue.pop(0)
+
+            if node.value == value:
+                return True 
         
+            if value < node.value:
+                if node.left:
+                    queue.append(node.left)
+            
+            if value > node.value:
+                if node.right:
+                    queue.append(node.right) 
 
-# tree.balanced_add(21)
+        return False 
 
-# tree.remove(40)
-# print(tree.head.left.val, tree.head.left.balance)
-# print(tree.head.left.left.val, tree.head.left.left.balance)
-# tree.rotate_right(tree.head)
-# tree.rotate_left(tree.head)
+    def display_tree(self): 
+        
+        class s_node:
+            def __init__(self, parent, depth = 0):
+                self.curr = parent
+                self.depth = depth 
 
-# print(tree.head.val, tree.head.balance)
+        if self.root == None:
+            return 
+        
+        queue = [s_node(self.root)]
+        arr = []
 
-# print(tree.head.right.val, tree.head.right.balance)
-# print(tree.head.right.right.val, tree.head.right.right.balance)
+        while queue:
+            
+            node = queue.pop(0) 
+
+            if len(arr) == node.depth:
+                arr.append([])
+            
+            arr[node.depth].append( str(node.curr.value) + ' ' + node.curr.color)
+
+            if node.curr.left:
+                queue.append( s_node(node.curr.left, node.depth + 1) )
+
+            if node.curr.right:
+                queue.append( s_node(node.curr.right, node.depth + 1) )
+
+
+        for ele in arr:
+            print('{}\n'.format(ele))
+
+
+    def remove(self, value):
+        if self.root == None:
+            return None 
+        
+        queue = [self.root]
+
+tree = RB_Tree()
+tree.add(40)
+tree.add(22)
+tree.add(92)
+tree.add(389)
+tree.add(491)
+tree.add(132)
+tree.add(1320)
+tree.add(2)
+
+print()
+print(tree.display_tree())
