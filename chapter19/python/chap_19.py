@@ -771,6 +771,8 @@ class RB_Tree:
             return None 
         
         queue = [self.root]
+        
+        # TBD 
 
 tree = RB_Tree()
 tree.add(40)
@@ -784,3 +786,190 @@ tree.add(2)
 
 print()
 print(tree.display_tree())
+
+class Splay_Node:
+    def __init__(self, value):
+        self.value = value 
+        self.right = None 
+        self.left = None 
+
+class Splay_Tree:
+    def __init__(self):
+        self.root = None 
+
+
+    def __rotate_left(self, target_node):
+        
+        class search_node:
+            def __init__(self, current, prev_list = []):
+                self.tree_node = current
+                self.tree_node_prev = prev_list
+        
+        node = None 
+        demote_node = None 
+        promote_node = None 
+
+        if self.root == None:
+            return 
+        
+        if self.root.right == None:
+            return 
+        
+        queue = [  search_node(self.root)  ]
+
+        while queue:
+
+            node = queue.pop(0)
+            
+            if node.tree_node == target_node:
+                demote_node = node.tree_node
+                promote_node = node.tree_node.right 
+                grand_child = None 
+
+                if promote_node:
+                    grand_child = promote_node.left 
+                    demote_node.right = grand_child 
+                    promote_node.left = demote_node
+
+                if len(node.tree_node_prev) == 0:
+                    self.root = promote_node
+
+                elif node.tree_node_prev[-1].right == demote_node:
+                    node.tree_node_prev[-1].right = promote_node
+
+                elif node.tree_node_prev[-1].left == demote_node:
+                    node.tree_node_prev[-1].left = promote_node
+                
+                break 
+                    
+            if node.tree_node.left:
+                queue.append( search_node(node.tree_node.left, node.tree_node_prev +  [node.tree_node]  ) )
+            
+            if node.tree_node.right:
+                queue.append( search_node(node.tree_node.right,     node.tree_node_prev +  [node.tree_node]  ) )
+
+    def __rotate_right (self, target_node):
+        class search_node:
+            def __init__(self, current, prev_list = []):
+                self.tree_node = current 
+                self.tree_node_prev = prev_list
+        node = None 
+        demote_node = None 
+        promote_node = None 
+
+        if self.root == None:
+            return 
+        if self.root.left == None :
+            return 
+        
+        queue = [search_node(self.root)]
+
+        while queue:
+            node = queue.pop(0)
+
+            if node.tree_node == target_node:
+                demote_node = node.tree_node
+                promote_node = node.tree_node.left
+                grand_child = None 
+
+                if promote_node:
+                    grand_child = promote_node.right
+                    demote_node.left = grand_child 
+                    promote_node.right = demote_node
+                
+                if len(node.tree_node_prev) == 0:
+                    self.root = promote_node 
+                elif node.tree_node_prev[-1].right == demote_node:
+                    node.tree_node_prev[-1].right = promote_node 
+                elif node.tree_node_prev[-1].left == demote_node:
+                    node.tree_node_prev[-1].left = promote_node 
+                
+                break 
+
+            if node.tree_node.left:
+                queue.append(search_node(node.tree_node.left, node.tree_node_prev + [node.tree_node]) )
+            
+            if node.tree_node.right:
+                queue.append(search_node(node.tree_node.right, node.tree_node_prev + [node.tree_node]) )
+
+    def display_tree(self): 
+        
+        class s_node:
+            def __init__(self, parent, depth = 0):
+                self.curr = parent
+                self.depth = depth 
+
+        if self.root == None:
+            return 
+        
+        queue = [s_node(self.root)]
+        arr = []
+
+        while queue:
+            
+            node = queue.pop(0) 
+
+            if len(arr) == node.depth:
+                arr.append([])
+            
+            arr[node.depth].append( str(node.curr.value) )
+
+            if node.curr.left:
+                queue.append( s_node(node.curr.left, node.depth + 1) )
+
+            if node.curr.right:
+                queue.append( s_node(node.curr.right, node.depth + 1) )
+
+
+        for ele in arr:
+            print('{}\n'.format(ele))
+
+
+    def add(self, value):
+        path = []
+        ele = None 
+
+        node = None 
+        
+        if self.root == None:
+            self.root = Splay_Node(value)
+        else:
+            node = self.root 
+
+            while node: 
+                if (value < node.value):
+                    
+                    path.append( {'parent': node, 'dir': 'left' }  )
+                    if node.left:
+                        node = node.left 
+                    else: 
+                        node.left = Splay_Node(value)
+                        break 
+                elif (value >= node.value):
+                    path.append( {'parent': node, 'dir': 'right' }  )
+                    if node.right :
+                        node = node.right 
+                    else:
+                        node.right = Splay_Node(value)
+                        break 
+
+        while path:
+
+            ele = path.pop() 
+            if ele['dir'] == 'left':
+                self.__rotate_right(ele['parent'])
+            
+            if ele['dir'] == 'right':
+                self.__rotate_left(ele['parent'])
+
+
+tree = Splay_Tree() 
+tree.add(100)
+tree.add(250)
+tree.add(250)
+tree.add(1000)
+tree.add(222)
+
+tree.display_tree()
+print(tree.root.value)
+print(tree.root.left.left.left.value)
