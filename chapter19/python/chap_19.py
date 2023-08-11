@@ -961,6 +961,196 @@ class Splay_Tree:
             
             if ele['dir'] == 'right':
                 self.__rotate_left(ele['parent'])
+    
+    def contains(self, value):
+        path = [] 
+        ele = None 
+        node = None 
+        result = False
+
+        if self.root == None:
+            result = False 
+        else:        
+            node = self.root 
+
+            while node:
+                
+                if value == node.value:
+                    result = True 
+                    node = None 
+                
+                elif value < node.value:
+                    if node.left:
+                        path.append( {'parent': node, 'dir': 'left' }  )
+                        node = node.left 
+                    else:
+                        node = None 
+
+                elif value > node.value: 
+                    if node.right:
+                        path.append( {'parent': node, 'dir': 'right' }  )
+                        node = node.right 
+                    else:
+                        node = None 
+                else :
+                    break 
+
+        # splay     
+        while path:
+
+            ele = path.pop() 
+            if ele['dir'] == 'left':
+                self.__rotate_right(ele['parent'])
+            
+            if ele['dir'] == 'right':
+                self.__rotate_left(ele['parent'])
+    
+                    
+        return result 
+
+    def remove (self, value):
+        path = [] 
+        node = None 
+        ele = None 
+        result = False
+
+        if self.root == None:
+
+            result = False 
+
+        else:        
+
+            node = self.root 
+
+            while node:
+                delete_node = node 
+                parent_node = None 
+                # grand_parent_node = None if len(path) > 1 else path[-2][0]
+                
+                if len(path) > 0:
+                    parent_node = path[-1]['parent']
+
+                if value == node.value:
+
+                    if self.root == delete_node: # 
+                            # promote right node 
+                        if delete_node.right == None:
+                            self.root = node.left
+                            # promote left node
+                        elif delete_node.left == None :
+                            self.root = node.right 
+                            # promote right side 
+                        else:
+                            delete_node_right_child = None 
+                            delete_node_right_grand_child = None 
+                            delete_node_left_child = None 
+
+                            delete_node_right_child = node.right 
+
+                            if delete_node_right_child:
+                                delete_node_right_grand_child = node.right.left 
+
+                            delete_node_left_child = node.left 
+                            
+                            if delete_node_left_child:
+                                while delete_node_left_child.right:
+                                    delete_node_left_child = delete_node_left_child.right
+                                delete_node_left_child.right = delete_node_right_grand_child 
+                            
+                            self.root = delete_node_right_child
+                        
+                    # promote right side 
+                    elif parent_node.right == node:
+                        
+                        delete_node_right_child = None 
+                        delete_node_left_child = None 
+                        delete_node_right_grand_child = None 
+
+                        delete_node_right_child = node.right 
+                        
+                        if delete_node_right_child:
+                            delete_node_right_grand_child = node.right.left 
+
+                        delete_node_left_child = node.left 
+                        
+                        if delete_node_left_child:
+                            while delete_node_left_child.right:
+                                delete_node_left_child = delete_node_left_child.right
+                            delete_node_left_child.right = delete_node_right_grand_child 
+                            
+                        parent_node.right = delete_node_right_child 
+
+                    
+
+                    # promote left side 
+                    elif parent_node.left == node:
+                        delete_node_left_child = None 
+                        delete_node_left_grand_child = None 
+                        delete_node_right_child = None 
+
+                        delete_node_left_child = node.left 
+                        
+                        if delete_node_left_child:
+                            delete_node_left_grand_child = node.left.right 
+
+                        delete_node_right_child = node.right 
+                        
+                        if delete_node_right_child:
+                            while delete_node_right_child.left:
+                                delete_node_right_child = delete_node_right_child.left
+                            delete_node_right_child.left = delete_node_left_grand_child
+                            
+                        parent_node.left = delete_node_left_child
+
+                    break 
+
+                elif value < node.value:
+                    if node.left:
+                        path.append( {'parent': node, 'dir': 'left' }  )
+                        node = node.left 
+                    else:
+                        node = None 
+
+                elif value > node.value: 
+                    if node.right:
+                        path.append( {'parent': node, 'dir': 'right' }  )
+                        node = node.right 
+                    else:
+                        node = None 
+                else :
+                    break 
+
+    def display_tree(self): 
+        
+        class s_node:
+            def __init__(self, parent, depth = 0):
+                self.curr = parent
+                self.depth = depth 
+
+        if self.root == None:
+            return 
+        
+        queue = [s_node(self.root)]
+        arr = []
+
+        while queue:
+            
+            node = queue.pop(0) 
+
+            if len(arr) == node.depth:
+                arr.append([])
+            
+            arr[node.depth].append( str(node.curr.value) )
+
+            if node.curr.left:
+                queue.append( s_node(node.curr.left, node.depth + 1) )
+
+            if node.curr.right:
+                queue.append( s_node(node.curr.right, node.depth + 1) )
+
+
+        for ele in arr:
+            print('{}\n'.format(ele))
 
 
 tree = Splay_Tree() 
@@ -970,6 +1160,6 @@ tree.add(250)
 tree.add(1000)
 tree.add(222)
 
+tree.remove(222)
+
 tree.display_tree()
-print(tree.root.value)
-print(tree.root.left.left.left.value)
