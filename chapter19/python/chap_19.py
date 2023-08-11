@@ -1061,7 +1061,8 @@ class Splay_Tree:
                         
                     # promote right side 
                     elif parent_node.right == node:
-                        
+                        result = True 
+
                         delete_node_right_child = None 
                         delete_node_left_child = None 
                         delete_node_right_grand_child = None 
@@ -1099,7 +1100,7 @@ class Splay_Tree:
                             while delete_node_right_child.left:
                                 delete_node_right_child = delete_node_right_child.left
                             delete_node_right_child.left = delete_node_left_grand_child
-                            
+
                         parent_node.left = delete_node_left_child
 
                     break 
@@ -1119,7 +1120,8 @@ class Splay_Tree:
                         node = None 
                 else :
                     break 
-
+        return result
+    
     def display_tree(self): 
         
         class s_node:
