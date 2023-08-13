@@ -767,11 +767,355 @@ class RB_Tree:
 
 
     def remove(self, value):
+
+        def parent_of_node (target):
+            class s_node :
+                def __init__(self, c, prev = None):
+                    self.curr = c
+                    self.prev = prev 
+
+            queue = [s_node(self.root)]
+            
+            while queue:
+                
+                node = queue.pop() 
+                
+                if node.curr == target : 
+                    return node.prev
+
+                if node.left:
+                    queue.append(  s_node(node.left, node) )
+
+                if node.right:
+                    queue.append(  s_node(node.right, node) )
+
+                
+
+
+        path = [] 
         if self.root == None:
             return None 
         
-        queue = [self.root]
+        node = self.root 
+
+        if value < node.value :
+            path.append(node)
+            if node.left:
+                node = node.left 
         
+        elif value > node.value :
+            path.append(node )
+            if node.right:
+                node = node.right 
+
+        elif value == node.value:
+            z = None 
+            z_color = None 
+            z_parent_to_y_direction = None 
+            y = None 
+            y_parent = None 
+            y_color = None 
+            x = None 
+            x_color = None 
+            y_parent_dir = None 
+            w = None
+
+
+            z = node 
+
+            if len(path) :
+                z_parent = path[-1]
+
+            # delete node has no children
+            if z.left == None and z.right == None:
+                
+                y = z.right 
+
+                if z == self.root:
+                    self.root == None 
+                elif z_parent.right == y:
+                    z_parent.right = None 
+                    z_parent_to_y_direction  = 'right'
+                elif z_parent.left == y:
+                    z_parent.left = None 
+                    z_parent_to_y_direction  = 'left'
+            
+            # delete node has one child
+            elif z.left == None:
+
+                y = z.right 
+
+                if z == self.root :
+                    self.root = y 
+                elif z_parent.left  == z:
+                    z_parent.left = y
+                    z_parent_to_y_direction  = 'left'
+                elif z_parent.right  == z:
+                    z_parent.right = y
+                    z_parent_to_y_direction  = 'right'
+
+            # delete node has one child
+            elif z.right == None :
+
+                y = z.left
+
+                if self.root == z:
+                    self.root = y 
+                elif z_parent.left  == z:
+                    z_parent.left = y
+                    z_parent_to_y_direction  = 'left'
+                elif z_parent.right  == z:
+                    z_parent.right = y
+                    z_parent_to_y_direction  = 'right'
+            
+            # delete node is full 
+            else:
+
+                # find min right subtree 
+
+                y = z.right 
+
+                while y.left:
+                    y_parent = y
+                    y = y.left
+                
+                    x = y.right 
+
+                    if not x:
+                        x_color = 'black'
+                    else: 
+                        x_color = x.color 
+
+                #  transplant 
+
+                if not y_parent:
+                    y.right  = x
+                    y.left = z.left 
+                elif y_parent.left == y:
+                    y_parent.left = x 
+                    y.left = z.left 
+                    y.right = y_parent
+                
+                y_color = y.color # original y color  ( if black rotate and repaint )
+                y.color = z.color # original color of z 
+
+
+                #
+                #   Two types of violations 
+                #
+                #
+                #
+                #  Black - Red 
+                #
+                #    R                  R                   R
+                #     \         ->       \          --->     \
+                #      B(y)             B - R                 B 
+                #       \ 
+                #        R(x)
+                # 
+                # 
+
+                #
+                #    B                  B                   B
+                #     \         ->       \          --->     \
+                #      B(y)             B - R                 B 
+                #       \ 
+                #        R(x)
+                # 
+                # 
+
+
+
+                # Double Black
+                #
+                #    R                   R  
+                #     \         ->         \        
+                #      B(y)               B - B
+                #       \ 
+                #        B(x)
+                #
+                #
+                #    B                   B 
+                #     \         ->         \ 
+                #      B(y)               B - B
+                #       \ 
+                #        B(x)
+
+
+
+
+
+            if y_color == 'black':
+                
+                # RED BLACK
+                if x_color == 'red':
+                    
+                    if x:
+                        x.color = 'black'
+
+                elif z_parent:
+                    
+                    while y != self.root :
+                        
+                        w_left_color = None 
+                        w_right_color = None 
+                        
+                        if z_parent_to_y_direction == 'left':
+                            
+                            w = z_parent.right  # sibling of x 
+                            
+                            if w:
+                                
+                                if w.left == None:
+                                    w_left_color = 'black'
+                                else:
+                                    w_left_color = w.left.color 
+
+                                if w.right == None:
+                                    w_right_color = 'black'
+                                else:
+                                    w_right_color = w.right.color 
+
+                                # case 1
+                                if w.color == 'red':
+
+                                    # color right child of parent of x to BLACK
+                                    w.color = 'black'
+
+                                    # color of parent of x to RED 
+                                    z_parent.color = 'red'
+                                
+                                    # left rotate parent of x 
+                                    self.rotate_left(z_parent)
+
+                                    # assign the right-child of parent of x to w 
+                                    w = z_parent.right    # sibling of x 
+
+                                # case 2 
+                                elif w_left_color =='black' and w_right_color == 'black':
+
+                                    # set the color of w as RED 
+                                    w.color = 'red'
+
+                                    # assign parent of x to x ( y = z_parent)
+                                    z_parent = parent_of_node(y)
+
+                                # case 3
+                                elif w_right_color == 'black' and w_left_color == 'red':   
+                                    
+                                    # set left child of w to BLACK
+                                    if w.left:
+                                        w.left.color = 'black'
+
+                                    # set color of w to RED
+                                    w.color = 'red'
+
+                                    self.rotate_right(w)
+                                    
+                                    # assign the right-child of parent of y to w
+
+                                    w = z_parent.right
+                                
+                                # case 4
+                                elif w_right_color == 'red' and w_left_color == 'black':   
+                                    
+                                    # color of w as the color  of the parent of x 
+                                    z_parent = parent_of_node(y)
+                                    w.color = z_parent.color 
+                                    
+                                    # set color of parent of x as BLACK
+                                    z_parent.color = 'black'
+
+                                    # color of right child of w as BLACK
+                                    if w.right:
+                                        w.right.color = 'black'
+
+                                    self.rotate_left(z_parent)
+
+                                    y = self.root 
+
+                        
+                        if z_parent_to_y_direction == 'right':
+                            
+                            # NOTE : operations similar to above case for z_parent_to_y_direction == left, but many operations are reversed 
+                            
+                            w = z_parent.left # sibling of x 
+
+                            if w:
+                                
+                                if w.left == None:
+                                    w_left_color = 'black'
+                                else:
+                                    w_left_color = w.left.color 
+
+                                if w.right == None:
+                                    w_right_color = 'black'
+                                else:
+                                    w_right_color = w.right.color 
+
+                                # case 1
+                                if w.color == 'red':
+
+                                    # color right child of parent of x to BLACK
+                                    w.color = 'black'
+
+                                    # color of parent of x to RED 
+                                    z_parent.color = 'red'
+                                
+                                    # left rotate parent of x 
+                                    self.rotate_right(z_parent)
+
+                                    # assign the right-child of parent of x to w 
+                                    w = z_parent.left    # sibling of x 
+
+                                # case 2 
+                                elif w_left_color =='black' and w_right_color == 'black':
+
+                                    # set the color of w as RED 
+                                    w.color = 'red'
+
+                                    # assign parent of x to x ( y = z_parent)
+                                    z_parent = parent_of_node(y)
+
+                                # case 3
+                                elif w_right_color == 'red' and w_left_color == 'black':   # red  right side 
+                                    
+                                    # set right child of w to BLACK
+                                    if w.right:
+                                        w.right.color = 'black'
+
+                                    # set color of w to RED
+                                    w.color = 'red'
+
+                                    self.rotate_left(w)
+
+                                    # assign the left-child of parent of y to w
+                                    w = z_parent.left
+                                
+                                # case 4
+                                elif w_right_color == 'black' and w_left_color == 'red':   # red left side 
+                                    
+                                    # color of w as the color  of the parent of x 
+                                    z_parent = parent_of_node(y)
+                                    w.color = z_parent.color 
+                                    
+                                    # set color of parent of x as BLACK
+                                    z_parent.color = 'black'
+
+                                    # color of right child of w as BLACK
+                                    if w.left:
+                                        w.left.color = 'black'
+
+                                    self.rotate_right(z_parent)
+
+                                    y = self.root 
+
+
+                        if y:
+                            y.color = 'black'                        
+
+
+
         # TBD 
 
 tree = RB_Tree()
@@ -783,6 +1127,9 @@ tree.add(491)
 tree.add(132)
 tree.add(1320)
 tree.add(2)
+
+tree.remove(491)
+
 
 print()
 print(tree.display_tree())
