@@ -1,4 +1,4 @@
-package java_fun.java_fun_child.multi_inheritance;
+package review.java_fun_child.multi_inheritance;
 
 public class Executor {
     public static void main(String[] args) {
