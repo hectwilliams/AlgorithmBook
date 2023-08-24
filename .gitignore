@@ -2,3 +2,5 @@
 *.DSYM
 *.json
 *.vscode
+*notes_blind.txt
+*xx_xx*
