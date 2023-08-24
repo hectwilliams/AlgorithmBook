@@ -2,6 +2,7 @@
 
 ## Chapters
 
+0. Review
 1. Fundamentals (***C++***, ***Python***, ***Java*** )
 2. Fundamentals II (***C++***, ***Python***, ***Java***)
 3. Arrays (***C++***, ***Python***, ***Java***)

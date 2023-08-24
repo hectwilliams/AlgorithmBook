@@ -1,4 +1,4 @@
-package algo;
+package chapter1.algo;
 
 import java.util.*;
 
