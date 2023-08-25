@@ -1,10 +1,10 @@
 package review.java_fun_child.dbs;
 
-public class DatabaseInsert {
+public class DatabaseCrud {
 
     public DatabaseConnection conninstance = null; 
 
-    public DatabaseInsert(DatabaseConnection connInstance) {
+    public DatabaseCrud(DatabaseConnection connInstance) {
         this.conninstance = connInstance;
     }
 
@@ -28,12 +28,17 @@ public class DatabaseInsert {
         this.conninstance.insert(sql);
     }
 
-    public void check(String dbName, String item) {
+    public String get(String dbName, String item) {
         // String sql = "SELECT item FROM shoplist" + "WHERE item " + "LIKE " + shopItem + '%';
         String sql = "SELECT item FROM" + " " +  dbName + "  " + "WHERE item = " + "'" + item  + "'" ;
-        boolean found_item = this.conninstance.find(sql);
-        System.out.println(found_item);
+        return this.conninstance.find(sql);
     }
 
+    // read orange from db
+     public String getRow1(String tableName) {
+        int row = 1;
+        String sql = "SELECT item  FROM" + " " +  tableName +   " WHERE id = "  + "'" +  row + "'"    ;
+        return this.conninstance.find(sql);
+    }
 
 }

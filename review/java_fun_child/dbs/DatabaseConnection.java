@@ -94,22 +94,25 @@ public class DatabaseConnection {
 
     }
 
-    public boolean find(String sql) {
+    public String find(String sql) {
 
-        boolean state = false;
+        String rcvdString = "";
 
         try {
             ResultSet rs = this.stmt.executeQuery(sql);
             ResultSetMetaData rcvData = rs.getMetaData();
-            state = rcvData.getColumnCount() != 0;
-            
+            int count = rcvData.getColumnCount();
+
+            while (rs.next()) {
+                rcvdString = rs.getString(count);
+            }
+
         } catch (SQLException se) {
             se.printStackTrace();
         }
 
-        return state; 
+        return rcvdString; 
     }
-
 
 
     public void closeConnection () {
