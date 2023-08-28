@@ -3,10 +3,12 @@ package review.java_fun_child.dbs;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 // inherit Frame class 
 
-public class ButtonExample extends Frame{
+public class ButtonExample extends Frame {
 
     public final String[] labels= {"Click Me", "I'm Melting"};
     public Button b = null; 
@@ -35,15 +37,26 @@ public class ButtonExample extends Frame{
         setVisible(true);
 
         // frame size 
-        this.setSize(300, 300);
+         GraphicsDevice gd = this.getGraphicsConfiguration().getDevice();
+         int height = gd.getDisplayMode().getHeight();
+         int width = gd.getDisplayMode().getWidth();
+         this.setSize(width, height);
 
+        
         
         /* ACTIONS */
 
         b.addActionListener( (event) -> {       
             this.updateButtonLabel();
         });
- 
+
+        this.addWindowListener(
+            new WindowAdapter() {
+                public void windowClosing(WindowEvent we_event) {
+                    we_event.getWindow().dispose();
+                }
+            }
+        );
     }
 
     // call by event listener of button 
@@ -63,6 +76,14 @@ public class ButtonExample extends Frame{
 
     public static void main(String args[]) {
         ButtonExample f = new ButtonExample();
+        GraphicsDevice gd = MouseInfo.getPointerInfo().getDevice();
+        System.out.println(gd.getDisplayMode().getWidth());
+        System.out.println(gd.getDisplayMode().getHeight());
+        
+        GraphicsDevice ggd = f.getGraphicsConfiguration().getDevice();
+        System.out.println ( ggd.getDisplayMode().getWidth());
+        System.out.println ( ggd.getDisplayMode().getHeight());
+
     } 
 
 }
