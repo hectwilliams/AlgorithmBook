@@ -1,5 +1,8 @@
 package review.java_fun_child.dbs;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class DatabaseCrud {
 
     public DatabaseConnection conninstance = null; 
@@ -38,13 +41,6 @@ public class DatabaseCrud {
         return this.conninstance.find(sql);
     }
 
-    // read orange from db
-     public String getRow1(String tableName) {
-        int row = 1;
-        String sql = "SELECT item  FROM" + " " +  tableName +   " WHERE id = "  + "'" +  row + "'"    ;
-        return this.conninstance.find(sql);
-    }
-
        // read orange from db
     public int db_length(String tableName) {
         String sql = "SELECT *  FROM" + " " +  tableName;
@@ -53,10 +49,9 @@ public class DatabaseCrud {
     }
 
       // read orange from db
-    public String  [] db_items (String tableName) {
-        String sql = "SELECT item  FROM" + " " +  tableName;
-        String [] result = this.conninstance.findAll(sql);
-        System.out.println(result);
+    public List<String> db_items (String tableName) {
+        String sql = "SELECT * FROM" + " " +  tableName;
+        List<String>  result = this.conninstance.findAll(sql);
         return result;
     }
 

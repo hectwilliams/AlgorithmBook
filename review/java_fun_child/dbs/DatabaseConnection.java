@@ -21,6 +21,8 @@
 package review.java_fun_child.dbs;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.lang.ClassNotFoundException;
 import java.nio.file.Paths;
 
@@ -116,18 +118,24 @@ public class DatabaseConnection {
         return rcvdString; 
     }
 
-    public String[] findAll(String sql) { 
-        String [] rcvdStrings = {};
-
+    public List<String> findAll(String sql) { 
+        List<String>  rcvdStringList = new ArrayList<>();
+        int id; 
+        
         try {
+            
             ResultSet rs = this.stmt.executeQuery(sql);
-            ResultSetMetaData rcvData = rs.getMetaData();
-            System.out.println(rcvData);
+            
+            while (rs.next()) {
+                id = rs.getInt("id");
+                rcvdStringList.add(rs.getString("item"));
+            }
+            
         } catch(SQLException se) {
             se.printStackTrace();
         } 
 
-        return rcvdStrings;
+        return rcvdStringList;
     }
 
 
@@ -162,7 +170,5 @@ public class DatabaseConnection {
             se.printStackTrace();
         }
     }
-
-    // public static void main (String[] args) throws ClassNotFoundException {}
 
 }

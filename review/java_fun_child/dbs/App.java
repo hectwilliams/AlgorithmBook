@@ -31,39 +31,28 @@ import java.lang.Math;
 
 public class App extends Frame {
 
-    public final String[] labels= {"Click Me", "I'm Melting", "hmm", "click me", "click me", "click me"};
-    public Button b, b_first= null; 
+    public Button b = null; 
     public GridLayout grid = null ; 
     List<Button> buttons = new ArrayList<>();  // buffe of buttons 
     Random rand = new Random();
-    boolean bool = false ;
-    public   String workingDir = Paths.get("review", "java_fun_child", "dbs").toAbsolutePath().normalize().toString();
-
+    public String workingDir = Paths.get("review", "java_fun_child", "dbs").toAbsolutePath().normalize().toString();
     DatabaseConnection conninstance = new DatabaseConnection();
-
     DatabaseCrud crudMyApi = new DatabaseCrud(conninstance);
-
 
     public App() {
 
         new DatabaseInit(crudMyApi, workingDir);
         
-        crudMyApi.db_items("shoplist");
-
+        setTitle("Button - Database Chat");
         
-        // setTitle (method)
-        setTitle("Click me to read Database");
-
-        // length of database 
-        int buttonCount = this.databaseSize() ;
-        int r = (int) Math.ceil(this.databaseSize() / 2.0);   
+        List<String>  items = crudMyApi.db_items("shoplist");
+        int r = (int) Math.ceil(items.size() / 2.0);   
         int c = 2;
         GridLayout grid = new GridLayout( r ,  c); 
-        setLayout(grid);
         
-        // // visible frame 
+        setLayout(grid);
         setVisible(true);
-
+        
         // // frame size 
          GraphicsDevice gd = this.getGraphicsConfiguration().getDevice();
          int height = gd.getDisplayMode().getHeight();
@@ -71,9 +60,9 @@ public class App extends Frame {
          this.setSize(width, height);
          
         // // create button(s), not connected to database 
-        for (int i = 0; i < buttonCount; i++) {
-            b = new Button(labels[i]);
-
+        for (int i = 0; i < items.size(); i++) {
+            b = new Button( items.get(i));
+            
             Color color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
             b.setBackground(  color);
             color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
@@ -89,12 +78,7 @@ public class App extends Frame {
             add(button_ele);
         }
 
-        // /* ACTIONS */
-
-        // b_first.addActionListener( (event) -> {       
-        //     this.updateButtonLabel();
-        // });
-
+        // close window 
         this.addWindowListener(
             new WindowAdapter() {
                 public void windowClosing(WindowEvent we_event) {
@@ -102,27 +86,14 @@ public class App extends Frame {
                 }
             }
         );
-    }
 
-    // call by event listener of button 
-    public void updateButtonLabel() { 
-        if (this.b_first.getLabel().contains("Click")) {
-            // value from database 
-            b_first.setLabel(this.labels[1]);
-        } else {
-            b_first.setLabel(this.labels[0]);
+        // add button listener event 
+        // change button color when clicked 
+        for (Button button: buttons) {
+            button.addActionListener(event -> {  // lambda 
+                button.setBackground( new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat()) );
+            });
         }
-    }
-
-    // call by public Class Execute  to update array label storage
-    public void updateButtonLabel(String  str) {
-        this.labels[1] = str;
-    }
-
-    public int databaseSize() {
-        int count = 0;
-        crudMyApi.db_length("shoplist");
-        return count; 
     }
 
     public static void main(String args[]) {
