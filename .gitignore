@@ -3,4 +3,9 @@
 *.json
 *.vscode
 *notes_blind.txt
-*xx_xx*
+xx_xx_config.java
+*.jar
+*mysql-connector-j-8.0.33.jar
+*mysql-connector-j-8.1.0.jar
+*json-20230618.jar
+*/review/java_config/
