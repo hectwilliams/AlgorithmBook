@@ -22,6 +22,7 @@ package review.java_fun_child.dbs;
 
 import java.sql.*;
 import java.lang.ClassNotFoundException;
+import java.nio.file.Paths;
 
 public class DatabaseConnection {
 
@@ -44,6 +45,7 @@ public class DatabaseConnection {
     public Connection conn = null; 
     public Statement stmt = null;
 
+    public final String workingDir = Paths.get("review", "java_fun_child", "dbs").toAbsolutePath().normalize().toString();
 
     /* constructor */
     public DatabaseConnection() {
@@ -84,14 +86,14 @@ public class DatabaseConnection {
 
     }
 
-    public void insert(String sql) {
-
+    public int insert(String sql) {
+        int ret = 0;
         try {
-            this.stmt.executeUpdate(sql);
+            ret = this.stmt.executeUpdate(sql);
         } catch (SQLException se) {
             se.printStackTrace();
         }
-
+        return ret;
     }
 
     public String find(String sql) {
@@ -112,6 +114,36 @@ public class DatabaseConnection {
         }
 
         return rcvdString; 
+    }
+
+    public String[] findAll(String sql) { 
+        String [] rcvdStrings = {};
+
+        try {
+            ResultSet rs = this.stmt.executeQuery(sql);
+            ResultSetMetaData rcvData = rs.getMetaData();
+            System.out.println(rcvData);
+        } catch(SQLException se) {
+            se.printStackTrace();
+        } 
+
+        return rcvdStrings;
+    }
+
+
+    public int size(String sql) {
+
+        int count = 0;
+
+        try {
+            ResultSet rs = this.stmt.executeQuery(sql);
+            ResultSetMetaData rcvData = rs.getMetaData();
+            count = rcvData.getColumnCount();
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return count; 
     }
 
 

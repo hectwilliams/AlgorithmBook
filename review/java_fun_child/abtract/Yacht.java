@@ -1,4 +1,4 @@
-package java_fun.java_fun_child.abtract;
+package review.java_fun_child.abtract;
 
 // inheritance from an abstract class 
 public class Yacht extends Boat {

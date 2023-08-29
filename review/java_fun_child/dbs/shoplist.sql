@@ -8,20 +8,20 @@ CREATE TABLE shop.shoplist (
     id INTEGER NOT NULL AUTO_INCREMENT ,
     item VARCHAR(255),
     quantity INTEGER,
-    
+    img VARCHAR(255),
     PRIMARY KEY(id)
 );
 
-ALTER TABLE shop.shoplist 
-ADD UNIQUE(item) ;
+ALTER TABLE shop.shoplist ADD UNIQUE(item) ;
 
 CREATE TABLE shop.properties  (
     id INTEGER NOT NULL AUTO_INCREMENT,
     item_name VARCHAR(255),
     location VARCHAR(255)  DEFAULT 'San Francisco',
-    
     PRIMARY KEY(id)
 );
 
 ALTER TABLE shop.properties
 ADD FOREIGN KEY (item_name) REFERENCES shop.shoplist(item);
+
+

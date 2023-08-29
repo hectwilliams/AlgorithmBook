@@ -4,27 +4,31 @@ public class DatabaseCrud {
 
     public DatabaseConnection conninstance = null; 
 
-    public DatabaseCrud(DatabaseConnection connInstance) {
-        this.conninstance = connInstance;
+    public DatabaseCrud(DatabaseConnection conn) {
+        this.conninstance = conn;
     }
 
     public void insert() {
         String sql = "INSERT INTO shoplist(item, quantity) VALUES('Orange', 10)";
-        this.conninstance.insert(sql);
+        int status = this.conninstance.insert(sql);
+        if (status == 1) {} 
     }
 
-     public void insert(String dbName, String item, int amount) {
+    // insert to shoplist table 
+     public void insert(String dbName, String item, int amount, String img) {
+        int status = 0;
         item = item.toLowerCase();
         String sql = "";
-        
-        if (dbName.contains( "shop") ) {
-            sql = "INSERT INTO" + " " + dbName + "(item, quantity)" +  "VALUES"+ '(' + "'"+  item + "'" +  ',' +  amount + ')' ;
-        } 
+        sql = "INSERT INTO" + " " + dbName + "(item, quantity, img)" +  "VALUES"+ '(' + "'"+  item + "'" +  ',' +  amount  +  " "  +  ','  +  "'"+  img + "'"  +   ')' ;
+        status = this.conninstance.insert(sql);
+        if (status == 1) {} 
+    }
 
-        if (dbName.contains( "prop") ) {
-            sql = "INSERT INTO" + " " + dbName + "(item_name)" +  "VALUES"+ '(' + "'"+  item + "'"  + ')' ;
-        } 
-
+    // insert to properties table
+    public void insert_p(String dbName, String item, String link) {
+        item = item.toLowerCase();
+        String sql = "";
+        sql = "INSERT INTO" + " " + dbName + "(item_name, img)" +  "VALUES"+ '(' +    "'"+  item + "'"  +     + ')' ;
         this.conninstance.insert(sql);
     }
 
@@ -39,6 +43,21 @@ public class DatabaseCrud {
         int row = 1;
         String sql = "SELECT item  FROM" + " " +  tableName +   " WHERE id = "  + "'" +  row + "'"    ;
         return this.conninstance.find(sql);
+    }
+
+       // read orange from db
+    public int db_length(String tableName) {
+        String sql = "SELECT *  FROM" + " " +  tableName;
+        int result = this.conninstance.size(sql);
+        return result;
+    }
+
+      // read orange from db
+    public String  [] db_items (String tableName) {
+        String sql = "SELECT item  FROM" + " " +  tableName;
+        String [] result = this.conninstance.findAll(sql);
+        System.out.println(result);
+        return result;
     }
 
 }

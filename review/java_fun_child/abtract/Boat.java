@@ -1,4 +1,4 @@
-package java_fun.java_fun_child.abtract;
+package review.java_fun_child.abtract;
 
 // declare abstract class 
 abstract class Boat {
