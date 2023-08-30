@@ -1,0 +1,3 @@
+
+
+source /Users/hectorwilliams/Documents/dev/repos/AlgorithmBook/review/java_fun_child/dbs/shoplist.sql
