@@ -1,0 +1,3 @@
+[submodule "jx_review/java_fun_child/proj1_submodule"]
+	path = jx_review/java_fun_child/proj1_submodule
+	url = git@github.com:hectwilliams/proj1.git
