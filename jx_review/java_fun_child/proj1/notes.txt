@@ -1,9 +1,0 @@
-Create submodule 
-
-$ cd proj1
-
-$ git init 
-
-"sequence of events will create new directory"
-
-git submodule add <git repo>
