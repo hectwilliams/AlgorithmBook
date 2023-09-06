@@ -65,7 +65,7 @@ public class App extends Frame {
             
             Color color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
             b.setBackground(  color);
-            color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
+            color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat() ) ;
             b.setForeground(color);
             
             Font font = new Font(Font.SANS_SERIF, Font.BOLD, 12);

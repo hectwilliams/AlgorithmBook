@@ -37,7 +37,8 @@ public class Test {
 		node.next.next.next = new Node(93);
 		node.next.next.next.next = new Node(34);
 		node.next.next.next.next.next = new Node(25);
-		node.next.next.next.next.next.next = new Node(17);
+		node.next.next.next.next.next.next = new 
+		(17);
 		
 		node = Chapter12.selectionSortSList(head);
 		runner = node;
