@@ -1,3 +1,9 @@
 [submodule "jx_review/java_fun_child/proj1_submodule"]
 	path = jx_review/java_fun_child/proj1_submodule
 	url = git@github.com:hectwilliams/proj1.git
+[submodule "jx_review/java_fun_child/weather"]
+	path = jx_review/java_fun_child/weather
+	url = git@github.com:hectwilliams/weather.git
+[submodule "jx_review/java_fun_child/weather_app"]
+	path = jx_review/java_fun_child/weather_app
+	url = git@github.com:hectwilliams/weather_app.git
