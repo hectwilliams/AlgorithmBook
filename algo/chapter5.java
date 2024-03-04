@@ -1,15 +1,15 @@
 package algo;
 
 
-public class Chapter5 {
+public class chapter5 {
 	
-	public static final class Node // node object 
+	public   class Node // node object 
 	{
-		Integer value;
-		Node next;
+		public Integer value;
+		public Node next;
 		Node child;
 		
-		Node(int val)
+		public Node(int val)
 		{
 			this.value = val;
 			child = next = null;
@@ -19,7 +19,7 @@ public class Chapter5 {
 	// Standalone functions 
 
 	
-	public static  Node addFront(Node ptr, int value) 
+	public   Node addFront(Node ptr, int value) 
 	{
 		Node node = new Node(value);
 		
@@ -31,7 +31,7 @@ public class Chapter5 {
 		return node;
 	}
 	
-	public static final boolean contains (Node ptr, int val)
+	public   boolean contains (Node ptr, int val)
 	{
 		while (ptr != null) 
 		{
@@ -43,7 +43,7 @@ public class Chapter5 {
 		return false;
 	}
 	
-	public static final Node removeFront (Node ptr) 
+	public   Node removeFront (Node ptr) 
 	{
 		if (ptr != null) 
 		{
@@ -52,7 +52,7 @@ public class Chapter5 {
 		return ptr;
 	}
 	
-	public static final Integer front(Node ptr) 
+	public   Integer front(Node ptr) 
 	{
 		if (ptr != null) 
 		{
@@ -61,7 +61,7 @@ public class Chapter5 {
 		return null;
 	}
 	
-	static final int length (Node ptr) 
+	  int length (Node ptr) 
 	{
 		int count = 0;
 		while (ptr != null) 
@@ -72,7 +72,7 @@ public class Chapter5 {
 		return count;
 	}
 	
-	static final Integer max(Node ptr) 
+	  Integer max(Node ptr) 
 	{
 		Integer result = null;
 		String[] v = new String[2];
@@ -103,7 +103,7 @@ public class Chapter5 {
 		return result;
 	}
 	
-	static final int min(Node ptr) 
+	  int min(Node ptr) 
 	{
 		Integer result = null;
 		String[] v = new String[2];
@@ -136,7 +136,7 @@ public class Chapter5 {
 		return result;
 	}
 	
-	static final Number average (Node ptr) 
+	  Number average (Node ptr) 
 	{
 		double sum = 0;
 		int  n = 0;
@@ -161,8 +161,8 @@ public class Chapter5 {
 		}
 		return null;
 	}
-	
-	static final void display(Node ptr) 
+
+	public   void display(Node ptr) 
 	{
 		while (ptr != null) 
 		{
@@ -172,7 +172,7 @@ public class Chapter5 {
 		System.out.println("");
 	}
 	
-	public static final Integer back(Node ptr) 
+	public   Integer back(Node ptr) 
 	{
 		if (ptr != null) 
 		{
@@ -185,7 +185,7 @@ public class Chapter5 {
 		return null;
 	}
 	
-	public static final Node removeBack (Node ptr) 
+	public   Node removeBack (Node ptr) 
 	{
 		Node result = null;
 		if (ptr != null) 
@@ -203,7 +203,7 @@ public class Chapter5 {
 		return result;
 	}
 	
-	public static final void addBack (Node ptr, int value) 
+	public   void addBack (Node ptr, int value) 
 	{
 		
 		if (ptr == null) 
@@ -230,7 +230,7 @@ public class Chapter5 {
 		}
 	}
 	
-	static final Node moveToFront (Node ptr, int mode) 
+	  Node moveToFront (Node ptr, int mode) 
 	{
 		Node head, oldHead, prev = null;
 		compareInterface interfaceSelect;
@@ -282,19 +282,19 @@ public class Chapter5 {
 		return head;		
 	}
 	
-	static final Node moveMinToFront(Node ptr)
+	  Node moveMinToFront(Node ptr)
 	{
 
 		return moveToFront(ptr, 0);
 	}
 	
-	static final Node moveMaxToFront(Node ptr)
+	  Node moveMaxToFront(Node ptr)
 	{
 		
 		return moveToFront(ptr, 1);
 	}
 	
-	static final Node prependVal(Node ptr, int value, int before) 
+	  Node prependVal(Node ptr, int value, int before) 
 	{
 		Node oldHead = ptr, node = new Node(value);
 		
@@ -330,7 +330,7 @@ public class Chapter5 {
 	
 	
 	
-	static final Node appendVal(Node ptr, int value, int after) 
+	  Node appendVal(Node ptr, int value, int after) 
 	{
 		Node oldHead = ptr, node = new Node(value);
 		
@@ -365,7 +365,7 @@ public class Chapter5 {
 		return oldHead;
 	}
 	
-	static final Node removeVal(Node ptr, int value)
+	  Node removeVal(Node ptr, int value)
 	{
 		Node newHead = ptr, marker;
 		
@@ -400,7 +400,7 @@ public class Chapter5 {
 		return newHead;
 	}
 	
-	static final Node splitOnValue (Node ptr, int value) 
+	  Node splitOnValue (Node ptr, int value) 
 	{
 		Node newHead = null;
 		
@@ -431,7 +431,7 @@ public class Chapter5 {
 		return newHead;
 	}
 	
-	static final Node concat (Node a, Node b) 
+	  Node concat (Node a, Node b) 
 	{
 		Node head = null;
 		
@@ -455,7 +455,7 @@ public class Chapter5 {
 		return head;
 	}
 	
-	static final Node removeNegatives (Node ptr) 
+	  Node removeNegatives (Node ptr) 
 	{
 		Node head = null;
 		
@@ -488,7 +488,7 @@ public class Chapter5 {
 		return head;
 	}
 	
-	static final Node partition (Node ptr, int value)  // partition(S) sorted 
+	  Node partition (Node ptr, int value)  // partition(S) sorted 
 	{
 		Node head = null, part = null, partClone = null, nde;
 		int ptrNextValue, ptrValue , valuePart;
@@ -547,7 +547,7 @@ public class Chapter5 {
 		return head;
 	}
 	
-	static final Integer secondToLastValue(Node ptr) 
+	  Integer secondToLastValue(Node ptr) 
 	{
 		
 		if (ptr == null) 
@@ -569,7 +569,7 @@ public class Chapter5 {
 		return null;
 	}
 	
-	static final void removeSelf(Node ptr) 
+	  void removeSelf(Node ptr) 
 	{
 		if (ptr == null) 
 		{
@@ -585,7 +585,7 @@ public class Chapter5 {
 		ptr.next = ptr.next.next;
 	}
 	
-	static final Node copy (Node ptr)  // deep copy
+	  Node copy (Node ptr)  // deep copy
 	{
 		Node head = null, tail = null;
 		
@@ -605,7 +605,7 @@ public class Chapter5 {
 		return head;
 	}
 	
-	static final Node filter (Node ptr, int low, int high) 
+	  Node filter (Node ptr, int low, int high) 
 	{
 		int ptrValue;
 		Node head; 
@@ -644,7 +644,7 @@ public class Chapter5 {
 		return head;
 	}
 	
-	static final Integer secondLargestValue ( Node ptr) 
+	  Integer secondLargestValue ( Node ptr) 
 	{
 		Object[] maxReg = new Object[2];
 		
@@ -684,7 +684,7 @@ public class Chapter5 {
 		return null;
 	}
 	
-	static final Node zip (Node ptrA, Node ptrB) 
+	  Node zip (Node ptrA, Node ptrB) 
 	{
 		Node ptrAHead = null, ptrBNext = null;
 		
@@ -712,7 +712,7 @@ public class Chapter5 {
 		return ptrAHead;
 	}
 	
-	static final void dedupe(Node ptr) 
+	  void dedupe(Node ptr) 
 	{
 		Node bufferHead, bufferTail, bufferptr;
 		
@@ -760,7 +760,7 @@ public class Chapter5 {
 		}
 	}
 	
-	static final void dedupeWithOutBuffer(Node ptr)   // (N^2/2 or N^2 worst case ) runtime
+	  void dedupeWithOutBuffer(Node ptr)   // (N^2/2 or N^2 worst case ) runtime
 	{
 		Node walk;
 		compareInterface cmprInterface = (Node  a,  Node b) -> {
@@ -792,7 +792,7 @@ public class Chapter5 {
 
 
 
-	public static void main (String[] args)
+	public  void main (String[] args)
 	{
 //		List<Integer> w = new List<Integer>();
 		Node head = null, head2;

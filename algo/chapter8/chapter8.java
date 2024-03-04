@@ -1,11 +1,15 @@
-package algo;
-import algo.Chapter5.*;
+package algo.chapter8;
 
-public class Chapter8 {
+import algo.chapter5;
+import algo.chapter5.Node;
+;
+
+public class chapter8 {
 	
 	public  static class SList
 	{
-		Node head;
+		public Node head;
+		chapter5 c5 = new chapter5();
 		
 		SList() 
 		{
@@ -14,7 +18,7 @@ public class Chapter8 {
 		
 		public void pushFront (int value) 
 		{
-			head = Chapter5.addFront(head, value);
+			head = chapter5.addFront(head, value);
 		}
 		
 		public Integer popFront () 
@@ -30,22 +34,22 @@ public class Chapter8 {
 		
 		public boolean contains (int value) 
 		{
-			return Chapter5.contains(head, value);
+			return chapter5.contains(head, value);
 		}
 		
 		public void removeVal (int value) 
 		{
-			head = Chapter5.removeVal(head, value);
+			head = chapter5.removeVal(head, value);
 		}
 		
 		public Integer back (int value) 
 		{
-			return Chapter5.back(head);
+			return chapter5.back(head);
 		}
 		
 		public void pushBack (int value) 
 		{
-			 Chapter5.addBack(head, value);
+			 chapter5.addBack(head, value);
 		}
 		
 		public Integer popBack () 
@@ -70,7 +74,7 @@ public class Chapter8 {
 		
 		public void display()
 		{
-			Chapter5.display(head);
+			chapter5.display(head);
 		}
 		
 		public  void swapPairs () 

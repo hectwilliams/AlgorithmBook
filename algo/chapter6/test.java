@@ -1,8 +1,8 @@
-package algo;
+package algo.chapter6;
 
-import algo.Chapter7.*;
+import algo.chapter6.chapter6.*;
 
-public class Test {
+public class test {
 	
 	private static void chapter6_test () 
 	{
@@ -17,7 +17,7 @@ public class Test {
 		listQueue1.debugDisplay();
 		listQueue2.debugDisplay();
 		
-		System.out.print( Chapter6.compareQueues ( listQueue1, listQueue2) ); //  is it equal 
+		System.out.print( chapter6.compareQueues ( listQueue1, listQueue2) ); //  is it equal 
 		System.out.println("");
 
 		listQueue1.enqueue(89);
@@ -30,10 +30,10 @@ public class Test {
 		listQueue1.enqueue(5);
 		listQueue1.debugDisplay(); // 1,2,89,1,6,1212,1,3,4,5,
 		System.out.println("");
-		Chapter6.removeMinimums (listQueue1);
+		chapter6.removeMinimums (listQueue1);
 		listQueue1.debugDisplay(); // 1,2,89,6,1212,3,4,5,
 		
-		Chapter6.interleaveQueue(listQueue1);
+		chapter6.interleaveQueue(listQueue1);
 		listQueue1.debugDisplay(); //  1,1212,2,3,89,4,6,
 		System.out.println("");
 		System.out.println("");
@@ -44,13 +44,13 @@ public class Test {
 		Stack  stack2 = new Stack();
 		stack2.push(1);
 		stack2.push(2);
-		System.out.println( Chapter6.compareStacks ( stack1, stack2) ); //  is it equal 
+		System.out.println( chapter6.compareStacks ( stack1, stack2) ); //  is it equal 
 		
 		stack1.push(3);
 		stack1.push(4);
 
 		stack1.debugDisplay(); // 4, 3, 2, 1
-		Stack  copyStack = Chapter6.copyStack(stack1);
+		Stack  copyStack = chapter6.copyStack(stack1);
 		copyStack.debugDisplay(); //   4, 3, 2, 1
 		
 		TwoStackQueue stack0 = new TwoStackQueue();
@@ -84,7 +84,7 @@ public class Test {
 		stackx.push(2);
 		stackx.push(6);
 
-		Chapter6.removeOldestStackMin(stackx);
+		chapter6.removeOldestStackMin(stackx);
 		System.out.println ( stackx.pop() ) ; // 6
 		System.out.println ( stackx.pop() ) ; // 2
 		System.out.println ( stackx.pop() ) ; // 11
@@ -104,7 +104,7 @@ public class Test {
 		reorderThisQueue.enqueue(-40);
 		reorderThisQueue.enqueue(50);
 		
-		Chapter6.reorderAbsoluteQueue(reorderThisQueue);
+		chapter6.reorderAbsoluteQueue(reorderThisQueue);
 		System.out.println(reorderThisQueue.dequeue()); //  -40
 		System.out.println(reorderThisQueue.dequeue()); //  -20 
 		System.out.println(reorderThisQueue.dequeue()); //  10 
@@ -113,7 +113,7 @@ public class Test {
 		System.out.println("");
 
 		
-//		System.out.println ( Chapter6.isPalindrome(listQueue3) ) ;
+//		System.out.println ( chapter6.isPalindrome(listQueue3) ) ;
 		Stack  stackparition = new Stack();
 		stackparition.push(0);
 		stackparition.push(-1);
@@ -123,7 +123,7 @@ public class Test {
 		stackparition.push(7);
 		stackparition.push(-2);
 		stackparition.push(3);
-		Chapter6.partition(stackparition);
+		chapter6.partition(stackparition);
 
 		System.out.println ( stackparition.pop() ) ; // 6
 		System.out.println ( stackparition.pop() ) ; // 2
@@ -143,7 +143,7 @@ public class Test {
 		stack_switchpairs.push(3);
 		stack_switchpairs.push(2);
 		stack_switchpairs.push(1);
-		Chapter6.switchPairs(stack_switchpairs);
+		chapter6.switchPairs(stack_switchpairs);
 
 		System.out.println ( stack_switchpairs.pop() ) ; // 6
 		System.out.println ( stack_switchpairs.pop() ) ; // 7
@@ -161,14 +161,14 @@ public class Test {
 		stack_issorted.push(5);
 		stack_issorted.push(4);
 		stack_issorted.push(5);
-		System.out.print( Chapter6.isSorted(stack_issorted) ) ;
+		System.out.print( chapter6.isSorted(stack_issorted) ) ;
 
 		Stack stack_mirror= new Stack();
 		stack_mirror.push(7);
 		stack_mirror.push(5);
 		stack_mirror.push(3);
 		stack_mirror.push(1);
-		Chapter6.mirror(stack_mirror);
+		chapter6.mirror(stack_mirror);
 		System.out.println("");
 
 		System.out.println ( stack_mirror.pop() ) ; // 1
@@ -181,7 +181,7 @@ public class Test {
 		System.out.println ( stack_mirror.pop() ) ; // 1
 		System.out.println("");
 		
-		System.out.println(Chapter6.weakFinger(2,1));
+		System.out.println(chapter6.weakFinger(2,1));
 	}
 	
 	private static void chapter7_test () 

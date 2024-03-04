@@ -4,7 +4,7 @@ import java.util.*;
 
 import java.lang.*;
 
-public class Chapter2 {
+public class chapter2 {
 
 	private void printUtil(int[] collection)
 	{
@@ -872,7 +872,7 @@ public class Chapter2 {
 	
 	public static void main (String args[]) 
 	{
-		Chapter2 obj = new Chapter2();
+		chapter2 obj = new chapter2();
 		DateonDesertedIsland date = new DateonDesertedIsland();
 		System.out.print( date.fullDate(139947)  + " == " + "Tuesday, Freburary 29, 2400" );
 	}

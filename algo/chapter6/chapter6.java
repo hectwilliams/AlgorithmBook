@@ -1,6 +1,6 @@
-package algo;
+package algo.chapter6;
 
-public class Chapter6 {
+public class chapter6 {
 	
 	private static class SLNode  //no outside access 
 	{

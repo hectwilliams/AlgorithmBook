@@ -3,9 +3,9 @@ package algo;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Chapter7 {
+public class chapter7 {
 	
-	Chapter7() 
+	chapter7() 
 	{
 		System.out.println ( this.getClass().getName() );
 	}

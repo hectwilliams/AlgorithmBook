@@ -3,7 +3,7 @@ import java.math.*;
 import java.util.*;
 import java.util.Map.Entry;
 
-public class Chapter4 {
+public class chapter4 {
 	
 	static String removeBlank (String str) 
 	{

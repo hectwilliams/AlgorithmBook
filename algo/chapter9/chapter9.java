@@ -1,12 +1,12 @@
-package algo;
+package algo.chapter9;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-import algo.Chapter5.Node; // node
-public class Chapter9 {
+import algo.chapter5.*; // node
+public class chapter9 {
 	public static int rFib(int num)
 	{
 		/*

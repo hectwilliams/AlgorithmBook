@@ -1,8 +1,8 @@
-package algo;
-import algo.Chapter8.*;
-import algo.Chapter5.*;
+package algo.chapter8;
+import algo.chapter5.*;
+import algo.chapter8.chapter8.*;
 
-public class Tests {
+public class tests {
 	
 	
 	private static void reverseTest()
@@ -16,7 +16,7 @@ public class Tests {
 
 		llist0.display();
 		System.out.println("rotated");
-		Chapter8.reverse(llist0);
+		chapter8.reverse(llist0);
 		llist0.display();
 
 	}	
@@ -31,7 +31,7 @@ public class Tests {
 		llist0.pushFront(1);
 
 		llist0.display();
-		System.out.println(Chapter8.KthLastNode(llist0.head, 4));
+		System.out.println(chapter8.KthLastNode(llist0.head, 4));
 
 	}	
 	
@@ -45,7 +45,7 @@ public class Tests {
 		llist0.pushFront(1);
 
 		llist0.display();
-		Chapter8.display(Chapter8.shiftRight(llist0.head, 2));
+		chapter8.display(chapter8.shiftRight(llist0.head, 2));
 	}	
 	
 	private static void shiftLeftTest()
@@ -58,7 +58,7 @@ public class Tests {
 		llist0.pushFront(1);
 
 		llist0.display();
-		Chapter8.display(Chapter8.shiftRight(llist0.head, -2));
+		chapter8.display(chapter8.shiftRight(llist0.head, -2));
 	}		
 
 	private static void isPalindromeTest()
@@ -69,7 +69,7 @@ public class Tests {
 		llist0.pushFront(2);
 		llist0.pushFront(2);
 		llist0.pushFront(1);
-		System.out.println ( Chapter8.isPalindrome(llist0.head) );
+		System.out.println ( chapter8.isPalindrome(llist0.head) );
 
 
 	}		
@@ -85,7 +85,7 @@ public class Tests {
 		llist1.pushFront(4);
 		llist1.pushFront(8);
 
-		System.out.println ( Chapter8.sumNumeralsv2(llist0.head, llist1.head) );
+		System.out.println ( chapter8.sumNumeralsv2(llist0.head, llist1.head) );
 	}	
 	
 	private static void flattenChildrenTest()
@@ -106,8 +106,8 @@ public class Tests {
 		list2.pushFront(200);
 		list2.pushFront(100);
 		
-		Chapter8.setChild(list0.head.next, list1.head);
-		Chapter8.setChild(list1.head.next, list2.head);
+		chapter8.setChild(list0.head.next, list1.head);
+		chapter8.setChild(list1.head.next, list2.head);
 
 		/* Unflatten:
 		 *[ 2 ] [ 3 ] [ 4 ] [5 ]  list0 
@@ -122,9 +122,9 @@ public class Tests {
 		 * 
 		 * */
 		list0.display();
-		Chapter8.flattenChildren(list0.head);
+		chapter8.flattenChildren(list0.head);
 		list0.display(); // 2,3,4,5,10,20,50,100,200,300,
-		Chapter8.unflattenChildren(list0.head);
+		chapter8.unflattenChildren(list0.head);
 		list0.display(); // 2,3,4,5,
 		list1.display(); // 10,20,50,100,200,300,
 		list2.display(); // 100,200,300,
@@ -136,7 +136,7 @@ public class Tests {
 	{
 		int size = 5;
 		int pointBackTo = 3;
-		Node circularList = Chapter8.setUpLoop(size, pointBackTo);
+		Node circularList = chapter8.setUpLoop(size, pointBackTo);
 		int counter = 0;
 		
 		while (counter++ < size*3 )
@@ -149,37 +149,36 @@ public class Tests {
 	
 	private static void hasLoopTest() 
 	{
-		Node circularList = Chapter8.setUpLoop(5, 3);
-		System.out.println(Chapter8.hasLoop(circularList));
+		Node circularList = chapter8.setUpLoop(5, 3);
+		System.out.println(chapter8.hasLoop(circularList));
 		
 		SList list1 = new SList();
 		list1.pushFront(50);
 		list1.pushFront(20);
 		list1.pushFront(10);
-		System.out.println(Chapter8.hasLoop(list1.head));
+		System.out.println(chapter8.hasLoop(list1.head));
 	}
 	
 	private static void loopStartTest()
 	{
-		Node circularList = Chapter8.setUpLoop(7, 3);
-		System.out.println(Chapter8.loopStart(circularList).value);  // 3
-		circularList = Chapter8.setUpLoop(100, 5);
-		System.out.println(Chapter8.loopStart(circularList).value);  // 3
+		Node circularList = chapter8.setUpLoop(7, 3);
+		System.out.println(chapter8.loopStart(circularList).value);  // 3
+		circularList = chapter8.setUpLoop(100, 5);
+		System.out.println(chapter8.loopStart(circularList).value);  // 3
 	}
 
 	
 	private static void breakLoopTest()
 	{
-		Node circularList = Chapter8.setUpLoop(7, 3);
-//		Chapter5.display(circularList); infinite loop
-		Chapter8.breakLoop(circularList);
-		Chapter5.display(circularList);
+		Node circularList = chapter8.setUpLoop(7, 3);
+//		chapter5.display(circularList); infinite loop
+		chapter8.breakLoop(circularList);
 	}
 
 	
 	private static void numberOfNodesTest()
 	{
-		Node circularList = Chapter8.setUpLoop(7, 3);
+		Node circularList = chapter8.setUpLoop(7, 3);
 		
 		SList list = new SList();
 		list.pushFront(5);
@@ -187,8 +186,8 @@ public class Tests {
 		list.pushFront(3);
 		list.pushFront(2);
 		
-		System.out.println(Chapter8.numberOfNodes(circularList));  
-		System.out.println(Chapter8.numberOfNodes(list.head));  
+		System.out.println(chapter8.numberOfNodes(circularList));  
+		System.out.println(chapter8.numberOfNodes(list.head));  
 	}
 
 	private static void swapPairsTest()
@@ -229,7 +228,7 @@ public class Tests {
 		dlist.push(22);
 		dlist.push(21);
 		dlist.push(23);
-		Chapter8.prependValue(dlist, 300, 23);
+		chapter8.prependValue(dlist, 300, 23);
 		dlist.display();
 
 	}
@@ -240,8 +239,8 @@ public class Tests {
 		dlist.push(22);
 		dlist.push(21);
 		dlist.push(23);
-		Chapter8.appendValue(dlist, 300, 23);
-		Chapter8.appendValue(dlist, 300, 22);
+		chapter8.appendValue(dlist, 300, 23);
+		chapter8.appendValue(dlist, 300, 22);
 
 		dlist.display();
 	}
@@ -262,7 +261,7 @@ public class Tests {
 //		dlist.push(21);
 //		dlist.push(23);
 //		dlist.display();
-//		Chapter8.deleteMiddleNode(dlist.getHead().next);
+//		chapter8.deleteMiddleNode(dlist.getHead().next);
 //		dlist.display();
 //	}
 	
@@ -295,7 +294,7 @@ public class Tests {
 		dlist.push(1);
 		
 		dlist.display();
-		Chapter8.partition(dlist, 7);
+		chapter8.partition(dlist, 7);
 		dlist.display();
 
 	}

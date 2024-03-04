@@ -2,7 +2,7 @@ package algo;
 
 import java.util.Random;
 
-public class Chapter3 
+public class chapter3 
 {
 	/* custom array structure */ 
 	static class Array_ 

@@ -1,9 +1,9 @@
-package algo;
+package algo.chapter10;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Chapter10 {
+public class chapter10 {
 
 	public static String[] stringToArray (String str)
 	{
