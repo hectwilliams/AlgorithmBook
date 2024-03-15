@@ -1,23 +1,31 @@
 
 from typing import List
-from copy import copy, deepcopy
-
+from copy import deepcopy
 # Write any import statements here
 class PageNode:
   def __init__(self, page) -> None:
     self.page = page 
     self.max_distance = 0
+    self.exited = {} 
+    self.exited_expected = {} 
     self.visitors = {} 
     self.visitors_expected = {} 
     self.mlinks = {}
 
-def clone_(parent: dict):
-    res = {}
-    for key in parent:
-        if isinstance(parent[key] , list):
-            res[key] = parent[key] + []
-        else:
-            res[key] = parent[key] 
+def clone_(parent):
+    res = parent 
+
+    # top level
+    if isinstance(parent, list):
+        res = []
+        for i in range(len(parent)):
+            child = parent[i]
+            res.append(clone_(child))
+    elif isinstance(parent, dict):
+        res = {}
+        for key in parent:
+            child = parent[key]
+            res[key] = clone_(child)
     return res 
 
 def getMaxVisitableWebpages(N: int, M: int, A: List[int], B: List[int]) -> int:
@@ -40,72 +48,77 @@ def getMaxVisitableWebpages(N: int, M: int, A: List[int], B: List[int]) -> int:
             graph[m_link_page] = PageNode(m_link_page)
         # assign m
         graph[m_link_page].mlinks[m] = None
+        
         # create mapping for m and page 
-
         # egress 
         m_link_page_ = B[i]
         if m_link_page_ not in graph:
             graph[m_link_page_] = PageNode(m_link_page_)
         graph[m_link_page].mlinks[m] = m_link_page_
-        graph[m_link_page_].visitors_expected[m_link_page] = True
-
+        # graph[m_link_page_].visitors_expected[m_link_page] = True
+        graph[m_link_page_].visitors_expected[m] = True
 
         if (page >= 1 and page<= N) :
             page_record = {}
             page_record['curr_node'] = graph[page]
             page_record['distance'] = 1 # start at a node 
             page_record['visitors'] = {} 
+            page_record['exitors'] = {} 
             page_record['path'] = [page]
-            
             q.append(page_record)
 
-    # first breath slowest wins
+    # for page in graph: 
+    #     node = graph[page]
+    #     print('page] {}   visitors_expected = {}\t existed_expected {}\t node links = {}  '.format(page, node.visitors_expected , node.exited_expected   , node.mlinks))
+
     while q:
         record = q.pop(0)
-
+        
+        # print(record)
 
         curr_page_node = record['curr_node']
         curr_page_node_distance = record['distance']
         curr_page_node_path = record['path']
+        exitors = record['exitors'] 
+        visitors =   record['visitors'] 
 
-        # update visitors in node (i.e. static store) 
-        curr_page_node.visitors = record['visitors']
-        
-        # update node's max distance rcvd  ( measure when entering this node)
-        if curr_page_node_distance > curr_page_node.max_distance:
-           curr_page_node.max_distance = curr_page_node_distance
+        # # update node's max distance rcvd  ( measure when entering this node)
+        # if curr_page_node_distance > curr_page_node.max_distance:
+        #    curr_page_node.max_distance = curr_page_node_distance
         
         # update global max distance 
-        if curr_page_node_distance > best_max_distance:
+        if curr_page_node_distance >= best_max_distance:
+            print(curr_page_node_path)
             best_max_distance = curr_page_node_distance
         
-        # hold past list of  visitors 
-        # print(record)
-
         # only search if walker distance is equal to larger previous passer
         for m_link in curr_page_node.mlinks:
-
             
             next_page = curr_page_node.mlinks[m_link]
-
             next_page_node = graph[next_page]
-            
-            next_distance = curr_page_node_distance + 1
-            
-            # restrict visiting curr node 
-            if next_page == curr_page_node.page or next_page in curr_page_node_path:
-                continue
-            
-            # clone visitors 
-            next_page_visitors = clone_(next_page_node.visitors) 
-            
-            if curr_page_node.page not in next_page_visitors:
-                next_page_visitors[curr_page_node.page] = [curr_page_node.page]
-            next_page_visitors[curr_page_node.page] +=   [next_page] 
+            next_distance = curr_page_node_distance + int(next_page not in curr_page_node_path)
 
-            if ( next_page_visitors.keys() != next_page_node.visitors_expected.keys() ) or (next_distance >= next_page_node.max_distance)  :
-                q.append({ 'curr_node': next_page_node, 'distance': next_distance,  'visitors':  next_page_visitors, 'path':  curr_page_node_path + [next_page] })
- 
+            # revisited page
+            if next_page in visitors : 
+                if  m_link in visitors[next_page]:
+                    continue
+            
+            ## visitor block 
+            visitors_in_path = clone_(visitors)
+            if next_page not in visitors_in_path:
+                visitors_in_path[next_page] = {} 
+            if m_link not in visitors_in_path[next_page]:
+                visitors_in_path[next_page][m_link] = True
+            
+            ## exitors block 
+            exitors_in_path = clone_(exitors)
+            if curr_page_node.page not in exitors_in_path:
+                exitors_in_path[curr_page_node.page ] = {} 
+            if m_link not in exitors_in_path[curr_page_node.page]:
+                exitors_in_path[curr_page_node.page ] [m_link] = True
+            
+            q.append({ 'curr_node': next_page_node, 'distance': next_distance,  'visitors':  visitors_in_path, 'exitors': exitors_in_path, 'path':  curr_page_node_path + [next_page] })
+
     return best_max_distance
     
 
