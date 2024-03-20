@@ -82,10 +82,6 @@ def getMaxVisitableWebpages(N: int, M: int, A: List[int], B: List[int]) -> int:
         exitors = record['exitors'] 
         visitors =   record['visitors'] 
 
-        # # update node's max distance rcvd  ( measure when entering this node)
-        # if curr_page_node_distance > curr_page_node.max_distance:
-        #    curr_page_node.max_distance = curr_page_node_distance
-        
         # update global max distance 
         if curr_page_node_distance >= best_max_distance:
             print(curr_page_node_path)
