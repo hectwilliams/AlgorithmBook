@@ -149,6 +149,39 @@ void selectionSort_array(int *array, int size)
   }
 }
 
+#ifdef SELECTION_SHORT_GENERIC
+/*/
+  Parameters:
+    data: start address of data
+    size: number of samples in data 
+    bytes_per_element: -
+    type: data type 
+      (0 -> int)
+*/
+void selection_sort_generic(void*data, int size, int bytes_per_element, int type){
+  int index, test = 0;
+  char tmp[bytes_per_element]; 
+
+  for (int i = 0; i < size-1; i++){
+    index = i;
+    for (int k = i; k < size; k++) {
+      switch(type){
+        case 0:
+          if ( *(int*)(data + k*bytes_per_element) < *(int*)(data + index*bytes_per_element)) {
+            index = k;
+          }
+        break;
+      }
+    }
+    if (index != i) {
+      memcpy(tmp, data + index*bytes_per_element,bytes_per_element);
+      memcpy(data + index*bytes_per_element, data + i*bytes_per_element, bytes_per_element);
+      memcpy(data + i*bytes_per_element, (void*)tmp, bytes_per_element);
+    }
+  }
+} 
+
+#endif 
 void selectionSort_array_test()
 {
   int array[] = {4,3,2,1,0};
