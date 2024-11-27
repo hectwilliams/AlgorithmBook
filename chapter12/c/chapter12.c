@@ -76,6 +76,34 @@ void swap_belt (struct belt *collection, int i, int k)
   collection[i] = tmp;
 }
 
+#define  BUBBLE_SORT_STRING_ARRAY 1
+#ifdef BUBBLE_SORT_STRING_ARRAY
+#define BUBBLE_SORT_BUFFER_BLOCK_SIZE 100
+void bubble_sort( char *strings, int size) {
+  char buffer2d[size][BUBBLE_SORT_BUFFER_BLOCK_SIZE];
+  char tmp_buffer[BUBBLE_SORT_BUFFER_BLOCK_SIZE];
+
+  for (int i =0; i < size; i++){
+    memset(buffer2d[i], '\0', strlen(buffer2d[i]) ); 
+    // memcpy(buffer2d[i], strings[i], strlen(strings[i]) + 1 ); 
+  }
+
+  for (int round = 0; round < size-1; round++) {
+    for (int i = 0; i < size-1; i++){
+      if (  compare((void*)strings + i*BUBBLE_SORT_BUFFER_BLOCK_SIZE , (void*)strings + (i+1)*BUBBLE_SORT_BUFFER_BLOCK_SIZE)  == 1) {
+        // write to tmp buffer (i)
+        memset(tmp_buffer, '\0', BUBBLE_SORT_BUFFER_BLOCK_SIZE); 
+        memcpy(tmp_buffer, (void*)strings + i*BUBBLE_SORT_BUFFER_BLOCK_SIZE , BUBBLE_SORT_BUFFER_BLOCK_SIZE); 
+        // write mem(i+1) to mem(i)
+        memcpy((void*)strings + i*BUBBLE_SORT_BUFFER_BLOCK_SIZE,  (void*)strings + (i+1)*BUBBLE_SORT_BUFFER_BLOCK_SIZE, BUBBLE_SORT_BUFFER_BLOCK_SIZE ); 
+        // // write tmp_buffer to mem(i+1)
+        memcpy((void*)strings +  (i+1)*BUBBLE_SORT_BUFFER_BLOCK_SIZE, tmp_buffer, BUBBLE_SORT_BUFFER_BLOCK_SIZE ); 
+      }
+    }
+  }
+}
+#endif
+
 void bubble_sort_array(int *array, int size)
 {
   int tmp;
