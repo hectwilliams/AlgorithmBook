@@ -90,7 +90,7 @@ void bubble_sort( char *strings, int size) {
 
   for (int round = 0; round < size-1; round++) {
     for (int i = 0; i < size-1; i++){
-      if (  compare((void*)strings + i*BUBBLE_SORT_BUFFER_BLOCK_SIZE , (void*)strings + (i+1)*BUBBLE_SORT_BUFFER_BLOCK_SIZE)  == 1) {
+      if (  strcmp((void*)strings + i*BUBBLE_SORT_BUFFER_BLOCK_SIZE , (void*)strings + (i+1)*BUBBLE_SORT_BUFFER_BLOCK_SIZE)  > 0) {
         // write to tmp buffer (i)
         memset(tmp_buffer, '\0', BUBBLE_SORT_BUFFER_BLOCK_SIZE); 
         memcpy(tmp_buffer, (void*)strings + i*BUBBLE_SORT_BUFFER_BLOCK_SIZE , BUBBLE_SORT_BUFFER_BLOCK_SIZE); 
