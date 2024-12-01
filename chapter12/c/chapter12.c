@@ -470,6 +470,34 @@ void insertionSort_list(struct SList **head)
   }
 }
 
+/*
+  Parameters:
+    data - typeless address to data 
+    size - number of samples 
+    bytes - bytes per samples 
+*/
+
+void insertion_sort(void *data, int size, int bytes ) {
+  char buffer[bytes];
+  char lowest_largest_value[bytes];
+  void *addr_i; 
+
+  for(int i = 0; i < 6; i++) {
+    addr_i = data + i*bytes;
+    for (void* addr = data; addr < addr_i; addr+=bytes ) {
+
+      if ( (*(int*) addr ) > (*(int*) addr_i ) ) {
+        // save sample to be swapped/inserted in front/left region (i.e.lower value)
+        memcpy(buffer, addr_i, bytes); 
+        // overwrite/shift subregion 
+        memcpy( (addr + bytes), addr , abs(addr-addr_i) )  ;
+        memcpy( addr, buffer, bytes);
+      }
+    }
+  }
+}
+
+
 struct array_obj  combine_array(int * a, int a_size, int *b, int b_size)
 {
   struct array_obj obj;
