@@ -729,23 +729,46 @@ int  partition_array_third_helper(int *collection,int start, int end)
   return k;
 }
 
-void quickSort(int *collection, int size)
-{
-  return quickSort_helper(collection, 0, size);
-}
+void quick_sort(int arr[], int size) {
+  int *child_left, *child_right;
+  int child_left_size = 0, child_right_size = 0;
+  int pivot;
+  int write_index;
 
-void quickSort_helper(int *collection, int start, int end)
-{
-  int pivot ;
+  if (size > 1){
+    // allocate dynamic memory
+    child_left = (int*)malloc(sizeof(int) * size);
+    child_right = (int*)malloc(sizeof(int) * size);
+    pivot = arr[size - 1];
 
-  if (end - start > 0)
-  {
-    pivot = partition_array_third_helper(collection, start, end);
-    if (pivot >= 0)
-    {
-      quickSort_helper(collection, 0, pivot); // left
-      quickSort_helper(collection, pivot + 1, end); // right
+    // parition arr values by pivot 
+    for(int i = 0; i < size - 1; i++) {
+      if (arr[i] < pivot){
+        child_left[child_left_size++] = arr[i];
+      } else {
+        child_right[child_right_size++] = arr[i];
+      }
     }
+    // truncate
+    child_left = realloc(child_left, child_left_size);
+    child_right = realloc(child_right, child_right_size);
+    // recursion
+    quick_sort(child_left, child_left_size);
+    quick_sort(child_right, child_right_size);
+
+    // overwrite arr parameter
+    write_index = 0;
+    for (int i = 0; i< child_left_size; i++) {
+      arr[write_index++] = child_left[i];
+    }
+    arr[write_index++] = pivot;
+    for (int i = 0; i< child_right_size; i++) {
+      arr[write_index++] = child_right[i];
+    }
+
+    free(child_left);
+    free(child_right);
+
   }
 }
 
