@@ -725,178 +725,55 @@ def board_show(queen_list, n = 8):
             print(board[row][col], end=' ')
         print("\n")                
 
+#!/usr/bin/env python3
+def is_on_board(move, n):
+  if move[0] >= n or move[1] >= n or move[0] <0 or move[1] <0:
+    return False
+  return True
 
-def chess_move_safe (intended_move, queen):
-    class chess_node:
-        def __init__(self, intended_move = (0,0), queen = (0,0)):
-            self.row = intended_move[0]
-            self.col = intended_move[1]
-            self.intended_move = intended_move 
-            self.queen = queen
-            self.n = 8
-            self.col_move = 0
-            self.row_move = 0
+def valid_move(move, moves_list,  n):
+  if not is_on_board(move, n):
+    return False
+  for qrow, qcol in moves_list:
+    if qcol == move[1]:
+      return False
+    if qrow == move[0]:
+      return False
+    for i in range(1, n):
+      move_right_diag_up = ( move[0] - i, move[1] + i)
+      move_right_diag_down = ( move[0] + i, move[1] - i)
+      if is_on_board(move_right_diag_up, n) and move_right_diag_up == (qrow, qcol):
+        return False
+      if is_on_board(move_right_diag_down, n) and move_right_diag_down == (qrow, qcol):
+        return False
+    for i in range(1, n):
+      move_left_diag_up = ( move[0] - i, move[1] - i )
+      move_left_diag_down = ( move[0] + i, move[1] + i )
+      if is_on_board(move_left_diag_up, n) and move_left_diag_up == (qrow, qcol):
+        return False
+      if is_on_board(move_left_diag_down, n) and move_left_diag_down == (qrow, qcol):
+        return False
+  return True
+def n_queen(n):
+  q = [ dict(row = 0, path = []) ]
+  paths = []
+  while q:
+    record = q.pop()
+    path = record['path']
+    row_ = record['row']
 
-    def copy_node(parent):
-        c_node = chess_node()
-        c_node.row = parent.row 
-        c_node.col = parent.col 
-        c_node.intended_move = parent.intended_move 
-        c_node.queen = parent.queen 
-        c_node.col_move = parent.col_move 
-        c_node.row_move = parent.row_move 
-        return c_node
+    if row_ == N:
+      paths.append(path)
+      continue
 
-    def valid_move (node):
-        if node.col >= node.n  or node.col < 0:
-            return False 
-        if node.row >= node.n or node.row < 0:
-            return False 
-        return True 
+    for col in range(N):
+      move_next = (row_, col)
+      if valid_move(move_next, path, N):
+        q.append( dict(row = row_ + 1, path = path + [move_next]) )
+  for path in paths:
+    print(path)
+RUN_N_QUEEN = False
+N=8
+if RUN_N_QUEEN:
+  n_queen(N)
 
-    q = []
-
-    # continous moves  available once at intended move position 
-
-    # 1 upper diag left 
-    node = chess_node(intended_move, queen)
-    node.col_move = -1
-    node.row_move = -1
-    q.append(node)
-    
-    # up
-    node = chess_node(intended_move, queen)
-    node.row_move = -1
-    q.append(node)
-
-    # upper diag right 
-    node = chess_node(intended_move, queen)
-    node.col_move = 1
-    node.row_move = -1
-    q.append(node)
-
-    # right 
-    node = chess_node(intended_move, queen)
-    node.col_move  = 1
-    q.append(node)
-    
-    #lower right diag 
-    node = chess_node(intended_move, queen)
-    node.col_move = 1
-    node.row_move = 1
-    q.append(node)
-
-    # down 
-    node = chess_node(intended_move, queen)
-    node.row_move = 1
-    q.append(node)
-
-    # lower left diag 
-    node = chess_node(intended_move, queen)
-    node.row_move = 1 
-    node.col_move = -1 
-    q.append(node)
-
-    # left
-    node = chess_node(intended_move, queen)
-    node.col_move = -1 
-    q.append(node)
-
-    while q:
-
-        node = q.pop(0)
-        
-        if node.row == queen[0] and node.col == queen[1]:
-            return False 
-
-        new_node = copy_node(node)
-        new_node.row += new_node.row_move
-        new_node.col += new_node.col_move
-        if valid_move(new_node):
-            q.append(new_node)
-    return True 
-
-piece_location =(3,4)
-queen_location = (3,3)
-print('{}'.format(chess_move_safe(piece_location, queen_location)))
-
-def all_safe_chess_squares(queen):
-    BOARD_SIZE = 8
-    safe_moves = []
-    for row in range(BOARD_SIZE):
-        for col in range(BOARD_SIZE):
-            if chess_move_safe((row, col), queen):
-                safe_moves.append((row, col))
-    return safe_moves
-queen_location = (3,4)
-print('{}'.format(all_safe_chess_squares(queen_location)))
-print('---------')
-
-
-def eight_queens(n = 8, row_size = 8, column_size = 8):
-    class eight_queens_node:
-        def __init__(self, queen=(0,0)):
-            self.row = queen[0]
-            self.col = queen[1]
-            self.prev = []
-            self.n = n
-
-    def copy_node (node):
-        c_node = eight_queens_node()
-        c_node.prev = node.prev + []   
-        c_node.row = node.row 
-        c_node.col = node.col 
-        c_node.n = node.n
-        return c_node 
-    
-    def valid_move(queue_list, test_node):
-       
-        for queue_list_node in queue_list:
-            if queue_list_node.row == test_node.row and queue_list_node.col == test_node.col:
-                return False 
-  
-        for prev_node in test_node.prev:
-            valid_queen_pos = (prev_node.row, prev_node.col)
-            new_queen_pos = (test_node.row, test_node.col)
-            if not chess_move_safe( valid_queen_pos, new_queen_pos ):
-                return False 
-            if prev_node.row == test_node.row and prev_node.col == test_node.col:
-                return False 
-
-        return True 
-
-    valid_paths = [] 
-    queue = []
-
-    # start unique graphs(i.e graph) at every cell on board
-    for row in range(row_size):
-        for col in range(column_size):
-            queue.append(eight_queens_node((row, col)))
-
-    while queue:
-        node = queue.pop(0) 
-        
-        # 8 queens placed 
-        if len( node.prev) == node.n - 1 :
-            valid_paths.append(  list(map(lambda struct: (struct.row, struct.col)  ,node.prev) ) + [(node.row, node.col)] )
-            continue 
-        
-        # current node position to all other cells
-        for row in range(row_size):
-            for col in range(column_size):
-                new_node = copy_node(node)                
-                new_node.prev  += [node] 
-                new_node.row = row 
-                new_node.col = col 
-                if valid_move(queue, new_node):
-                    queue.append(new_node)
-
-
-    return valid_paths
-    
-# print('{}\n\n'.format(eight_queens() ))
-
-def n_queens(n, x_size, y_size):
-    return eight_queens(n, x_size, y_size)
-n = 8
-print('{}\n\n'.format(n_queens(n, n, n) ))
