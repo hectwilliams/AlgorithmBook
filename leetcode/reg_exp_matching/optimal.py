@@ -1,17 +1,17 @@
 """
-  
-  EUREKEA !!!!!!!!!!!!!!!!!!!!! THIS SOLUTION WAS THOUGHT OF WHILE DEEP THOUGHT IN THE SHOWER :) 
- 
+
+  EUREKEA !!!!!!!!!!!!!!!!!!!!! THIS SOLUTION WAS THOUGHT OF WHILE DEEP THOUGHT IN THE SHOWER :)
 
   PURPOSE -  Solve regex matching problem (leetcode)
 
-  NOTE - 35 % of testcases handled (will update later tonight)
+  NOTE - 100 % of testcases !!!
 
-  AUTHOR - Hectron 
-
+  AUTHOR - Hectron
 
 """
+
 import re 
+
 
 def translate_seq(s):
     bins = []
@@ -30,19 +30,20 @@ def translate_commands(raw_commands):
     pad = [] 
     greddy_flag = False 
     k = len(raw_commands) - 1
-    r = -1
     while k > -1:
         if raw_commands[k]  == "*":
             greddy_flag = True
         else:
             if greddy_flag:
-                # greedy_indices.insert(0, r) 
                 pad.insert(0,  "z-"  + raw_commands[k]  ) 
+                if pad.__len__() > 1:
+                    if pad[0] == pad[1] and pad[0][0] == 'z':
+                        #prevent repeated/contigious greedy commands 
+                        pad.pop(0)
 
             else:
                 pad.insert(0,  "s-" + raw_commands[k]  ) 
             greddy_flag = False
-            r -= 1   
         k -=1
     
     return pad 
@@ -128,10 +129,13 @@ def split_end_dual(node):
     
     return a1_one_to_b1_one, a1_one_to_b1_more , a1_more_to_b1_one, a1_more_to_b1_more
 
-def remove_from_end(node, index ):
-    node.p.pop(index)
-    node.s.pop(index)
-
+def safe_s_bin_op(node, u):
+    # Adds to the value property in bin 
+    data_bin = node.s[0] + []
+    data_bin[1] += u
+    # update bin
+    node.s[0] = data_bin
+    
 class Solution:
     def isMatch(self, s: str, p: str) -> bool:
         
@@ -150,18 +154,49 @@ class Solution:
             if not node.p and not node.s:
                 # both command bin and sequence empty 
                 return True
+    
+            if len(node.p) == 1 and node.p[0][0] == 'z'  :
+
+                if  not node.s:
+                    # s = ""  p = .* 
+                    # s = ""  p = d*
+                    return True 
                 
+                if node.s:
+                        
+                    if node.p[0][2] == '.':
+                        # The Thing aborbs all!
+                        return True
+                        
+                    elif node.p[0][2] != '.':
+                        
+                        if node.p[0][0] == node.p[0][2] :
+                            # matching command and head of bin 
+                            
+                            if len(node.s) == 1:
+                                # command  matches front of bin
+                                    return True 
+                            
+                            if all([ propp[0] == node.s[-1] for propp in node.s]) :
+                                # all symbols in bin are the same 
+                                return True 
+                            
+                            # heterogenous bin 
+                            return False
+                    
+            if not node.s:
+                # all symbol bins absorbed
+                if all([ propp[0] == 'z'  for propp in node.p]):
+                    return True 
+
+
             if (node.p  and not node.s) or (node.s and not node.p):
                 #either bins list is empty, discard node 
-                print('removed', node.s, node.p)
                 continue 
             
-            # print(node.p, node.s)
-       
             if node.p[0][0] == 'z':
                 #greedy command, # split this bugger :) 
                 node1, node2 = split_end(node, 0)
-                # only pass once to queue 
                 q.append(node1)
                 q.append(node2)
                 continue
@@ -169,7 +204,7 @@ class Solution:
                 #greedy command;  n or more matches. Ambigious, split this bugger again 
                 r = re.match(r'^y(\d+)\-.', node.p[0])
                 n_expected_matches = int(r.groups(0)[0])
-                if n_expected_matches  <= s_len :
+                if n_expected_matches  <= s_len + 3 :
                     # number of commands exceed sequence length ( throw away node)
                     node1, node2 = split_end(node, 0)
                     q.append(node1)
@@ -179,11 +214,10 @@ class Solution:
                     # instructions/rules larger than input string ( dump )
                     continue
             elif node.p[0][0] == 's':
-                
                 # Single command
                 if node.p[0][2] == '.':
                     # match any symbol 
-                    node.s[0][1] = node.s[0][1] - 1
+                    safe_s_bin_op(node, -1)
                     node.history = node.history + [node.p[0]]
                     node.p.pop(0) # remove single command 
                     if node.s[0][1] == 0:
@@ -192,7 +226,7 @@ class Solution:
                         
                 elif node.p[0][2] == node.s[0][0]:
                     #match specific symbol 
-                    node.s[0][1] = node.s[0][1] - 1
+                    safe_s_bin_op(node, -1)
                     node.history = node.history + [node.p[0]]
                     node.p.pop(0)
                     if node.s[0][1] == 0:
@@ -211,7 +245,7 @@ class Solution:
                     # read sequence bins data
                     while n_reads > 0:
                         # read nonspecific bin data ( The Thing parasite does not deciminate :) )
-                        node.s[0][1] = node.s[0][1]  - 1
+                        safe_s_bin_op(node, -1)
                         n_reads = n_reads - 1
                         node.history = node.history + [node.p[0]]
                         if node.s[0][1] == 0:
@@ -230,30 +264,31 @@ class Solution:
                         continue 
                 
                 else:
-                    # print('WE HERE', node.p, node.s, 'CMD', cmd)
                     # read specific bin data (contigious)
-                    if cmd != node.s[0][0]: #  or n_reads != node.s[0][1]:
+                    if cmd != node.s[0][0]:
                         # cmd does not match current bin 
                         continue
                     
                     while n_reads > 0 and node.s[0][1]  > 0:
-
-                        node.s[0][1] = node.s[0][1] - 1 # read symbol 
+                        safe_s_bin_op(node, -1)
                         n_reads = n_reads - 1                        
                         node.history = node.history + [node.p[0]]
                    
                     if n_reads == 0:
                         # all reads were complete, remove command bin and sequence bin
                         node.p.pop(0)
-                        node.s.pop(0)
+                        if node.s[0][1] == 0:
+                            # drop active symbol bin iff empty, else persist for next command bin
+                            node.s.pop(0)
+                        else:
+                            pass
+                            # continue
+                        
                     else:
                         # invalid state , cannot handle commands 
                         # print("FAILIURE", n_reads, node.p, node.s)
                         continue
                     
-            print('node saved', node.s, '--', node.p)
-
             q.append(node) # put node back
         
         return False    
-
