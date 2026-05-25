@@ -13,25 +13,24 @@
 #include <deque>
 #include <vector>
 #include <map>
-// #include <algorithm>
+#include <algorithm>
+#include <array>
 
-using WordBin = std::map<std::string, int>;
+
+using CMap = std::map<char, void*>;
+using WordMap = std::map<std::string, int>;
 using Words = std::vector<std::string> ;
 using StartIndices = std::vector<int> ;
 
 
-/**
- * Zeros all eval bin and word count
- * 
- * @param bin Caller's accumulator evaluation bin 
- * @param word_count integer number 
- */
-void reset_eval(WordBin &bin, int &word_count) {
-     word_count = 0;
-    for(const auto &[key, value]: bin) {
-        bin[key] = 0;
-    }
-}
+
+struct Node {
+    int start;
+    std::string s;
+    int depth;
+    WordMap wbin;
+};
+
 /**
 * Parsers string and words to determine if simple convolution sweep 
 * may be used to support caller's routine. If the string consist of a repeating 
@@ -80,10 +79,10 @@ std::array<int, 2> discrete_mode(std::string s, Words &words) {
 }
 
 class Solution {
-    WordBin wbin;
-    WordBin wbin_zeroed;
-
-    int word_length;
+    CMap cmap;
+    WordMap wmap;
+    int word_len;
+    
     
     /**
      * loads words into map
@@ -91,12 +90,11 @@ class Solution {
     */
     void map_words(const Words &words) {
         for (const std::string &w: words) {
-            word_length = w.length();
-            if (wbin.count(w) == 0 ) {
-                wbin[w] = 0;
-                wbin_zeroed[w] = 0;
-            }
-            wbin[w] += 1;
+            if(wmap.count(w) == 0)
+                wmap[w] = 0;
+            wmap[ w ] += 1;
+            cmap[ w[0] ] = nullptr;
+            word_len = w.length();
         } 
     }
     
@@ -109,8 +107,9 @@ class Solution {
      */
      
      void solver(std::string s, Words& words, StartIndices &s_indices) {
-         
-         
+       
+       
+       
         // quick convolution code block
         std::array<int,2> conv_tuple = discrete_mode(s, words);
         if (conv_tuple[0] == s.length()  && conv_tuple[1] == words.size()) {
@@ -118,81 +117,56 @@ class Solution {
             for(int k = 0; k < limit; k++ ) {
                 s_indices.push_back(k);
             }
-            return;
-        }
-        
-         int start_of_index = 0;
-         int i = 0;
-         int j = 0;
-         int r = -1;
-         int word_hits = 0;
-         WordBin wbin_eval = wbin_zeroed;
-
-        // default code block
-         while (i < s.length()) {
-             
-             // search for word 
-             std::string test_word = s.substr(i, word_length);
-   
-             if (  wbin.count(test_word)  ) {
-
-                 if ( wbin_eval[test_word] < wbin[test_word] ) {
-                     // threshold not violated 
-                     if (r == -1 ) {
-                        r = i + 1;
-                    }
-                     
-                     // increment bin for word 
-                     wbin_eval[test_word] += 1;
-                     
-                    // found matching word ( jump ahead
-                     i += word_length;
-                     
-                     // increment word_hit
-                     word_hits +=1;
-                    
-                     if (word_hits == words.size()) {
-                         // concat match found 
-                         s_indices.push_back(start_of_index);
-                         // move start index forward 
-                         start_of_index = i;
-                         // reset hits 
-                         word_hits = 0;
-                         // go back 
-                         i = r;
-                         start_of_index  = i;
-                         // reset r
-                         r = -1;
-                         // reset eval bin
-                        reset_eval(wbin_eval, word_hits);
-
-                     } 
-                     
-                 } else {
-                     // bin (word bin) overshoot (incorrect concatenation)
-                     
-                    // go back
-                    i = r;
-                    start_of_index = i;
-                    r = -1;
-                    reset_eval(wbin_eval, word_hits);
-                 }
-            } else {
-                // found substring that is not part of index store 
-                if (r == -1) {
-                // searching for word
-                    i+= 1;
-                } else {
-                    i = r; // go back  
-                    r = -1; // reset 
-                }
-                start_of_index = i;
-                reset_eval(wbin_eval, word_hits);
-            } 
+        } else {
+            // default code block 
+            std::deque<Node*> q;
             
-         }
+            // init queue 
+            for(int i = 0; i < s.length(); i++) {
+               if ( cmap.count(s[i]) ) {
+                   // potential concat string start at this index 
+                   q.push_back( new Node{i, s.substr(i, s.length()) , 0, {}} );
+               }
+            }
+            
+            int depth = 0;
+            while (!q.empty()) {
+               Node * node = q.front();
+               q.pop_front();
+               
+               std::string test_string = node->s.substr(0, word_len);
+                
+               if (node->depth == words.size()) {
+                   s_indices.push_back(node->start);
+                   delete node;    
+                   
+               } else if ( wmap.count(test_string) ) {
+                   // a valid word
+                   
+                   if (node->wbin.count(test_string) == 0) {
+                       // add word to nodes bin map
+                       node->wbin[test_string] = 0;
+                   }
+                   
+                   if( node->wbin[test_string] < wmap[test_string] ) {
+                       
+                       node->wbin[test_string] += 1; 
+                       // available for concat string
+                       node->depth += 1;
+                       //truncate valid word (header)
+                       node->s = node->s.substr(word_len, node->s.length() - 1 );
+                       q.push_back(node);
+                   }
+                   
+               } else {
+                   delete node;     
+               }
+              
+            }   
         
-     }
+        }
+
+    }
 
 public:
     vector<int> findSubstring(string s, vector<string>& words) {
