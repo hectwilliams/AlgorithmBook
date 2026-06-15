@@ -6,8 +6,9 @@
 
   URL: https://leetcode.com/problems/wildcard-matching/
 
-*/
+  Note: This was daunting, until the dendrite connection  :) 
 
+*/
 
 #include <iostream>
 #include <string>
@@ -18,30 +19,20 @@
 #include<array>
 #include<vector>
 
-const std::regex regex_pattern(R"(<(\d+)y>)"); 
-const std::regex regex_pattern2(R"((<(\d+)>).+)"); 
-const std::regex regex_pattern3(R"((^[a-z]\d+).+)"); 
-const std::regex regex_pattern4(R"((^\*[a-z\?]).*)"); 
-const std::regex regex_pattern5(R"((^[a-z]\*)$)"); 
-const std::regex regex_pattern6(R"(^<(\d+)>)"); 
-// const std::regex regex_all_wildcard(R"((^?+).*)"); 
 
-struct SNode {
-    std::string acc;
-    std::string s;
-    std::string p;
-    std::map <char, int> indices;
-    std::vector<SNode*> children;
-    int depth;
-    int depth2;
+
+struct Node {
+  std::string string;
+  int depth;
+  bool paths_set;
 };
-
 
 /**
  * Get rid of contigious 
  * 
- * @param seq String sequence 
- * @return new sequence 
+ * @param seq Command sequence 
+ * @param count Ref containing number of 'true' characters
+ * @return Compressed sequence 
 */
 std::string squeeze_any(std::string seq, int &count) {
     std::string s;
@@ -58,23 +49,18 @@ std::string squeeze_any(std::string seq, int &count) {
  
     }
     
-        
     for (int i = 1; i < seq.length(); i++) {
-        
         
         if (s[s.length() - 1] == '*' && seq[i] == '*') {
             //skip
         } else {
             s += seq[i];
-         
         }
         
         if (seq[i] != '*'){
             count++;
- 
         }
     
-            
     }
     
     return s; 
@@ -82,209 +68,13 @@ std::string squeeze_any(std::string seq, int &count) {
 
 
 
-std::string seq_xform(std::string s) {
-    
-    std::string data;
-    int count = 0;
-    char prev;
-    char curr;
-    
-    if (s.length() == 0) {
-        return s;
-    }
-    
-    count +=1;
-    prev = s[0];
-    
-    for(int i = 1; i < s.length(); i++) {
-        
-        curr = s[i];
-        
-        if (curr == prev) {
-            count+= 1;
-        }
-        
-        if  (i == s.length() - 1 ) {
-            
-            if (curr == prev) {
-                if (curr == '*') {
-                    data += prev;
-                } else {
-                    data += prev + std::to_string(count + 1);
-                }
-                
-            } else if (curr != prev) {
-                
-                if (curr == '*') {
-                    data += prev;
-                    data += '*';
-                } else {
-                    // diff curr, prev
-                    data += prev + std::to_string(count);
-                    data += curr + std::to_string(1);
-                }
-            }
-            
-        } else if ( (curr != prev)   ) {
-            data += prev + (prev == '*'? "": std::to_string(count) ) ;
-            count = 1;
-        }
-        
-        prev= curr;
-        
-    }
-    
-    return data;
-    
-}
-
-
-void show_map(std::map<char, int> data) {
-    for(const auto [key, value]: data) {
-        std::cout << key << "," << value << "-------" << "\n";
-    }
-}
-
-
 /**
- * Merge repeating *<> is command list
-**/
-std::string remove_greedy_pairs(std::string s, std::map<char, int> &map) {
-    std::string s_out;
-    int w = 0;
-    while (w < s.length() ) {
-        int w_eye = w;
-        char c = s[w];
-        
-        if (s_out.length() > 1) {
-            
-            if (w + 1 < s.length() ) {
-                char out_tail = s_out[s_out.length() - 1];
-                char out_tail_prev = s_out[s_out.length() - 2];
-                
-                if (s[w] == s_out[s_out.length() - 2] &&  s[w + 1] == s_out[s_out.length() - 1]  && out_tail_prev == '*'  && out_tail != '?' ) {
-                    // jump w
-                    w += 2;
-                    // continue;
-                } else {
-                    s_out += c;
-                    w += 1;
-                }
-            } else {
-                // last element
-                s_out += c;
-                w += 1;
-            }
-            
-        } else {
-            s_out += c;
-            w += 1;
-        }
-        
-       if ( s_out[s_out.length()-1] != '*' && w_eye + 1 == w ) {
-           // does not capture skipped subset
-            if (map.count( s_out[s_out.length()-1 ] ) == 0) {
-                map[ s_out[ s_out.length() - 1] ] = 0;
-            } 
-            map[ s_out[ s_out.length() - 1]  ] += 1;
-        }
-        
-    }
-    // std::cout << s_out << "\n";
-    return s_out; 
-    
-}
-
-
-std::map<char, int> get_map(std::string s) {
-    std::map<char, int> m;
-    
-    bool pause = false;
-    for(const auto &c: s) {
-        if (c == '<')
-            pause = true;
-        
-        
-        if (!pause) {
-            
-            if(c != '*') {
-                if (m.count(c) ==0)
-                    m[c] = 0;
-                m[c] +=1;
-            }
-            
-        }
-        
-        if (c == '>')
-            pause = false;
-    }
-    return m;
-}
-
-
-bool valid_maps(std::string command, std::string data) {
-    
-    auto cmd_map = get_map(command);
-    auto data_map = get_map(data);
-    
-    //   std::cout << command << "\n";
-    //     std::cout << data << "\n";
-            
-    // for( const auto &[key, cmd_size_of_char ]: cmd_map ) {
-    //     if (key == '*' || key == '?')
-    //         continue;
-    //     if(data_map.count(key) == 0)
-    //         return false;
-    //     int data_size_of_char = data_map[key];
-    //     if (data_size_of_char < cmd_size_of_char /*data bin cannot absorb all of command bin */)
-    //         return false;
-    // }
-    // return true;
-    
-        
-    //   std::cout <<  "____T___ " << command << "\n";
-    //   std::cout <<  "____T___ "  << data << "\n";
-            
-    for( const auto &[key_, cmd_size_of_char ]: cmd_map ) {
-        
-        if (key_ == '*' )
-            continue;
-            
-        char key; 
-        if ( key_ == '?') {
-            // pluck a key from data_map
-            key = data_map.begin()->first;
-        } else {
-            key = key_;
-        }
-        
-        // std::cout << key << " TEST " << "\n";
-        
-        if ( data_map.count(key) == 0) {
-            // no data available; violation
-            return false;
-        } else {
-            data_map[key]--; 
-            if (data_map.count(key) == 0) {
-                data_map.erase(key);
-            }
-        }
-        
-    }
-    return true;
-    
-    
-}
-
-int num_chars (std::string s) {
-    int count = 0;
-    for(const auto &c: s) {
-        if (c!='*')
-            count++;
-    }
-    return count; 
-}
-
+ * Parse command string and concat/partition contigious commands into list.
+ * The data stream should flow/match with the ordered commands list
+ * 
+ * @param p Commands string
+ * @param table List containing tuple containing packed command and prev packed command 
+*/
 void set_eval_table(std::string p, std::vector< std::pair<std::string, std::string> > &table) {
     std::string buffer;
     bool read_mode = false;
@@ -295,12 +85,7 @@ void set_eval_table(std::string p, std::vector< std::pair<std::string, std::stri
     for (int i = 0; i < p.length(); i++) {
         
        char curr = p[i];
-       
-       
-    //   if (prev == '*') {
-    //       any_mode = true;
-    //   }
-       
+
        if (curr == '*') {
            
            
@@ -342,57 +127,25 @@ void set_eval_table(std::string p, std::vector< std::pair<std::string, std::stri
     }
 }
 
-struct Node {
-  std::string string;
-  int depth;
-  bool paths_set;
-};
 
 class Solution {
 public:
- Solution() {root=nullptr;};
-    SNode *root;
-
 
     bool isMatch(std::string s, std::string p) {
         
-        std::smatch matches;
-        std::deque<SNode*> q;
-        int num_unique_values = 0;
-        std::map <char, int> tmp;
-        // std::map <std::string , void*> table;
-        // std::vector< std::pair<std::string, bool> > table;
-        std::map <int , int> dtable;
-        
-        
-        if (root == nullptr) {
-            p = squeeze_any( p, num_unique_values );
-            // p = remove_greedy_pairs( p, tmp );
-            std::cout << s << "\n";
-            std::cout << p << "\n";
-            q.push_back ( new SNode{"",s,p,tmp,{},0, 0} ) ;
-            
-        } 
-        
         std::vector< std::pair<std::string, std::string> > eval_table;
-        // std::deque< std::pair<std::string, int> > s_queue;
         std::deque< Node * > s_queue;
+        int num_unique_values = 0;        
 
+        p = squeeze_any( p, num_unique_values );
         set_eval_table(p, eval_table);
+                                
+        // std::cout << "Commands -> p: "<< "\n";
+        // for (const auto &[a, b]: eval_table) {
+        //     std::cout << a << "," << b  <<  "\n";
+        // }
         
-        int k = 0;
-        
-        std::string ss = s;
-        
-        bool match_count = true; 
-        
-        std::cout << "Commands -> p: "<< "\n";
-        for (const auto &[a, b]: eval_table) {
-            std::cout << a << "," << b  <<  "\n";
-            
-        }
-        
-        s_queue.push_back(new Node{ss, 0, false}); // init buffer
+        s_queue.push_back(new Node{s, 0, false}); // init buffer
         int target_index = 0;
         for (const auto &[target_str, prev_str]: eval_table) {
             
@@ -401,22 +154,15 @@ public:
             for (int i = 0; i < queue_len; i++) {
                 
                 // get test string 
-                
                 auto node = s_queue.front();
                 s_queue.pop_front();
                 std::string curr_string = node->string;
                 int depth = node->depth;
                 bool paths_set = node->paths_set;
-                
-                
-                std::cout << "TEST STRING: " << curr_string << "\n";
-                std::cout << "TARGET: " << target_str << "\n";
 
                 if ((prev_str == "") && (target_str == "*") ) {
-
-                    // std::cout << "hello" << "\n";
+                    
                     std::string ss_next = curr_string.substr( curr_string.length(), 0 );
-                    // std::cout << ss_next << "\n";
                     s_queue.push_back( new Node{ss_next, depth + 1, paths_set } );
                     
                 } else if (prev_str == "*") {
@@ -426,25 +172,25 @@ public:
                     if (target_str[0] == '?') {
                         
                         if (curr_string.length() == 0) {
+                            delete node;
                             continue;
                         }
                         
                         if ( target_index  + 1 == eval_table.size() ) { 
                             // last substring 
+                            
                             // one or more tail of '?' 
                             if(  curr_string.length()  >= target_str.length()   ) {
                                 
                                 std::string ss_next = curr_string.substr( curr_string.length(), curr_string.length()  ); // should produce an empty string 
                                 s_queue.push_back(new Node{ss_next, depth + 1, paths_set });
-                                
                             }
                             
                         } else {
                             
                             // all excluding last substring 
-                            std::cout << 122;
 
-                            if (depth == 0) {
+                            if (depth == 0 || !paths_set) {
                                     
                                 // convolutional sweep 
                                 for (int n = 0; n < curr_string.length(); n++) {
@@ -455,13 +201,8 @@ public:
                                     if (test_string.length() >= target_str.length()) {
                                         
                                         std::string ss_next = test_string.substr( target_str.length(), test_string.length() - target_str.length()  );
-                                    
-                                        // return 1;
-
-                                    // if (ss_next.length()  >= num_unique_values) {
+                                
                                         s_queue.push_back(new Node{ss_next, depth + 1, paths_set });
-                                        // s_queue.push_back({ss_next, depth + 1});
-                                    // }
                                     }
                                     
                                 }
@@ -481,8 +222,26 @@ public:
                         
                         
                         // all possible matches 
-                        
-                        if (depth == 0 || !paths_set) {
+                        if ( target_index  + 1 == eval_table.size() ) { 
+                            
+                            // last sub string 
+                          
+                            size_t find_index = curr_string.rfind(target_str);
+                            
+                            if (find_index != std::string::npos) {
+                                
+                                find_index = static_cast<int>(find_index); 
+    
+                                // move to last match 
+                                std::string analysis_str = curr_string.substr( find_index , curr_string.length() - find_index );
+                                
+                                std::string ss_next = analysis_str.substr( target_str.length(), analysis_str.length() - target_str.length()  );
+                                
+                                s_queue.push_back(new Node{ss_next, depth + 1, paths_set });
+                                
+                            }
+
+                        } else if (depth == 0 || !paths_set) {
                             // create paths ( find all matching prefix of full sequence)
                             for (int n = 0; n < curr_string.length(); n++) {
                                 std::string analysis_str = curr_string.substr( n , curr_string.length() - n );
@@ -492,10 +251,8 @@ public:
                                     if (find_index == 0) {
                                         // move forward past matching prefix 
                                         std::string ss_next = analysis_str.substr(target_str.length(), analysis_str.length() - target_str.length());
-                                        // if (ss_next.length()  >= num_unique_values) {
                                             std::cout << ss_next << "\n";
                                             s_queue.push_back(new Node{ss_next, depth + 1, true });
-                                        // }
                                     }
                                 }
                             }
@@ -506,10 +263,7 @@ public:
                                 find_index = static_cast<int>(find_index);
                                 std::string analysis_str = curr_string.substr( find_index , curr_string.length() - find_index );
                                 std::string ss_next = analysis_str.substr(target_str.length(), analysis_str.length() - target_str.length());
-                                std::cout << "TEST: \t" << ss_next  << "\t" << depth << " " << target_str << "\n";
-                                    s_queue.push_back(new Node{ss_next, depth + 1, paths_set });
-                                // std::cout << target_str << "\t" <<  curr_string <<  "\t" << find_index << ":" << ss_next <<"\n";
-                                // std::cout << "TEST -> : " <<ss_next << "\n";
+                                s_queue.push_back(new Node{ss_next, depth + 1, paths_set });
                             }
                         }
                         
@@ -529,8 +283,6 @@ public:
                         // single prefix
                         auto find_index = curr_string.find(target_str);
                         
-                        std::cout << target_str << "\t" << curr_string << "\n";
-                        
                         if (  find_index != std::string::npos  ) {
                             find_index = static_cast<int>(find_index);
                             
@@ -538,18 +290,20 @@ public:
                                 // immediate match 
                                 std::string analysis_str = curr_string.substr( find_index , curr_string.length() - find_index );
                                 std::string ss_next = analysis_str.substr(target_str.length(), analysis_str.length() - target_str.length() );
-                                // std::cout << "TEST: \t" << ss_next  << "\t" << depth << " " << target_str << "\n";
                                 s_queue.push_back(new Node{ss_next, depth + 1, paths_set });
                             }
                         }
                     }
                 }
+                
+                delete node;
             }
             
             target_index += 1;
+
         }
         
-        
+        // validity test 
         bool found = false; 
         for(const auto &eval_node : s_queue) {
             found |= (eval_node->string.length() == 0 && eval_node->depth == eval_table.size());
@@ -559,4 +313,3 @@ public:
     }
         
 };
-
