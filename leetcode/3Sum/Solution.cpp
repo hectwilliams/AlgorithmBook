@@ -3,6 +3,7 @@
 #include <iostream>
 #include <deque>
 #include <map>
+#include <algorithm>
 
 std::ostream& operator<<(std::ostream& os, const Numbers& numbers) {
     std::size_t i = 0;
@@ -47,10 +48,34 @@ std::ostream& operator<<(std::ostream& os, const Node *node) {
 
 }
 
-void read_three ( Numbers &data, Node *node  ) {
+bool read_three ( Numbers &data, Node *node  ) {
+
+    if (!node->prevnode)
+        return false ;
+
+    if (!node->prevnode->prevnode)
+        return false;
+
     data.push_back(node->prevnode->prevnode->value);
     data.push_back(node->prevnode->value);
     data.push_back(node->value);
+
+    // sort vector ( in place ) 
+    std::sort(
+        data.begin(), 
+        data.end(), 
+        [](int a, int b)  {
+            return a < b;
+        }
+    );
+
+    
+    // zero sum boolean return 
+    int sum = 0;
+
+    sum = (node->prevnode->prevnode->value) + node->prevnode->value + node->value;
+
+    return sum == 0;
 }
 
 
@@ -72,31 +97,28 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
             q.push_back(tree.root);
 
             while (!q.empty()) {
+
                 Node *node = q.front();
                 q.pop_front();
 
                 // add children to queue if accumulation is < 3
                 for (const auto &c : node->childnodes) {
-                    if (c->count < 3) {
-                        q.push_back(c);
-                    }
+                    q.push_back(c);
                 }
 
                 // add value node to tree 
                 Node * new_node = new Node {value, node->accumulator + value, node->count + 1, Children{}, node} ;
                 node->childnodes.push_back(new_node);
 
-                std::cout << new_node->value << " \t" << node->accumulator << " \t" <<  node->count << "\n";
+                std::cout << "prev: " << node->value  << " " << "leaf: " << new_node->value << " \t" << node->accumulator << " \t" <<  node->count << "\n";
 
-                if (new_node->accumulator == 0 && new_node->count == N_SUM) {
+                Numbers data;
+                bool zero_sum_returned = read_three(data, new_node);
+
+                if (zero_sum_returned && map.count(data) == 0) {
                     std::cout << new_node;
-                    Numbers data;
-                    read_three(data, new_node);
-                    if (map.count(data) == 0) {
-                        data_return.push_back(data);
-                        map[data] = true;
-                    }
-
+                    data_return.push_back(data);
+                    map[data] = true;
                 }
 
             }

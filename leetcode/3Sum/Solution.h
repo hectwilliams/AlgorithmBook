@@ -1,6 +1,7 @@
 #pragma once // Prevents the header from being included more than once
 
 #include <vector>
+
 /*
     Purpose: solve leetcode 3Sum problem
 
@@ -9,6 +10,7 @@
     URL: https://leetcode.com/problems/3sum/
 
 */
+
 
 const int N_SUM = 3;
 
@@ -40,4 +42,4 @@ public:
 };
 
 
-void read_three ( Numbers &data, Node *node  );
+bool read_three ( Numbers &data, Node *node  );
