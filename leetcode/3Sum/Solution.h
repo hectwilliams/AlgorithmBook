@@ -57,6 +57,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Numbers&  numbers );
     friend std::ostream& operator<<(std::ostream& os, const NumbersArray&  numbers_2D);
     friend std::ostream& operator<<(std::ostream& os, const CNode *node);
+        friend std::ostream& operator<<(std::ostream& os, const std::array<int,2> &arr) ;
 };
 
 

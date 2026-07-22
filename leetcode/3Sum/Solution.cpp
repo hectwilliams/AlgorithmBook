@@ -7,6 +7,18 @@
 #include <numeric> 
 #include <random>
 #include <cassert> 
+#include <array>
+
+std::ostream& operator<<(std::ostream& os, const std::array<int,2> &arr) {
+    os << "[ ";
+    os << " " << arr[0] ;
+    os << ", " << arr[1]  ;
+    
+    os << " ]\n";
+
+    return os;
+    
+}
 
 std::ostream& operator<<(std::ostream& os, const Numbers& numbers) {
     std::size_t i = 0;
@@ -194,11 +206,60 @@ void random_values (Numbers & v) {
     }
 
 }
+
+void add_to_map ( const int v, std::map<int, int> &pos, std::map<int, int> &neg, std::map<int, int> &zero ) {
+    std::map<int, int> *ref {nullptr}; 
+        
+    if (v < 0) {
+        ref = &pos;
+    } else if (v > 0) {
+        ref = &neg;
+
+    } else if (v == 0) {
+        ref = &zero;
+    }
+
+    if (ref->count(v) == 0)  {
+        (*ref)[v] = 0;
+    }
+    (*ref)[v]++;
+}
+
+
+/*
+    validates sum vector with the number of resources available in object (i.e. histogram bin table models available resources )
+*/
+bool valid_sum (const Numbers &test_sum,  std::map<int, int> histo) {
+    
+    for (const int &v: test_sum) {
+        
+        if (histo[v] == 0) {
+            // not enough resources 
+            return false;
+        }
+
+        histo[v]--;
+        
+    }
+
+    
+    return true;
+}
+
 std::vector<Numbers > Solution::threeSum(Numbers& nums) {
     
     std::map< int/* number */ , std::map<int, bool> /* indices map */ > v_map; // values map 
     std::vector<Numbers > data_return;
     std::map< Numbers , bool > unique_map; // values map 
+    std::map< int, int > neg_map{}; 
+    std::map< int, int > pos_map{}; 
+    std::map< int, int > zero_map{}; 
+    std::map< int, std::vector<std::array<int,2>> > sum_2_assoc_map{}; 
+    std::map< int, int > histo{}; 
+
+    // std::map< int, bool > sum_3_assoc_map{}; used for 4sums 
+
+    int first_pos_index{-1};
 
     if (EN_DEBUG) {
         Numbers nums2;
@@ -228,16 +289,27 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
         indices.begin(), 
         indices.end(), 
         eff_nums.begin(), 
-        [ &nums, &v_map, &new_index ](int i) {
+        [ &nums, &v_map, &new_index, &neg_map, &pos_map, &zero_map, &first_pos_index, &histo ](int i) {
+
+            int v = nums[i];
+            // add_to_map(v, pos_map, neg_map, zero_map);
+
+            if (histo.count(v) == 0){
+                histo[v] = 0;
+            }
+            histo[v]+= 1;
 
             
-            int v = nums[i];
 
             if (v_map.count(v) == 0) {
                 v_map[v] = std::map<int, bool>  {};
             }
             v_map[v][new_index++] = true;
 
+            if (v > 0 && first_pos_index == -1) {
+                // first positive index
+                first_pos_index = new_index - 1;
+            }
             // std::cout << " hello world " << v << " " << ( new_index - 1 )  << "\n"  ;
             return nums[i];
         }
@@ -245,55 +317,99 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
 
 
     // print numbers 
-
     std::cout << eff_nums << "\n";
+    // std::cout << pos_map.size() << "\n";
+    // std::cout << neg_map.size() << "\n";
+    // std::cout << zero_map.size() << "\n";
+    // std::cout << first_pos_index << "\n";
 
-    assert(0);
-
-    // -> directio search
-    for (std::size_t i = N_SUM-1; i < eff_nums.size(); i++) {
-
-        int curr = eff_nums[i];
+    // branch network (fractal)
+    int window_size = 2;
+    while (window_size > 0) {
         
-        int curr_prev = eff_nums[i - 1];
+        int s_index = 0;
+        int e_index = s_index + window_size - 1;
         
-        int curr_prev_prev = eff_nums[i - 2];
-        
-        int sum = curr + curr_prev;
+        std::map< std::array<int, 2> , bool > unique_arr2; // unique_arr2 map 
 
-        int sum2 = curr + curr_prev_prev;
+        while (e_index < eff_nums.size()) {
+            
+            int curr_sun = eff_nums[s_index] + eff_nums[e_index];
+            
+            if (sum_2_assoc_map.count(curr_sun) == 0) {
+                sum_2_assoc_map[curr_sun] = {};
+            }
 
-        if ( i - 1 >= 1 )
-            test_zero_sum(static_cast<int>(i), static_cast<int>(i-1), curr, curr_prev, sum * -1, v_map, data_return, unique_map);
+            // sum_2_assoc_map[curr_sun].push_back( {eff_nums[s_index], eff_nums[e_index]} );
+            std::array<int,2> entry = { eff_nums[s_index],  eff_nums[e_index] };
+            std::cout << " TEST " << entry;
+
+            
+            // sort entry 
+            std::sort(
+                entry.begin(), 
+                entry.end(),  
+                [](int a, int b) {
+                    return a < b;
+                }
+            );
+
+            // add to sum_2_assoc_map map
+            if (unique_arr2.count(entry) == 0) {
+                sum_2_assoc_map[curr_sun].push_back( entry ); // capture potential sum 
+            }
+
+            s_index += 1;   //window_size - 1;
+            e_index += 1;  // window_size - 1;
+        }
+
+        window_size++;
         
-        if ( i - 2 >= 0)
-            test_zero_sum(static_cast<int>(i), static_cast<int>(i-2), curr, curr_prev_prev, sum2 * -1, v_map, data_return, unique_map);
+        if (s_index == 0) {
+            // fractals stopped
+            break;
+        }
     }
 
-    // <- direction search 
+    // find 3 sum 
+    std::cout << "----" << "\n";
 
-      for ( std::ptrdiff_t i = eff_nums.size() - 2 - 1; i >= 0 ; i-- ) {
-        
-        int curr = eff_nums[i];
-        
-        int curr_prev = eff_nums[i + 1];
-        
-        int curr_prev_prev = eff_nums[i + 2];
-        
-        int sum = curr + curr_prev;
+    std::map< Numbers, bool > unique_set{}; // unique_arr2 map 
 
-        int sum2 = curr + curr_prev_prev;
+    for ( auto &[accumulator, vector_of_arr2] : sum_2_assoc_map) {
 
-        // std::cout << " \t" << i <<  "\ttwo\t" <<  sum <<  " " << (curr+ curr_prev+ sum * -1) <<  "\n";
+        int next_acc = accumulator*-1;
 
-        // std::cout << " \t" << i <<  "\tone\t" <<  sum2 << "\n";
+        for (const std::array<int,2> arr2: vector_of_arr2 ) {
 
-        if ( i + 1 <= static_cast<ptrdiff_t>(eff_nums.size()) - 2 )
-            test_zero_sum(static_cast<int>(i), static_cast<int>(i+1), curr, curr_prev, sum * -1, v_map, data_return, unique_map);
+            if (v_map.count(next_acc)) {
 
-        
-        if ( i + 2 <= static_cast<ptrdiff_t>(eff_nums.size()) - 1 )
-            test_zero_sum(static_cast<int>(i), static_cast<int>(i+2), curr, curr_prev_prev, sum2 * -1, v_map, data_return, unique_map);
+                Numbers entry{arr2[0], arr2[1], next_acc}; // possible sum 
+                
+                // sort entry 
+                std::sort(
+                    entry.begin(), 
+                    entry.end(),  
+                    [](int a, int b) {
+                        return a < b;
+                    }
+                );
+                
+                //
+                if (!valid_sum(entry, histo)) {
+                    continue;
+                }
+
+                // unique sum 
+                if (unique_set.count(entry) == 0) {
+                    unique_set[entry] = true;
+                    data_return.push_back(entry);
+                    std::cout << entry << "\n";
+                }
+
+            }
+            
+        }
 
     }
 
