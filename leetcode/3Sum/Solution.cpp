@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <numeric> 
 #include <random>
+#include <cassert> 
 
 std::ostream& operator<<(std::ostream& os, const Numbers& numbers) {
     std::size_t i = 0;
@@ -127,8 +128,8 @@ void test_zero_sum(int i, int i2, int v1, int v2, int v3,  std::map< int , std::
         // v3 must be a value with index exclusive to v1 and v2
         std::cout << "v1: " << v1 << " i= " << i << "\t" << "v2: "<<  v2 << " i2= " <<  i2 <<  " v3 " << v3  << "\n";
 
-        std::cout << "number of indices with value of v3: " << lmap.size() << "\n";
-        std::cout << "number of indices with value of v3: " << lmap.size() << "\n";
+        // std::cout << "number of indices with value of v3: " << lmap.size() << "\n";
+        // std::cout << "number of indices with value of v3: " << lmap.size() << "\n";
 
 
 
@@ -137,7 +138,7 @@ void test_zero_sum(int i, int i2, int v1, int v2, int v3,  std::map< int , std::
             lmap.begin(), 
             lmap.end(), 
             [i, i2]( const auto& pair) {
-                std::cout << " indices \t" << pair.first << " " << i << " " << i2 << "\n"; 
+                // std::cout << " indices \t" << pair.first << " " << i << " " << i2 << "\n"; 
                 // lmap is a list of indices; the condition block checks whether current index is unique compared to the index of the other two values 
                 return pair.first  != static_cast<int>(i) && pair.first  != static_cast<int>(i2);
             }
@@ -155,7 +156,7 @@ void test_zero_sum(int i, int i2, int v1, int v2, int v3,  std::map< int , std::
                 }
             );
 
-            std::cout << " " << valid_entry_3Sum[0] << " " << valid_entry_3Sum[1] << " " << valid_entry_3Sum[2] << "\n"; 
+            // std::cout << " " << valid_entry_3Sum[0] << " " << valid_entry_3Sum[1] << " " << valid_entry_3Sum[2] << "\n"; 
             
             // add valid unique three sum values  
             if (u_map.count(valid_entry_3Sum) == 0  &&  std::accumulate(valid_entry_3Sum.begin(), valid_entry_3Sum.end(), 0)  == 0) {
@@ -194,6 +195,7 @@ void random_values (Numbers & v) {
 
 }
 std::vector<Numbers > Solution::threeSum(Numbers& nums) {
+    
     std::map< int/* number */ , std::map<int, bool> /* indices map */ > v_map; // values map 
     std::vector<Numbers > data_return;
     std::map< Numbers , bool > unique_map; // values map 
@@ -219,25 +221,7 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
         }
     );
 
-        // Numbers nums = { -1, 0 , 1 } ;
-
-    // map to table  (value- indices table)
-    // for (const auto &curr_index: indices) {
-    //     int value = nums[curr_index];
-    //     // v_map table 
-   
-    // }
-
-    // for (  const auto& [key, value_map] : v_map) {
-        // std::cout << key << "\n";
-        // for (const auto & [key2, index2]: value_map) {
-            // std::cout << key2 << "\n";
-        // }
-        // std::cout << "-----" << "\n";
-    // }
-
     // transfrom indices to value (map)
-
     Numbers eff_nums(indices.size());
     int new_index = 0;
     std::transform(
@@ -254,31 +238,64 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
             }
             v_map[v][new_index++] = true;
 
-            std::cout << " hello world " << v << " " << ( new_index - 1 )  << "\n"  ;
+            // std::cout << " hello world " << v << " " << ( new_index - 1 )  << "\n"  ;
             return nums[i];
         }
     );
 
+
+    // print numbers 
+
+    std::cout << eff_nums << "\n";
+
+    assert(0);
+
+    // -> directio search
     for (std::size_t i = N_SUM-1; i < eff_nums.size(); i++) {
 
         int curr = eff_nums[i];
-
+        
         int curr_prev = eff_nums[i - 1];
-
+        
         int curr_prev_prev = eff_nums[i - 2];
-
+        
         int sum = curr + curr_prev;
 
         int sum2 = curr + curr_prev_prev;
 
-        if ( i - 1 >= ( ( N_SUM-1) - 1 ) )
+        if ( i - 1 >= 1 )
             test_zero_sum(static_cast<int>(i), static_cast<int>(i-1), curr, curr_prev, sum * -1, v_map, data_return, unique_map);
         
-        if ( i - 2 >= ( ( N_SUM-1) -2 ) )
+        if ( i - 2 >= 0)
             test_zero_sum(static_cast<int>(i), static_cast<int>(i-2), curr, curr_prev_prev, sum2 * -1, v_map, data_return, unique_map);
     }
 
-    // std::cout << nums.size() << "\n";
+    // <- direction search 
+
+      for ( std::ptrdiff_t i = eff_nums.size() - 2 - 1; i >= 0 ; i-- ) {
+        
+        int curr = eff_nums[i];
+        
+        int curr_prev = eff_nums[i + 1];
+        
+        int curr_prev_prev = eff_nums[i + 2];
+        
+        int sum = curr + curr_prev;
+
+        int sum2 = curr + curr_prev_prev;
+
+        // std::cout << " \t" << i <<  "\ttwo\t" <<  sum <<  " " << (curr+ curr_prev+ sum * -1) <<  "\n";
+
+        // std::cout << " \t" << i <<  "\tone\t" <<  sum2 << "\n";
+
+        if ( i + 1 <= static_cast<ptrdiff_t>(eff_nums.size()) - 2 )
+            test_zero_sum(static_cast<int>(i), static_cast<int>(i+1), curr, curr_prev, sum * -1, v_map, data_return, unique_map);
+
+        
+        if ( i + 2 <= static_cast<ptrdiff_t>(eff_nums.size()) - 1 )
+            test_zero_sum(static_cast<int>(i), static_cast<int>(i+2), curr, curr_prev_prev, sum2 * -1, v_map, data_return, unique_map);
+
+    }
 
     return data_return;
 
