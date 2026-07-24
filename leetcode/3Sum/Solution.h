@@ -96,4 +96,7 @@ struct TNode {
 struct PNode {
     std::vector<int> path;
     Histogram histo;
+    int depth;
 };
+
+int first_positive_index(const Numbers &nums);
