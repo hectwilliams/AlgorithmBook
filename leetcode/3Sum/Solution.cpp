@@ -158,9 +158,7 @@ std::vector<int> find_path(TNode *node_a, TNode *node_b, int sum) {
     
     return {};
 }
-
-
-
+ 
 int first_positive_index(const Numbers &nums) {
 
     int pos_left = 0;
@@ -469,7 +467,7 @@ void sort_split(Numbers collection, const Numbers &raw, Histogram &histo, Vertic
 
         int include_zero = 0;
 
-        if ( histo.count(0) >= N_SUM) {
+        if ( histo.count(0) ) {
 
             if (histo[0] >= N_SUM ) {
                 include_zero = 1;
@@ -500,7 +498,7 @@ void sort_split(Numbers collection, const Numbers &raw, Histogram &histo, Vertic
             // histo_new[vertex_id]  // used resource (decr)
         }
 
-        std::cout << histo;
+
 
 
     } else {
@@ -585,9 +583,9 @@ void process(Numbers other, Numbers &positive, Vertices &vertices, int depth, Hi
     } 
 }
 
-
 std::vector<Numbers > Solution::threeSum(Numbers& nums) {
     
+  
     std::map< int/* number */ , std::map<int, bool> /* indices map */ > v_map; // values map 
     std::vector<Numbers > data_return;
     std::map< int, int > histo{}; 
@@ -611,16 +609,38 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
 
     if (pos_list.size() == 0) {
         // not sums
+
+        // checks zero 
+        if (histo[0] >= 3) {
+            data_return.push_back({0,0,0});
+        }
+        
     }
+
 
     while (loop < N_SUM - 1) {
         
         loop++;
+    // std::cout << "START" << "\n";
+
+    //     std::cout << other_list;
+    //     std::cout << pos_list;
+    // std::cout << "END END" << "\n";
+    // std::cout << "-------------" << "\n";
+        
+
 
         process(other_list, pos_list, vertices, loop, histo, eff_nums, data_return);
 
+        // std::cout << pos_list;
+
         if (loop < N_SUM - 1)
             sort_split(eff_nums, raw, histo, vertices, loop , other_list, pos_list, pos_index );
+
+        
+        // std::cout << pos_list;
+        // std::cout << other_list;
+
 
     }    
     return data_return;
