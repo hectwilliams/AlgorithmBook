@@ -160,6 +160,48 @@ std::vector<int> find_path(TNode *node_a, TNode *node_b, int sum) {
 }
 
 
+
+int first_positive_index(const Numbers &nums) {
+
+    int pos_left = 0;
+    int pos_right = nums.size() - 1;
+    int sample_left = nums[pos_left];
+    int sample_right = nums[pos_right];
+    unsigned long watchdog = 1;
+    
+    while ( 1 ) {
+        
+        sample_left = nums[pos_left];
+
+
+        sample_right = nums[pos_right];
+
+        if (!(sample_left <= 0 && sample_right > 0) )
+            break; 
+            
+        // std::cout << pos_right << "\n";
+
+        pos_right--;
+        pos_left++;
+        
+        watchdog++;
+
+        if (watchdog == 0 || watchdog > nums.size())
+            break;
+
+    }
+
+    if (sample_left > 0) {
+        // std::cout << "left" << "\n";
+        return pos_left;
+    } else  {
+        // std::cout << "right" << "\n";
+        return pos_right + 1;
+
+    }
+}
+
+
 void process_helper( const int &o,  const int &p, Vertices &vertices,  int depth, Histogram histo, Numbers &recent_sums ,  std::map<int, void*> &unique_sum_vertex_id,   std::map < std::array<int,2>, void*> &unique_pair_sum,  std::vector<Numbers> &ref_out) {
   
     bool zero_sum_mode{ depth == (N_SUM - 1) };
@@ -214,27 +256,30 @@ void process_helper( const int &o,  const int &p, Vertices &vertices,  int depth
         
         int next_depth;
 
-       ;
-
         if (depth == 1) {
 
             // find path producing sum from child nodes
             std::vector<int> path = find_path(node_o, node_p, s);
 
-            std::cout << " PATH " << path;
-            std::cout << " SUM " << s;
+            // std::cout << " PATH " << path;
+            // std::cout << " SUM " << s;
 
             new_histo = histo;
             
-            new_histo[p]+= -1;
-            new_histo[o]+= -1;
+            if (p == 0 && o == 0) {
+                new_histo[o]+= -1;
+                
+            } else {
+                new_histo[p]+= -1;
+                new_histo[o]+= -1;
+                next_depth = depth;
+            }
 
-            next_depth = depth;
             
             
             if (unique_pair_sum.count({o, p}) == 0) {
                 
-                std::cout << "\n  NEXT PATH " << path << "\n";
+                // std::cout << "\n  NEXT PATH " << path << "\n";
 
                 unique_pair_sum[{o, p}] = nullptr;
                 unique_pair_sum[{p, o}] = nullptr;
@@ -245,20 +290,25 @@ void process_helper( const int &o,  const int &p, Vertices &vertices,  int depth
             }
             
         } else {    
-            std::cout << "\n\n";
-            std::cout << " NODES - " << o << "  NODES - " << p << "\n";
-            std::cout << " PARENT - " << s  <<"\n\n";
+            
+            // std::cout << "\n\n";
+            // std::cout << " NODES - " << o << "  NODES - " << p << "\n";
+            // std::cout << " PARENT - " << s  <<"\n\n";
 
             std::vector<std::vector<int>> paths; 
-            bool stop = false; 
 
-            for (const auto pnode_o: vertices[o]->intercect) {
-                for (const auto pnode_p: vertices[p]->intercect) { 
+            std::vector<PNode*> pnodes_o = vertices[o]->intercect;
+            std::vector<PNode*> pnodes_p = vertices[p]->intercect;
+
+            bool stop = false; 
+                
+            for (const auto pnode_o: pnodes_o) {
+
+                for (const auto pnode_p: pnodes_p) { 
                 
                     std::vector<int> new_path;
                     
                     new_path.insert(new_path.end(), pnode_o->path.begin(), pnode_o->path.end());
-
 
                     new_path.insert(new_path.end(), pnode_p->path.begin(), pnode_p->path.end());
 
@@ -273,29 +323,47 @@ void process_helper( const int &o,  const int &p, Vertices &vertices,  int depth
                     if (new_path.size() != depth + 1)
                         continue; 
 
-                    std::cout << "NEXT PATH : " << "\n";
-                    std::cout << "\t\t" << pnode_o->path << "\n";
-                    std::cout << "\t\t" << pnode_p->path << "\n";
-                    
+
+                    // std::cout << "\n\n******NEXT PATH : " << "\n";
+                    // std::cout << "\t\t" << pnode_o->path << "\n";
+                    // std::cout << "\t\t" << pnode_p->path << "\n";
+                    // std::cout << "\t\t NEW PATH\t\t" << new_path << "\n";
+                    // std::cout << "\t\t NODE\t\t" << s  << "\n"<< "\n";
+
+                    // std::cout << new_path << "\n";
+
                     // does path exist vertex (s) node 
-                    bool exists = false;
-                    int count = 0;
-                    for (const auto &pnode_s: vertices[s]->intercect) {
+                        
+                    bool unique_path_for_vertex  = true;
+                    for (const auto pnode_s: vertices[s]->intercect) {
+                        
                         if (pnode_s->path.size() == new_path.size()) {
+                            
+                            int count = 0;
+                            // std::cout << "\t\t TEST ARRAY " <<  pnode_s->path << "\n";
+                            // std::cout << "\t\t TEST  SIZE" <<  new_path.size()<< "\n";
+
                             for (int n = 0; n < new_path.size(); n++) {
-                                count += +(new_path[n] == pnode_s->path[n]);
+                                if (new_path[n] == pnode_s->path[n]) {
+                                    count++;
+                                }
+                                // std::cout  << " TEST COUNT " << count << "\n";
                             }
+                            
                             if (count == new_path.size() ) {
-                                exists = true; // path already exists to summation node 
+                                unique_path_for_vertex = false; // path already exists to summation node 
                                 break;
                             } 
                         }
+
                     }
 
-                    if ( !exists ) {
-
+                    if ( unique_path_for_vertex ) {
+                            
+                            
                         // can higher node loose a sample 
                         if (pnode_o->depth == 0 && pnode_p->depth != 0) {
+                            
                             // p is main path 
                             if (pnode_p->histo[o] <= 0) 
                                 continue;
@@ -303,48 +371,42 @@ void process_helper( const int &o,  const int &p, Vertices &vertices,  int depth
                             // update histogram of path
                             new_histo = pnode_p->histo;
                             new_histo[o] += -1;
-
+                            
                             PNode *new_pnode = new PNode{new_path, new_histo, depth};
                             vertices[s]->intercect.push_back(new_pnode); // add new path to node
                             paths.push_back(new_path);
-                            stop = true;
-
+                            
                         } else if (pnode_o->depth != 0 && pnode_p->depth == 0) {
+                            
                             // o is main path 
                             if (pnode_o->histo[p] <= 0) 
                                 continue;
-                                
-                                // update histogram of path
-                                new_histo = pnode_o->histo;
-                                new_histo[p] += -1;
-
-                                PNode *new_pnode = new PNode{new_path, new_histo, depth};
-                                vertices[s]->intercect.push_back(new_pnode); // add new path to node
-                                paths.push_back(new_path);
-                                stop = true;
-
-
-                        }
-
+                            
+                            // update histogram of path
+                            new_histo = pnode_o->histo;
+                            new_histo[p] += -1;
+                            
+                            PNode *new_pnode = new PNode{new_path, new_histo, depth};
+                            vertices[s]->intercect.push_back(new_pnode); // add new path to node
+                            paths.push_back(new_path);
+                        
+                            
+                        }   
+                        
                         
                     }
                     
                 }
-
+                
+                
             }
-
+        
             for (const auto &c: paths) {
-                std::cout << c << "\n";
+
+                ref_out.push_back(c);
             }
 
-            // std::cout << paths.size() << "\n";
         }
-        
-
-        
-        std::cout << "\n";
-
-        
 
     }
 
@@ -405,9 +467,29 @@ void sort_split(Numbers collection, const Numbers &raw, Histogram &histo, Vertic
         other_io.reserve(pos_index + 1);
         other_io.assign(eff_nums.begin(), eff_nums.begin() + pos_index);
 
+        int include_zero = 0;
+
+        if ( histo.count(0) >= N_SUM) {
+
+            if (histo[0] >= N_SUM ) {
+                include_zero = 1;
+            }
+            // 0 vertex layer 1 node exists
+        }
+
         positive_io.clear();
-        positive_io.reserve(eff_nums.size() - pos_index);
-        positive_io.assign(eff_nums.begin() + pos_index, eff_nums.end());
+        positive_io.reserve(eff_nums.size()  - pos_index + include_zero);
+        
+        if(include_zero) {
+            positive_io.push_back(0);
+            positive_io.insert(positive_io.end(), eff_nums.begin() + pos_index, eff_nums.end() );
+
+            // pos_list.insert(pos_list.begin(), 0);
+            // positive_io.assign(eff_nums.begin() + pos_index, eff_nums.end());
+
+        } else {
+            positive_io.assign(eff_nums.begin() + pos_index, eff_nums.end());
+        }
 
         // set histo 
         for (const auto  &[vertex_id, _ ] : histo) {
@@ -454,17 +536,18 @@ void sort_split(Numbers collection, const Numbers &raw, Histogram &histo, Vertic
 }
 
 
-void process(Numbers other, Numbers positive, Vertices &vertices, int depth, Histogram histo,  Numbers &io , std::vector<Numbers> &ref_out) {
+void process(Numbers other, Numbers &positive, Vertices &vertices, int depth, Histogram histo,  Numbers &io , std::vector<Numbers> &ref_out) {
 
     int o;
     int p;
     std::map<int, void*> unique_sum_vertex_id;
     std::map < std::array<int, 2> , void*> unique_pair;
     std::map < std::array<int,2>, void*> unique_pair_sum;
-    std::cout << "PROCESSING" << "\n";
-    std::cout << "previous sum\t\t"  << other;
-    std::cout << "input data \t\t"  << positive;
-    std::cout << "PROCESSING END" << "\n";
+
+    // std::cout << "PROCESSING" << "\n";
+    // std::cout << "previous sum\t\t"  << other;
+    // std::cout << "input data \t\t"  << positive;
+    // std::cout << "PROCESSING END" << "\n";
     
     if (depth < N_SUM  ) {
         
@@ -474,65 +557,34 @@ void process(Numbers other, Numbers positive, Vertices &vertices, int depth, His
             for (std::size_t j = 0; j < other.size(); j++) {
                 p = positive[i];
                 o =  other[j];
-                // std::array<int, 2> t1{p, o};
-                // // std::array<int, 2> t2{o ,p};
+                std::array<int, 2> t1{p, o};
+                std::array<int, 2> t2{o ,p};
 
-                // if (unique_pair.count(t1) == 0) {
-                //     unique_pair[t1] = nullptr;
-                //     // unique_pair[t2] = nullptr;
-                // }
+                if (unique_pair.count(t1) == 0) {
+                    unique_pair[t1] = nullptr;
+                    unique_pair[t2] = nullptr;
+                } else  {
+                    continue;
+                }
+
                 if (depth == 1 &&  p > 0 && o > 0)  
                     return;
                 
-                if (depth == 2 &&  p + o != 0) 
+                if (depth == N_SUM - 1 &&  p + o != 0) 
                     continue;   
 
                 process_helper(o, p, vertices, depth, histo, io, unique_sum_vertex_id ,unique_pair_sum, ref_out);
             }
         }
 
+        if (positive.size() > 0  && positive[0] == 0 ) {
+            // remove zero from positive 
+            positive.erase(positive.begin()); 
+        }
+
     } 
 }
 
-int first_positive_index(const Numbers &nums) {
-
-    int pos_left = 0;
-    int pos_right = nums.size() - 1;
-    int sample_left = nums[pos_left];
-    int sample_right = nums[pos_right];
-    unsigned long watchdog = 1;
-    
-    while ( 1 ) {
-        
-        sample_left = nums[pos_left];
-
-
-        sample_right = nums[pos_right];
-
-        if (!(sample_left <= 0 && sample_right > 0) )
-            break; 
-            
-        // std::cout << pos_right << "\n";
-
-        pos_right--;
-        pos_left++;
-        
-        watchdog++;
-
-        if (watchdog == 0 || watchdog > nums.size())
-            break;
-
-    }
-
-    if (sample_left > 0) {
-        // std::cout << "left" << "\n";
-        return pos_left;
-    } else  {
-        // std::cout << "right" << "\n";
-        return pos_right + 1;
-
-    }
-}
 
 std::vector<Numbers > Solution::threeSum(Numbers& nums) {
     
@@ -557,17 +609,13 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
     raw.insert(raw.end(), other_list.begin(), other_list.end());
     raw.insert(raw.end(), pos_list.begin(), pos_list.end());
 
+    if (pos_list.size() == 0) {
+        // not sums
+    }
+
     while (loop < N_SUM - 1) {
         
         loop++;
-    // std::cout << "START" << "\n";
-
-    //     std::cout << other_list;
-    //     std::cout << pos_list;
-    // std::cout << "END END" << "\n";
-    // std::cout << "-------------" << "\n";
-
-
 
         process(other_list, pos_list, vertices, loop, histo, eff_nums, data_return);
 
