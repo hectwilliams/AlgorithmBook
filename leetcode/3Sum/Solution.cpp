@@ -169,7 +169,7 @@ int first_positive_index(const Numbers &nums) {
 }
 
 
-void set_histogram(Numbers numbers, Histogram &histogram, Histogram &histogram_pos) {
+void set_histogram(Numbers numbers, Histogram *histogram, Histogram &histogram_pos) {
 
     bool is_odd = (numbers.size() % 2 == 1);
     int half_length = numbers.size()/2;
@@ -185,36 +185,36 @@ void set_histogram(Numbers numbers, Histogram &histogram, Histogram &histogram_p
         a = numbers[left + i];
         b = numbers[right - i];
 
-        if (histogram.count(a) == 0) {
-            histogram[a] = 0;
+        if ((*histogram).count(a) == 0) {
+            (*histogram)[a] = 0;
 
             if (a > 0)
                 histogram_pos[a] = 1;
 
         }
-        histogram[a] += 1;
+        (*histogram)[a] += 1;
         
-        if (histogram.count(b) == 0) {
-            histogram[b] = 0;
+        if ((*histogram).count(b) == 0) {
+            (*histogram)[b] = 0;
 
             if (b > 0)
                 histogram_pos[b] = 1;
 
         }
-        histogram[b] += 1;
+        (*histogram)[b] += 1;
     }
 
     if (is_odd) {
         
         a = numbers[half_length];
 
-         if (histogram.count(a) == 0) {
-            histogram[a] = 0;
+         if ((*histogram).count(a) == 0) {
+            (*histogram)[a] = 0;
             
             if (a > 0)
                 histogram_pos[a] = 1;
         }
-        histogram[a] += 1;
+        (*histogram)[a] += 1;
     }
 }
 
@@ -224,114 +224,189 @@ void sort_list(Numbers &numbers) {
 
 }
 
-void process_value (const int &value, Histogram &histo,  Numbers data, std::map<int, std::map<int, std::map<int, void*>>> path_map, std::vector<Numbers > &data_return) {
-
-    Histogram histogram_pad = histo;
-    int sum; 
-
-    if (histo[value]) {
-        
-        
-        std::sort(data.begin(), data.end(), [](int a, int b) {return a < b;});
-
-        sum = std::accumulate(data.begin(), data.end(), 0);
-        
-        histogram_pad = histo;
-
-        if (sum == 0) {
-
-            std::cout << data << "\n";
-
-            bool bin_exhausted = false;
-
-            for (const auto &c: data) {
-                bin_exhausted |= +( histogram_pad[c] <= 0 );
-                histogram_pad[c]--;
-            } 
-            
-            if ( !bin_exhausted && path_map[ data[0] ][ data[1]].count(data[2])  == 0) {
-                // catch if fetch fails 
-                
-                path_map[ data[0] ][ data[1]][data[2]] = nullptr;
-                
-                // std::cout << data;
-                data_return.push_back(data);
-
-            }  
-            
-        }
-
-    }
-}
-
 std::vector<Numbers > Solution::threeSum(Numbers& nums) {
     
     std::vector<Numbers > data_return;
-    std::map< int, int > histo{}; 
+    Histogram *histo = new Histogram{}; 
     std::map< int, int > histo_pos{}; 
-
-    int pos_index;
-
     Numbers eff_nums = nums;
+    Numbers data;
+    int *sum = new int{};
+    int value;
+    int pos_threshold_other_io = -1;
+    int neg_threshold_positive_io = -1;
+    bool stop ; 
+    int row_data;
+    int col_data;
+    int pos_index;
+    std::map<int, std::map<int, std::map<int, void*>>> *path_map = new std::map<int, std::map<int, std::map<int, void*>>>{};
+
 
     sort_list(eff_nums);
     set_histogram(eff_nums, histo, histo_pos);
 
     pos_index = first_positive_index(eff_nums);
 
-     
-     Numbers positive_io{};
-     Numbers other_io{};
-     
-     other_io.clear();
-     other_io.reserve(pos_index );
-     other_io.assign(eff_nums.begin(), eff_nums.begin() + pos_index);
-     
-     // assign concat nodes to positive
-     positive_io.clear();
-     positive_io.reserve(eff_nums.size()  - pos_index );
-     positive_io.insert(positive_io.end(), eff_nums.begin() + pos_index, eff_nums.end() );
+    Numbers *positive_io = new Numbers{};
+    Numbers *other_io = new Numbers{} ;
     
-     std::map<int, std::map<int, std::map<int, void*>>> path_map;
-
-     Numbers output;
-     int sample;
-     int next = 0;
-     int last = 0;
-     int sum = 0;
-     int value;
-    int count  = other_io.size();
-    int threshold_other_io =-1;
+    other_io->clear();
+    other_io->reserve(pos_index );
+    other_io->assign(eff_nums.begin(), eff_nums.begin() + pos_index);
     
-    if (positive_io.size()) {
+    // assign concat nodes to positive
+    positive_io->clear();
+    positive_io->reserve(eff_nums.size()  - pos_index );
+    positive_io->insert(positive_io->end(), eff_nums.begin() + pos_index, eff_nums.end() );
 
-        threshold_other_io = positive_io[positive_io.size() - 1];
+
+    data.reserve(3);
+    data.insert(data.end(), {0,0,0});
+
+    if (positive_io->size()) {
+
+        pos_threshold_other_io = (*positive_io) [positive_io->size() - 1] ;
+
+    }
+    
+    if (other_io->size()) {
+
+        neg_threshold_positive_io = (*other_io)[ 0 ] ;
 
     }
     
 
-    std::cout << positive_io;
+    // all ones test 
+    bool all_equal = eff_nums.empty() || std::all_of(eff_nums.begin(), eff_nums.end(), [&eff_nums](int element) { return element == eff_nums.front() && element == 0; });
+    
+    if (all_equal) {
 
-    std::cout << other_io;
-
-    // left to right 
-
-    for (int col = other_io.size() - 1; col  >= 0; col--) {
-
-        for (int row = col ; row  >= 0; row--) {
-            
-            value = (other_io[col] + other_io[row]) * -1;
-            
-            Numbers data {value, other_io[col], other_io[row]};
-            
-            process_value(value, histo, data, path_map, data_return);
-
-            if (threshold_other_io !=- 1 && value >=  threshold_other_io) {
-                break;
-            }
-
+        if (eff_nums.size() >=  N_SUM) {
+            data_return.push_back({0,0,0} );
         }
+
+    } else {
+
+        for (int col = other_io->size() - 1; col  >= 0; col--) {
+            
+            for (int row = col - 1  ; row  >= 0; row--) {
+                
+
+                col_data = (*other_io)[col];
+                row_data =  (*other_io)[row];
+                value = (col_data + row_data) * -1;
+
+                (*histo)[col_data]--; 
+                (*histo)[row_data]--; 
+                (*histo)[value]--; 
+
+                int zero_sum = ( ((*histo)[col_data] == - 1  || (*histo)[row_data] == -1 ||  (*histo)[value] == -1 )  )  ;
+                
+                (*histo)[col_data]++; 
+                (*histo)[row_data]++; 
+                (*histo)[value]++; 
+
+                if (zero_sum ) {
+                    continue;
+                }
+
+                data[2] = value;
+
+                if (row > col) {
+                    
+                    data[1] = row_data;
+                    data[0] = col_data;
+                    
+                } else {
+                    
+                    data[0] = row_data;
+                    data[1] = col_data;
+                    
+                }
+
+                *sum = data[0] + data[1] + data[2];
+
+                if (*sum == 0  ) {
+
+                    if ( (*path_map)[ data[0] ][ data[1]].count(data[2])  == 0) {
+
+                        (*path_map)[ data[0] ][ data[1]][data[2]] = nullptr;
+
+                        data_return.push_back(data);
+
+                    }  
+
+                }
+
+                if (pos_threshold_other_io !=- 1 && value >  pos_threshold_other_io) {
+                    break; 
+                }
+
+            }
+            
+        }
+
+
         
+        for ( int col = 0 ; col < (*positive_io).size(); col++ ) {
+
+            for ( int row = col + 1 ; row  < (*positive_io).size(); row++ ) {
+                
+                col_data = (*positive_io)[col];
+                row_data =  (*positive_io)[row];
+                value = (col_data + row_data) * -1;
+                
+                (*histo)[col_data]--; 
+                (*histo)[row_data]--; 
+                (*histo)[value]--; 
+                
+                int zero_sum = ( ((*histo)[col_data] == - 1  || (*histo)[row_data] == -1 ||  (*histo)[value]  == -1 )  )  ;
+                
+                (*histo)[col_data]++; 
+                (*histo)[row_data]++; 
+                (*histo)[value]++; 
+                
+                if (zero_sum ) {
+                    continue;
+                }
+                
+                data[0] = value;
+
+                if (row > col) {
+                    
+                    data[2] = row_data;
+                    data[1] = col_data;
+                    
+                } else {
+                    
+                    data[1] = row_data;
+                    data[2] = col_data;
+                    
+                }
+                
+                *sum = data[0] + data[1] + data[2];
+
+                if (*sum == 0  ) {
+
+                    if ( (*path_map)[ data[0] ][ data[1]].count(data[2])  == 0) {
+
+                        (*path_map)[ data[0] ][ data[1]][data[2]] = nullptr;
+
+                        data_return.push_back(data);
+
+                    }  
+
+                }
+                    
+                if (neg_threshold_positive_io !=- 1 && value <=  neg_threshold_positive_io) {
+                    break;
+                }
+                
+
+            }
+            
+        }
+
     }
 
     return data_return;
