@@ -1,6 +1,8 @@
 #pragma once // Prevents the header from being included more than once
 
 #include <vector>
+#include <map>
+#include <array>
 
 /*
     Purpose: solve leetcode 3Sum problem
@@ -18,10 +20,15 @@ const bool EN_DEBUG = false;
 
 struct Node ;
 struct CNode;
+struct thrNode;
+struct TNode;
+struct PNode; 
+using Histogram = std::map<int, int>;
 
 using Numbers = std::vector<int>; 
 using NumbersArray = std::vector<Numbers>;
 using Children = std::vector<Node*>;
+using NumbersThreeNode = std::vector<thrNode*>; 
 
 struct Node {
     int value;
@@ -57,9 +64,39 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Numbers&  numbers );
     friend std::ostream& operator<<(std::ostream& os, const NumbersArray&  numbers_2D);
     friend std::ostream& operator<<(std::ostream& os, const CNode *node);
-        friend std::ostream& operator<<(std::ostream& os, const std::array<int,2> &arr) ;
-};
+    friend std::ostream& operator<<(std::ostream& os, const std::array<int,2> &arr) ;
+    friend std::ostream& operator<<(std::ostream& os, const std::array<int,3> &arr) ;
+    friend std::ostream& operator<<(std::ostream& os, const NumbersThreeNode &arr) ;
+    friend std::ostream& operator<<(std::ostream& os, const PNode *node);
+    friend std::ostream& operator<<(std::ostream& os, const Histogram &h);
 
+};
 
 bool read_three ( Numbers &data, CNode *node  );
 int  sum_window_three (Numbers &a, Numbers &b, Numbers &c);
+
+struct thrNode {
+    int acc;
+    std::vector<int> values;
+    std::map<int, int> histo; 
+    int depth ;
+};
+
+using NumbersThreeNode = std::vector<thrNode*>; 
+using Vertices = std::map<int, TNode*>; 
+// using Links = std::map<int, TNode*>; 
+using intersectVertices = std::vector< PNode* >; 
+
+struct TNode {
+    int acc; 
+    intersectVertices intercect; 
+    int depth;
+};
+
+struct PNode {
+    std::vector<int> path;
+    Histogram histo;
+    int depth;
+};
+
+int first_positive_index(const Numbers &nums);
