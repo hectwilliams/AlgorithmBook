@@ -29,10 +29,22 @@ using NumbersArray = std::vector<Numbers>;
  };
 
 
+  std::ostream& operator<<(std::ostream& os, const Nodes &nodes) {
+
+    // std::cout << h.size() << "\n";
+     os << "[ ";
+    for ( const auto node: nodes ) {
+        os << " " << node->acc << " ,";
+    }
+     os << " ]\n";
+
+    return os; 
+
+}
+
 
  std::ostream& operator<<(std::ostream& os, const Histogram & h) {
 
-    std::cout << h.size() << "\n";
      os << "[ ";
     for ( const auto &[value, count ]: h ) {
         os << " " << value  <<  "[" << count << " ]"<< ","  ;
@@ -127,6 +139,12 @@ void sort_list(Numbers &numbers) {
 
 }
 
+void sort_list(Nodes & nodes) {
+
+    std::sort(nodes.begin(), nodes.end(), [](Node *node_a, Node* node_b){  return node_a->acc < node_b->acc ; });
+
+}
+
 
 void process_value (const int &value,  const Histogram histo,   Numbers data, std::map<int, std::map<int, std::map<int, void*>>> &path_map, std::vector<Numbers > &data_return) {
 
@@ -174,6 +192,34 @@ void move_to_node (Nodes *nodes, const Numbers & numbers, Histogram histo) {
     }
 
 }
+
+void uniquify (Nodes &nodes) {
+
+    std::size_t k = 0;
+    while (k + 1 < nodes.size()) {
+        if (nodes[k]->acc  == nodes[k + 1]->acc ) {
+            delete nodes[k + 1]; // free 
+            nodes.erase(nodes.begin() + k+1); // Deletes element at specific index
+        } else {
+            k++;
+        }
+    }
+}
+
+void uniquify (Numbers &numbers) {
+
+    std::size_t k = 0;
+    while (k + 1 < numbers.size()) {
+        if (numbers[k] == numbers[k + 1] ) {
+            numbers.erase(numbers.begin() + k+1); // Deletes element at specific index
+        } else {
+            k++;
+        }
+    }
+}
+
+
+
 class Solution {
 public:
     std::vector<std::vector<int>> fourSum(std::vector<int>& nums, int target) {
@@ -183,19 +229,18 @@ public:
     Histogram histo; 
     std::map< int, int > histo_pos{}; 
     
-    sort_list(eff_nums ) ;
+    sort_list( eff_nums ) ;
     set_histogram(eff_nums, histo, histo_pos);
 
     Nodes nodes_table[2];
     Histogram h;
     
-std::map<int,
     std::map<int,
     std::map<int,
-    std::map<int, void*> >>> path_maps;
-
-        
+    std::map<int,
+    std::map<int, bool> >>> path_maps;
     
+
     // all ones test 
     bool all_equal = eff_nums.empty() || std::all_of(eff_nums.begin(), eff_nums.end(), [&eff_nums, &target](int element) { return element == eff_nums.front() && element == target ; });
     
@@ -208,16 +253,12 @@ std::map<int,
     } 
     
     else {
-        
-        std::cout << eff_nums;
-        std::cout << histo;
 
-        std::cout << "\n\n\n";
+        std::cout  << " HISTOGRAM :\t" << histo << "\n";
 
+        uniquify(eff_nums);
         move_to_node(nodes_table, eff_nums, histo);
         Nodes raw_nodes = nodes_table[0];
-        // int col_data{}; 
-        // int row_data{};
         int index = 0;
         std::map < std::array<int, 4> , void*> unique4;
         std::map < std::array<int, 3> , void*> unique3;
@@ -228,6 +269,11 @@ std::map<int,
         for (int i = 0; i < N_SUM - 1; i++) {
 
             int size = nodes_table[0].size();
+               std::cout << "ITERATION: " << i + 1 << "\n";
+            std::cout << nodes_table[0];
+            std::cout << raw_nodes;
+
+
             // interate subsection of NxN grid ( bottom diagonal region)
             for (int row_start_marker = 0; row_start_marker < size ; row_start_marker++) {
                 
@@ -249,90 +295,63 @@ std::map<int,
 
                     Histogram new_histo = nodes_table[0][r]->histo;
 
-                    // if (h.count(summ)  ) {
+                    std::vector<int> active_path = nodes_table[0][r]->path; 
 
-                    // if ( 1 ) {
+                    active_path.push_back(col_data);
+                    
+                    sort_list(active_path);
                         
-                        std::vector<int> active_path = nodes_table[0][r]->path; 
+                    if (active_path.size() == N_SUM && std::accumulate(active_path.begin(), active_path.end(), 0) == target) {
+                        std::cout  << " CHECK:\t" << active_path << "\n";
+                        std::cout  << " NEW VALUE:\t" << col_data << "\n";
+                        std::cout  << " Histo:\t" << new_histo <<  "\n\n---\n\n";
 
-                        active_path.push_back(col_data);
-                        
-                        sort_list(active_path);
-                            
-                        if (active_path.size() == N_SUM && std::accumulate(active_path.begin(), active_path.end(), 0) == target) {
-                            
-                            if (new_histo[col_data] > 0 && path_maps[active_path[0]][active_path[1]][active_path[2]].count(active_path[3] ) == 0) {
-
-                                // std::cout << active_path << "\n";
-                                // std::cout << "\t\t\t\t"<<col_data << "\n";
-                                // std::cout << "\t\t\t\t:\t\t"<<summ << "\n";
-                                // std::cout << new_histo << "\n";
-                                
-
-                                // if (path_maps[active_path[0]][active_path[1]][active_path[2]].count(active_path[3] ) == 0 ) {
-                                    
-                                    path_maps[active_path[0]][active_path[1]][active_path[2]][active_path[3]] = nullptr;
-
-                                    data_return.push_back(active_path);
-
-                                    std::cout  << " ADDED:\t" << active_path << "\n";
-
-                                // }
-                                
-                            }
+                        if (new_histo[col_data] > 0 && path_maps[active_path[0]][active_path[1]][active_path[2]].count(active_path[3] ) == 0) {
 
                             
-                        } else {
-                            
-                            // remove samople 
+                            path_maps[active_path[0]][active_path[1]][active_path[2]][active_path[3]] = true;
 
-                            if (i == 0 ) {
-                                
-                                new_histo[col_data] += - 1;
-                                new_histo[row_data] += -1;
+                            data_return.push_back(active_path);
 
-                            } else {
-
-                                new_histo[col_data] += -1;
-
-                            }
-
-                         
-                                
-                            nodes_table[ 1 ^ index ].push_back( new Node{summ, active_path,  new_histo } );
-                            // }
-
-                            std::cout << " R " << r << "\n";
-                            std::cout << " R " << row_start_marker << "\n";
-
+                            std::cout  << " ADDED:\t" << active_path << "\n\n *****\n\n";
 
                         }
 
-                    // }
+                    } else {
+                        
+                        // remove samople 
+
+                        if (i == 0 ) {
+                            
+                            new_histo[col_data] += - 1;
+                            new_histo[row_data] += -1;
+
+                        } else {
+
+                            new_histo[col_data] += -1;
+
+                        }
+                            
+                        nodes_table[ 1 ^ index ].push_back( new Node{summ, active_path,  new_histo } );
+
+                    }
+
                     
                     r++; // step down 
                     c++; // step right 
                     c = c % raw_nodes.size();
 
-
-                    std::cout << " R " << r <<  " " << size << " \n";
                 }   
                 
                 
             }
                 
-            // if (i == N_SUM-1) {
 
-            //     std::cout << " HELLO WORLD " << "\n";
-            //     break;
+            sort_list(nodes_table[1 ^index]);
+            uniquify( nodes_table[1 ^index] );
+            nodes_table[index] = nodes_table[1 ^index] ;
+            nodes_table[1 ^ index].clear(); // clear other list 
                 
-            // } else {
-                
-
-                nodes_table[index] = nodes_table[1 ^index] ;
-                nodes_table[1 ^ index].clear(); // clear other list 
-                
-            // }
         
         }
 
@@ -349,8 +368,6 @@ std::map<int,
 
 int main(int param_count, char *args[]) {
     Solution sol;
-
-    std::cout << param_count << "\n";
     Numbers nums{};
     int target = 0;
 
@@ -666,6 +683,7 @@ int main(int param_count, char *args[]) {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                target = 0;
                 break;
 
             case (1):
@@ -683,6 +701,12 @@ int main(int param_count, char *args[]) {
                 nums = {-5,-4,-3,-2,-1,0,0,1,2,3,4,5};
                 target = 0;
                 break;
+            
+            case (4): 
+                nums = {1,0,-1,0,-2,2};
+                target = 0;
+                break;
+                
             default:
                 break;
         }
