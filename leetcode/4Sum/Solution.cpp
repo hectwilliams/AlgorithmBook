@@ -100,8 +100,8 @@ void set_histogram(Numbers numbers, Histogram &histogram, Histogram &histogram_p
         a = numbers[left + i];
         b = numbers[right - i];
 
-        if ((histogram).count(a) == 0) {
-            (histogram)[a] = 0;
+        if (histogram.count(a) == 0) {
+            histogram[a] = 0;
 
             if (a > 0)
                 histogram_pos[a] = 1;
@@ -109,8 +109,8 @@ void set_histogram(Numbers numbers, Histogram &histogram, Histogram &histogram_p
         }
         (histogram)[a] += 1;
         
-        if ((histogram).count(b) == 0) {
-            (histogram)[b] = 0;
+        if (histogram.count(b) == 0) {
+            histogram[b] = 0;
 
             if (b > 0)
                 histogram_pos[b] = 1;
@@ -124,12 +124,12 @@ void set_histogram(Numbers numbers, Histogram &histogram, Histogram &histogram_p
         a = numbers[half_length];
 
          if ((histogram).count(a) == 0) {
-            (histogram)[a] = 0;
+            histogram[a] = 0;
             
             if (a > 0)
                 histogram_pos[a] = 1;
         }
-        (histogram)[a] += 1;
+        histogram[a] += 1;
     }
 }
 
@@ -141,7 +141,7 @@ void sort_list(Numbers &numbers) {
 
 void sort_list(Nodes & nodes) {
 
-    std::sort(nodes.begin(), nodes.end(), [](Node *node_a, Node* node_b){  return node_a->acc < node_b->acc ; });
+    std::sort(nodes.begin(), nodes.end(), [](const Node *node_a, const Node* node_b){  return node_a->acc < node_b->acc ; });
 
 }
 
@@ -173,7 +173,6 @@ void process_value (const int &value,  const Histogram histo,   Numbers data, st
                 
                 path_map[ data[0] ][ data[1]][data[2]] = nullptr;
                 
-                // std::cout << data;
                 data_return.push_back(data);
 
             }  
@@ -239,6 +238,7 @@ public:
     std::map<int,
     std::map<int,
     std::map<int, bool> >>> path_maps;
+        int index = 0;
     
 
     // all ones test 
@@ -259,30 +259,23 @@ public:
         uniquify(eff_nums);
         move_to_node(nodes_table, eff_nums, histo);
         Nodes raw_nodes = nodes_table[0];
-        int index = 0;
-        std::map < std::array<int, 4> , void*> unique4;
-        std::map < std::array<int, 3> , void*> unique3;
-        std::map < std::array<int, 2> , void*> unique2;
-        
         // 2nd layer 
         
         for (int i = 0; i < N_SUM - 1; i++) {
 
-            int size = nodes_table[0].size();
-               std::cout << "ITERATION: " << i + 1 << "\n";
-            std::cout << nodes_table[0];
-            std::cout << raw_nodes;
-
+            // std::cout << "ITERATION: " << i + 1 << "\n";
+            // std::cout << nodes_table[0];
+            // std::cout << raw_nodes;
 
             // interate subsection of NxN grid ( bottom diagonal region)
-            for (int row_start_marker = 0; row_start_marker < size ; row_start_marker++) {
+            for (std::size_t row_start_marker = 0; row_start_marker < nodes_table[0].size() ; row_start_marker++) {
                 
                 // start position 2D Grid
-                int r = row_start_marker; // start row 
-                int c = 0; // start column 
+                std::size_t r = row_start_marker; // start row 
+                std::size_t c = 0; // start column 
                 
                 // right diagonal search 
-                while (r < size) {
+                while (r < nodes_table[0].size()) {
                     
                     // read subset in column 
                     // std::cout << r << " " << c  << "\n";
@@ -290,6 +283,12 @@ public:
                     int col_data = raw_nodes[c]->acc;   // sample
 
                     int row_data = nodes_table[0][r]->acc;  // path
+
+                    // if (i == 2) {
+
+                    //     std::cout << col_data + row_data << "\n";
+
+                    // }
 
                     int summ = col_data + row_data;
 
@@ -301,10 +300,13 @@ public:
                     
                     sort_list(active_path);
                         
-                    if (active_path.size() == N_SUM && std::accumulate(active_path.begin(), active_path.end(), 0) == target) {
-                        std::cout  << " CHECK:\t" << active_path << "\n";
-                        std::cout  << " NEW VALUE:\t" << col_data << "\n";
-                        std::cout  << " Histo:\t" << new_histo <<  "\n\n---\n\n";
+                    if (active_path.size() == N_SUM && summ == target) {
+
+                        // std::cout  << " CHECK:\t" << active_path << "\n";
+
+                        // std::cout  << " NEW VALUE:\t" << col_data << "\n";
+
+                        // std::cout  << " Histo:\t" << new_histo <<  "\n\n---\n\n";
 
                         if (new_histo[col_data] > 0 && path_maps[active_path[0]][active_path[1]][active_path[2]].count(active_path[3] ) == 0) {
 
@@ -323,12 +325,12 @@ public:
 
                         if (i == 0 ) {
                             
-                            new_histo[col_data] += - 1;
-                            new_histo[row_data] += -1;
+                            new_histo[col_data]--;
+                            new_histo[row_data]--;
 
                         } else {
 
-                            new_histo[col_data] += -1;
+                            new_histo[col_data]--;
 
                         }
                             
@@ -347,10 +349,21 @@ public:
             }
                 
 
+            // std::cout << "SIZE "<< nodes_table[1 ^index].size() << "\n";
+
             sort_list(nodes_table[1 ^index]);
             uniquify( nodes_table[1 ^index] );
+
+            // if (i == 2) {
+            //     for (const auto node: nodes_table[1  ^ index]) {
+            //         std::cout << node->acc << "\n";
+            //     }
+            // }
             nodes_table[index] = nodes_table[1 ^index] ;
-            nodes_table[1 ^ index].clear(); // clear other list 
+
+            // nodes_table[1 ^ index].clear(); // clear other list 
+
+            nodes_table[1 ^ index].resize(0);
                 
         
         }
