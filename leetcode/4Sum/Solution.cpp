@@ -14,7 +14,7 @@
 
 
 const int N_SUM = 4;
-
+const int DEBUG = false; 
 struct Node;
 
 using Histogram = std::map<int, int>;
@@ -183,11 +183,11 @@ void process_value (const int &value,  const Histogram histo,   Numbers data, st
 }
 
 
-void move_to_node (Nodes *nodes, const Numbers & numbers, Histogram histo) {
+void move_to_node (Nodes &nodes, const Numbers & numbers, Histogram histo) {
     
     for (const auto &data: numbers) {
 
-        nodes[0].push_back(new Node{ data, {data}, histo});
+        nodes.push_back(new Node{ data, {data}, histo});
     }
 
 }
@@ -227,19 +227,15 @@ public:
     Numbers eff_nums = nums;
     Histogram histo; 
     std::map< int, int > histo_pos{}; 
-    
-    sort_list( eff_nums ) ;
-    set_histogram(eff_nums, histo, histo_pos);
-
     Nodes nodes_table[2];
-    Histogram h;
-    
     std::map<int,
     std::map<int,
     std::map<int,
     std::map<int, bool> >>> path_maps;
-        int index = 0;
+    int index = 0;
     
+    sort_list( eff_nums ) ;
+    set_histogram(eff_nums, histo, histo_pos);
 
     // all ones test 
     bool all_equal = eff_nums.empty() || std::all_of(eff_nums.begin(), eff_nums.end(), [&eff_nums, &target](int element) { return element == eff_nums.front() && element == target ; });
@@ -250,22 +246,23 @@ public:
             data_return.push_back({target,target,target, target} );
         }
 
-    } 
-    
-    else {
+    } else {
 
         std::cout  << " HISTOGRAM :\t" << histo << "\n";
 
         uniquify(eff_nums);
-        move_to_node(nodes_table, eff_nums, histo);
+        move_to_node(nodes_table[0], eff_nums, histo);
         Nodes raw_nodes = nodes_table[0];
+
         // 2nd layer 
         
         for (int i = 0; i < N_SUM - 1; i++) {
 
-            // std::cout << "ITERATION: " << i + 1 << "\n";
-            // std::cout << nodes_table[0];
-            // std::cout << raw_nodes;
+            if (DEBUG) {
+                std::cout << "ITERATION: " << i + 1 << "\n";
+                std::cout << nodes_table[0];
+                std::cout << raw_nodes;
+            }
 
             // interate subsection of NxN grid ( bottom diagonal region)
             for (std::size_t row_start_marker = 0; row_start_marker < nodes_table[0].size() ; row_start_marker++) {
@@ -277,18 +274,9 @@ public:
                 // right diagonal search 
                 while (r < nodes_table[0].size()) {
                     
-                    // read subset in column 
-                    // std::cout << r << " " << c  << "\n";
-                    
                     int col_data = raw_nodes[c]->acc;   // sample
 
                     int row_data = nodes_table[0][r]->acc;  // path
-
-                    // if (i == 2) {
-
-                    //     std::cout << col_data + row_data << "\n";
-
-                    // }
 
                     int summ = col_data + row_data;
 
@@ -302,11 +290,12 @@ public:
                         
                     if (active_path.size() == N_SUM && summ == target) {
 
-                        // std::cout  << " CHECK:\t" << active_path << "\n";
+                        if (DEBUG) {
 
-                        // std::cout  << " NEW VALUE:\t" << col_data << "\n";
-
-                        // std::cout  << " Histo:\t" << new_histo <<  "\n\n---\n\n";
+                            std::cout  << " CHECK:\t" << active_path << "\n";
+                            std::cout  << " NEW VALUE:\t" << col_data << "\n";
+                            std::cout  << " Histo:\t" << new_histo <<  "\n\n---\n\n";
+                        }
 
                         if (new_histo[col_data] > 0 && path_maps[active_path[0]][active_path[1]][active_path[2]].count(active_path[3] ) == 0) {
 
@@ -337,7 +326,6 @@ public:
                         nodes_table[ 1 ^ index ].push_back( new Node{summ, active_path,  new_histo } );
 
                     }
-
                     
                     r++; // step down 
                     c++; // step right 
@@ -345,35 +333,28 @@ public:
 
                 }   
                 
-                
             }
                 
-
-            // std::cout << "SIZE "<< nodes_table[1 ^index].size() << "\n";
-
             sort_list(nodes_table[1 ^index]);
             uniquify( nodes_table[1 ^index] );
 
-            // if (i == 2) {
-            //     for (const auto node: nodes_table[1  ^ index]) {
-            //         std::cout << node->acc << "\n";
-            //     }
-            // }
+            nodes_table[index].clear();
             nodes_table[index] = nodes_table[1 ^index] ;
 
-            // nodes_table[1 ^ index].clear(); // clear other list 
+            for (auto node: nodes_table[1 ^ index] ) {
+                nodes_table[index].push_back(node);
+            }
 
             nodes_table[1 ^ index].resize(0);
                 
-        
         }
 
-  
     }
 
+    
     return data_return;
 
-    }
+}
 
 
 };

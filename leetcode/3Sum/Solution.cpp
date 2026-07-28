@@ -224,7 +224,7 @@ void sort_list(Numbers &numbers) {
 
 }
 
-std::vector<Numbers > Solution::threeSum(Numbers& nums) {
+std::vector< Numbers > Solution::threeSum(Numbers& nums) {
     
     std::vector<Numbers > data_return;
     Histogram *histo = new Histogram{}; 
@@ -240,7 +240,6 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
     int col_data;
     int pos_index;
     std::map<int, std::map<int, std::map<int, void*>>> *path_map = new std::map<int, std::map<int, std::map<int, void*>>>{};
-
 
     sort_list(eff_nums);
     set_histogram(eff_nums, histo, histo_pos);
@@ -259,23 +258,17 @@ std::vector<Numbers > Solution::threeSum(Numbers& nums) {
     positive_io->reserve(eff_nums.size()  - pos_index );
     positive_io->insert(positive_io->end(), eff_nums.begin() + pos_index, eff_nums.end() );
 
-
     data.reserve(3);
     data.insert(data.end(), {0,0,0});
 
     if (positive_io->size()) {
-
         pos_threshold_other_io = (*positive_io) [positive_io->size() - 1] ;
-
     }
     
     if (other_io->size()) {
-
         neg_threshold_positive_io = (*other_io)[ 0 ] ;
-
     }
     
-
     // all ones test 
     bool all_equal = eff_nums.empty() || std::all_of(eff_nums.begin(), eff_nums.end(), [&eff_nums](int element) { return element == eff_nums.front() && element == 0; });
     
