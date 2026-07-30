@@ -25,6 +25,7 @@ using Table = std::map< char, RouteMap >;
 struct Node {
     char value;
     Table table;
+
 };
 
 struct Tree {
@@ -95,15 +96,15 @@ class Solution {
 public:
     std::string minWindow(std::string s, std::string t) {
         
-        Histogram histo_main, t_histo, s_histo, s_raw_histo;
+        Histogram histo_main, t_histo, s_histo, s_raw_histo, tt_histo;
         Substrings substrings{}; 
         unsigned min_size = 1000000000;
         std::string min_result;
         std::string pad;
         char c , c_prev;
         bool width_full = false;
-
-        std::map<char, Node*> vertices;
+        std::string min_string;
+        std::map<char, Node*> vertices, s_vertices;
 
         set_t_histogram(t, histo_main);
         set_s_histogram(s, histo_main, s_histo);
@@ -121,9 +122,10 @@ public:
         Node *root{nullptr}, *node{nullptr}, *prev{nullptr}; 
         std::string buffer;     
 
-        for (unsigned int i = 0; i < s.length(); i++) {
+            
+        for (unsigned int i = 0; i < t.length(); i++) {
         
-            c = s[i];
+            c = t[i];
 
             // root = new Node{c, {}};
             if (root == nullptr) {
@@ -134,27 +136,33 @@ public:
                 vertices[c] = new Node{c, Table{}};
             }
 
-            if (t_histo.count(c)) {
+            // if (s_histo.count(c) ) {
+
                 buffer += c;
 
                 if (buffer.length() > 1) {
+
+                    
                     // closeing 
 
-                    // std::cout << " IN " << buffer << "\n";
+                    std::cout << " IN " << buffer << "\n";
                     
                     char c_next = buffer[ buffer.length()-1 ];
+                    char c_prev = buffer[ 0 ];
                     
-                    unsigned int path_len = buffer.length()-2;
-
+                    unsigned int path_len = 0; //buffer.length()-2;
+                    
+                    Node *current = vertices[c_prev];
+                    
                     Node *next_node = vertices[c_next];
-
-                    Node *current = vertices[c];
-
-                    std::string next_buffer = buffer.substr(1, buffer.length()-2);
                     
-                    // std::cout << " OUT " << next_buffer << "\n";
-
+                    std::string next_buffer = "";//buffer.substr(1, buffer.length()-2);
+                    
+                    // forward connection
                     current->table[c_next][path_len]= {next_buffer, next_node}; 
+
+                    // reverse connection
+                    next_node->table[c_prev][path_len]= {next_buffer, current}; 
 
                     // reset 
                     buffer = "";
@@ -163,66 +171,354 @@ public:
 
                 }
 
-            } else {
-
-                buffer +=c;
-
-            }
             
             prev = vertices[c];
 
-
         }
 
+        std::cout << "-----" << "\n";
+        std::string buffer_s;
         std::string acc;
+        int acc_size = -1;
 
-        for (int i = 1; i < t.length(); i++) {
+        tt_histo = histo_main;
+
+        std::cout << s_histo;
+        Node *curr_node;
+        Node *prev_node{nullptr};
+        Node *next_node;
+        Node *start{nullptr};
+        Node *end{nullptr};
+        Node *t_node{nullptr};
+
+
+        int count = 0;
+        std::cout << tt_histo;
+        int counter = 0;
+        int indices[2] = {-1,-1};
+        for (unsigned int i = 0; i < s.length(); i++) {
             
-            char c_head  = t[i-1];
+
+        char curr = s[i];
+        char next = s[i+1];
+        
+        std::map<char, std::map<char, int>> distance_map;
+        
+        if (s_histo.count(curr)) {
             
-            char c_curr  = t[i];
+            curr_node = vertices[curr];
 
-            acc += c_head;
+            indices[0] = indices[1];
+
+            indices[1] = i;
             
-            Node *node = vertices[c_head];
+            std::cout << indices[0] << " , " << indices[1] << "\n";
+
+            if (indices[0] >=0) {
+                
+                char c1 = s[indices[0]];
+                
+                char c2 = s[indices[1]];
+
+                int delta = indices[1] - indices[0];
+                
+                if (distance_map[c1].count(c2) == 0 ) {
+                    distance_map[c1][c2] = delta ;
+                    distance_map[c2][c1] = delta ;
+                } else if (distance_map[c1][c2] <= delta) {
+                    distance_map[c1][c2] = delta ;
+                    distance_map[c2][c1] = delta ;
+                }
+
+                for (const auto [first_c, distance_map_2]: distance_map) {
+                    for (const auto [second_c, distance]: distance_map) {
+                        std::cout << first_c << "\t" << "\t" << second_c << "\t"<< distance << "\n";
+                    }   
+                    
+                }
+                
+                
+                // distance_map[c1][c2] = indices[1] - indices[0] ;
+
+                
+                // int tmp_indices[2] = indices;
+                
+                // std::array<int ,2 > data {c1, c2   };
+                
+                // std::sort(tmp_indices.begin(), tmp_indices.end(), [](int i, int j){return s[i] < s[j]} );
+
+            }
+
+
+            // if (start == nullptr) {
+
+            //     start = curr_node;
+
+            //     if (tt_histo.count(curr))
+            //         tt_histo[curr]--;
+                
+            //     if (tt_histo[curr] == 0)
+            //         tt_histo.erase(curr);
+
+            //     continue;
+            // }
+
+            // if (start ) {
+                
+            //     // curr_node = vertices[curr];
+            // } 
+
+
+
+            // if (prev_node) {
+
+            //     if ( test_node->table.count(next)  && test_node) {
+            //         // std::cout << "GOOD\n";
+            //         // std::cout << "GOOD\n";
+
+            //     }
+            // }
+
+            // std::cout << curr << "\n";
+
+                    
+                    // if (curr_node)
+                    //     std::cout << " CURR " << curr_node->value << "\n";
+                
+                    // if (prev_node)
+                    //     std::cout << " PREV " << prev_node->value  << "\n";
+                    
+
+                    // if (tt_histo.count(curr))
+                    //     tt_histo[curr]--;
+
+                    // // if (tt_histo.count(next))
+                    // //     tt_histo[next]--;
+
+                    // if (tt_histo[curr] == 0)
+                    //     tt_histo.erase(curr);
+
+                    // // if (tt_histo[next] == 0)
+                    // //     tt_histo.erase(next);
+
+                    // std::cout << " ANALYSIS CURR " << curr_node->value << " -- " << curr_node << "\n";
+                        
+                    // if (prev_node)
+                    //     std::cout << " ANALYSIS PREV " << prev_node->value << " -- " << prev_node << "\n";
+                    
+                    // if (tt_histo.empty()) {
+
+                    //     std::cout << " RESETR CURR " << prev << " -- " << next << "\n";
+
+                    //     tt_histo = histo_main;
+                    //     acc = curr;
+                    // } else {
+                    //     acc += curr;
+
+                    // }
+
+
+                    // std::cout << "-------" <<  acc <<  "\n";
             
-            std::cout << node->value << "\n";
-            
-            RouteMap route_table = node->table[c_curr];
-            
-            std::cout << route_table.size() << "\n";
+                    prev_node = curr_node;
+                } else {
+                        acc += curr;
 
-            unsigned low_length = route_table.begin()->first;
-
-            std::pair< std::string, Node* > low_pair = route_table.begin()->second;
-
-            // std::cout << low_length << "\n";
-
-            // std::cout << low_pair.first << "\n";
-
-            std::cout << low_pair.second << "\n";
-            std::cout << "----- "<< "\n";
-
-// 
-            // Node *next = node->table[c_curr];
-            break;
-        }            
-
-        for (const auto &[key, value]: substrings) {
-            std::cout << key << "\n";
+            }
         }
+        
 
-        // std::cout << substrings.size() << " SIZEZIE \n";
-        // std::cout << substrings.begin()->first << " SIZEZIE \n";
-        // std::cout << substrings[4]<< " SIZEZIE \n";
-        // std::cout << min_result << " SIZEZIE \n";
+        // for (unsigned int i = 0; i < s.length(); i++) {
+        //     c = s[i];
+            
+         
+        //     // // root = new Node{c, {}};
+        //     // if (root == nullptr) {
+        //     //     s_vertices[c] = new Node{c, Table{}};
+        
+        //     // } else if (s_raw_histo.count(c) == 0) {
+        //     //     // high piroroty resource 
+        //     //     s_vertices[c] = new Node{c, Table{}};
+        //     // }
 
-        if (substrings.size()) {
+        //     bool safe = false;
+        //     if (s_histo.count(c) ) {
 
-            return substrings.begin()->second;
-        } else {
-            return "";
-        }
+        //         buffer_s += c;
+                
+
+        //         if (buffer_s.length() > 1) {
+                    
+        //             // std::cout << " IN " << buffer_s << "\n";
+        //             // char curr = buffer_s[0];
+        //             // char next = buffer_s[buffer_s.length()-1];
+
+        //             // Node *next_node = vertices[ curr ];
+        //             // Node *current = vertices[next];
+
+
+        //             // if (tt_histo.count(curr))
+        //             //     tt_histo[curr]--;
+
+        //             // if (tt_histo.count(next))
+        //             //     tt_histo[next]--;
+                    
+        //             // if (tt_histo[curr] == 0) 
+        //             //     tt_histo.erase(curr);
+
+        //             // if (tt_histo[next] == 0) 
+        //             //     tt_histo.erase(next);
+                
+
+
+
+        //             // std::cout << " current " << current << "\n";
+        //             // std::cout << " next_node " << next_node << "\n";
+        //             // std::cout << " current " << current->value << "\n";
+        //             // std::cout << " next_node " << next_node->value << "\n";
+                    
+        //             // if(current->table.count(next_node->value)) {
+
+        //             //     std::string sub = buffer_s.substr(1, buffer_s.length()-2);
+                        
+        //             //     acc +=  curr +  sub;
+                        
+        //             //     acc_size += sub.length(); 
+                        
+        //             //     std::cout << " ACC " << acc << "\n";
+        //             //     std::cout << " BEFORE HISTOGRAM " << t_histo << "\n";
+                        
+        //             //     if (t_histo.count(curr))
+        //             //         t_histo[curr]--;
+                        
+        //             //         if (t_histo.count(next))
+        //             //         t_histo[next]--;
+
+        //             //     if (t_histo[curr] == 0) {
+        //             //         t_histo.erase(curr);
+        //             //     }
+                        
+        //             //     if (t_histo[next] == 0) {
+        //             //         t_histo.erase(next);
+        //             //     }
+        //             //         std::cout << " NEXT HISTOGRAM " << t_histo << "\n";
+
+        //             //     if (t_histo.empty()) {
+        //             //         safe
+
+        //             //         t_histo = histo_main;
+        //             //         if (min_size == -1 || acc.length() < min_size) {
+        //             //             min_size = acc.length();
+        //             //             min_string = acc;
+        //             //         }
+
+        //             //         acc = "";
+
+        //             //     }
+
+        //             // }
+                    
+        //     //         // closeing 
+
+                    
+        //     //         char c_next = buffer[ buffer.length()-1 ];
+        //     //         char c_prev = buffer[ 0 ];
+                    
+        //     //         unsigned int path_len = buffer.length()-2;
+                    
+                    
+                    
+        //     //         std::string next_buffer = buffer.substr(1, buffer.length()-2);
+                    
+        //     //         // forward connection
+        //     //         current->table[c_next][path_len]= {next_buffer, next_node}; 
+
+        //     //         // reverse connection
+        //     //         next_node->table[c_prev][path_len]= {next_buffer, current}; 
+
+        //             // reset 
+        //             if (tt_histo.empty()){
+                        
+        //                 buffer_s = "";
+        //                 tt_histo = histo_main;
+        //             }
+
+        //             buffer_s += c;
+
+        //         }
+
+        //     } else {
+
+        //         buffer_s +=c;
+
+        //     }
+            
+        //     prev = s_vertices[c];
+
+        // }
+
+        return min_string;
+        // conneection tail to head 
+//         char head_char = buffer[ buffer.length()-1 ];
+//         char tail_char = buffer[  0 ];
+        
+//         // forward connection
+//         vertices[head_char]->table[tail_char][0]= {"",  vertices[tail_char ]   }; 
+
+//         // reverse connection
+//         vertices[tail_char]->table[head_char][0]= {"",  vertices[head_char]   }; 
+
+//         std::cout << " ******* "  << "\n";
+
+//         std::string acc;
+
+//         for (int i = 1; i < t.length(); i++) {
+            
+//             char c_curr  = t[i-1];
+            
+//             char c_next  = t[i];
+            
+//             std::cout << " MOVE " << c_curr  << " " << c_next << " " << "\n";
+
+//             acc += c_curr;
+            
+//             Node *node = vertices[c_curr];
+            
+//             std::cout << node->value << "\n";
+            
+//             RouteMap route_table = node->table[c_next];
+            
+//             std::cout << route_table.size() << "\n";
+
+//             unsigned low_length = route_table.begin()->first;
+
+//             std::pair< std::string, Node* > low_pair = route_table.begin()->second;
+
+//             std::cout << low_pair.first << "\n";
+
+//             std::cout << low_pair.second->value << "\n";
+//             std::cout << "----- "<< "\n";
+
+// // 
+//             // Node *next = node->table[c_curr];
+//             break;
+//         }            
+
+//         for (const auto &[key, value]: substrings) {
+//             std::cout << key << "\n";
+//         }
+
+//         // std::cout << substrings.size() << " SIZEZIE \n";
+//         // std::cout << substrings.begin()->first << " SIZEZIE \n";
+//         // std::cout << substrings[4]<< " SIZEZIE \n";
+//         // std::cout << min_result << " SIZEZIE \n";
+
+//         if (substrings.size()) {
+
+//             return substrings.begin()->second;
+//         } else {
+//             return "";
+//         }
 
     }
 };
