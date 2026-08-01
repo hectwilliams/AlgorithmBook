@@ -22,6 +22,7 @@ using RouteMap = std::map<unsigned int , std::pair< std::string, Node* > >;
 using Table = std::map< char, RouteMap >;
 
 // std::pair<int, std::string> p1 = {1, "Apple"};
+using IndicesTable = std::map<int, int>;
 
 struct Node {
     char value;
@@ -39,6 +40,14 @@ struct BNode {
     int size;
     int index;
     std::string s;
+};
+
+struct SNode {
+    std::string s;
+    int curr_index;
+    int next_index;
+    Histogram histo;
+    int depth;
 };
 
 using DeltaList = std::vector<BNode*>;
@@ -164,6 +173,51 @@ void bin_handler(Histogram &h, int value) {
     }
 }
 
+void bin_handler(Histogram &h, char value) {
+    if (h.count(value)) {
+        h[value]--;
+        if (h[value] == 0) {
+            h.erase(value);
+        }
+    }
+}
+
+
+bool valid_sub_window(Histogram h, BNode *node) {
+    char source = node->source;
+    char dest = node->dest;
+    
+    if (h.count(source))
+        h[source]--;
+    else 
+        return false; 
+
+    if (h.count(dest))
+        h[dest]--;
+    else 
+        return false; 
+    
+
+    if (h[dest] < 0 || h[source] < 0 ) {
+        return false;
+    }
+
+    return true;
+
+
+}
+
+Histogram cpy_node( Histogram data) {
+    
+    Histogram res;
+
+    for (const auto &[key, value]: data) {
+        res[key] = value;
+    }
+
+    return res;
+}
+
 class Solution {
 public:
     std::string minWindow(std::string s, std::string t) {
@@ -211,12 +265,11 @@ public:
         std::cout << "T-DATA\n" << histo_main;
 
         tt_histo = histo_main;
-        char prev_c1;
-        int counter = 0;
         int indices[2] = {-1,-1};
         std::string acc_string;
         std::map<char, std::map < char, std::string > > distance_map;
         DeltaList list;
+        IndicesTable index_table;
         // s = s + "\0" ;
 
         for (unsigned int i = 0; i < s.length(); i++) {
@@ -235,19 +288,22 @@ public:
                     
                     char c2 = s[indices[1]];
 
+                    index_table[ indices[1] ] = indices[ 0 ] ;
+
+                    index_table[ indices[0] ] = indices[ 1 ] ;
+
+
                     int delta = indices[1] - indices[0];
 
                     std::string str_tmp ;
                     
                     str_tmp = s.substr( indices[0] , delta + 1 );
                     
-                    std::cout << "STRING\t" << str_tmp <<  " " << tt_histo.size() << " " << " delta " << delta << "\n";
+                    std::cout  << " INDEX " << i  << "STRING\t" << str_tmp <<  " " << tt_histo.size() << " " << " delta " << delta << "\n";
 
                     list.push_back(new BNode{c1, c2, delta + 1, indices[0], str_tmp });
                     
                     
-
-                    prev_c1 = c1;
                 }
 
 
@@ -259,7 +315,7 @@ public:
 
         std::sort(list.begin(), list.end(), [](BNode *a, BNode *b){
 
-            return a->size < b->size;
+            return a->size < b->size && a->index < b->index;
 
         });
 
@@ -268,11 +324,11 @@ public:
             std::cout << " SOURCE: "<< ptr->source << " DEST: " << ptr->dest << " " << " SIZE " << ptr->size << "  INDEX: " << ptr->index << "\n";
          }
 
-         int cnt = 0;
-         int growth = 0;
          std::string accum;
          t_histo = histo_main;
          
+         std::map<int, SNode* > sratch_pad{};
+
         if (list.size() == 1) {
             
             BNode *node = list[0];
@@ -291,53 +347,157 @@ public:
             
         } else {
 
-            for (int i = 0; i < list.size(); i++) {
+
+            tt_histo = histo_main;
+
+            for (std::size_t i = 0; i < list.size(); i++) { 
+                // new adress 
+                
                 BNode *node = list[i];
                 
-                if (i == 0) {
-                    cnt +=1;
-                    growth = node->index;
-                    accum += node->s;
+                    char c = node->s[0];
+                    
+                    std::cout << " INDEX : " << i << "\n";
+                    std::cout << "CHARACTER \t " << c << " " << '\n';
 
-                    if (cnt == t.length() - 1 ) {
-                        substrings[accum.length()] = accum;
-                    } 
-
-                } else {
-
-                    if (node->index > growth) {
-                        cnt++;
-                        accum = accum.substr(0, accum.length() - 1) + node->s;
+                    int next_index = index_table[node->index];
+                    
+                    if (sratch_pad.count(node->index) == 0) {
                         
-                        if (cnt == t.length() - 1 ) {
-                            substrings[accum.length()] = accum;
-                        } 
+                        // Histogram h = histo_main;
+                        sratch_pad[node->index] = new SNode{node->s, node->index, next_index, histo_main, 1};
+                        std::cout << "NEW ENTRY" << "\n";
+                        std::cout << " HISTO START  \t"<<  sratch_pad[node->index]->histo;
+                        std::cout << " THIS  \t"<<  sratch_pad[node->index]->curr_index<< '\n';
+                        std::cout << " NEXT  \t"<<  sratch_pad[node->index]->next_index<< '\n';
+                        std::cout << " DEPTH  \t"<<  sratch_pad[node->index]->depth << '\n';
+                        std::cout << " DATA  \t"<<  sratch_pad[node->index]->s  << '\n';
+                        
+                        bin_handler(sratch_pad[node->index]->histo, c);
+                        std::cout << " HISTO END  \t"<<  sratch_pad[node->index]->histo;
+                        
+                        // set up next slot
+                        if (sratch_pad.count(next_index) == 0) {
+                            
+                            sratch_pad[next_index] = new SNode{node->s, next_index, -1,   sratch_pad[node->index]->histo , sratch_pad[node->index]->depth + 1}; // placeholder 
+                        }
+                        
+                        std::cout << "----\n";
+                    }  else {
+                        // has forward address
+
+                            SNode *snode = sratch_pad[node->index];
+
+                            if (snode->histo.count(c)) {
+                                std::cout << " RESOURCES AVAILABLE" << "\n";
+                                bin_handler(snode->histo, c);
+                                std::string s = snode->s.substr(0, snode->s.length() - 1) + node->s ;
+                                snode->s = s;
+                                // snode->depth += 1;
+                                
+                                if (sratch_pad.count(next_index) == 0) {
+
+                                    sratch_pad[next_index] = new SNode{snode->s , next_index, -1,    snode->histo ,  snode->depth + 1}; // placeholder 
+                                }
+                                std::cout << " RESET DATA  \t"<<  sratch_pad[node->index]->s << "\n";
+                                std::cout << " RESET  DEPTH \t"<<  sratch_pad[node->index]->depth<< "\n";
+                                std::cout << " RESET  HISTO \t"<<  sratch_pad[node->index]->histo<< "\n";
+                                
+                                std::cout << "----\n";
+
+                             
+                            } else {
+
+                                std::cout << "RESOURCES UNAVAILABLE" << "\n";
+                                
+                                // reset 
+                                
+                                std::cout << "CHARACTER \t " << c << " " << '\n';
+                                std::cout << "ENTER  HISTO \t"<<  sratch_pad[node->index]->histo<< "\n";
+                                // std::cout << " RESET  HISTO \t"<<  sratch_pad[node->index]->histo<< "\n";
+                                std::cout << "RESET DATA BEFORE  \t"  << snode->s << "\n";
+                                std::cout << "RESET  DEPTH \t"  <<  sratch_pad[node->index]->depth  << "\n\n";
+                                
+                                snode->histo = histo_main;
+                                bin_handler(snode->histo, c);
+                                snode->depth--;
+                                snode->s = node->s;
+
+                                std::cout << " RESET DATA AFTER  \t"<<  sratch_pad[node->index]->s << "\n";
+
+                                std::cout << " RESET  HISTO AFTER\t" <<  sratch_pad[node->index]->histo << "\n";
+                                
+                                // std::cout << " RESET DATA  \t"<<  sratch_pad[node->index]->s << "\n";
+                                std::cout << " RESET  DEPTH AFTER \t"<<  sratch_pad[node->index]->depth<< "\n";
+
+                                if (sratch_pad.count(next_index) == 0) {
+
+                                    sratch_pad[next_index] = new SNode{snode->s , next_index, -1,    snode->histo ,  snode->depth + 1}; // placeholder 
+                                }
+                                
+                                std::cout << "----\n";
+
+                            }
+
+
+
+                            // std::cout << "NUMBER \t " << node->index << " " << '\n';
+
+                            // // sratch_pad[node->index]
+
+                            // std::cout << " RESET HISTO  \t"<<  sratch_pad[node->index]->histo;
+                        
                     }
 
-                }
+                    if ( list [ list.size() - 1 ] == node ) {
+                        
+                        SNode *snode = sratch_pad[node->index];
+
+                        std::cout << "\t\t\t\t\tLAST WINDOW\n\n";
+                        
+                        bin_handler(snode->histo, node->source);
+                        bin_handler(snode->histo, node->dest);
+                        
+                        std::cout << " LAST WINDOW HISTO AFTER\t" <<  sratch_pad[node->index]->histo << "\n";
+
+                        
+                    }
+
+                    if ( static_cast<unsigned>(sratch_pad[node->index]->depth) == t.length() - 1) {
+                        
+                        std::cout << " STRING OUT: \t\t "<<  sratch_pad[node->index]->s << "\n";
+
+                        substrings[sratch_pad[node->index]->s.length()] = sratch_pad[node->index]->s;
+                    }
+
+                    // std::cout << " CURR \t"<< node->index << "\n";
+                    // std::cout << " NEXT \t"<< next_index << "\n";
+                    // std::cout << " CURR  \t"<< sratch_pad[node->index]->s  << "\n";
+                    // std::cout << " DEPTH  \t"<<  sratch_pad[node->index]->depth << "\n";
+                    // std::cout << " HISTO  \t"<<  sratch_pad[node->index]->histo;
+                    // std::cout << " STRING  \t"<<  sratch_pad[node->index]->s << "\n";
+                    // std::cout << "----\n";
+
             }
+        
         }
 
-  
+            
+            
+        if (substrings.size()) {
+            return substrings.begin()->second;
+        } 
 
-
-            // for (const auto [first_c, distance_map_2]: distance_map) {
-            //     for (const auto [second_c, distance]: distance_map_2) {
-            //         std::cout << first_c << " ->" << "\t" << second_c << ":\n " << distance << "\n\n\n";
-            //     }   
-                
-            // }
-
-            if (substrings.size()) {
-                return substrings.begin()->second;
-            } 
-
-            return "";
-      
-
+        return "";
+            
     }
-};
 
+};
+        // sratch_pad[node->index].second + 1
+                        // sratch_pad[node->index]->histo[c]--;
+                        // if (sratch_pad[node->index]->histo[c] == 0) {
+                        //     sratch_pad[node->index]->histo.erase(c);
+                        // }
 
 int main(int param_count, char *args[]) {
     Solution sol;
@@ -374,8 +534,12 @@ int main(int param_count, char *args[]) {
                 t = "ab";
                 break;
             case (5):
-                s = "bba"; 
-                t = "ab";
+                s = "bbaa"; 
+                t = "aba";
+                break;
+            case (6):
+                s = "cabwefgewcwaefgcf"; 
+                t = "cae";
                 break;
             default:
                 break;
