@@ -53,7 +53,8 @@ struct SNode {
 struct AccumNode {
     // std::string path;
     int recent_index;
-    std::string acc_str;
+    int dest_index;
+    std::string s;
     Histogram histo;
     bool open;
 };
@@ -212,7 +213,14 @@ bool valid_sub_window(Histogram h, BNode *node) {
     return true;
 }
 
-void log_search(DeltaList list, Substrings &substrings , Histogram h_main) {
+void last_resource_test(AccumNode *accnode, char c) {
+
+    if (accnode->histo.size() == 1 && accnode->histo.count(c) && accnode->histo[c] == 1) {
+        std::cout << "EVAL THIS NODE: TBD" <<"\n";
+    }
+}
+
+void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main) {
 
     double threshold = std::pow(static_cast<double>(10), static_cast<double>(5) );
     
@@ -224,19 +232,32 @@ void log_search(DeltaList list, Substrings &substrings , Histogram h_main) {
     
     int pos = 0;
 
-    // a.reserve(list.size());
-    // b.reserve(list.size());
-    for (int i = 0; i < list.size(); i++) {
+    // a.reserve(units_list.size());
+    // b.reserve(units_list.size());
+    for (int i = 0; i < units_list.size(); i++) {
         anodeList[select].push_back(nullptr);
         anodeList[1 ^ select].push_back(nullptr);
     }
 
+
+
+        // show units list 
+    std::cout << -1  << " STAGE : \n";
+
+    for (int n = 0; n < units_list.size(); n++) {
+        
+        std::cout << units_list[n]->s << "\t\tINDEX: " <<  n <<  "\n";
+
+    }
+    std::cout << "------" << "\n";
+
+
     // first stage 
     std::cout << ++pos  << " STAGE : \n";
-    for (int i = 1; i < list.size()  ; i++) {
+    for (int i = 1; i < units_list.size()  ; i++) {
 
-        BNode *bnode_right = list[i];
-        BNode *bnode_left = list[i-1];
+        BNode *bnode_right = units_list[i];
+        BNode *bnode_left = units_list[i-1];
 
         // convergence 
         Histogram histo = h_main;
@@ -245,43 +266,101 @@ void log_search(DeltaList list, Substrings &substrings , Histogram h_main) {
         // path_header += node->source;
         bin_handler(histo, bnode_right->source);
         bin_handler(histo, bnode_left->source);
-        AccumNode *node = new AccumNode{ bnode_right->index, acc, histo, true };
+        AccumNode *acc_node = new AccumNode{ bnode_right->index, bnode_right->dest,acc, histo, true };
 
-        anodeList[select][i - 1] = node;
+        anodeList[select][i] = acc_node;
+        anodeList[1 ^ select][i] = acc_node;
+
         valid_indices[select].push_back(i);
         
-            std::cout << i << " - MEM/NODES " << "unit index " << i-1 << "\t" << " unit index " <<  i<< "\t" << "\n";
+            // std::cout << i << " - MEM/NODES " << "unit index " << i-1 << "\t" << " unit index " <<  i<< "\t" << "\n";
 
         // std::cout << " i: \t" << i-1 << "\t" << node << node-> acc_str << "\n";
+        
+        std::cout << "**" << "\n";
 
-        // std::cout << node-> acc_str << "\n";
+        std::cout << acc_node-> s  <<  "  INDEX " << i  << "\n";
+        std::cout << " PREV_INDEX \t" << bnode_left->index  << "\n";
+        std::cout << " NEXT_INDEX \t" << bnode_right->index  << "\n";
+        std::cout << " NEXT_NEXT_INDEX \t" << bnode_right->dest  << "\n";
+        std ::cout << "**" << "\n";
+
         // std::cout << node-> histo << "\n";
     }
     std::cout << "------" << "\n";
 
-    while (! valid_indices[select].empty() ) {
+
+    
+    // while (! valid_indices[select].empty() ) {
+    while ( pos < units_list.size() ) {
     
         std::cout << ++pos << " STAGE: \n";
 
-        std::vector<int> valid_indices_trunc(valid_indices[select].begin() + 1, valid_indices[select].begin() + valid_indices[select].size());
-        
-        for (const auto mem_index: valid_indices_trunc ) {
+        // std::vector<int> valid_indices_trunc(valid_indices[select].begin() + 1, valid_indices[select].begin() + valid_indices[select].size());
+        // for (int i = pos; i < units_list.size(); i++) {
 
             
+        // reset next valid indices
+        // valid_indices[1  ^ select].resize(0);
+        // 
+        // for (const auto mem_index: valid_indices_trunc ) {
+        for (int i = pos; i < units_list.size(); i++) {
+            
+            int mem_index = i;
+
             // write to next later of nodes 
             int acc_index = mem_index - 1;
-            int unit_index = mem_index + 1;
-            
-            std::cout << mem_index << " - MEM/NODES " << "acc_index " << acc_index << "\t" << " unit index " <<  unit_index << "\t" << "\n";
+            int unit_index = mem_index;
+            std::cout << "***" << "\n";
 
-            // store in other arrau
-            valid_indices[1  ^ select].push_back(mem_index);
+            std::cout << "mem/acc_index " << mem_index << "- MEM/NODES " << "mem/acc_index " << acc_index << "\t" << " unit index " <<  unit_index << "\t" << "\n";
+// 
+            // get a base unit node
+            BNode *unit_node = units_list[unit_index];
+            char unit_char = unit_node->source;
+
+            // get a accumulator node 
+            AccumNode *acc_node = anodeList[1 ^ select][acc_index];
+
+            // get accumulator histo
+            Histogram h = acc_node->histo;
+
+            // concat string
+            std::cout << " PREV_INDEX \t" << acc_node->recent_index  << "\n";
+            std::cout << " INDEX \t" << unit_node->index  << "\n";
+            std::cout << " LAST_INDEX \t" << unit_node->dest  << "\n";
+
+            std::cout << " NEW CHAR \t" << unit_char  << "\n";
+
+            std::cout <<  acc_node->s  << "\n" << unit_node->s  << "\n";
+            std::string new_string = acc_node->s.substr(1, acc_node->s.length()- 1) + unit_node->s;
+            std::cout << " POTENTIAL \t" << new_string  << "\n";
+
+            std::cout <<  h << "\n";
+            std::cout << "***" << "\n\n";
+
+            last_resource_test(acc_node, unit_char);
+
+            
+            // // test histo
+            bool passed = true;
+
+            if (passed) {
+                
+                AccumNode *new_target_node = new AccumNode{unit_node->index, unit_node->dest, new_string, h, true};
+                
+                anodeList[select][mem_index] = new_target_node;
+                // // add indices
+                // valid_indices[1  ^ select].push_back(mem_index);
+            }
+
+            // write to accumulation nodes 
+
         }
 
         std::cout << "------" << "\n";
 
         // swap collections 
-        valid_indices[select].clear();
         select = 1 ^ select;
     }
 
@@ -291,30 +370,6 @@ void log_search(DeltaList list, Substrings &substrings , Histogram h_main) {
 
 
     // while (pos < list.size() - 1) {
-
-    //     for (int i = pos + 1; i < list.size()  ; i++) {
-
-    //         if (pos == 0) {
-                
-    //             // // right side 
-    //             // BNode *bnode_right = list[i];
-    //             // BNode *bnode_left = list[i-1];
-
-    //             // // convergence 
-    //             // Histogram histo = h_main;
-    //             // std::string acc = bnode_left->s.substr(0, bnode_left->s.length() - 1) + bnode_right->s;
-    //             // // std::string path_header;
-    //             // // path_header += node->source;
-    //             // bin_handler(histo, bnode_right->source);
-    //             // bin_handler(histo, bnode_left->source);
-    //             // AccumNode *node = new AccumNode{ bnode_right->index, acc, histo, true };
-
-    //             // anodeList[select][i - 1] = node;
-    //             // valid_indices[select].push_back(i);
-    //             // std::cout << " i: \t" << i-1 << "\t" << node << node-> acc_str << "\n";
-
-    //             // std::cout << node-> acc_str << "\n";
-    //             // std::cout << node-> histo << "\n";
 
     //         } else {
 
