@@ -13,7 +13,7 @@
 #include <cmath> // Required header
 // #include <cstdint> // uint ...
 
-const std::uint8_t DEBUG_ON = 1;
+const std::uint8_t DEBUG_ON = 0;
 
 struct Node;
 struct BNode;
@@ -272,22 +272,17 @@ bool last_resource_test_2(AccumNode *accnode, char c) {
 }
 
 
-void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main) {
+void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main, const std::string &t, const std::string &seq  ) {
 
     // double threshold = std::pow(static_cast<double>(10), static_cast<double>(5) );
     
     std::vector<AccumNode*> anodeLists[2];
     std::vector<int> valid_indices[2];
-    unsigned int select = 0;
-
-    std::cout << "------\n";
-
     AccumNode closed_accum_node{-1, "DEADBEEF", {}, {}, false};
     AccumNode *closed_accum_node_ptr = &closed_accum_node;
-        
-        AccumNode *acc_node{nullptr}, *new_acc_node{nullptr};
-        bool bin_check_passed1, bin_check_passed2;
-
+    unsigned min_length = seq.length();
+    
+    unsigned int select = 0;
     unsigned pos = 0;
 
     for (unsigned i = 0; i < units_list.size(); i++) {
@@ -309,175 +304,161 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main)
         std::cout << "------" << "\n";
     }
 
-    // first stage 
+    // first stage  ( creates first layer accum nodes set )
     
+    if (DEBUG_ON) {
+        std::cout << pos  << " PRE-STAGE : \n";
+        std::cout << h_main  << "n";
+    }
+    
+    AccumNode *first_stage_acc_node;
+    for (unsigned unit_index = 0; unit_index < units_list.size(); unit_index++) {
+        BNode *unit_node = units_list[unit_index];
+        
+        Histogram histo = h_main;
+        HistogramUsed used_histo = {};
+        first_stage_acc_node =  new AccumNode{ static_cast<int>(unit_index), unit_node->s, histo, used_histo, true };
+        
+        char char_left  = unit_node->source;
+        // char char_right  = unit_node->dest;
+        
+        if (!bin_handler(histo, used_histo,  char_left) ) {
+            // eval 
+            if (histo.size() != 0) {
+                first_stage_acc_node->open = false;
+            }
+        }
+
+        first_stage_acc_node->histo = histo;
+        first_stage_acc_node->used_histo = used_histo;
+        anodeLists[select][unit_index] = first_stage_acc_node;
+    }
+
+    pos++;
+
+    if (DEBUG_ON) {
+    
+        for (const auto node: anodeLists[select]) {
+            std::cout << "INDEX: " << node->recent_index << "\n" << node->s << "\t" << node->histo <<  node->open << "\n";
+        }
+    }
+            
+    if (DEBUG_ON) {
+        std::cout << "--------\n";
+    }
+    
+    if (DEBUG_ON) {
+            
+        std::cout << pos  << " STAGE : \n";
+    }
+
+
+    AccumNode *new_acc_node{nullptr};
     while (pos < units_list.size()) {
         
-        ++pos;
-        if (DEBUG_ON) {
-            
-            std::cout << pos  << " STAGE : \n";
-
-        }
-        // unit postion  == pos 
-
-        // if (pos == 2) {
-
-        //     std::cout << anodeLists[select][2]->s << "\n\n";
-
-        //     assert(0);
-        // }
-
         for (unsigned unit_index = pos; unit_index < units_list.size(); unit_index++) {
 
-            int acc_index = unit_index - 1;
-            // std::cout << " ACC INDEX " << acc_index << " UNIT INDEX " << unit_index << " , ";
+            BNode *unit_node = units_list[unit_index];
+
+            AccumNode *accum_ancestor_node = anodeLists[select][unit_index - 1];
             
-            
-            BNode *unit_node = units_list[unit_index    ];
-            
-            std::cout << "SELECT: " << select << "\t" << " MEMOYR ADDRESS "  << &anodeLists[select] << "\n";
+            new_acc_node = new AccumNode{};
 
-            if (!anodeLists[select][acc_index]) {
+            if (!accum_ancestor_node->open || accum_ancestor_node->s.length() >= min_length) {
                 
-                Histogram histo = h_main;
-                HistogramUsed used_histo = {};
-                
-                BNode *unit_node_prev = units_list[unit_index - 1];
-
-                acc_node =  new AccumNode{ unit_node_prev->index, unit_node_prev->s, histo, used_histo, true };
-                
-                char acc_char  = unit_node_prev->source;
-                char unit_char  = unit_node->source;
-                
-                bin_check_passed1 = bin_handler(histo, used_histo, unit_char);
-                bin_check_passed2 = bin_handler(histo, used_histo,  acc_char);
-                
-                acc_node->histo = histo;
-                acc_node->used_histo = used_histo;
-                
-            } else {
-                acc_node = anodeLists[select][acc_index];
-            }
-            
-            // if ( ! acc_node->open ) {
-            //     // is operand accum node available  
-            //     // delete new_acc_node; // delete previous set mem (delete null pointer does what )
-            //     new_acc_node = closed_accum_node_ptr;  
-            // } {
-
-            std::string potential_acc = acc_node->s.substr(0, acc_node->s.length()-1) + unit_node->s; // potential merge
-
-            new_acc_node = new AccumNode{ unit_node->index, potential_acc, acc_node->histo,  acc_node->used_histo , acc_node->open };
-            
-            // eval next stage nodes 
-            if (DEBUG_ON) {
-                std::cout <<   "READING UNIT NODE MEM POS_INDEX " << unit_index  << "\n";
-                std::cout <<   "READING ACC NODE MEM POS_INDEX " << acc_index  << "\n";
-                
-                std::cout << acc_node-> s  <<  " ACC POS_INDEX " << acc_node->recent_index  << "\n";
-                std::cout << unit_node-> s  <<  "  INDEX " << unit_node->index  <<  "\t" << unit_node -> source <<"\n";
-                std::cout << potential_acc <<  "  NEXT_INDEX " << new_acc_node->recent_index  << "\n";
-
-                std::cout << " HISTO :  \t"<< new_acc_node-> histo;
-                std::cout << " USED HISTO :  \t"<< new_acc_node-> used_histo;
-
-            }
-
-
-            // test unit with acc 
-            if (last_resource_test_2(acc_node, unit_node->source)) {
-
-                bin_handler(new_acc_node->histo, new_acc_node->used_histo, unit_node->source);
-
-                std::cout << new_acc_node->histo;
-                std::cout << new_acc_node->used_histo;
-                std::cout << acc_node->s << "  SOLUTION NAME " << "\n";
-                new_acc_node->open = false; 
-
-                // assert(0);
-
+                new_acc_node = closed_accum_node_ptr;
 
             } else {
-                // continue search 
 
-            }
+                // reads 
 
-            if (acc_node->s != "DEADBEEF" && new_acc_node->histo.size() == 0) {
+                std::string s = accum_ancestor_node->s;
+                
+                std::string test_s = s.substr(0, s.length()-1) + unit_node->s;
 
-                substrings[acc_node->s.length()] = acc_node->s;
+                Histogram h = accum_ancestor_node->histo;
+
+                HistogramUsed u = accum_ancestor_node->used_histo;
+
+                bool open = accum_ancestor_node->open; 
+
+                char c = unit_node->source;
+
+                bool response_ok = bin_handler(h, u , c);
+
+                // if (!response_ok ) {
+                    
+
+                //     open = false; 
+
+                //     if (DEBUG_ON){
+
+                //         std::cout << " STRING " << s <<  " FAILED " << "\n";
+                //         std::cout << " CHAR " << c << "\n";
+                //         std::cout << " CONECTS TO " << unit_node->s << "\n";
+                //         std::cout << h << "\n";
+                //         std::cout << u << "\n";
+                //         std::cout << "----" << "\n";
+
+                //     }
+
+                // } else 
+
+                
+                if (h.empty()) {
+                    
+                    if (s.length() >= t.length() && s.length()  < min_length   ) {
+
+                        new_acc_node->s = s;
+                        
+                        substrings[s.length()] = s;
+
+                        min_length = s.length();
+                    }
+
+                    open = false; 
+
+                } else {
+                    
+                    new_acc_node->recent_index = -1; // TBD 
+
+                    new_acc_node->open = open;
+
+                    new_acc_node->used_histo = u;
+                
+                    new_acc_node->histo = h;
+                    
+                    s = s.substr(0, s.length()-1) + unit_node->s;
+                    
+                    new_acc_node->s = s;
+
+                }
+                
             }
 
             anodeLists[1 ^ select][unit_index] = new_acc_node;
-        
-            // if (acc_node->open) {
 
-            //     // if (resource_depleted(new_acc_node, unit_node->source)) {
-            //     //     // new_acc_node->open = false;
-            //     //     new_acc_node = closed_accum_node_ptr;
-            //     //     std::cout << " \t\t\t\tDEPLETED " << "\n";
-            //     // }
-    
-            //     // else
-            //      if (last_resource_test(new_acc_node, unit_node->source)) {
-                    
-            //         std::cout << "\t\t\t\t\t\t\t\t" << new_acc_node-> histo;
-    
-            //         // new_acc_node->open = false;
-    
-            //     }
-                
-            //     if (new_acc_node->histo.size() == 0) {
-            //         // resources exhausted
-                    
-            //         // add acc_node's accumulator to substring 
-            //         // if (acc_node->s != "DEADBEEF") {
-    
-            //         //     substrings[acc_node->s.length()] = acc_node->s;
-            //         // }
-    
-            //         // new_acc_node->open = false;
-            //         // // set next layer accum node as "OFF" 
-            //         // new_acc_node = closed_accum_node_ptr;  
-    
-            //     }
-            //     // }
-            // } else {
-            //     new_acc_node = closed_accum_node_ptr;
-            // }
-
-
-            // set next layer accum node 
-            
-            if (DEBUG_ON) {
-
-                std::cout << "ACC LAYER: " << pos << "\t" << "WRITE  ACC NODE TO MEM AREA. (NON CONFLICT REGION) POSITION: " << unit_index  <<  "\t" << &anodeLists[1 ^ select] <<  "\n";
-                std::cout << " STRING DARA IN MEM " << new_acc_node->s  << "\n";
-                std ::cout << "**" << "\n";
-
-            }
         }
         
         if (DEBUG_ON) {
-            
-            std::cout << "--------\n";
-
+            std::cout << "X--------X\n";
         }
 
         select = 1 ^ select;
 
-        // if (pos == 2)
-        //     break;
-
+        pos++;
     }
 
+    
+    if (DEBUG_ON) {
 
-    for (const auto &[length, value]: substrings) {
+        for (const auto &[length, value]: substrings) {
+            
+            std::cout << length << "\t" << value <<"\n";
+            
+        }
         
-        std::cout << length << "\t" << value <<"\n";
-
     }
-
 }
 
 
@@ -506,7 +487,7 @@ public:
     std::string minWindow(std::string s, std::string t) {
         
         Histogram histo_main, s_histo, s_raw_histo, tt_histo;
-        Substrings substrings{}; 
+        Substrings substrings; 
         std::string min_result;
         std::string pad;
         std::string min_string;
@@ -567,10 +548,6 @@ public:
                     
                     char c2 = s[indices[1]];
 
-                    // index_table[ indices[1] ] = indices[ 0 ] ;
-
-                    // index_table[ indices[0] ] = indices[ 1 ] ;
-
                     int delta = indices[1] - indices[0];
 
                     std::string str_tmp ;
@@ -618,7 +595,7 @@ public:
         } else {
 
             tt_histo = histo_main;
-            log_search(list, substrings, histo_main);
+            log_search(list, substrings, histo_main, t, s);
        
         }
 
@@ -636,10 +613,38 @@ public:
 
 };
 
+void random_chars(double length, std::string &s) {
+    if (length <=0) {
+        return;
+    }
+
+    std::random_device rd;
+    
+    // 2. Initialize the standard mersenne twister engine with the seed
+    std::mt19937 gen(rd());
+    
+    // 3. Define the inclusive range [min, max]
+    char min = 97; //a
+    char max = 122; //z
+    std::uniform_int_distribution<int> distrib(min, max);
+    
+    // 4. Generate the random number
+    
+    std::cout << length << "\n";
+
+    for ( int i = 0; i < length; i ++) {
+        
+        s.push_back(distrib(gen));
+        
+    }
+}
+
+
 int main(int param_count, char *args[]) {
     Solution sol;
     std::string s;
     std::string t;
+    double threshold = std::pow(static_cast<double>(10), static_cast<double>(5) );
 
     try {
 
@@ -681,6 +686,17 @@ int main(int param_count, char *args[]) {
             case (7):
                 s = "aa"; 
                 t = "aaa";
+                break;
+            case (8):
+                s = "aaaaaaaaaaaabbbbbcdd"; 
+                t = "abcdd";
+            case (9):
+                s = "aaaaaaaaaaaabbbbbcdd";
+                t =  "abcdd";
+                break;
+            case (10):
+                t =  "abcdd";
+                random_chars(threshold, s);
                 break;
             default:
                 break;
