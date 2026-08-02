@@ -11,6 +11,6 @@ if (( $#  != 1 )) ; then
     exit 1
 fi
 
-g++ Solution.cpp -std=c++17   -fsyntax-only -Wall -Wextra -Wpedantic   &&  g++  -std=c++17  Solution.cpp  -o run  ; 
 
+g++  -O0   Solution.cpp -std=c++17   -fsyntax-only -Wall -Wextra -Wpedantic   &&  g++  -std=c++17  Solution.cpp  -o run  ; 
 ./run "$1"

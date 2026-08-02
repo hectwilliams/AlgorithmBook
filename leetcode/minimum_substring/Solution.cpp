@@ -7,13 +7,14 @@
 #include <numeric> 
 #include <random>
 #include <cassert> 
-#include <stdexcept> // Required for standard exceptions
+#include <stdexcept> 
 #include <string>
 #include <utility> 
-#include <cmath> // Required header
-// #include <cstdint> // uint ...
+#include <cmath> 
 
-const std::uint8_t DEBUG_ON = 0;
+#ifndef DEBUG_ONN
+    #define DEBUG_ONN 0
+#endif
 
 struct Node;
 struct BNode;
@@ -61,7 +62,6 @@ std::ostream& operator<<(std::ostream& os, const HistogramUsed & h) {
     return os; 
 
 }
-
 
 std::ostream& operator<<(std::ostream& os, const Histogram & h) {
 
@@ -240,11 +240,11 @@ bool last_resource_test(AccumNode *accnode, char c) {
         
         if (accnode->histo[c] == 0)
         {
-            if (DEBUG_ON) {
+            #if DEBUG_ONN 
                 
                 std::cout << "EVAL THIS NODE: TBD" <<"\n";
 
-            }
+            #endif 
 
             accnode->histo.erase(c);
             return true;
@@ -290,9 +290,7 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
         anodeLists[0].push_back(nullptr);
     }
 
-    // show units list 
-    if (DEBUG_ON) {
-
+    #if DEBUG_ONN
         std::cout << pos  << " STAGE : \n";
         
         for (unsigned n = 0; n < units_list.size(); n++) {
@@ -302,14 +300,13 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
         }
         
         std::cout << "------" << "\n";
-    }
+    #endif
 
     // first stage  ( creates first layer accum nodes set )
-    
-    if (DEBUG_ON) {
+    #if DEBUG_ONN
         std::cout << pos  << " PRE-STAGE : \n";
         std::cout << h_main  << "n";
-    }
+    #endif
     
     AccumNode *first_stage_acc_node;
     for (unsigned unit_index = 0; unit_index < units_list.size(); unit_index++) {
@@ -336,21 +333,16 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
 
     pos++;
 
-    if (DEBUG_ON) {
-    
+    #if DEBUG_ONN
         for (const auto node: anodeLists[select]) {
             std::cout << "INDEX: " << node->recent_index << "\n" << node->s << "\t" << node->histo <<  node->open << "\n";
         }
-    }
+    #endif
             
-    if (DEBUG_ON) {
+    #if DEBUG_ONN
         std::cout << "--------\n";
-    }
-    
-    if (DEBUG_ON) {
-            
         std::cout << pos  << " STAGE : \n";
-    }
+    #endif
 
 
     AccumNode *new_acc_node{nullptr};
@@ -364,7 +356,7 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
             
             new_acc_node = new AccumNode{};
 
-            if (!accum_ancestor_node->open || accum_ancestor_node->s.length() >= min_length) {
+            if (!accum_ancestor_node->open ) {
                 
                 new_acc_node = closed_accum_node_ptr;
 
@@ -386,28 +378,9 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
 
                 bool response_ok = bin_handler(h, u , c);
 
-                // if (!response_ok ) {
-                    
-
-                //     open = false; 
-
-                //     if (DEBUG_ON){
-
-                //         std::cout << " STRING " << s <<  " FAILED " << "\n";
-                //         std::cout << " CHAR " << c << "\n";
-                //         std::cout << " CONECTS TO " << unit_node->s << "\n";
-                //         std::cout << h << "\n";
-                //         std::cout << u << "\n";
-                //         std::cout << "----" << "\n";
-
-                //     }
-
-                // } else 
-
-                
                 if (h.empty()) {
                     
-                    if (s.length() >= t.length() && s.length()  < min_length   ) {
+                    if (s.length() >= t.length() && s.length() <= min_length) {
 
                         new_acc_node->s = s;
                         
@@ -420,7 +393,7 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
 
                 } else {
                     
-                    new_acc_node->recent_index = -1; // TBD 
+                    new_acc_node->recent_index = -1; // bungee gum 
 
                     new_acc_node->open = open;
 
@@ -440,17 +413,13 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
 
         }
         
-        if (DEBUG_ON) {
-            std::cout << "X--------X\n";
-        }
-
         select = 1 ^ select;
 
         pos++;
     }
 
     
-    if (DEBUG_ON) {
+    #if DEBUG_ONN
 
         for (const auto &[length, value]: substrings) {
             
@@ -458,7 +427,7 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
             
         }
         
-    }
+    #endif 
 }
 
 
@@ -470,15 +439,14 @@ void sort_units_list (DeltaList &list) {
 
     });
 
-    for (const auto ptr: list) {
-
-        if (DEBUG_ON) {
-            
-            std::cout << " SOURCE: "<< ptr->source << " DEST: " << ptr->dest << " " << " SIZE " << ptr->size << "  INDEX: " << ptr->index << "\n";
-
-        }
     
-    }
+    #if DEBUG_ONN
+        for (const auto ptr: list) {
+
+            std::cout << " SOURCE: "<< ptr->source << " DEST: " << ptr->dest << " " << " SIZE " << ptr->size << "  INDEX: " << ptr->index << "\n";
+            
+        }
+    #endif 
 
 }
 
@@ -554,10 +522,11 @@ public:
                     
                     str_tmp = s.substr( indices[0] , delta + 1 );
                     
-                    if (DEBUG_ON) {
+                    #if DEBUG_ONN
 
                         std::cout  << " INDEX " << i  << "STRING\t" << str_tmp <<  " " << tt_histo.size() << " " << " delta " << delta << "\n";
-                    }
+
+                    #endif 
 
 
                     list.push_back(new BNode{c1, c2, delta + 1, indices[0], str_tmp });
@@ -573,7 +542,6 @@ public:
         list.push_back(last_index);
         sort_units_list(list);
          
-        
          if (list.size() == 1) {
             
             std::string accum;
@@ -613,6 +581,7 @@ public:
 
 };
 
+
 void random_chars(double length, std::string &s) {
     if (length <=0) {
         return;
@@ -623,14 +592,13 @@ void random_chars(double length, std::string &s) {
     // 2. Initialize the standard mersenne twister engine with the seed
     std::mt19937 gen(rd());
     
-    // 3. Define the inclusive range [min, max]
     char min = 97; //a
     char max = 122; //z
     std::uniform_int_distribution<int> distrib(min, max);
     
     // 4. Generate the random number
     
-    std::cout << length << "\n";
+    // std::cout << length << "\n";
 
     for ( int i = 0; i < length; i ++) {
         
@@ -691,8 +659,8 @@ int main(int param_count, char *args[]) {
                 s = "aaaaaaaaaaaabbbbbcdd"; 
                 t = "abcdd";
             case (9):
-                s = "aaaaaaaaaaaabbbbbcdd";
-                t =  "abcdd";
+                s = "aaaaaaaaaaaabbbbbcdd" ;
+                t =  "abcdd" ;
                 break;
             case (10):
                 t =  "abcdd";
