@@ -42,9 +42,6 @@ struct BNode {
 };
 
 struct AccumNode {
-    // std::string path;
-    int recent_index;
-    // int dest_index;
     std::string s;
     Histogram histo;
     HistogramUsed used_histo;
@@ -72,26 +69,6 @@ std::ostream& operator<<(std::ostream& os, const Histogram & h) {
      os << " ]\n";
 
     return os; 
-
-}
-
-
-void strip (std::string & s, const Histogram &histo) {
-
-    while ( histo.count( s[0] ) == 0  && !s.empty()) {
-        s.erase( 0, 1);
-
-        if (s.length() == 0)
-            return;
-        
-    }
-
-    if (s.length() == 0)
-        return;
-
-    while ( histo.count( s[s.length()-1] ) == 0 ) {
-        s.erase( s.length() - 1 , 1);
-    }
 
 }
 
@@ -197,139 +174,85 @@ bool bin_handler(Histogram &h, HistogramUsed &u, char value) {
     }
 }
 
-
-
-bool valid_sub_window(Histogram h, BNode *node) {
-    char source = node->source;
-    char dest = node->dest;
+void init_accumulator_nodes(DeltaList &list, std::vector<AccumNode*> anodeLists[], Histogram histo_main, const Histogram & s_histo, const std::string & s ){
+    char c1, c2;
+    int indices[2] = {-1,-1};
+    std::string str_tmp ;
+    std::string dummy{};
     
-    if (h.count(source))
-        h[source]--;
-    else 
-        return false; 
+    BNode *last_index = new BNode{'\0','\0',1, -1, ""};
 
-    if (h.count(dest))
-        h[dest]--;
-    else 
-        return false; 
-    
-
-    if (h[dest] < 0 || h[source] < 0 ) {
-        return false;
-    }
-
-    return true;
-}
-
-bool resource_depleted(AccumNode *accnode, char c) {
-    if (accnode->histo.count(c) == 0 ) {
-        return true;
-    }
-    if (accnode->histo.count(c) == 0 && accnode->used_histo.count(c)) {
-        return true;
-    }
-    return false; 
-
-}
-
-bool last_resource_test(AccumNode *accnode, char c) {
-
-    if (accnode->histo.size() == 1 && accnode->histo.count(c) && accnode->histo[c] == 1) {
+    for (unsigned int i = 0; i < s.length(); i++) {
+            
+        char curr = s[i];
         
-        accnode->histo[c]--;
-        
-        if (accnode->histo[c] == 0)
-        {
-            #if DEBUG_ONN 
+        if (s_histo.count(curr)) {
+            
+            indices[0] = indices[1];
+
+            indices[1] = i;
+            
+            if (indices[0] >=0) {
                 
-                std::cout << "EVAL THIS NODE: TBD" <<"\n";
+                c1 = s[indices[0]];
+                
+                c2 = s[indices[1]];
 
-            #endif 
+                int delta = indices[1] - indices[0];
 
-            accnode->histo.erase(c);
-            return true;
-        }
+                
+                str_tmp = s.substr( indices[0] , delta + 1 );
+                
+                #if DEBUG_ONN
 
+                    std::cout  << " INDEX " << i  << "STRING\t" << str_tmp <<  " " << tt_histo.size() << " " << " delta " << delta << "\n";
+
+                #endif 
+
+
+                list.push_back(new BNode{c1, c2, delta + 1, indices[0], str_tmp });
+                AccumNode *node = new AccumNode{ str_tmp, histo_main, {}, true } ;
+                if (!bin_handler(node->histo, node->used_histo,  c1) ) {
+                    // eval 
+                    if (node->histo.size() == 0) {
+                        node->open = false;
+                    }
+                }
+
+                anodeLists[0].push_back(  node );
+                anodeLists[1].push_back( nullptr);
+
+                last_index->source = list[list.size()-1]->dest;
+                last_index->index =  list[list.size()-1]->index +  delta;
+                last_index->s = dummy + list[list.size()-1]->dest ;
+            }               
+
+        } 
     }
-    return false; 
+
+    list.push_back(last_index);
+    // BNode *tail_node = list[list.size()-1];
+    AccumNode *acc_node = new AccumNode{  std::string{} + last_index->source , histo_main, {}, true } ;
+    if (!bin_handler(acc_node->histo, acc_node->used_histo,  last_index->source) ) {
+        // eval 
+        if (acc_node->histo.size() == 0) {
+            acc_node->open = false;
+        }
+    }
+
+    anodeLists[0].push_back( acc_node );
+    anodeLists[1].push_back( nullptr);
 }
 
+void log_search(DeltaList units_list,  std::vector<AccumNode*> anodeLists[],  Substrings &substrings , const std::string &t, const std::string &seq  ) {
 
-bool last_resource_test_2(AccumNode *accnode, char c) {
-
-    if (accnode->histo.size() == 1 && accnode->histo.count(c) && accnode->histo[c] == 1) {
-        
-        accnode->histo[c]--;
-        
-        if (accnode->histo[c] == 0)
-        {
-           
-            return true;
-        }
-
-    }
-    return false; 
-}
-
-
-void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main, const std::string &t, const std::string &seq  ) {
-
-    // double threshold = std::pow(static_cast<double>(10), static_cast<double>(5) );
-    
-    std::vector<AccumNode*> anodeLists[2];
     std::vector<int> valid_indices[2];
-    AccumNode closed_accum_node{-1, "DEADBEEF", {}, {}, false};
+    AccumNode closed_accum_node{ "DEADBEEF", {}, {}, false};
     AccumNode *closed_accum_node_ptr = &closed_accum_node;
     unsigned min_length = seq.length();
-    
     unsigned int select = 0;
     unsigned pos = 0;
-
-    for (unsigned i = 0; i < units_list.size(); i++) {
-        anodeLists[1].push_back(nullptr);
-        anodeLists[0].push_back(nullptr);
-    }
-
-    #if DEBUG_ONN
-        std::cout << pos  << " STAGE : \n";
-        
-        for (unsigned n = 0; n < units_list.size(); n++) {
-            
-            std::cout << units_list[n]->s << "\t\tINDEX: " <<  n <<  "\n";
-            
-        }
-        
-        std::cout << "------" << "\n";
-    #endif
-
-    // first stage  ( creates first layer accum nodes set )
-    #if DEBUG_ONN
-        std::cout << pos  << " PRE-STAGE : \n";
-        std::cout << h_main  << "n";
-    #endif
-    
-    AccumNode *first_stage_acc_node;
-    for (unsigned unit_index = 0; unit_index < units_list.size(); unit_index++) {
-        BNode *unit_node = units_list[unit_index];
-        
-        Histogram histo = h_main;
-        HistogramUsed used_histo = {};
-        first_stage_acc_node =  new AccumNode{ static_cast<int>(unit_index), unit_node->s, histo, used_histo, true };
-        
-        char char_left  = unit_node->source;
-        // char char_right  = unit_node->dest;
-        
-        if (!bin_handler(histo, used_histo,  char_left) ) {
-            // eval 
-            if (histo.size() != 0) {
-                first_stage_acc_node->open = false;
-            }
-        }
-
-        first_stage_acc_node->histo = histo;
-        first_stage_acc_node->used_histo = used_histo;
-        anodeLists[select][unit_index] = first_stage_acc_node;
-    }
+    AccumNode *new_acc_node{nullptr};
 
     pos++;
 
@@ -345,7 +268,6 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
     #endif
 
 
-    AccumNode *new_acc_node{nullptr};
     while (pos < units_list.size()) {
         
         for (unsigned unit_index = pos; unit_index < units_list.size(); unit_index++) {
@@ -376,7 +298,7 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
 
                 char c = unit_node->source;
 
-                bool response_ok = bin_handler(h, u , c);
+                bin_handler(h, u , c);
 
                 if (h.empty()) {
                     
@@ -393,7 +315,7 @@ void log_search(DeltaList units_list, Substrings &substrings , Histogram h_main,
 
                 } else {
                     
-                    new_acc_node->recent_index = -1; // bungee gum 
+                    // "bungee gum"
 
                     new_acc_node->open = open;
 
@@ -460,12 +382,13 @@ public:
         std::string pad;
         std::string min_string;
         Vertices vertices, s_vertices;
+        std::vector<AccumNode*> anodeLists[2];
+        DeltaList list;
+        tt_histo = histo_main;
 
         set_t_histogram(t, histo_main, vertices);
         set_s_histogram(s, histo_main, s_histo);
 
-        strip(s, histo_main);
-        
         if (s.length() == 0) 
             return "";
         
@@ -493,53 +416,8 @@ public:
             return "";
         }
 
-        tt_histo = histo_main;
-        int indices[2] = {-1,-1};
-        DeltaList list;
-        // IndicesTable index_table;
-        BNode *last_index = new BNode{'\0','\0',1, -1, ""};
-        std::string dummy{};
-
-        for (unsigned int i = 0; i < s.length(); i++) {
-                
-            char curr = s[i];
-            
-            if (s_histo.count(curr)) {
-                
-                indices[0] = indices[1];
-
-                indices[1] = i;
-                
-                if (indices[0] >=0) {
-                    
-                    char c1 = s[indices[0]];
-                    
-                    char c2 = s[indices[1]];
-
-                    int delta = indices[1] - indices[0];
-
-                    std::string str_tmp ;
-                    
-                    str_tmp = s.substr( indices[0] , delta + 1 );
-                    
-                    #if DEBUG_ONN
-
-                        std::cout  << " INDEX " << i  << "STRING\t" << str_tmp <<  " " << tt_histo.size() << " " << " delta " << delta << "\n";
-
-                    #endif 
-
-
-                    list.push_back(new BNode{c1, c2, delta + 1, indices[0], str_tmp });
-                    
-                    last_index->source = list[list.size()-1]->dest;
-                    last_index->index =  list[list.size()-1]->index +  delta;
-                    last_index->s = dummy + list[list.size()-1]->dest ;
-                }               
-
-            } 
-        }
-
-        list.push_back(last_index);
+        init_accumulator_nodes(list, anodeLists, histo_main, s_histo, s);
+    
         sort_units_list(list);
          
          if (list.size() == 1) {
@@ -563,7 +441,7 @@ public:
         } else {
 
             tt_histo = histo_main;
-            log_search(list, substrings, histo_main, t, s);
+            log_search(list, anodeLists, substrings, t, s);
        
         }
 
@@ -576,7 +454,6 @@ public:
             return "";
 
         }
-            
     }
 
 };
