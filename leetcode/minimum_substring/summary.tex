@@ -1,0 +1,75 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{booktabs} % Provides professional-quality horizontal rules
+\usepackage{float} % Required for [H] placement
+\usepackage{tikz}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,    % True removes the default red/green border boxes
+    linkcolor=blue,     % Colors internal links (like the TOC) blue
+    urlcolor=cyan       % Colors external URLs cyan
+}
+
+\newcommand{\newpagex}{
+    \newpage
+    \vspace*{-7\baselineskip} % Pulls text up by one line
+}
+
+\author{Hectron} 
+
+\title{Minimum Substring}
+
+\begin{document}
+
+% generates the title
+\maketitle
+
+% insert the table of contents
+\tableofcontents
+
+% seperate body and table of contents 
+\newpagex
+    \noindent
+
+\section{Description}
+    
+    Given two strings s and t of lengths m and n respectively, return the minimum window of s such that every character in  in t (including duplicates) is included in the window.
+
+    \begin{itemize}
+    \item \textbf{Input:} \newline \textmd{s = ``ADOBECODEBANC''} \newline \textmd{t = ``ABC''}
+    \item \textbf{Output}: \newline  \textmd{``BANC''}
+    \item \textbf{Explanation}: \newline  \textmd{The minimum window substring ``BANC'' includes `A', `B', and `C' from string t.}
+    \end{itemize}
+
+\section{Function/Method Declaration}
+    \footnotesize
+
+    \begin{verbatim}
+        class Solution {
+        
+        public:
+
+            std::string minWindow\(std::string s, std::string t);
+
+        }
+
+    \end{verbatim}
+
+
+\section{How to solve}
+    \input{min_sub}
+
+    \noindent
+    % O(nlog\_{2}(n)) search .This is a\_test. 
+    Search for minimum string requires runtime of $O(nlog_{_2}(n))$.
+    
+    \begin{figure}[htbp]
+        
+        \noindent
+    
+        \caption{Search for minimum substring example.}
+
+    \end{figure}
+
+\end{document}
+
