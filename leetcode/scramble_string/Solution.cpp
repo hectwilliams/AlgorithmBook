@@ -1,5 +1,3 @@
-
-
 #include <vector>
 #include <iostream>
 #include <deque>
@@ -17,23 +15,20 @@ struct Node;
 using Q = std::deque<Node *>;
 using UsedList = std::map<std::string, bool>;
 using STable = std::map<std::size_t, std::string> ;
+using Words = std::vector< std::string>;
 
 struct Node {
-    // std::string s1;
-    // std::string s2;
-    STable data; 
-    // bool swapped; 
+    Words data;
+    std::string acc; 
     int index;
 };
 
 
-std::ostream& operator<<(std::ostream& os, const std::vector<unsigned>& data) {
-    std::size_t i = 0;
+std::ostream& operator<<(std::ostream& os, const Words & data) {
 
      os << "[ ";
     for ( const auto &value: data ) {
         os << " " << value << ", "  ;
-        i++;
     }
      os << " ]\n";
 
@@ -41,15 +36,18 @@ std::ostream& operator<<(std::ostream& os, const std::vector<unsigned>& data) {
 
 }
 
+
 std::ostream& operator<<(std::ostream& os, Node* node) {
+
+
      os << "[\n";
     
     //  os  << "\ts1: "<< node->s1 << " s2: " << node->s2  << "\n";
 
-     for (const auto &[key, value]: node->data) {
-        os << "\t" << key << " | " << value << "\n";
+     for (const auto &value: node->data) {
+        os <<  value <<  ",";
      }
-     os << "]\n";
+     os << "\n]\n";
 
     return os; 
 
@@ -58,89 +56,6 @@ std::ostream& operator<<(std::ostream& os, Node* node) {
 
 void add_to_queue() {
 
-}
-
-/* 
-    
-    First splits of analysis string 
-
-*/
-void init_split(std::string s1, std::string s2, Q &q) {
-    const char s2_first_char  = s2[0];
-    std::size_t index;
-
-    for (std::size_t i = 0; i < s1.length(); i++) {
-        if (s1[i] == s2_first_char) {
-
-            if (i == 0) {
-
-                index = 0;
-                std::string sub1 = s1.substr(0, 1); 
-                std::string sub2 = s2.substr(1); 
-
-                q.push_back(new Node {STable{ {0 ,sub1}, {i+1,sub2} }, 0 });
-
-            } else if (i < s1.length() - 1) {
-                
-                std::string sub1 = s1.substr(0, i+1); 
-                std::string sub2 = s2.substr(i + 1); 
-
-                q.push_back(new Node { STable{ {i,sub1}, {i+1,sub2} },  0 });
-
-            } else if (i == s1.length()-1) {
-
-                q.push_back(new Node {STable{ {i , s1 } }, 0});
-
-            }
-
-
-            std::cout << q.back();
-        }
-    }
-}
-
-/* 
-    True if every entry in table contains single char and matches the characters(in order) of s2 target string
-*/
-bool test_stable(const STable & table, std::string target) {
-
-    if (table.size() != target.length()) {
-        return false;
-    }
-
-    std::size_t  n_matches = 0;
-
-    for (std::size_t i = 0; i < target.length(); i++) {
-
-        if (!table.count(i))  // index not present in table 
-            return false;
-
-        if (table.at(i).length() != 1)  // string must be length of 1
-            return false;
-
-        n_matches += +( table.at(i) == std::string( 1, target[i]) );
-
-    }
-
-    return n_matches == target.length();
-
-}
-
-/*
-    search for target index and place in node's table
-*/
-bool recursive_search(Node *node, std::string s) {
-    
-    int target_index = node->index;
-    char target_char = s[target_index];
-    STable table = node->data; 
-    std::string single_s = std::string(1, target_char);
-
-    while (table[target_index] != single_s) {
-            break;
-    }
-
-    return false;
 }
 
 bool histo_valid (std::string s1, std::string s2) {
@@ -169,91 +84,166 @@ bool histo_valid (std::string s1, std::string s2) {
     return (sum == 0);
 }
 
-void search(std::string s, Node *node, Q & q ) {
 
-    std::size_t targetindex = node->index; 
+void init_split(std::string s1, Q &q) {
+    // add s1 string to node 
+
+    Node *node = new Node{ {}, "", 0};
+
+    node->data.push_back(s1);
+
+    q.push_back(node);
+
+}
+
+
+bool search_2_test(Node *node, std::string s) {
     
-    char target_c = s[targetindex];
-
-    std::vector<unsigned> hits;
     
-    // find all indices where
-
-    std::string analysis_s = node->data[targetindex];
-
-    for (std::size_t i = 0; i < analysis_s.length(); i++) {
+    for (std::size_t i = 0; i < s.length(); i++) {
         
-        if (target_c == analysis_s[i]) {
-            
-            
-            hits.push_back(i);
+        if ( s[i] != node->acc[i] ) {
+            return false; 
+        }
 
-            // new node;
-            Node * new_node = new Node{};
-            new_node->data = node->data;  // copy data 
+    }
+    
+    return true;
 
-            // 
-            std::string curr_s = node->data[targetindex];
-            std::string a;
-            std::string b;
+}
+
+void search_2(std::string s, Node *node, Q & q ) {
+
+    char target_c = s[node->index];
+
+    std::string analysis_s = node->data[0];
+    std::cout  << analysis_s << "\n";
+
+    std::cout << " ANALYSIS\t" << analysis_s;
+    std::cout << " ANALYSIS DONE" <<  "\n";
+    std::cout << " AC "  << node->acc  << "\n";
+    std::cout << " TARGET "  << target_c  << "\n";
+
+    for (int i = 0; i < analysis_s.length(); i++) {
+        
+
+        if ( target_c == analysis_s[i] ) {
 
             if (i == 0) {
 
-                a = analysis_s.substr(0, 1);
-                // new_node->[i] = a;
-                b = analysis_s.substr(1);
-                // new_node->[i+1] = b;
-                
-            } else if(i == analysis_s.length() - 1) {
+                // split 
+                std::string left = analysis_s.substr(0, 1);
+                std::string right = analysis_s.substr(1);
 
-                 a = analysis_s.substr(0 , i);
-                //  new_node->[i] = a;
-                 b = analysis_s.substr(i);
-                //  new_node->[i] = a;
+                Node *new_node = new Node{ {}, node->acc , node->index }; // copy 
+                
+                // remove prev head 
+                Words next_vector = Words( node->data.begin() + 1 , node->data.end() );
+                
+                // new head 
+                Words left_vector;
+                
+                if (right.length()) {
+                    left_vector.push_back(right);
+                }
+
+                // concat
+                left_vector.insert(left_vector.end(), next_vector.begin(), next_vector.end());
+                
+                // write to new node 
+                new_node->data = left_vector;
+
+                // append char to accumulator
+                new_node->acc += left;
+
+                // incr
+                new_node->index = node->index + 1;
+
+                std::cout << new_node->acc;
+                std::cout << new_node->data;
+                std::cout << "------0" << "\n";
+
+                q.push_back(new_node);
+
+            } else if (i == analysis_s.length()-1) {
+
+                // split 
+                std::string left = analysis_s.substr(0, analysis_s.length() - 1 );
+                std::string right = analysis_s.substr( analysis_s.length() - 1 );
+
+                // remove prev head 
+                Words next_vector = Words( node->data.begin() + 1 , node->data.end() ); 
+
+                Node *new_node = new Node{ {}, node->acc , node->index }; // copy 
+                
+                // new head 
+
+                Words left_vector;
+
+                if (left.length()) {
+                    left_vector.push_back(left);
+                }
+
+                // concat 
+                left_vector.insert(left_vector.end(), next_vector.begin() , next_vector.end());
+
+                // set data 
+                new_node->data = left_vector;
+
+                // set accum
+                new_node->acc += right;
+
+                new_node->index = node->index + 1;
+
+                std::cout << new_node->acc;
+                std::cout << new_node->data;
+                std::cout << "------1" << "\n";
+
+                q.push_back(new_node);
 
             } else {
                 
-                std::cout << i << "\n";
+                // split 
+                std::string left = analysis_s.substr(0, i + 1 );
+                std::string right = analysis_s.substr(i + 1 );
+                std::string uni = left.substr(left.length() - 1);
+                left = left.substr( 0, left.length() - 1);
                 
-                 a = analysis_s.substr(0, i + 1);
-                 b = analysis_s.substr(i + 1);
-                 std::size_t a_len = a.length();
-                 std::size_t b_len = b.length();
-                 
-            }
+                Node *new_node = new Node{ {}, node->acc , node->index }; // copy 
+
+                Words next_vector = Words( node->data.begin() + 1 , node->data.end() ); 
+
+                // new head 
+                Words left_vector = {left};
+                Words right_vector = {right};
+                Words collection = {};
+
+                // concat with left
+                // collection.insert(collection.end(), left_vector.begin(), left_vector.end());
+
+                // concat with right
+                left_vector.insert(left_vector.end(), right_vector.begin(), right_vector.end());
+
+                left_vector.insert(left_vector.end(), next_vector.begin(), next_vector.end());
+
+
+                // set data 
+                new_node->data = left_vector;
+
+                // set accum 
+                new_node->acc += uni;
+
+                new_node->index =  node->index + 1;
                 
-            if (a[0] != target_c) {
-                //move char to front ( equivalent to splitting tail)
-
-                std::string temp_1 = a.substr(0, a.length() - 1);
-
-                std::string temp_0 = a.substr(a.length() - 1);
-
-                a  = temp_0 + temp_1;
-
+                std::cout << new_node->acc;
+                std::cout << new_node->data;
+                std::cout << "------" << "\n";
+                q.push_back(new_node);
+                
             }
-
-            new_node->data[targetindex] = a;
-            new_node->data[targetindex + a.length()] = b;
-
-            if (new_node->data[targetindex].length() != 0) {
-                // split first
-
-               std::string a  = new_node->data[targetindex].substr(0,1);
-                std::string b  = new_node->data[targetindex].substr(1);
-
-                new_node->data[targetindex ] = a;
-                new_node->data[targetindex + 1] = b;
-
-            }
-            
-            std::cout << new_node;
-            
-            
         }
-    }
 
-    std::cout << hits << "\n";
+    }
 
 }
 
@@ -286,92 +276,107 @@ public:
         }
 
         if (!histo_valid(s1, s2)) {
+            std::cout << "HISTO" << "\n";
             return false; 
         }
 
-        // init
-        q.push_back(new Node{  STable{{0, s1 }},  0});
+        // q.push_back(new Node{  STable{{0, s1 }},  0});
         
+        // init
+        init_split(s1, q);
+
+        bool found_u = false;
+
         while (!q.empty())  {
              
             Node *node = q.front();
 
             q.pop_front(); 
 
-            search(s2, node, q);
+            if (node->acc.length() == s2.length()) {
+                
+                found_u |= true;
+
+            } else {
+                search_2(s2, node, q);
+            }
             
-            // for (std::size_t target_index; target_index < s1.length(); target_index++) {
-                // break; 
+            // if (node->index == s1.length()) {
+
+            //     if (search_2_test(node, s2)) {
+            //         std::cout << "match found" << "\n";
+            //         // std::cout << node;
+            //         found_u |= true;
+
+            //     }
+                
+            // } else {
+
+            //     // search(s2, node, q);
+
             // }
-            
-            break; 
 
         }
 
-        return false;
-
-        // init_split(s1, s2, q);
-
-        // // load first value into 
-        // q.push_back(new Node{s1, s2, s1+s2, false, 0});
-
-        while (!q.empty()) {
-            
-            Node *node = q.front();
-
-            q.pop_front(); 
-
-            // test current node 
-            bool found = test_stable(node->data, s2);
-
-            std::cout << " found " << found << "\n";
-            std::cout << "\n";
-
-            if (node->index >= s2.length()) {
-                continue;
-            }
-
-            bool safe_continue = recursive_search(node, s2);
-            if (safe_continue) {
-                q.push_back(node);
-            }
-
-            
-
-
-            // split
-            
-
-            // swap 
-
-
-        //     if (s1.length() == 0 && s2.length() == 0) {
-        //         // test 
-        //     }
-
-        //     // swap
-        //     if (node->swapped) {
-        //         continue; 
-        //     } else {
-        //         node->swapped = true; 
-        //         q.push_back(new Node{s2, s1, s2+s1, true, node->index});
-        //     }
-
-        }
+        return found_u;
 
         return false;
     }
 };
 
-int main() {
+int main(int param_count, char *args[]) {
     Solution sol;
-
     std::string s1,s2;
+    bool result;
 
-    s1 = "great";
-    s2 = "rgeat";
+    try {
 
-    bool result = sol.isScramble(s1, s2);
+        if (param_count  < 2)
+            return 1;
+        
+        int test = std::stoi(args[1]);
+
+        switch(test) {
+
+            case (0):
+                s1 = "great";
+                s2 = "rgeat";
+                break;
+            
+            case (1):
+                s1 = "abcde";
+                s2 = "caebd";
+                break;
+
+            case (2):
+                s1 = "a";
+                s2 = "a";
+                break;
+
+            case(3):
+                s1 = "abcdbdacbdac";
+                s2 = "bdacabcdbdac";
+                break;
+
+            case(4):
+                s1 = "abcde";
+                s2 = "caebd";
+
+            default: 
+                break;
+        
+        }
+
+        result = sol.isScramble(s1, s2);
+
+
+
+     } catch (const std::runtime_error & e) {
+
+        std::cout << " RUNTIME ERROR "<< e.what() << "\n" ;
+
+    }
+
 
     std::cout << " is sramble " << result << "\n";
 }
