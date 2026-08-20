@@ -59,7 +59,7 @@ struct TNode {
     TNode * left;
     TNode * right;
     TNode * prev;
-    Store  active;
+    Store * active;
     std::size_t depth;
     TNode *root;
 };
@@ -141,7 +141,7 @@ void init_sol(std::string s1, std::string s2,  Qt &q, ActiveTable &table) {
     
     table[tnode->root] = { tnode };
     
-    tnode->active = table[tnode->root];
+    tnode->active = &table[tnode->root];
     
     
     q.push_back(tnode);
@@ -167,7 +167,7 @@ void copy_node_network_helper(TNode * source, TNode * dest, ActiveTable & table)
     }
 
 
-    if ( source->active[0]->s == dest->s ) {
+    if ( (*source->active)[0]->s == dest->s ) {
 
         // update destination active node
 
@@ -192,13 +192,12 @@ TNode* copy_node_network(TNode * node, ActiveTable &table) {
 
     new_node->root = new_node;
     table[new_node->root] = {new_node};
-    new_node->active = table[new_node->root];
+    new_node->active = &table[new_node->root];
 
     copy_node_network_helper(node->root, new_node, table);
 
     return new_node;
 }
-
 
 void swapT (TNode * node) {
     TNode *temp = node->left;
@@ -210,132 +209,276 @@ void swapT (TNode * node) {
 void test_new(TNode *node, Qt &q, ActiveTable &table) {
 
     std::size_t num = 0;
-    TNode *curr_node = node->active[0];
+    TNode *curr_node = (*(node->active))[0];
 
     char c = curr_node->sgoal[0];
 
     curr_node->sgoal = curr_node->sgoal.substr(1);
 
 
-    for(int i = 0; i < curr_node->s.length(); i++) {
-        
-        if (c == curr_node->s[i]) {
-            // num+=;
+    std::cout << "current node string --> " << curr_node->s << "\n";
 
-            if (i == 0) {
-                
-                // copy tree 
-                TNode *new_node = copy_node_network(node, table);
+   if (!curr_node->s.contains(c)) {
+    std::cout << "TESTING "<< c << ", ERROR: failed char...skipping\n";
 
-                TNode *parent = new_node->active[0];
+    return;
+   } else {
+    std::cout << "find char: " << c << "\n";
+   }
 
+   if (curr_node->sgoal.length() == 2) {
+        assert(0);
+   }
 
-                // leaf node for active node
-                std::string s_left = curr_node->s.substr(0, i);
-                std::string s_right = curr_node->s.substr(i);
+    if (curr_node->s.length() > 1) {
 
-                // parent->left = new TNode{s2_left_left,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
-                // parent->left->active = table[parent->root];
+        for(int i = 0; i < curr_node->s.length(); i++) {
+            
+            if (c == curr_node->s[i]) {
+                // num+=;
+    
+                if (i == 0) {
+                    
+                    // copy tree 
+                    TNode *new_node = copy_node_network(node, table);
+    
+                    TNode *parent =  (*(new_node->active))[0]; // new_node->active[0]; // get path point
+    
+                    // leaf node for active node
+                    std::string s_left = parent->s.substr(0, i + 1);
+                    std::string s_right = parent->s.substr(i+1);
+    
+                    parent->left = new TNode{s_left,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->left->active = &table[parent->root];
 
-                // parent->right = new TNode{s2_left_right,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
-                // parent->right->active = table[parent->root];
-                // std::cout << parent->left->s << "\t" << parent->right->s << "\n";
+                    // std::cout <<  &(parent->left->active)  << "\n";
+    
+                    parent->right = new TNode{s_right,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->right->active =  &table[parent->root];
 
-            } else if (i == curr_node->s.length() - 1) {
+                    // std::cout <<  &(parent->right->active)  << "\n";
 
-                // copy tree 
+    
+                    {
 
-                // leaf node for active node
-                std::string s_left = curr_node->s.substr(0, i);
-                std::string s_right = curr_node->s.substr(i);
-
-            } else {
-
-                // copy tree
-
-                TNode *new_node = copy_node_network(node, table);
-
-                TNode *node1 = new_node->active[0];
-
-                // leaf node for active node
-                std::string s1_left = node1->s.substr(0, i);
-                std::string s1_right = node1->s.substr(i);
-
-                node1->left = new TNode{s1_left,  node1->sgoal, nullptr, nullptr, node1, nullptr, node1->depth + 1, node1->root};
-                node1->left->active = table[node1->left->root];
-
-                node1->right = new TNode{s1_right, node1->sgoal, nullptr, nullptr, node1, nullptr, node1->depth + 1, node1->root};
-                node1->right->active = table[node1->left->root];
-
-                std::cout << s1_left << "\t" << s1_right << "\n";
-                std::cout << node1->left << "\t" << node1->right << "\n";
-
-                //split parent.left 
-
-                TNode *parent = node1->left;
-
-                std::string s1_left_left = parent->s.substr(0, parent->s.length() - 1);
-                std::string s1_left_right = parent->s.substr(parent->s.length() - 1);
-
-                parent->left = new TNode{s1_left_left,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
-                parent->left->active = table[parent->left->root];
-
-                parent->right = new TNode{s1_left_right,  parent->sgoal, nullptr, nullptr, parent, nullptr, node1->right->depth + 1, parent->root};
-                parent->right->active = table[parent->right->root];
-
-                std::cout << s1_left_left << "\t" << s1_left_right << "\n";
-
-                // swap 
-
-                swapT(node1->left);
-                std::cout << node1->left->left->s << "\t" << node1->left->right->s << "\n";
-                
-                std::cout << "\n-----\n";
-                
-                // copy tree
-                new_node = copy_node_network(node, table);
-
-                TNode *node2 = new_node->active[0];
-
-                // leaf node for active node
-                std::string s2_left = node2->s.substr(0, i-1);
-                std::string s2_right = node2->s.substr(i-1);
+                        TNode *anchor_node = parent->left; // set anchor node (recently found char)
+                        
+                        // update active node
+                        while (anchor_node->prev) {
+                            anchor_node = anchor_node->prev;
+                            if (anchor_node->right) {
+                                anchor_node = anchor_node->right;
+                                table[anchor_node->root][0] = anchor_node;
+                                std::cout << "BOOM\t" << anchor_node->s << "\n";
+                                break;
+                            }
+                        }
+                        
+                    }
+                    q.push_back(parent->root);
 
 
-                node2->left = new TNode{s2_left,  curr_node->sgoal, nullptr, nullptr, node2, nullptr, node2->depth + 1, node2->root};
-                node2->left->active = table[node2->root];
+                    // update active
+                    // table[parent->root][0] = parent->left;
+    
+                } else if (i == curr_node->s.length() - 1) {
+    
+                    // copy tree 
+                    TNode *new_node = copy_node_network(node, table);
+    
+                    TNode *parent = (* new_node->active)[0]; // get path point
+    
+                    // leaf node for active node
+                    std::string s_left = parent->s.substr(0, i);
+                    std::string s_right = parent->s.substr(i);
+    
+    
+                    parent->left = new TNode{s_left,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->left->active = &table[parent->root];
+    
+                    parent->right = new TNode{s_right,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->right->active = &table[parent->root];
+    
+                    swapT(parent);
 
-                node2->right = new TNode{s2_right, curr_node->sgoal, nullptr, nullptr, node2, nullptr, node2->depth + 1, node2->root};
-                node2->right->active = table[node2->root];
+                    {
+
+                        TNode *anchor_node = parent->left; // set anchor node (recently found char)
+                        
+                        // update active node
+                        while (anchor_node->prev) {
+                            anchor_node = anchor_node->prev;
+                            if (anchor_node->right) {
+                                anchor_node = anchor_node->right;
+                                table[anchor_node->root][0] = anchor_node;
+                                std::cout << "BOOM\t" << anchor_node->s << "\n";
+                                
+                                break;
+                            }
+                        }
+                        
+                    }
+                    q.push_back(parent->root);
 
 
-                std::cout << s2_left << "\t" << s2_right << "\n";
-                std::cout << node2->left << "\t" << node2->right << "\n";
+                } else {
+    
+                    // copy tree
+    
+                    TNode *new_node = copy_node_network(node, table);
+    
+                    TNode *node1 = (* new_node->active)[0];
+    
+                    // leaf node for active node
+                    std::string s1_left = node1->s.substr(0, i);
+                    std::string s1_right = node1->s.substr(i);
+    
+                    node1->left = new TNode{s1_left,  node1->sgoal, nullptr, nullptr, node1, nullptr, node1->depth + 1, node1->root};
+                    node1->left->active = &table[node1->left->root];
+    
+                    node1->right = new TNode{s1_right, node1->sgoal, nullptr, nullptr, node1, nullptr, node1->depth + 1, node1->root};
+                    node1->right->active = &table[node1->left->root];
+    
+                    std::cout << s1_left << "\t" << s1_right << "\n";
+                    std::cout << node1->left << "\t" << node1->right << "\n";
+    
+                    swapT(node1);
 
-                swapT(node2);
-                std::cout << node2->left->s << "\t" << node2->right->s << "\n";
+                    std::cout << node1->left->s << "\t" << node1->right->s << "\n";
+                    
+                    //split parent.left ( target index 0)
+                    
+                    TNode *parent = node1->left;
+                    std::string s1_left_left = parent->s.substr(0, 1);
+                    std::string s1_left_right = parent->s.substr(1);
 
-                // split parent .left at zero index
+                    // std::string s1_left_left = parent->s.substr(0, parent->s.length() - 1);
+                    // std::string s1_left_right = parent->s.substr(parent->s.length() - 1);
+    
+                    parent->left = new TNode{s1_left_left,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->left->active = &table[parent->left->root];
+    
+                    parent->right = new TNode{s1_left_right,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->right->active = &table[parent->right->root];
+    
+                    std::cout << parent->left->s << "\t" << parent->right->s << "\n";
 
-                std::string s2_left_left = node2->left->s.substr(0,  1);
-                
-                std::string s2_left_right = node2->left->s.substr(1);
+                    {
 
-                std::cout << s2_left_left<< "\t" << s2_left_right << "\n";
+                        TNode *anchor_node = parent->left; // set anchor node (recently found char)
+                        
+                        // update active node
+                        while (anchor_node->prev) {
+                            anchor_node = anchor_node->prev;
+                            if (anchor_node->right) {
+                                anchor_node = anchor_node->right;
+                                table[anchor_node->root][0] = anchor_node;
+                                std::cout << "BOOM\t" << anchor_node->s << "\n";
+                                break;
+                            }
+                        }
+                        
+                    }
+                    q.push_back(parent->root);
 
-                parent = node2->left;
-                parent->left = new TNode{s2_left_left,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
-                parent->left->active = table[parent->root];
+                    std::cout << "\n---------------------------------------------------------------------------------------------------------\n";
+                    
 
-                parent->right = new TNode{s2_left_right,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
-                parent->right->active = table[parent->root];
-                std::cout << parent->left->s << "\t" << parent->right->s << "\n";
-                std::cout << "\n-----\n";
 
+
+
+
+
+
+                    // copy tree
+                    new_node = copy_node_network(node, table);
+    
+                    TNode *node2 = (*new_node->active)[0];
+    
+                    // leaf node for active node
+                    std::string s2_left = node2->s.substr(0, i+1);
+                    std::string s2_right = node2->s.substr(i+1);
+    
+    
+                    node2->left = new TNode{s2_left,  curr_node->sgoal, nullptr, nullptr, node2, nullptr, node2->depth + 1, node2->root};
+                    node2->left->active = &table[node2->root];
+    
+                    node2->right = new TNode{s2_right, curr_node->sgoal, nullptr, nullptr, node2, nullptr, node2->depth + 1, node2->root};
+                    node2->right->active = &table[node2->root];
+    
+    
+                    std::cout << s2_left << "\t" << s2_right << "\n";
+                    std::cout << node2->left << "\t" << node2->right << "\n";
+    
+                    std::cout << node2->left->s << "\t" << node2->right->s << "\n";
+    
+                    // split parent .left at zero index
+    
+                    parent = node2->left;
+                    
+                    std::string s2_left_left = parent->s.substr(0,  1);
+                    
+                    std::string s2_left_right = parent->s.substr(1);
+    
+                    std::cout << s2_left_left<< "\t" << s2_left_right << "\n";
+
+                    
+                    
+                    
+                    parent->left = new TNode{s2_left_left,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->left->active = &table[parent->root];
+    
+                    parent->right = new TNode{s2_left_right,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    parent->right->active = &table[parent->root];
+                    
+                    swapT(parent);
+                    std::cout << parent->left->s << "\t" << parent->right->s << "\n";
+                    std::cout << "HAHAHAH\n";
+                    
+                    // std::string sl = parent->left->s.substr(0, parent->left->s.length()-1);
+                    // std::string sr = parent->left->s.substr(parent->left->s.length()-1);
+                    
+                    // std::cout << sl << "\n";
+                    // std::cout << sr << "\n";
+
+                    // parent = parent->left;
+                    
+                    // parent->left = new TNode{sl,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    // parent->left->active = &table[parent->root];
+                    
+                    // parent->right = new TNode{sr,  parent->sgoal, nullptr, nullptr, parent, nullptr, parent->depth + 1, parent->root};
+                    // parent->right->active = &table[parent->root];
+                    
+                    // swapT(parent);
+                    std::cout << parent->left->s << "\t" << parent->right->s << "\n";
+
+                    {
+                        TNode *anchor_node = parent->left; // set anchor node (recently found char)
+
+                          // update active node
+                        while (anchor_node->prev) {
+                            anchor_node = anchor_node->prev;
+                            if (anchor_node->right) {
+                                anchor_node = anchor_node->right;
+                                table[anchor_node->root][0] = anchor_node;
+                                std::cout << "BOOM\t" << anchor_node->s << "\n";
+                                break;
+                            }
+                        }
+                    }
+
+                    q.push_back(parent->root);
+                    std::cout << "BOOM\t" << (*parent->active)[0]->s << "\n";
+
+                    std::cout << "\n---------------------------------------------------------------------------------------------------------\n";
+                }
+    
             }
-
         }
     }
+
+   
+
 
 }
 
