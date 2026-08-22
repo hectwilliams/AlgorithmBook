@@ -135,48 +135,45 @@ bool histo_valid (std::string s1, std::string s2) {
 }
 
 
+void print_info(TNode *parent) {
+    std::cout << "parent:\t" << parent->s << "\n";
+    if (parent->left && parent->right) {
+        
+        std::cout << "\t\t -> \t"<< parent->left->s << "\t" << parent->right->s << "\n";
 
-void init_sol(std::string s, std::string sgoal,  Qt &q, ActiveTable &table) {
-
-    // loaded first node into q 
-
-    std::size_t  *  index_ptr = new std::size_t{0}; // const adress ( non-const value )
-
-    void ** const mem_addr_shared = (void ** const )malloc(sizeof( void *)) ; // allocate const 8 bytes  ( oouter ) 
-    
-    TNode * tnode = new TNode{s, sgoal, nullptr, nullptr, nullptr, 0, nullptr, false, index_ptr, mem_addr_shared};
-
-    std::cout << " ADDRESS INDEX : "<< (tnode->index) << "\n";
-    std::cout << " VALUE INDEX : " << (* tnode->index) << "\n";
-
-    tnode->root = tnode;
-    
-    *mem_addr_shared = tnode;
-
-    // table[tnode->root] = { tnode }; // each network has unique active node stored in a shared mem region 
-
-    // tnode->active = &table[tnode->root]; // point to shared mem region 
-    
-    // TNode **  mem_addr = &tnode;
-    std::cout << mem_addr_shared  << "-- " <<  (*mem_addr_shared) << "\n";
-    // std::cout << sizeof(mem_addr_shared)  << " -- " << sizeof(  *((TNode*)*mem_addr_shared)  ) << "\n";
-    // std::cout << mem_addr_shared  << "-- " <<  (*((TNode*)*mem_addr_shared)).s << "\n";
-    
-    // assert(0);
-
-    q.push_back(tnode);
-
+    } else {
+        std::cout << "--leaf node--" << "\n";
+    }
 }
 
-void copy_node_network_helper(TNode * source, TNode * dest, ActiveTable & table) {
+void swapT (TNode * node) {
+    TNode *temp = node->left;
+    node->left = node->right;
+    node->right = temp;
+    std::cout << "swapped" << "\n";
+}
+
+void split_node(TNode *parent, std::string sleft, std::string sright) {
+
+    parent->left = new TNode{sleft,  parent->sgoal, nullptr /* left ptr */, nullptr /* right ptr */, parent, parent->depth + 1, parent->root, false, parent->index, parent->active_dptr_cstyle_t};
+    // parent->left->active = ; // each node points to the same array slot
+
+    parent->right = new TNode{sright, parent->sgoal, nullptr, nullptr, parent, parent->depth + 1, parent->root, false, parent->index,  parent->active_dptr_cstyle_t};
+
+    std::cout << "split" << "\n";
+}
+
+
+
+
+void copy_node_network_helper(TNode * source, TNode * dest) {
 
     if (source->left) {
         
         dest->left = new TNode{source->left->s, dest->sgoal, nullptr, nullptr, dest, source->left->depth, dest->root, source->left->staged, dest->index , dest->active_dptr_cstyle_t};
         
-        // dest->left->active = &table[dest->root]; 
 
-        copy_node_network_helper(source->left, dest->left, table);
+        copy_node_network_helper(source->left, dest->left);
 
     }
 
@@ -184,22 +181,10 @@ void copy_node_network_helper(TNode * source, TNode * dest, ActiveTable & table)
         
         dest->right = new TNode{source->right->s, dest->sgoal, nullptr, nullptr, dest, source->right->depth, dest->root, source->right->staged, dest->index, dest->active_dptr_cstyle_t};
         
-        // dest->right->active = &table[dest->root]; 
         
-        copy_node_network_helper(source->right, dest->right, table);
+        copy_node_network_helper(source->right, dest->right);
 
     }
-
-
-    // if ( (*source->active)[0]  == source ) {
-
-    //     // update destination active node
-
-    //     table[dest->root][0] = dest;
-
-    // }
-
-
 
     if (*source->active_dptr_cstyle_t  == source ) {
 
@@ -209,10 +194,9 @@ void copy_node_network_helper(TNode * source, TNode * dest, ActiveTable & table)
 
     }
 
-
 }
 
-TNode* copy_node_network(TNode * node, ActiveTable &table) {
+TNode* copy_node_network(TNode * node) {
     
     std::size_t *index_ptr = new std::size_t{ (* node->index) };
 
@@ -233,49 +217,75 @@ TNode* copy_node_network(TNode * node, ActiveTable &table) {
     };
 
     new_node->root = new_node;
-    // new_node->active = 
-    // table[new_node->root] = {new_node};
-    // new_node->active = &table[new_node->root];
+
 
     *mem_addr_shared = new_node;
 
     // new_node->active_dptr_cstyle_t = (void*)new_node; TBD
 
-    copy_node_network_helper(node->root, new_node, table);
+    copy_node_network_helper(node->root, new_node);
 
-    return new_node;
+    return (TNode *)*new_node->active_dptr_cstyle_t;     //return active node
 }
 
-void swapT (TNode * node) {
-    TNode *temp = node->left;
-    node->left = node->right;
-    node->right = temp;
-    std::cout << "swapped" << "\n";
-}
 
-void split_node(TNode *parent, std::string sleft, std::string sright, ActiveTable &table) {
+/* 
 
-    parent->left = new TNode{sleft,  parent->sgoal, nullptr /* left ptr */, nullptr /* right ptr */, parent, parent->depth + 1, parent->root, false, parent->index, parent->active_dptr_cstyle_t};
-    // parent->left->active = ; // each node points to the same array slot
+    Splits strinf on all split points and creates full node
 
-    parent->right = new TNode{sright, parent->sgoal, nullptr, nullptr, parent, parent->depth + 1, parent->root, false, parent->index,  parent->active_dptr_cstyle_t};
-    // parent->right->active = &table[parent->root]; // each node points to the same array slot
+    Example:
 
-    std::cout << "split" << "\n";
-}
+    string s = "ABCD"
 
-void print_info(TNode *parent) {
-    std::cout << "parent:\t" << parent->s << "\n";
-    if (parent->left && parent->right) {
+    Splits : A-BCD , AB-CD ,  ABC-D
+*/
+void init_sol_extend(TNode *node, Qt &q) {
+
+    std::string sleft, sright;
+
+    for (std::size_t i = 1; i < node->s.length();  i++) {
+
+        sleft = node->s.substr(0, i );
+        sright = node->s.substr(i);
         
-        std::cout << "\t\t -> \t"<< parent->left->s << "\t" << parent->right->s << "\n";
+        // copy
+        
+        TNode *curr_node = copy_node_network(node);
+        
+        // split onf string 
 
-    } else {
-        std::cout << "--leaf node--" << "\n";
+        split_node(curr_node, sleft, sright);
+        
+        print_info(curr_node);
+
+        // add to queue 
+
+        q.push_back(curr_node);
+
     }
+
 }
 
-void set_next_node(TNode *anchor_node, ActiveTable &table) {
+
+void init_sol(std::string s, std::string sgoal,  Qt &q) {
+
+    // loaded first node into q 
+
+    std::size_t  *  index_ptr = new std::size_t{0}; // const adress ( non-const value )
+
+    void ** const active_mem_addr_shared = (void ** const )malloc(sizeof( void *)) ; // allocate const 8 bytes  ( oouter ) 
+    
+    TNode * tnode = new TNode{s, sgoal, nullptr, nullptr, nullptr, 0, nullptr, false, index_ptr, active_mem_addr_shared};
+
+    tnode->root = tnode;
+    
+    *active_mem_addr_shared = tnode;
+
+    init_sol_extend(tnode, q); // loads queue 
+
+}
+
+void set_next_node(TNode *anchor_node) {
     
     if (!anchor_node) {
         return;
@@ -298,8 +308,6 @@ void set_next_node(TNode *anchor_node, ActiveTable &table) {
 
             anchor_node->staged = true; 
 
-            // table[anchor_node->root][0] = anchor_node;  // start node upon entering new test 
-
             ((TNode *)*anchor_node->active_dptr_cstyle_t)->staged = true;
 
             std::cout << "BOOM\t" << ((TNode *)*anchor_node->active_dptr_cstyle_t)-> s << "\n";
@@ -320,7 +328,97 @@ void set_next_node(TNode *anchor_node, ActiveTable &table) {
 
 }
 
-void test_new(TNode *node, Qt &q, ActiveTable &table) {
+bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
+
+    std::cout << "ENTER NODE" << "\t" << node->s << "\n";
+    assert(0);
+    while (*node->index < sgoal.length()) {
+
+        char character = sgoal[ *node->index ];
+
+        std::cout << "character" << "\t" << character << "\n";
+
+        node->staged = true;
+
+        // make active node 
+        *node->active_dptr_cstyle_t = node; 
+
+        print_info(node);
+
+        if (!node->s.contains(character)) {
+            std::cout << "Error\t" << node->s << "\n";
+            return false;
+        } 
+
+        if (!node->left && !node->right) {
+
+            if (node->s.length() == 1) {
+
+                set_next_node(node);
+
+                node = (TNode*)(*node->active_dptr_cstyle_t);
+
+            } else {
+                
+                std::string l, r;
+                
+                if (node->s[0] == character) {
+
+                    l = node->s.substr(0, 1);
+
+                    r = node->s.substr(1);
+
+                    split_node(node, l , r);
+                    
+                } else if (node->s[node->s.length() - 1] == character) {
+
+                    l = node->s.substr(0, node->s.length()-1);
+
+                    r = node->s.substr(node->s.length()-1);
+                    
+                    split_node(node, l , r);
+
+                } else if (  node->s.contains(character)  ) {
+                    
+                    std::cout << "BRANCH \t" << node->s << "\n";
+
+                    init_sol_extend(node, q);
+
+                    return false;
+
+                } else {
+                    return false; 
+                }
+
+            }
+
+        }
+
+        else if (node->left  && node->left->s.contains(character)) {
+
+            node = node->left;
+
+        }
+
+        else if (node->right  && node->right->s.contains(character)) {
+
+            swapT(node);
+            print_info(node);
+
+            node = node->left;
+
+        }
+
+    }
+
+    // std::cout << "RESULT\t"<< *node->index << "\n";
+
+
+    return *node->index  >= sgoal.length();
+
+}
+
+void test_new(TNode *node, Qt &q) {
 
     std::cout << "-------------------------------w------------------------" << "\n\n";
 
@@ -361,14 +459,14 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 
                 if (active_node->s.length() == 1) {
 
-                    TNode *new_node = copy_node_network(active_node, table);
+                    TNode *new_node = copy_node_network(active_node);
 
                     // TNode *parent =  (*(new_node->active))[0]; // new_node->active[0]; // get path point
 
                     TNode *parent = (TNode *)(*new_node->active_dptr_cstyle_t);
                     print_info(parent);
 
-                    set_next_node(parent, table);
+                    set_next_node(parent);
                     
                     q.push_back(parent); 
                     std::cout << "\n---------------------------------------------------------i0-0------------------------------------------------\n";
@@ -376,7 +474,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 } else {
 
                     // copy tree 
-                    TNode *new_node = copy_node_network(active_node, table);
+                    TNode *new_node = copy_node_network(active_node);
                     
                     // TNode *parent =  (*(new_node->active))[0]; // new_node->active[0]; // get path point
                     
@@ -388,7 +486,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                     std::string s_left = parent->s.substr(0, 1);
                     std::string s_right = parent->s.substr(1);
 
-                    split_node(parent, s_left, s_right, table);
+                    split_node(parent, s_left, s_right);
                     std::cout << "split\n";
                     std::cout << "grandparent:\t" << parent->prev->s << "\n";
                     print_info(parent);
@@ -399,7 +497,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
 
                     // set 
                     parent->left->staged = true;
-                    set_next_node(parent->left, table);
+                    set_next_node(parent->left);
                     
                     q.push_back(parent->root);
                     
@@ -410,7 +508,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
             } else if (i == active_node->s.length() - 1) {
 
                 // copy tree 
-                TNode *new_node = copy_node_network(active_node, table); 
+                TNode *new_node = copy_node_network(active_node); 
 
                 // TNode *parent = (* new_node->active)[0]; // get path point
 
@@ -420,7 +518,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 std::string s_left = parent->s.substr(0, i);
                 std::string s_right = parent->s.substr(i);
                 
-                split_node(parent, s_left, s_right, table);
+                split_node(parent, s_left, s_right);
                 std::cout << "split" << "\n";
                 print_info(parent);
                 swapT(parent);
@@ -428,7 +526,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                     
                 parent->left->staged = true;
 
-                set_next_node(parent->left, table);
+                set_next_node(parent->left);
                     
                 q.push_back(parent->root);
                 
@@ -438,7 +536,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
 
                 // copy tree
 
-                TNode *new_node = copy_node_network(active_node, table);
+                TNode *new_node = copy_node_network(active_node);
 
                 // TNode *parent = (* new_node->active)[0];
 
@@ -447,7 +545,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 // leaf node for active node
                 std::string s_left = parent->s.substr(0, i);
                 std::string s_right = parent->s.substr(i);
-                split_node(parent, s_left, s_right, table);
+                split_node(parent, s_left, s_right);
                 std::cout << "parent:\t" << parent->s << "\n";
                 std::cout << parent->left->s << "\t" << parent->right->s << "\n";
 
@@ -465,20 +563,20 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 s_left = parent->s.substr(0, 1);
                 s_right = parent->s.substr(1);
 
-                split_node(parent, s_left, s_right, table);
+                split_node(parent, s_left, s_right);
                 print_info(parent);
                 
                 parent->left->staged = true;
                 parent = parent->left;
                 // std::cout << parent->left->s << "\t" << parent->right->s << "\n";
-                set_next_node(parent, table);
+                set_next_node(parent);
 
                 q.push_back(parent->root);
 
                 std::cout << "\n---------------------------------------------------------c1------------------------------------------------\n";
 
                 // copy tree
-                new_node = copy_node_network(active_node, table);
+                new_node = copy_node_network(active_node);
 
                 // parent = (*new_node->active)[0];
 
@@ -488,7 +586,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 std::string s2_left = parent->s.substr(0, i+1);
                 std::string s2_right = parent->s.substr(i+1);
                 
-                split_node(parent, s2_left, s2_right, table);
+                split_node(parent, s2_left, s2_right);
 
                 // std::cout << parent->left << "\t" << parent->right << "\n";
                 print_info(parent);
@@ -498,7 +596,7 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 s2_left = parent->s.substr(0,  parent->s.length()- 1);
                 s2_right = parent->s.substr( parent->s.length()- 1 );
                 
-                split_node(parent, s2_left, s2_right, table);
+                split_node(parent, s2_left, s2_right);
                 print_info(parent);
                 swapT(parent);
                 print_info(parent);
@@ -507,14 +605,14 @@ void test_new(TNode *node, Qt &q, ActiveTable &table) {
                 parent = parent->left;
                 std::cout << "parent:\t" << parent->s << "\n";
 
-                set_next_node(parent, table);
+                set_next_node(parent);
 
                 q.push_back(parent->root);
 
                 std::cout << "\n-------------------------------------------------c2--------------------------------------------------------\n";
 
                 // copy tree
-                new_node = copy_node_network(active_node, table);
+                new_node = copy_node_network(active_node);
 
 
             }
@@ -568,24 +666,29 @@ public:
 
         // init_trees(s1, s2, q);
 
-        init_sol(s1, s2, q, table);
+        init_sol(s1, s2, q);
         
         std::cout << " --------INIT COMPLETE----------" << "\n";
-
+        
         while (!q.empty())  {
-             
+            
             TNode *node = q.front();
-
+            
             q.pop_front(); 
 
-            if (*node->index >=  s2.length())
+            std::cout << "ATTEMPT\t\n";
+            found_u = build_scramble_network(node, s2, q);
+            if (found_u) {
                 return true;
+            }
 
-            test_new(node, q, table);
+            // if (*node->index >=  s2.length())
+            // return true;
+
+            // test_new(node, q);
 
             // std::cout << "xxx---NEXT SET OF DATA--xxx\n" << "\n";
         }
-
 
         return false;
     }
