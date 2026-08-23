@@ -10,6 +10,7 @@
 #include <stdexcept> // Required for standard exceptions
 #include <string>
 #include <iterator>
+#include <cstdlib>
 
 struct Node2; 
 struct Node; 
@@ -109,68 +110,118 @@ std::ostream& operator<<(std::ostream& os, Node2* node) {
 
 
 bool histo_valid (std::string s1, std::string s2) {
-    
+    // TBD this can be improved O(N)
     std::map<char, std::size_t> zero_map;
 
-    for(std::size_t i = 0; i < s1.length(); i++) {
-        
-        if (zero_map.count(s1[i]) == 0)
-            zero_map[s1[i]] = 0;
+    if (s1.length() != s2.length())
+        return false; 
 
-        if (zero_map.count(s2[i]) == 0)
-            zero_map[s2[i]] = 0;
+    for ( std::size_t i = 0; i < s1.length(); i++) {
 
-        zero_map[s1[i]]++;
-        zero_map[s2[i]]--;
+        char c1 = s1[i];
+        char c2 = s2[i];
+
+        if (zero_map.count(c1) == 0)
+            zero_map[c1] = 0;
+
+        if (zero_map.count(c2) == 0)
+            zero_map[c2] = 0;
+
+        zero_map[c1]--;
+        zero_map[c2]++;
 
     }
 
-    int sum = 0;
+    unsigned not_zero_sum_count = 0;
 
     for (const auto &[key, value]: zero_map) {
-        sum += value;
+        not_zero_sum_count += +(value != 0);
     }
 
-    return (sum == 0);
+    return not_zero_sum_count == 0;
+
+    
+
+    // for(std::size_t i = 0; i < s1.length(); i++) {
+        
+    //     if (zero_map.count(s1[i]) == 0)
+    //         zero_map[s1[i]] = 0;
+
+    //     if (zero_map.count(s2[i]) == 0)
+    //         zero_map[s2[i]] = 0;
+
+    //     zero_map[s1[i]]++;
+    //     zero_map[s2[i]]--;
+
+    // }
+
+    // int sum = 0;
+
+    // for (const auto &[key, value]: zero_map) {
+    //     sum += value;
+    // }
+
+    // return (sum == 0);
 }
 
 
 void print_info(TNode *parent) {
-    std::cout << "parent:\t" << parent->s << "\n";
+
+    std::cout << " PRINT INFO: " << "\n";
+
+    std::cout << "\tparent:\t" << parent->s << "\n";
+    
     if (parent->left && parent->right) {
-        
-        std::cout << "\t\t -> \t"<< parent->left->s << "\t" << parent->right->s << "\n";
+         
+        std::cout << "\t\t" << parent->left->s << " ( " << parent->left->sgoal  << " ) " << "\t" << parent->right->s << " ( " << parent->right->sgoal  << " ) "<< "\n";
 
     } else {
-        std::cout << "--leaf node--" << "\n";
+
+        std::cout << "\t--is a leaf node--" << "\n";
+
     }
 }
 
 void swapT (TNode * node) {
+
+    std::size_t len = node->sgoal.length();
+    std::string sleft_sgoal = node->left->sgoal;
+    std::string sright_sgoal= node->right->sgoal;
+    
     TNode *temp = node->left;
     node->left = node->right;
+    node->left->sgoal = sright_sgoal;
     node->right = temp;
+    node->right->sgoal = sleft_sgoal;
+
     std::cout << "swapped" << "\n";
+
 }
 
 void split_node(TNode *parent, std::string sleft, std::string sright) {
 
-    parent->left = new TNode{sleft,  parent->sgoal, nullptr /* left ptr */, nullptr /* right ptr */, parent, parent->depth + 1, parent->root, false, parent->index, parent->active_dptr_cstyle_t};
+    parent->left = new TNode{sleft,  parent->sgoal.substr(0, sleft.length()), nullptr /* left ptr */, nullptr /* right ptr */, parent, parent->depth + 1, parent->root, false, parent->index, parent->active_dptr_cstyle_t};
     // parent->left->active = ; // each node points to the same array slot
 
-    parent->right = new TNode{sright, parent->sgoal, nullptr, nullptr, parent, parent->depth + 1, parent->root, false, parent->index,  parent->active_dptr_cstyle_t};
+    parent->right = new TNode{sright, parent->sgoal.substr(sleft.length()), nullptr, nullptr, parent, parent->depth + 1, parent->root, false, parent->index,  parent->active_dptr_cstyle_t};
 
     std::cout << "split" << "\n";
 }
 
+void clear_node(TNode *node) {
+    *node->active_dptr_cstyle_t = nullptr;
+    std::free(node->active_dptr_cstyle_t); // free double pointer 
+    delete node->index;
 
+    delete node; 
+}
 
 
 void copy_node_network_helper(TNode * source, TNode * dest) {
 
     if (source->left) {
         
-        dest->left = new TNode{source->left->s, dest->sgoal, nullptr, nullptr, dest, source->left->depth, dest->root, source->left->staged, dest->index , dest->active_dptr_cstyle_t};
+        dest->left = new TNode{source->left->s, source->left->sgoal , nullptr, nullptr, dest, source->left->depth, dest->root, source->left->staged, dest->index , dest->active_dptr_cstyle_t};
         
 
         copy_node_network_helper(source->left, dest->left);
@@ -179,7 +230,7 @@ void copy_node_network_helper(TNode * source, TNode * dest) {
 
     if (source->right) {
         
-        dest->right = new TNode{source->right->s, dest->sgoal, nullptr, nullptr, dest, source->right->depth, dest->root, source->right->staged, dest->index, dest->active_dptr_cstyle_t};
+        dest->right = new TNode{source->right->s, source->right->sgoal, nullptr, nullptr, dest, source->right->depth, dest->root, source->right->staged, dest->index, dest->active_dptr_cstyle_t};
         
         
         copy_node_network_helper(source->right, dest->right);
@@ -218,7 +269,6 @@ TNode* copy_node_network(TNode * node) {
 
     new_node->root = new_node;
 
-
     *mem_addr_shared = new_node;
 
     // new_node->active_dptr_cstyle_t = (void*)new_node; TBD
@@ -228,6 +278,32 @@ TNode* copy_node_network(TNode * node) {
     return (TNode *)*new_node->active_dptr_cstyle_t;     //return active node
 }
 
+bool valid_split(std::string sleft, std::string sright, std::string sgoal) {
+
+    unsigned len = sleft.length();
+
+    std::string sleft_sgoal = sgoal.substr(0, len);
+    std::string sright_sgoal = sgoal.substr(len);
+
+    // histo check 
+
+    // case 1 
+    bool left_check = histo_valid(sleft, sleft_sgoal);
+    bool right_check = histo_valid(sright, sright_sgoal);
+    
+    std::cout << " TEST SPLIT PARENT STRING " << "\t" << sleft << "(" << sleft_sgoal << ")" << "-"  << " " << sright <<  " ( " << sright_sgoal <<  " ) " << "\n";
+
+    if (left_check & right_check) {
+
+        std::cout << "TEST PASSED" << "\n";
+        
+        std::cout << " CHILDREN " <<  sleft_sgoal << " \t"  << sright_sgoal << "\n";
+        
+    }
+    // histo check 
+
+    return left_check & right_check;
+}
 
 /* 
 
@@ -238,31 +314,67 @@ TNode* copy_node_network(TNode * node) {
     string s = "ABCD"
 
     Splits : A-BCD , AB-CD ,  ABC-D
+
 */
+
 void init_sol_extend(TNode *node, Qt &q) {
+    
+    int n_possible = 0;
 
     std::string sleft, sright;
 
     for (std::size_t i = 1; i < node->s.length();  i++) {
 
-        sleft = node->s.substr(0, i );
+        sleft = node->s.substr(0, i);
+
         sright = node->s.substr(i);
-        
+
         // copy
+        // TNode *curr_node = copy_node_network(node);
         
-        TNode *curr_node = copy_node_network(node);
+        // add to queue  if passed 
+        if (valid_split(sleft, sright, node->sgoal)) {
+            
+            TNode *curr_node = copy_node_network(node);
+
+            split_node(curr_node, sleft, sright);
+            print_info(curr_node);
+
+            // succesful split ( move left )
+            // curr_node = curr_node->left;
+
+            // * node->active_dptr_cstyle_t = curr_node;
+
+            q.push_back(curr_node);
+            
+            n_possible++;
+
+        } 
+
+        // add to queue  if passed 
+        if (valid_split( sright , sleft , node->sgoal)) {
+            
+            TNode *curr_node = copy_node_network(node);
+
+            split_node(curr_node, sright ,sleft );
+
+            print_info(curr_node);
+
+            // succesful split ( move left )
+            // curr_node = curr_node->left;
+
+            // * node->active_dptr_cstyle_t = curr_node;
+
+            q.push_back(curr_node);
+            
+            n_possible++;
+
+        } 
+
         
-        // split onf string 
-
-        split_node(curr_node, sleft, sright);
-        
-        print_info(curr_node);
-
-        // add to queue 
-
-        q.push_back(curr_node);
-
     }
+
+    std::cout  << n_possible << " added to queue "<< "\n\n\n";
 
 }
 
@@ -330,8 +442,10 @@ void set_next_node(TNode *anchor_node) {
 
 bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
 
-    std::cout << "ENTER NODE" << "\t" << node->s << "\n";
-    assert(0);
+    std::cout << "ENTER STRING" << "\t" << node->s << "\n";
+    std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
+
+
     while (*node->index < sgoal.length()) {
 
         char character = sgoal[ *node->index ];
@@ -343,34 +457,49 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
         // make active node 
         *node->active_dptr_cstyle_t = node; 
 
+        std::cout << "ACTIVE NODE" << "\t" << node->s << "\n";
+
         print_info(node);
+
 
         if (!node->s.contains(character)) {
             std::cout << "Error\t" << node->s << "\n";
             return false;
         } 
 
-        if (!node->left && !node->right) {
+        if (!node->left && !node->right) {  
+
+            // process leaf node
 
             if (node->s.length() == 1) {
 
                 set_next_node(node);
 
                 node = (TNode*)(*node->active_dptr_cstyle_t);
+                
+                node->staged = true;
 
             } else {
                 
                 std::string l, r;
                 
-                if (node->s[0] == character) {
+                std::ptrdiff_t count = std::count(node->s.begin(), node->s.end(), character);
+
+                if (node->s[0] == character && count == 1) {
 
                     l = node->s.substr(0, 1);
 
                     r = node->s.substr(1);
 
                     split_node(node, l , r);
+
+                    node = node->left ;  // move left down 
+
+                    *node->active_dptr_cstyle_t = node; // update active 
+
+
                     
-                } else if (node->s[node->s.length() - 1] == character) {
+                } else if (node->s[node->s.length() - 1] == character && count == 1) {
 
                     l = node->s.substr(0, node->s.length()-1);
 
@@ -378,15 +507,27 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
                     
                     split_node(node, l , r);
 
+                    swapT(node); 
+
+                    node = node->left; // move left down 
+                    
+                    *node->active_dptr_cstyle_t = node; // update active 
+
                 } else if (  node->s.contains(character)  ) {
                     
-                    std::cout << "BRANCH \t" << node->s << "\n";
+                    // std::cout << "BRANCH NODE \t" << node->s << "\n";
+                    // std::cout << "BRANCH SGOAL \t" << node->sgoal << "\n";
+                    // std::cout << "BRANCH SGOAL \t" << ( (TNode *)(*node->active_dptr_cstyle_t))->sgoal << "\n";
 
-                    init_sol_extend(node, q);
+                    *node->active_dptr_cstyle_t = node;  // parent is active 
+
+                    init_sol_extend(node, q); 
+                    
 
                     return false;
 
                 } else {
+
                     return false; 
                 }
 
@@ -394,233 +535,47 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
 
         }
 
+            
         else if (node->left  && node->left->s.contains(character)) {
 
             node = node->left;
+            
+            // *node->active_dptr_cstyle_t = node; 
+
+            std::cout << "TARGET CHAR LEFT" << "\n";
+
+            std::cout << "ENTER STRING" << "\t" << node->s << "\n";
+            
+            std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
 
         }
 
         else if (node->right  && node->right->s.contains(character)) {
+            
+            std::cout << "TARGET CHAR RIGHT " << "\n";
 
             swapT(node);
-            print_info(node);
+
+            // print_info(node);
 
             node = node->left;
+            
+            std::cout << "TARGET CHAR LEFT " << "\n";
+
+            // *node->active_dptr_cstyle_t = node; 
+
+            std::cout << "ENTER STRING" << "\t" << node->s << "\n";
+            
+            std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
 
         }
 
     }
-
-    // std::cout << "RESULT\t"<< *node->index << "\n";
-
 
     return *node->index  >= sgoal.length();
 
 }
 
-void test_new(TNode *node, Qt &q) {
-
-    std::cout << "-------------------------------w------------------------" << "\n\n";
-
-    // TNode *active_node = (*(node->active))[0]; // pull active node 
-    TNode *active_node = (TNode*) (*node->active_dptr_cstyle_t); 
-
-    if (active_node->prev){
-        
-        std::cout << "PREV " << active_node->prev->s << "\n";
-
-    }
-
-    std::cout << "ACTIVE " << active_node->s << "\n";
-    
-    // std::cout << *node->active_dptr_cstyle_t << "\n";
-
-    std::cout << "INDEX \t" << *active_node->index << "\n";
-
-    char c = active_node->sgoal[ * active_node->index ];
-
-    std::cout << " current node string --> " << active_node->s << " \t EXPECT CHAR --> " << c << "\n";
-    
-    if ( ! active_node->s.contains(c) ) {
-
-        return;
-
-    } else {
-
-        std::cout << "FOUND CHAR: " << c  << " " << " FRACTAL BRANCH OF " << active_node->s << "\n";
-        
-    }
-
-    for(int i = 0; i < active_node->s.length(); i++) {
-        
-        if (c == active_node->s[i]) {
-
-            if (i == 0) {
-                
-                if (active_node->s.length() == 1) {
-
-                    TNode *new_node = copy_node_network(active_node);
-
-                    // TNode *parent =  (*(new_node->active))[0]; // new_node->active[0]; // get path point
-
-                    TNode *parent = (TNode *)(*new_node->active_dptr_cstyle_t);
-                    print_info(parent);
-
-                    set_next_node(parent);
-                    
-                    q.push_back(parent); 
-                    std::cout << "\n---------------------------------------------------------i0-0------------------------------------------------\n";
-
-                } else {
-
-                    // copy tree 
-                    TNode *new_node = copy_node_network(active_node);
-                    
-                    // TNode *parent =  (*(new_node->active))[0]; // new_node->active[0]; // get path point
-                    
-                    TNode *parent = (TNode*) *new_node->active_dptr_cstyle_t; // new_node->active[0]; // get path point
-
-                    // assert(0);
-                    
-                    // leaf node for active node
-                    std::string s_left = parent->s.substr(0, 1);
-                    std::string s_right = parent->s.substr(1);
-
-                    split_node(parent, s_left, s_right);
-                    std::cout << "split\n";
-                    std::cout << "grandparent:\t" << parent->prev->s << "\n";
-                    print_info(parent);
-                    
-                    // parent->left->sgoal = curr_node->sgoal; // anchor (update sgoal)
-                    
-                    // std::cout << parent->left->s << "\t" << parent->right->s << "\n";
-
-                    // set 
-                    parent->left->staged = true;
-                    set_next_node(parent->left);
-                    
-                    q.push_back(parent->root);
-                    
-                    std::cout << "\n---------------------------------------------------------i0-1------------------------------------------------\n";
-
-                }
-
-            } else if (i == active_node->s.length() - 1) {
-
-                // copy tree 
-                TNode *new_node = copy_node_network(active_node); 
-
-                // TNode *parent = (* new_node->active)[0]; // get path point
-
-                TNode *parent = (TNode*) *new_node->active_dptr_cstyle_t; // new_node->active[0]; // get path point
-
-                // leaf node for active node
-                std::string s_left = parent->s.substr(0, i);
-                std::string s_right = parent->s.substr(i);
-                
-                split_node(parent, s_left, s_right);
-                std::cout << "split" << "\n";
-                print_info(parent);
-                swapT(parent);
-                print_info(parent);
-                    
-                parent->left->staged = true;
-
-                set_next_node(parent->left);
-                    
-                q.push_back(parent->root);
-                
-                std::cout << "\n---------------------------------------------------------iend------------------------------------------------\n";
-
-            } else {
-
-                // copy tree
-
-                TNode *new_node = copy_node_network(active_node);
-
-                // TNode *parent = (* new_node->active)[0];
-
-                TNode *parent = (TNode*) *new_node->active_dptr_cstyle_t; // new_node->active[0]; // get path point
-
-                // leaf node for active node
-                std::string s_left = parent->s.substr(0, i);
-                std::string s_right = parent->s.substr(i);
-                split_node(parent, s_left, s_right);
-                std::cout << "parent:\t" << parent->s << "\n";
-                std::cout << parent->left->s << "\t" << parent->right->s << "\n";
-
-                // std::cout << s_left << "\t" << s_right << "\n";
-                // std::cout << parent->left << "\t" << parent->right << "\n";
-
-                swapT(parent);
-                std::cout << parent->left->s << "\t" << parent->right->s << "\n";
-
-                // std::cout << parent->left->s << "\t" << parent->right->s << "\n";
-                
-                parent->left->staged = true;
-                parent = parent->left;
-
-                s_left = parent->s.substr(0, 1);
-                s_right = parent->s.substr(1);
-
-                split_node(parent, s_left, s_right);
-                print_info(parent);
-                
-                parent->left->staged = true;
-                parent = parent->left;
-                // std::cout << parent->left->s << "\t" << parent->right->s << "\n";
-                set_next_node(parent);
-
-                q.push_back(parent->root);
-
-                std::cout << "\n---------------------------------------------------------c1------------------------------------------------\n";
-
-                // copy tree
-                new_node = copy_node_network(active_node);
-
-                // parent = (*new_node->active)[0];
-
-                parent = (TNode*) *new_node->active_dptr_cstyle_t; // new_node->active[0]; // get path point
-
-                // leaf node for active node
-                std::string s2_left = parent->s.substr(0, i+1);
-                std::string s2_right = parent->s.substr(i+1);
-                
-                split_node(parent, s2_left, s2_right);
-
-                // std::cout << parent->left << "\t" << parent->right << "\n";
-                print_info(parent);
-
-                parent->left->staged = true;
-                parent = parent->left;
-                s2_left = parent->s.substr(0,  parent->s.length()- 1);
-                s2_right = parent->s.substr( parent->s.length()- 1 );
-                
-                split_node(parent, s2_left, s2_right);
-                print_info(parent);
-                swapT(parent);
-                print_info(parent);
-                
-                parent->left->staged = true;
-                parent = parent->left;
-                std::cout << "parent:\t" << parent->s << "\n";
-
-                set_next_node(parent);
-
-                q.push_back(parent->root);
-
-                std::cout << "\n-------------------------------------------------c2--------------------------------------------------------\n";
-
-                // copy tree
-                new_node = copy_node_network(active_node);
-
-
-            }
-
-        }
-    }
-
-}
 
 
 class Solution {
@@ -676,8 +631,10 @@ public:
             
             q.pop_front(); 
 
-            std::cout << "ATTEMPT\t\n";
+            std::cout << "\t\t\t ATTEMPT \t \n";
+            
             found_u = build_scramble_network(node, s2, q);
+
             if (found_u) {
                 return true;
             }
