@@ -111,7 +111,7 @@ std::ostream& operator<<(std::ostream& os, Node2* node) {
 
 bool histo_valid (std::string s1, std::string s2) {
     // TBD this can be improved O(N)
-    std::map<char, std::size_t> zero_map;
+    std::map<char, int > zero_map;
 
     if (s1.length() != s2.length())
         return false; 
@@ -127,8 +127,8 @@ bool histo_valid (std::string s1, std::string s2) {
         if (zero_map.count(c2) == 0)
             zero_map[c2] = 0;
 
-        zero_map[c1]--;
-        zero_map[c2]++;
+        zero_map[c1] -= 1;
+        zero_map[c2] += 1;
 
     }
 
@@ -167,17 +167,17 @@ bool histo_valid (std::string s1, std::string s2) {
 
 void print_info(TNode *parent) {
 
-    std::cout << " PRINT INFO: " << "\n";
+    // std::cout << " PRINT INFO: " << "\n";
 
-    std::cout << "\tparent:\t" << parent->s << "\n";
+    // std::cout << "\tparent:\t" << parent->s << "\n";
     
     if (parent->left && parent->right) {
-         
-        std::cout << "\t\t" << parent->left->s << " ( " << parent->left->sgoal  << " ) " << "\t" << parent->right->s << " ( " << parent->right->sgoal  << " ) "<< "\n";
+        //  
+        // std::cout << "\t\t" << parent->left->s << " ( " << parent->left->sgoal  << " ) " << "\t" << parent->right->s << " ( " << parent->right->sgoal  << " ) "<< "\n";
 
     } else {
 
-        std::cout << "\t--is a leaf node--" << "\n";
+        // std::cout << "\t--is a leaf node--" << "\n";
 
     }
 }
@@ -185,27 +185,26 @@ void print_info(TNode *parent) {
 void swapT (TNode * node) {
 
     std::size_t len = node->sgoal.length();
+
+
     std::string sleft_sgoal = node->left->sgoal;
     std::string sright_sgoal= node->right->sgoal;
     
     TNode *temp = node->left;
     node->left = node->right;
-    node->left->sgoal = sright_sgoal;
     node->right = temp;
-    node->right->sgoal = sleft_sgoal;
 
-    std::cout << "swapped" << "\n";
+    node->left->sgoal = node->sgoal.substr(0, node->left->s.length()) ;
+    node->right->sgoal = node->sgoal.substr(node->left->s.length()) ;
 
 }
 
 void split_node(TNode *parent, std::string sleft, std::string sright) {
 
     parent->left = new TNode{sleft,  parent->sgoal.substr(0, sleft.length()), nullptr /* left ptr */, nullptr /* right ptr */, parent, parent->depth + 1, parent->root, false, parent->index, parent->active_dptr_cstyle_t};
-    // parent->left->active = ; // each node points to the same array slot
 
     parent->right = new TNode{sright, parent->sgoal.substr(sleft.length()), nullptr, nullptr, parent, parent->depth + 1, parent->root, false, parent->index,  parent->active_dptr_cstyle_t};
 
-    std::cout << "split" << "\n";
 }
 
 void clear_node(TNode *node) {
@@ -422,7 +421,7 @@ void set_next_node(TNode *anchor_node) {
 
             ((TNode *)*anchor_node->active_dptr_cstyle_t)->staged = true;
 
-            std::cout << "BOOM\t" << ((TNode *)*anchor_node->active_dptr_cstyle_t)-> s << "\n";
+            // std::cout << "BOOM\t" << ((TNode *)*anchor_node->active_dptr_cstyle_t)-> s << "\n";
 
             // (*anchor_node->active_dptr_cstyle_t) = anchor_node; 
             
@@ -442,22 +441,23 @@ void set_next_node(TNode *anchor_node) {
 
 bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
 
-    std::cout << "ENTER STRING" << "\t" << node->s << "\n";
-    std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
+    // std::cout << "ENTER STRING" << "\t" << node->s << "\n";
+    // std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
 
 
     while (*node->index < sgoal.length()) {
 
         char character = sgoal[ *node->index ];
 
-        std::cout << "character" << "\t" << character << "\n";
+        // std::cout << "character" << "\t" << character << "\n";
 
         node->staged = true;
 
         // make active node 
         *node->active_dptr_cstyle_t = node; 
 
-        std::cout << "ACTIVE NODE" << "\t" << node->s << "\n";
+        // std::cout << "ACTIVE NODE" << "\t" << node->s << "\n";
+        // std::cout << "ACTIVE NODE GOAL" << "\t" << node->sgoal << "\n";
 
         print_info(node);
 
@@ -542,17 +542,17 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
             
             // *node->active_dptr_cstyle_t = node; 
 
-            std::cout << "TARGET CHAR LEFT" << "\n";
+            // std::cout << "TARGET CHAR LEFT" << "\n";
 
-            std::cout << "ENTER STRING" << "\t" << node->s << "\n";
+            // std::cout << "ENTER STRING" << "\t" << node->s << "\n";
             
-            std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
+            // std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
 
         }
 
         else if (node->right  && node->right->s.contains(character)) {
             
-            std::cout << "TARGET CHAR RIGHT " << "\n";
+            // std::cout << "TARGET CHAR RIGHT " << "\n";
 
             swapT(node);
 
@@ -560,13 +560,13 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
 
             node = node->left;
             
-            std::cout << "TARGET CHAR LEFT " << "\n";
+            // std::cout << "TARGET CHAR LEFT " << "\n";
 
             // *node->active_dptr_cstyle_t = node; 
 
-            std::cout << "ENTER STRING" << "\t" << node->s << "\n";
+            // std::cout << "ENTER STRING" << "\t" << node->s << "\n";
             
-            std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
+            // std::cout << "ENTER GOAL" << "\t" << node->sgoal << "\n";
 
         }
 
@@ -695,6 +695,15 @@ int main(int param_count, char *args[]) {
                 s2 = "bcad";
                 break; 
                 
+            case(6):
+                s1 = "great";
+                s2 = "gtear";
+                break; 
+
+            case(7):
+                s1 = "abbbcbaaccacaacc";
+                s2 = "acaaaccabcabcbcb";
+                break; 
             default: 
                 break;
         
