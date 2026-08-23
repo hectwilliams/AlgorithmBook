@@ -12,47 +12,12 @@
 #include <iterator>
 #include <cstdlib>
 
-struct Node2; 
-struct Node; 
-struct NodeWord;
 struct TNode;
 
-using Q2 = std::deque<Node2 *>;
-using Q = std::deque<Node *>;
 using Qt = std::deque<TNode*>;
 
-using UsedList = std::map<std::string, bool>;
-using STable = std::map<std::size_t, std::string> ;
-using Words = std::vector< std::string>;
-using WordN = std::vector<NodeWord*>;
-
 using Store = std::array< TNode* , 1> ;
-
 using ActiveTable = std::map<TNode*, Store >;
-
-// using ActiveTable = std::map<TNode*,  TNode** >;
-
-
-struct Node2 {
-    Words data;
-    Words result;
-    // std::string acc; 
-    int index;
-};
-
-struct NodeWord {
-    char c;
-    std::size_t index;
-};
-
-struct Node {
-    WordN wordn;
-    Node * left;
-    Node * right;
-    Node * prev;
-    bool flipped;
-    std::size_t depth;
-};
 
 struct TNode {
     std::string s;
@@ -67,46 +32,8 @@ struct TNode {
     std::size_t *  index; // const adress ( non-const value ),
     void ** const active_dptr_cstyle_t; 
 
-    // TNode() : s(""), sgoal(""), left(nullptr), right(nullptr), prev(nullptr), active(nullptr), depth(0), root(nullptr), staged(false), index(nullptr), active_dptr_cstyle_t(nullptr)  {}
 };
 constexpr TNode TNODE_DUMMY = {};
-
-
-
-// / const adress_of_address -> address_record ( non-const adress_record -> record ),
-struct Tree {
-    Node * root;
-};
-
-std::ostream& operator<<(std::ostream& os, const WordN & data) {
-    os << "[ ";
-    for ( const auto &record: data ) {
-        os << " " << record->c << "[" <<  record->index << "]"  << " , "  ;
-    }
-     os << " ]\n";
-    return os; 
-}
-
-std::ostream& operator<<(std::ostream& os, const Words & data) {
-    os << "[ ";
-    for ( const auto &value: data ) {
-        os << " " << value << ", "  ;
-    }
-     os << " ]\n";
-    return os; 
-}
-
-
-std::ostream& operator<<(std::ostream& os, Node2* node) {
-     os << "[\n";
-    //  os  << "\ts1: "<< node->s1 << " s2: " << node->s2  << "\n";
-     for (const auto &value: node->data) {
-        os <<  value <<  ",";
-     }
-     os << "\n]\n";
-
-    return os; 
-}
 
 
 bool histo_valid (std::string s1, std::string s2) {
@@ -183,9 +110,6 @@ void print_info(TNode *parent) {
 }
 
 void swapT (TNode * node) {
-
-    std::size_t len = node->sgoal.length();
-
 
     std::string sleft_sgoal = node->left->sgoal;
     std::string sright_sgoal= node->right->sgoal;
@@ -290,13 +214,13 @@ bool valid_split(std::string sleft, std::string sright, std::string sgoal) {
     bool left_check = histo_valid(sleft, sleft_sgoal);
     bool right_check = histo_valid(sright, sright_sgoal);
     
-    std::cout << " TEST SPLIT PARENT STRING " << "\t" << sleft << "(" << sleft_sgoal << ")" << "-"  << " " << sright <<  " ( " << sright_sgoal <<  " ) " << "\n";
+    // std::cout << " TEST SPLIT PARENT STRING " << "\t" << sleft << "(" << sleft_sgoal << ")" << "-"  << " " << sright <<  " ( " << sright_sgoal <<  " ) " << "\n";
 
     if (left_check & right_check) {
 
-        std::cout << "TEST PASSED" << "\n";
+        // std::cout << "TEST PASSED" << "\n";
         
-        std::cout << " CHILDREN " <<  sleft_sgoal << " \t"  << sright_sgoal << "\n";
+        // std::cout << " CHILDREN " <<  sleft_sgoal << " \t"  << sright_sgoal << "\n";
         
     }
     // histo check 
@@ -318,9 +242,9 @@ bool valid_split(std::string sleft, std::string sright, std::string sgoal) {
 
 void init_sol_extend(TNode *node, Qt &q) {
     
-    int n_possible = 0;
-
     std::string sleft, sright;
+
+    std::vector< TNode* > trashmap;
 
     for (std::size_t i = 1; i < node->s.length();  i++) {
 
@@ -334,9 +258,12 @@ void init_sol_extend(TNode *node, Qt &q) {
         // add to queue  if passed 
         if (valid_split(sleft, sright, node->sgoal)) {
             
+            trashmap.push_back(node);
+            
             TNode *curr_node = copy_node_network(node);
 
             split_node(curr_node, sleft, sright);
+
             print_info(curr_node);
 
             // succesful split ( move left )
@@ -346,13 +273,16 @@ void init_sol_extend(TNode *node, Qt &q) {
 
             q.push_back(curr_node);
             
-            n_possible++;
 
         } 
 
         // add to queue  if passed 
         if (valid_split( sright , sleft , node->sgoal)) {
             
+            if (trashmap.empty() || trashmap[trashmap.size()- 1] != node) {
+                trashmap.push_back(node);
+            }
+
             TNode *curr_node = copy_node_network(node);
 
             split_node(curr_node, sright ,sleft );
@@ -366,14 +296,19 @@ void init_sol_extend(TNode *node, Qt &q) {
 
             q.push_back(curr_node);
             
-            n_possible++;
 
         } 
 
         
     }
 
-    std::cout  << n_possible << " added to queue "<< "\n\n\n";
+    // clear stale/copied mem
+
+    // for (const auto n: trashmap) {
+    // }
+ 
+
+    // std::cout  << n_possible << " added to queue "<< "\n\n\n";
 
 }
 
@@ -463,7 +398,8 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
 
 
         if (!node->s.contains(character)) {
-            std::cout << "Error\t" << node->s << "\n";
+            // std::cout << "Error\t" << node->s << "\n";
+            clear_node(node);
             return false;
         } 
 
@@ -524,9 +460,13 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
                     init_sol_extend(node, q); 
                     
 
+                    clear_node(node);
+
                     return false;
 
                 } else {
+
+                    clear_node(node);
 
                     return false; 
                 }
@@ -581,17 +521,10 @@ bool build_scramble_network(TNode *node, std::string sgoal, Qt &q) {
 class Solution {
 public:
     bool isScramble(std::string s1, std::string s2) {
-        UsedList usedList; 
         // Q q;
         bool found_u = false;
 
-        // Q2 q;
-
-        // Q q;
-
         Qt q;
-
-        ActiveTable table;
 
         if (s2.length() == 0) {
             
@@ -615,7 +548,7 @@ public:
         }
 
         if (!histo_valid(s1, s2)) {
-            std::cout << "HISTO" << "\n";
+            // std::cout << "HISTO" << "\n";
             return false; 
         }
 
@@ -623,7 +556,7 @@ public:
 
         init_sol(s1, s2, q);
         
-        std::cout << " --------INIT COMPLETE----------" << "\n";
+        // std::cout << " --------INIT COMPLETE----------" << "\n";
         
         while (!q.empty())  {
             
@@ -631,7 +564,7 @@ public:
             
             q.pop_front(); 
 
-            std::cout << "\t\t\t ATTEMPT \t \n";
+            // std::cout << "\t\t\t ATTEMPT \t \n";
             
             found_u = build_scramble_network(node, s2, q);
 
