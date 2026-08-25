@@ -10,7 +10,7 @@
 #include <stdexcept> // Required for standard exceptions
 #include <string>
 #include <iterator>
-#include <cstdlib>
+#include <chrono> // Required header
 
 #define COMMENTS_OFF 0
 
@@ -840,14 +840,21 @@ int main(int param_count, char *args[]) {
                 s1 = "abcd";
                 s2 = "bdca";
                 break; 
-
+            
+            case(10):
+                s1 = "acccacbcaaaabbaaa";
+                s2 = "aacaacbabacbacaac";
+                break; 
             default: 
                 break;
         
         }
 
+        auto start = std::chrono::high_resolution_clock::now();
         result = sol.isScramble(s1, s2);
-
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        std::cout << "Execution time: " << duration.count() << " microseconds\n";
      } catch (const std::runtime_error & e) {
 
         std::cout << " RUNTIME ERROR "<< e.what() << "\n" ;
