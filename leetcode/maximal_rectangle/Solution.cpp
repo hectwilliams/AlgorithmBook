@@ -13,6 +13,8 @@
 #include <chrono> // Required header
 #include "Solution.h"
 
+#define COMMENTS_OFF 1
+
 struct Node;
 struct NodeTop;
 
@@ -29,10 +31,11 @@ struct Node {
 
     uint32_t row;
     uint32_t col;
-    uint32_t external_sum;  
     uint32_t id;  
-    int32_t v_single_sum;
-    int32_t *contigious_sum;  
+    int32_t v;
+    int32_t h;
+    int32_t *contigious_h;  
+    int32_t *contigious_v;  
 
 };
 
@@ -43,6 +46,12 @@ struct NodeTop {
     ActiveVerticesMap map;
 };
 
+
+std::ostream& operator<<(std::ostream& os,  Node * const node) {
+
+    os <<  "( " << node->row << "," << node->col << ") " << " V: " << node->v << " H: "<< node->h << " BIN_TOP_H: " << *node->contigious_v << "\n";
+    return os;
+}
 // struct Node {
 //     char value; 
 //     unsigned row;
@@ -167,33 +176,33 @@ bool has_reverse_adjacent(uint32_t r, uint32_t c, const Matrix &matrix) {
 
 // assumes current r,c cell is a valid 
 
-Node * copy_node (Node *source) {
-    try {
+// Node * copy_node (Node *source) {
+//     try {
         
-        if (!source)
-            throw std::runtime_error("undefined node: unable to copy");
+//         if (!source)
+//             throw std::runtime_error("undefined node: unable to copy");
 
-        Node *node = new Node{source->row, source->col, source->external_sum, source->id,  source->v_single_sum, new int32_t{*source->contigious_sum}};
+//         Node *node = new Node{source->row, source->col, source->external_sum, source->id,  source->v_single_sum, new int32_t{*source->contigious_sum}};
 
-        return node; 
+//         return node; 
 
-    } catch(const std::runtime_error& e) {
-        return nullptr;
-    }
-}
+//     } catch(const std::runtime_error& e) {
+//         return nullptr;
+//     }
+// }
 
-void copy_network( ActiveVerticesMap &source, ActiveVerticesMap &dest) {
-    for ( auto [ key2, source_node] : source) {
+// void copy_network( ActiveVerticesMap &source, ActiveVerticesMap &dest) {
+//     for ( auto [ key2, source_node] : source) {
         
-        // std::cout  << " \t copied node: " << key2 << "\n";  
+//         // std::cout  << " \t copied node: " << key2 << "\n";  
         
-        Node *dest_node = copy_node(source_node);
+//         Node *dest_node = copy_node(source_node);
 
-        std::string key = std::to_string(dest_node->row) + "," + std::to_string(dest_node->col) ; 
+//         std::string key = std::to_string(dest_node->row) + "," + std::to_string(dest_node->col) ; 
 
-        dest[key] = dest_node;
-    }
-}
+//         dest[key] = dest_node;
+//     }
+// }
 
 std::string akey(uint32_t r, uint32_t c) {
     return std::to_string(r) + "," + std::to_string(c) ; 
@@ -201,24 +210,33 @@ std::string akey(uint32_t r, uint32_t c) {
 
 bool valid_cell (uint32_t r, uint32_t c, uint32_t n_cols, const Matrix & matrix) {
 
-    if (c >= n_cols)
-        return false;
+    // if (c >= n_cols)
+    //     return false;
 
     return matrix[r][c] == '1';
 
 }
 
-void forward_adjacent_count(uint32_t r, uint32_t c, NodeTop *nodetop, const Matrix & matrix, uint32_t n_cols ) {
+// nodetop->map[ akey(r, c + 1) ]->contigious_sum = nodetop->map[ akey(r, c ) ]->contigious_sum ; 
 
-    while (valid_cell(r, c + 1, n_cols, matrix)) {
+// uint32_t forward_adjacent_count(uint32_t r, uint32_t c, NodeTop *nodetop, const Matrix & matrix, uint32_t n_cols ) {
+//     uint32_t count = 1; // called by current node
+//     uint32_t id = 0;
+//     Node *header_node = nodetop->map[akey(r, c)];
 
-        // nodetop->map[ akey(r, c + 1) ]->contigious_sum = nodetop->map[ akey(r, c ) ]->contigious_sum ; 
-        
-        // *(nodetop->map[ akey(r,c + 1) ]->contigious_sum) =  *(nodetop->map[ akey(r,c + 1) ]->contigious_sum) + 1; 
-        
-        c++;
-    }
-}
+//     while ( matrix[r][c + 1] == '1' && c < n_cols ) {
+//         count  += 1;
+//         std::string key_above = akey(r-1, c);
+//         std::string next_key = akey(r, c + 1);
+
+//         int32_t v_cnt = nodetop->map.count(key_above) ? nodetop->map[key_above]->v_single_sum + 1 : 1;
+//         Node *new_node = new Node{r, c + 1, 0, id++,,  header_node->contigious_sum };
+//         *header_node->contigious_sum = *header_node->contigious_sum + 1; // shared memory update count 
+//         nodetop->map[next_key] = new_node;
+//         c++;
+//     }
+//     return count;
+// }
 
 void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix & matrix) {
     
@@ -239,92 +257,69 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
                 std::string key = akey(r,c ); 
 
                 // create node 
-                node = new Node{r, c, 0,0, 1, new int32_t{1}};
-                nodetop->map[  key  ] = node; 
+                node = new Node{r, c, 0 /* id */, 1 /* v */, 1 /* h */,  new int32_t{1} , new int32_t{1} };
+                nodetop->map[  key  ] = node;  // valid cells are added to map 
                 std::cout << "\t\t\tADD NODE " << "" << key<< "\n";
-
                 
-                // previous 
-                if  ( nodetop->map.count(akey(r, c-1))  ) {
-                
-                    Node *curr_node = nodetop->map[ akey(r, c) ];
-                    
+                if  ( nodetop->map.count(akey(r, c-1))   ) {
+                        
                     Node *prev_node = nodetop->map[akey(r, c-1)];
+                        
+                    node->contigious_h = prev_node->contigious_h; // shared addr
 
-                    // copy contingious address 
-                    curr_node->contigious_sum = prev_node->contigious_sum;
-
-                    *prev_node->contigious_sum = *prev_node->contigious_sum + 1;
+                    *node->contigious_h = *node->contigious_h + 1; // increment
                     
-                    curr_node->id = prev_node->id + 1 ; 
-                    // std::cout << "\t PREV ID " << prev_node->id   << "\n";
-                    // std::cout << "\t NEXT ID " << curr_node->id   << "\n";
+                    node->h = prev_node->h + 1;
 
-                    // std::string key_prev = akey(r, c - 1); 
-
-                    // std::cout << "\t\tPREV " << " pos:\t " << r << " " << c - 1 << "\n";
-                    // std::cout << "\t\tPREV " << " pos:\t " << r << " " << c - 1 <<  "\t\t" << key<< "\n";
-
-                    // std::cout << nodetop->map[  key ] << "\n";
-
-                    // *nodetop->map[key]->contigious_sum =  *nodetop->map[key_prev]->contigious_sum + 1;
-                    //  *nodetop->map[key_prev]->contigious_sum + 1;
-                    
-
-                    // std::cout << "\t\ CHECK SUM " << *prev_node->contigious_sum << "\n";
-                    // std::cout << "\t\ CHECK SUM " << *curr_node->contigious_sum << "\n";
-
-                    // assert(0);
-
-                    // horizontal (simple) sums 
-                    if (nodetop->max_sum <  *nodetop->map[key]->contigious_sum) {
-                        nodetop->max_sum =  *nodetop->map[key]->contigious_sum;
-                    }
-
-                    // vertical (simple) sums  (adjacent top node is active  )
-                    if (r > 0 && nodetop->map.count( akey(r - 1,c ) ) )  {
-                        nodetop->map[ akey(r,c) ]->v_single_sum = nodetop->map[ akey(r-1,c)  ]->v_single_sum;
-                        if ( nodetop->max_sum < nodetop->map[ akey(r,c)  ]->v_single_sum) {
-                            nodetop->max_sum = nodetop->map[ akey(r,c)  ]->v_single_sum; 
-                        }
-                    }
-
-                    
-                } else {
-                    
+                    *node->contigious_v = node->h;
+                
                 }
                 
-                // look up 
+                if  (  nodetop->map.count(akey(r - 1, c))  ) {
+                    
+                    Node *up_node = nodetop->map[akey(r - 1, c)];
+                    
+                    node->v = up_node->v + 1;
+                    
+                    node->contigious_v = up_node->contigious_v; // top most valid bin keeps h values ( shared across all bin values )
+                    
+                    // *node->contigious_v = *node->contigious_v + 1; // increment
+                    
+                }
+            
+                Node *this_node = nodetop->map[ akey(r, c) ];
+                std::cout << this_node << "\n";
 
-                if ( r > 0 && nodetop->map.count( akey(r-1,c) )  && nodetop->map[ akey(r-1,c)]->id == 0  && *nodetop->map[ akey(r-1,c)]->contigious_sum > 1 ) {
+                // find max 
 
-                    NodeTop *new_nodetop = new NodeTop{ r,c, nodetop->max_sum,{} };
+                if (node->h == 1) {
 
-                    copy_network(nodetop->map, new_nodetop->map);
+                    if ( nodetop->max_sum < node->v ){
+                        nodetop->max_sum = node->v;
+                    }
+                }
 
-                    std::cout << r-1 << " " << c  <<  " " <<  (*(nodetop->map[ akey(r-1,c) ]->contigious_sum))    << "\n\n";
-                    std::cout << r-1 << " " << c  <<  " " <<  (*(nodetop->map[ akey(r-1,c) ]->contigious_sum))    << "\n\n";
-                    uint32_t top_continuous = (*(nodetop->map[ akey(r-1,c) ]->contigious_sum));
-                    uint32_t bottom_continuous = (*(nodetop->map[ akey(r,c) ]->contigious_sum));
+                else if (node->v == 1) {
+                    
+                    if (nodetop->max_sum < node->h) {
+                        nodetop->max_sum = node->h;
+                    }
+                
+                } 
+                
+                else  {
 
-                    std::cout << "TOP:\t" <<  top_continuous << "\t" << "BOTTOM\t" << bottom_continuous << "\n";
+                    uint32_t m = *node->contigious_v  * node->v;
 
-                    // clear node 
-                    *(nodetop->map[ akey(r,c) ]->contigious_sum) = 1; 
-                    bottom_continuous = (*(nodetop->map[ akey(r,c) ]->contigious_sum));
-                    std::cout << "TOP:\t" <<  top_continuous << "\t" << "BOTTOM\t" << bottom_continuous << "\n";
+                    if (nodetop->max_sum < m ) {
+                        nodetop->max_sum = m;
+                    }
 
-                    // if ()
 
-                    forward_adjacent_count(r, c, nodetop, matrix, n_cols);
-//   bottom_continuous = (*(nodetop->map[ akey(r,c) ]->contigious_sum));
-//                     std::cout << "TOP:\t" <<  top_continuous << "\t" << "BOTTOM\t" << bottom_continuous << "\n";
-
-                    assert(0);
 
 
                 }
-
+            
             }
 
         }
