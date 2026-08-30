@@ -33,6 +33,8 @@ struct Node {
     int32_t *contigious_h;  
     int32_t *contigious_v;  
     int32_t *top_width;  
+    int32_t *top_width_row;  
+
 
 };
 
@@ -48,11 +50,11 @@ struct NodeTop {
 
 std::ostream& operator<<(std::ostream& os,  Node * const node) {
 
-    os <<  "( " << node->row << "," << node->col << ") " << " V: " << node->v << " H: "<< node->h << "\t BIN_TOP_H: " << *node->contigious_h << " BIN_TOP_V: " << *node->contigious_v << " TOP_WIDTH: " << ((node->top_width !=nullptr)? *node->top_width: 0) <<"\n";
+    os <<  "( " << node->row << "," << node->col << ") " << " V: " << node->v << " H: "<< node->h << "\t BIN_TOP_H: " << *node->contigious_h << " BIN_TOP_V: " << *node->contigious_v << " TOP_WIDTH: " << ((node->top_width !=nullptr)? *node->top_width: 0)<< "\t STACK TOP INDEX:" << *node->top_width_row  <<"\n";
     return os;
 }
 
-std::string akey(uint32_t r, uint32_t c) {
+std::string akey(int32_t r, int32_t c) {
     return std::to_string(r) + "," + std::to_string(c) ; 
 }
 
@@ -70,7 +72,7 @@ void test_v(NodeTop *nodetop, Node *node) {
 
 }
 
-bool test_rectangle(uint32_t w, uint32_t h, Node *node, NodeTop *nodetop) {
+void test_rectangle(uint32_t w, uint32_t h, Node *node, NodeTop *nodetop) {
 
     uint32_t len_r = node->row + h;
     uint32_t len_c = node->col + w;
@@ -82,14 +84,100 @@ bool test_rectangle(uint32_t w, uint32_t h, Node *node, NodeTop *nodetop) {
             std::string key = akey(r, c);
             
             if (nodetop->map.count(key) == 0)
-                return false;
+                return ;
             
         }
         
     }
 
-    return true; 
+    int32_t area = h * w ;
+    
+    if (nodetop->max_sum < area ) {
+        nodetop->max_sum = area;
+    }
+
+    return ; 
 }
+
+bool valid_window(Node *source, Node *child) {
+
+    int32_t n_child_cells = *child->contigious_h - child->h + 1;
+
+    return n_child_cells >= *source->contigious_h;
+
+}
+
+void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
+
+    int32_t k = 1;
+    int32_t n_hits = 1; // start row contains contigious cells 
+    std::string key_up;
+    std::string key_down;
+    bool done_up = false;
+    bool done_down = false;
+    Node *child;
+
+    while ( !done_up || !done_down ) {
+        
+        key_up = akey(node->row - k, node->col);
+        key_down = akey(node->row + k, node->col);
+
+        std::cout << key_up  << " " <<  key_down << "\n";
+        
+        if (  !done_up  && nodetop->map.count(key_up) ) {
+            
+            child = nodetop->map[key_up];
+
+            // if ( *child->contigious_h >= w) {
+            if (  valid_window(node, child) ) {
+
+                n_hits++; std::cout << "\n (1 up))\n ";
+
+            } else {
+
+                done_up = true;
+
+            }
+            
+        } else {
+            done_up = true;
+        }
+        
+        if ( !done_down  && nodetop->map.count(key_down) ) {
+            
+            child = nodetop->map[key_down];
+
+            // if ( *nodetop->map[key_down]->contigious_h >= w) {
+            if (  valid_window(node, child) ) {
+
+                n_hits++; std::cout << "\n (1 down) \n";
+
+            } else {
+
+               done_down = true;
+
+            }
+
+        } else {
+
+            done_down = true;
+
+        }
+
+        k++;
+    }
+
+        int32_t area = n_hits * w ;
+
+        std::cout << n_hits << " <- " << "\n\n\n";
+        std::cout << area << " <- " << "\n\n\n";
+        
+        if (nodetop->max_sum < area ) {
+            nodetop->max_sum = area;
+        }
+        
+}
+
 
 void test_vh(NodeTop *nodetop, Node *node) {
 
@@ -121,61 +209,12 @@ void test_vh(NodeTop *nodetop, Node *node) {
 
         int32_t w = *node->top_width;
         
-        int32_t h = *node->contigious_v;// node->v - node->row;
+        std::cout << " \t\tANALYSIS " << node->row << " , " << node->col <<  "\t\tBAKED " << w  << " , " << "\n";
 
-   
-
-        if (node->v > 1) {
-
-            int32_t delta = h - node->row;
-
-            h = delta;
-        }
-
-        int32_t substack_h = *node->contigious_v - nodetop->n_rows;
-        
-        if (   substack_h == node->row ) {
-            // single contigious horiz seq
-            h = *node->contigious_v;
-        } else {
-            h = *node->contigious_v - node->row;
-        }
-
-        std::cout << " \t\tANALYSIS " << node->row << " , " << node->col <<  "\t\tBAKED " << w  << " , " << h << "\n";
-
-        std::map<int32_t, void*> used; 
-
-        // while ( used.count(start_pivot) == 0) {
-
-        //     node->row = start_pivot; 
-            
-            if (test_rectangle(w, h, node, nodetop)) {
-    
-                int32_t area = h * w ;
-                
-                if (nodetop->max_sum < area ) {
-                    nodetop->max_sum = area;
-                }
-            }
-
-            // used[start_pivot] = nullptr;
-
-            // start_pivot = (start_pivot + 1) % h;
-            
-        // }
-
-        // node->row = true_row;
-    }
-
-    else  {
-
-        // int32_t m = *node->contigious_v  * node->v;
-
-        // if (nodetop->max_sum < m ) {
-        //     nodetop->max_sum = m;
-        // }
+        test_walk_away_contigious(w, node, nodetop);
 
     }
+
 }
 
 
@@ -200,7 +239,7 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
                 std::string key = akey(r,c ); 
 
                 // create node 
-                node = new Node{r, c, 0 /* id */, 1 /* v */, 1 /* h */,  new int32_t{1} , new int32_t{1}, nullptr };
+                node = new Node{r, c, 0 /* id */, 1 /* v */, 1 /* h */,  new int32_t{1} , new int32_t{1}, nullptr, new int32_t{1} };
 
                 // std::cout << key << " --\t" << r << ", " << c << "\n"; 
                 nodetop->map[  key  ] = node;  // valid cells are added to map 
@@ -209,11 +248,7 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
                     std::cout << "\t\t\tADD NODE " << "" << key<< "\n";
                 #endif 
 
-                // if ( c >0 &&  matrix[r][c-1] == '0') {
-                //     // headers of contigious cells
-                //     node->top_width = node->contigious_h;
-                // }
-                
+             
                 if  ( nodetop->map.count(akey(r, c-1))   ) {
                         
                     Node *prev_node = nodetop->map[akey(r, c-1)];
@@ -224,19 +259,10 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
                     
                     if (prev_node->h == 1) {
                         prev_node->top_width = node->contigious_h;
+                        // *prev_node->top_width_row = prev_node->row;
                     }
 
                     *(node->contigious_h) = node->h;
-
-                    // *node->contigious_h = *node->contigious_h + 1; // increment
-                    
-                    
-                        
-                    // *node->contigious_v = node->h;
-                    // *node->contigious_h = node->h;
-
-
-                    // test_h(nodetop, node);
                 
                 }
                 
@@ -248,6 +274,11 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
 
                     node->contigious_v = up_node->contigious_v; 
                     *node->contigious_v = node->v ; // up_node->contigious_v; 
+
+                    if (up_node->v == 1) {
+                        *up_node->top_width_row =up_node->row;
+                    }
+                    node->top_width_row = up_node->top_width_row;
                 }
             
              
@@ -357,7 +388,23 @@ int main(int param_count, char *args[]) {
             case (9):
                 matrix = matrix_test_9;
                 break; 
+            
+                case (10):
+                matrix = matrix_test_10;
+                break; 
 
+            case (11):
+                matrix = matrix_test_11;
+                break; 
+
+            case (12):
+                matrix = matrix_test_12;
+                break;
+
+            case (13):
+                matrix = matrix_test_13;
+                break; 
+                
             default: 
                 break;
         
