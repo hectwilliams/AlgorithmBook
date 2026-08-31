@@ -14,6 +14,7 @@
 #include "Solution.h"
 
 
+
 #define COMMENTS_OFF 0
 
 struct Node;
@@ -100,6 +101,31 @@ void test_rectangle(uint32_t w, uint32_t h, Node *node, NodeTop *nodetop) {
     return ; 
 }
 
+
+// bool valid_window(int32_t w , Node *source, Node *child,  NodeTop *nodetop) {
+
+//     int32_t n_child_cells = *child->contigious_h - child->h + 1;
+//     int32_t n = 0;
+//     std::string key; 
+    
+//     for (int i = 0; ; i++ ) {
+        
+//         key = akey(child->row , child->col + i);
+
+//         if (nodetop->map.count(key)) {
+//             n++;
+//         } else {
+//             break;
+//         }
+
+//     }
+    
+//     return n >= *source->contigious_h;
+
+//     // return n_child_cells >= *source->contigious_h;
+
+// }
+
 bool valid_window(Node *source, Node *child) {
 
     int32_t n_child_cells = *child->contigious_h - child->h + 1;
@@ -111,7 +137,7 @@ bool valid_window(Node *source, Node *child) {
 
 
 
-void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
+void test_walk_away_contigious_vertical_less (int32_t w, Node *node, NodeTop *nodetop) {
     std::string key_up;
     std::string key_down;
     Node *child;
@@ -120,15 +146,16 @@ void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
     int32_t kup = 0;
     int32_t kdown = 0;
 
-    done_down = true;
+    done_down = false;
     done_up = false; 
     int32_t n_child_cells;
     int32_t area = 0;
-
+    bool changed ; 
     std::cout << "SEARCH PROCESS 2 " << "\n";
 
     while ( !done_up || !done_down ) {
         
+        changed = false;
         
         if ( !done_up && node->row - (kup + 1) >= 0) {
             kup = kup + 1;
@@ -141,10 +168,12 @@ void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
                 
                 n_child_cells = *child->contigious_h - child->h + 1;
                 
-                if (n_child_cells < w && n_child_cells != 1) {
+                if (n_child_cells <= w && n_child_cells != 1) {
                     w = n_child_cells; 
                     depth++;
                     std::cout << " N CHILD CELLS " <<   n_child_cells <<  " " << " UP DEPTH " << depth <<  "\n";
+                    changed = true;
+
                 } else {
                     done_up = true; 
                 }
@@ -154,7 +183,7 @@ void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
             done_up = true; 
         }
 
-        if ( !done_up && node->row + (kdown + 1) >= 0) {
+        if ( !done_up && node->row + (kdown + 1) < nodetop->n_rows ) {
             kdown = kdown + 1;
             key_down = akey(node->row + kdown, node->col);
             std::cout <<  " DOWN STEP: "  << " " <<  key_down <<  " " << node->row + (kdown )  << "\n";
@@ -164,8 +193,8 @@ void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
                 child = nodetop->map[key_down];
                 
                 n_child_cells = *child->contigious_h - child->h + 1;
-                
-                if (n_child_cells < w && n_child_cells != 1) {
+
+                if (n_child_cells <= w && n_child_cells != 1) {
                     w = n_child_cells;
                     depth++;
                     std::cout << " N CHILD CELLS " <<   n_child_cells <<  " " << " DOWN DEPTH " << depth <<  "\n";
@@ -263,7 +292,7 @@ void  test_walk_away_contigious_vertical(int32_t w, Node *node, NodeTop *nodetop
 
     } else  {
         
-        test_walk_away_contigious_less(w, node, nodetop);
+        test_walk_away_contigious_vertical_less(w, node, nodetop);
 
     }
         
@@ -272,7 +301,8 @@ void  test_walk_away_contigious_vertical(int32_t w, Node *node, NodeTop *nodetop
 bool valid_window2(int32_t h, Node *source, Node *child, NodeTop *nodetop) {
 
     int32_t n_child_cells = 0; //  = source->col - child->col + 1;
-    
+    // std::cout << " source-height " << *source->contigious_v << "\n";
+    // std::cout << " v-height " << *child->contigious_v  << "\n";
     for (int32_t i = 0; i < h; i++) {
 
         std::string key = akey(child->row + i, child->col);
@@ -282,10 +312,95 @@ bool valid_window2(int32_t h, Node *source, Node *child, NodeTop *nodetop) {
             n_child_cells++;
         }
     }
+    // return *child->contigious_v  >= *source->contigious_v;
 
     return n_child_cells == h;
 
 }
+
+void  test_walk_away_contigious_horizontal_less(int32_t h, Node *node, NodeTop *nodetop) {
+    std::string key_left;
+    std::string key_right;
+    Node *child; 
+    int32_t depth = 1;
+    bool done_left, done_right;
+    int32_t kleft = 0;
+    int32_t kright = 0;
+ int32_t n_child_cells;
+    int32_t area = 0;
+
+    done_left = done_right = false;
+
+    while (!done_left || !done_right) {
+
+        if ( !done_left && node->col - (kleft + 1) >= 0) {
+
+            kleft = kleft + 1;
+            key_left = akey(node->row , node->col - kleft);
+            // std::cout <<  "  UP STEP : "  << " " <<  key_down <<  " " << node->col - (kleft)  << "\n";
+
+            if ( nodetop->map.count(key_left) ) {
+
+                child = nodetop->map[key_left];
+
+                n_child_cells = *child->contigious_v - child->v + 1;
+
+                if (n_child_cells < h && n_child_cells != 1) {
+                    h = n_child_cells; 
+                    depth++;
+                    // std::cout << " N CHILD CELLS " <<   n_child_cells <<  " " << " UP DEPTH " << depth <<  "\n";
+                } else {
+                    done_left = true; 
+                }
+            } 
+
+        } else {
+
+            done_left = true; 
+
+        }
+
+
+        if ( !done_right && node->col + (kright + 1) < nodetop->n_cols) {
+
+            kright = kright + 1;
+            key_right = akey(node->row , node->col + kright);
+            // std::cout <<  "  UP STEP : "  << " " <<  key_down <<  " " << node->col - (kleft)  << "\n";
+
+            if ( nodetop->map.count(key_right) ) {
+
+                child = nodetop->map[key_right];
+
+                n_child_cells = *child->contigious_v - child->v + 1;
+
+                if (n_child_cells < h && n_child_cells != 1) {
+                    h = n_child_cells; 
+                    depth++;
+                    // std::cout << " N CHILD CELLS " <<   n_child_cells <<  " " << " UP DEPTH " << depth <<  "\n";
+                } else {
+                    done_right = true; 
+                }
+            } 
+
+        } else {
+
+            done_right = true; 
+
+        }
+
+
+
+    }
+
+        area = depth * h ;
+    std::cout << "HELLO WORLD" << "\t\t\t\t\t\t\t\t\t\t\t\t" << area << "\n";
+     if (nodetop->max_sum < area ) {
+        nodetop->max_sum = area;
+    }
+
+
+}
+
 
 void  test_walk_away_contigious_horizontal(int32_t h, Node *node, NodeTop *nodetop) {
 
@@ -353,7 +468,7 @@ void  test_walk_away_contigious_horizontal(int32_t h, Node *node, NodeTop *nodet
 
     }
 
-    if (n_hits > 1) {
+    if (n_hits != 1) {
 
         // no_change
         area = (n_hits) * (h) ;
@@ -365,9 +480,14 @@ void  test_walk_away_contigious_horizontal(int32_t h, Node *node, NodeTop *nodet
         if (nodetop->max_sum < area ) {
             nodetop->max_sum = area;
         }
-    }    
+    }    else {
+
+        test_walk_away_contigious_horizontal_less(h, node, nodetop);
+    }
 
 }
+
+
 
 
 void test_vh(NodeTop *nodetop, Node *node) {
