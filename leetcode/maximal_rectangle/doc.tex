@@ -1,0 +1,97 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{booktabs} % Provides professional-quality horizontal rules
+\usepackage{float} % Required for [H] placement
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage[bottom=1.5in]{geometry}
+\usepackage{array}     % For advanced table formatting
+
+\usepackage{amssymb} % Required for square symbols
+\usepackage[normalem]{ulem}
+\hypersetup{
+    colorlinks=true,    % True removes the default red/green border boxes
+    linkcolor=blue,     % Colors internal links (like the TOC) blue
+    urlcolor=cyan       % Colors external URLs cyan
+}
+
+\newcommand{\newpagex}{
+    \newpage
+    \vspace*{-7\baselineskip} % Pulls text up by one line
+}
+
+\author{Hectron} 
+
+\title{Max Rectangle}
+
+\begin{document}
+
+% generates the title
+\maketitle
+
+% insert the table of contents
+\tableofcontents
+
+% seperate body and table of contents 
+\newpagex
+    \noindent
+
+\section{Description}
+    
+Given a matrix with unit ('0' or '1') characters values, find the largest rectangle containing 1s. \\
+\begin{itemize}
+\item \textbf{Input:} 
+\begin{verbatim}
+std::vector<std::vector<char>>  { 
+    {'1','0','1','0','0'},
+    {'1','0','1','1','1'},
+    {'1','1','1','1','1'},
+    {'1','0','0','1','0'}
+};
+\end{verbatim}
+
+\item \textbf{Output}: \newline  \textmd{6}
+\end{itemize}
+
+\section{Function/Method Declaration} 
+\footnotesize
+\begin{verbatim}
+class Solution {
+public:
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        
+    }
+};
+\end{verbatim}
+
+\section{How to solve}
+% \textcolor{blue}{s1 - data } \\
+% \textcolor{red}{s2 - target rule } 
+    \input{import0}
+
+    \subsection{Algorithm}
+    The above 4 x 5 grid has a small object in the top-left corner of each grid cell(i.e. node) representing a valid (i.e. rectangle ) or invalid (circle) cell. 
+    \begin{itemize}
+
+        \item h - represents horizontal contiguous count. A h=2 means there are h-1 immediate rectangles to the left including the current node
+        \item d - represents vertical contiguous count. A d=2 means there are d-1 immediate rectangles to above including the current node
+        \item w - represents maximum horizontal width when calculating max area at current node 
+        
+        
+    \end{itemize}
+    
+    \subsection{Rules}
+    \begin{itemize}
+        \item $h = $1; max number of rectangles possible at node : d
+        \item $d = $1; max number of rectangles possible at node : h
+        \item $d \neq 1$ \& $h \neq $1; max number of rectangles possible at node: $w \times $d
+
+    \end{itemize}
+
+
+
+    % \begin{figure}[htbp]
+    %     \vspace{-15pt} % Essential anchor to force top alignment
+    %         \caption{.}
+    %     \end{figure}
+\end{document}
+
