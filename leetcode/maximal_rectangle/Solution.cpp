@@ -13,6 +13,7 @@
 #include <chrono> // Required header
 #include "Solution.h"
 
+
 #define COMMENTS_OFF 0
 
 struct Node;
@@ -33,7 +34,7 @@ struct Node {
     int32_t *contigious_h;  
     int32_t *contigious_v;  
     int32_t *top_width;  
-    int32_t *top_width_row;  
+    int32_t *left_height;  
     int32_t full_vertical;
 
 };
@@ -50,7 +51,7 @@ struct NodeTop {
 
 std::ostream& operator<<(std::ostream& os,  Node * const node) {
 
-    os <<  "( " << node->row << "," << node->col << ") " << " V: " << node->v << " H: "<< node->h << "\t BIN_TOP_H: " << *node->contigious_h << " BIN_TOP_V: " << *node->contigious_v << " TOP_WIDTH: " << ((node->top_width !=nullptr)? *node->top_width: 0)<< "\t STACK TOP INDEX:" << *node->top_width_row  <<"\n";
+    os <<  "( " << node->row << "," << node->col << ") " << " V: " << node->v << " H: "<< node->h << "\t BIN_TOP_H: " << *node->contigious_h << " BIN_TOP_V: " << *node->contigious_v << " TOP_WIDTH: " << ((node->top_width !=nullptr)? *node->top_width: 0)<< "\t STACK TOP INDEX:" << *node->left_height  <<"\n";
     return os;
 }
 
@@ -107,9 +108,8 @@ bool valid_window(Node *source, Node *child) {
 
 }
 
-bool valid_window_less(Node *source, Node *child) {
 
-}
+
 
 void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
     std::string key_up;
@@ -119,12 +119,9 @@ void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
     bool done_down, done_up;
     int32_t kup = 0;
     int32_t kdown = 0;
-    int32_t k = 1;
 
     done_down = true;
     done_up = false; 
-    int32_t new_w_up = w; 
-    int32_t new_w_low = w; 
     int32_t n_child_cells;
     int32_t area = 0;
 
@@ -192,7 +189,7 @@ void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
 
 }
 
-void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
+void  test_walk_away_contigious_vertical(int32_t w, Node *node, NodeTop *nodetop) {
 
     int32_t k = 1;
     int32_t n_hits = 1; // start row contains contigious cells 
@@ -272,6 +269,106 @@ void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
         
 }
 
+bool valid_window2(int32_t h, Node *source, Node *child, NodeTop *nodetop) {
+
+    int32_t n_child_cells = 0; //  = source->col - child->col + 1;
+    
+    for (int32_t i = 0; i < h; i++) {
+
+        std::string key = akey(child->row + i, child->col);
+
+        if (nodetop->map.count(key) == 1) {
+
+            n_child_cells++;
+        }
+    }
+
+    return n_child_cells == h;
+
+}
+
+void  test_walk_away_contigious_horizontal(int32_t h, Node *node, NodeTop *nodetop) {
+
+    int32_t k = 1;
+    int32_t n_hits = 1; // start row contains contigious cells 
+    std::string key_left;
+    std::string key_right;
+    bool done_left = false;
+    bool done_right = false;
+    Node *child;
+    int32_t area;
+
+    if (h <= 1)
+        return;
+
+    while ( !done_left || !done_right ) {
+
+        key_left = akey(node->row , node->col - k);
+
+        if (  !done_left  && nodetop->map.count(key_left) ) {
+            
+            child = nodetop->map[key_left];
+
+            // if ( *child->contigious_h >= w) {
+            if (  valid_window2(h , node, child, nodetop) ) {
+
+                n_hits++; 
+
+
+            } else {
+
+                done_left = true;
+
+            }
+            
+        } else {
+            done_left = true;
+        }
+    
+        key_right = akey(node->row , node->col + k);
+        if (  !done_right  && nodetop->map.count(key_right) ) {
+        
+                std::cout << " CURRENT KEY " << key_right << "\n";
+            
+            child = nodetop->map[key_right];
+
+            // if ( *child->contigious_h >= w) {
+            if (  valid_window2(h /* centered ate a column*/, node, child, nodetop) ) {
+
+                n_hits++; 
+                // std::cout << "\n (1 up))\n ";
+
+            } else {
+
+                done_right = true;
+
+            }
+            
+        } else {
+            done_right = true;
+        }
+    
+        k++;
+
+
+    }
+
+    if (n_hits > 1) {
+
+        // no_change
+        area = (n_hits) * (h) ;
+
+        
+        std::cout << n_hits << " <- " << "\n\n\n";
+        std::cout << area << " <- " << "\n\n\n";
+        
+        if (nodetop->max_sum < area ) {
+            nodetop->max_sum = area;
+        }
+    }    
+
+}
+
 
 void test_vh(NodeTop *nodetop, Node *node) {
 
@@ -299,7 +396,7 @@ void test_vh(NodeTop *nodetop, Node *node) {
         }
     }
 
-    else if (node->v == 1 && !node->top_width) {
+    if (node->v == 1 && !node->top_width) {
         
         if (nodetop->max_sum < node->h) {
             nodetop->max_sum = node->h;
@@ -307,16 +404,28 @@ void test_vh(NodeTop *nodetop, Node *node) {
     
     } 
     
-    else if (node->top_width ) {
+    if (node->top_width ) {
 
         int32_t w = *node->top_width;
         
-        std::cout << " \t\tANALYSIS " << node->row << " , " << node->col <<  "\t\tBAKED " << w  << " , " << "\n";
+        std::cout << " \t\t TOP WIDTH==ANALYSIS " << node->row << " , " << node->col <<  "\t\tBAKED " << w  << " , " << "\n";
 
-        test_walk_away_contigious(w, node, nodetop);
+        test_walk_away_contigious_vertical(w, node, nodetop);
 
     }
 
+    if (node->left_height ) {
+
+        int32_t h = *node->left_height;
+        std::cout << h << "\n";
+        
+        std::cout << " \t\t LEFT HEIGHT==ANALYSIS " << node->row << " , " << node->col <<  "\t\tBAKED " << h  << " , " << "\n";
+        // test_walk_away_contigious_horizontal(h, node, nodetop);
+
+        // if (nodetop->max_sum == 120)
+        //     assert(0);
+
+    }
 
 
 }
@@ -343,7 +452,7 @@ void evaluate(NodeTop * nodetop, int32_t n_rows, int32_t n_cols, const Matrix & 
                 std::string key = akey(r,c ); 
 
                 // create node 
-                node = new Node{r, c, 0 /* id */, 1 /* v */, 1 /* h */,  new int32_t{1} , new int32_t{1}, nullptr, new int32_t{1} , 0 };
+                node = new Node{r, c, 0 /* id */, 1 /* v */, 1 /* h */,  new int32_t{1} , new int32_t{1}, nullptr, nullptr , 0 };
 
                 // std::cout << key << " --\t" << r << ", " << c << "\n"; 
                 nodetop->map[  key  ] = node;  // valid cells are added to map 
@@ -374,15 +483,20 @@ void evaluate(NodeTop * nodetop, int32_t n_rows, int32_t n_cols, const Matrix & 
                     
                     Node *up_node = nodetop->map[akey(r - 1, c)];
                     
+                    if (up_node->v == 1) {
+                        up_node->left_height = up_node->contigious_v;
+                    }
+
                     node->v = up_node->v + 1;
 
-                    node->contigious_v = up_node->contigious_v; 
+                    node->contigious_v = up_node->contigious_v;  // base points to top
+
                     *node->contigious_v = node->v ; // up_node->contigious_v; 
 
-                    if (up_node->v == 1) {
-                        *up_node->top_width_row =up_node->row;
-                    }
-                    node->top_width_row = up_node->top_width_row;
+
+
+
+                    // node->left_height = up_node->left_height;
 
                     if (node->v == nodetop->n_rows) {
                         
@@ -393,9 +507,6 @@ void evaluate(NodeTop * nodetop, int32_t n_rows, int32_t n_cols, const Matrix & 
                             node->full_vertical = left_node->full_vertical + 1;
                             std::cout << "KEY: \t\t\t\t\t\t\t\t" << key << "\t" << node->full_vertical << "\n";
                         }
-                        
-                        // if (node->full_vertical > 1)
-                        //     std::cout << " \t\t\t\t\tFULL VERT ADJACENT:\t" << node->full_vertical << "\n";
                     }
 
                     // if (node->v == n_rows) {
@@ -414,7 +525,8 @@ void evaluate(NodeTop * nodetop, int32_t n_rows, int32_t n_cols, const Matrix & 
 
     for (auto [key, curr]: nodetop->map) {
 
-        std::cout << curr;
+        if (curr->v)
+        // std::cout << curr;
         test_vh(nodetop, curr);
     }
 
@@ -431,6 +543,7 @@ public:
         int32_t cols = matrix[0].size();
         int max_sum_out = 0;
 
+        
         ActiveVerticesQueue q; 
         NodeTop *nodetop = new NodeTop{ 0, 0, 0,  {}, rows, cols};
         q.push_back(nodetop);
@@ -448,6 +561,9 @@ public:
             }
         }
 
+        std::cout << rows << "\t" << cols << "\n";
+
+
         return max_sum_out;
     }
 };
@@ -459,7 +575,6 @@ int main(int param_count, char *args[]) {
     Solution sol;
 
     Matrix  matrix; 
-    
 
     int result;
 
@@ -534,6 +649,10 @@ int main(int param_count, char *args[]) {
                 
             case (15):
                 matrix = matrix_test_15;
+                break; 
+
+            case (16):
+                matrix = matrix_test_16;
                 break; 
 
             default: 
