@@ -25,26 +25,26 @@ using ActiveVerticesMap = std::map< std::string ,  Node * >;
 
 struct Node {
 
-    uint32_t row;
-    uint32_t col;
-    uint32_t id;  
+    int32_t row;
+    int32_t col;
+    int32_t id;  
     int32_t v;
     int32_t h;
     int32_t *contigious_h;  
     int32_t *contigious_v;  
     int32_t *top_width;  
     int32_t *top_width_row;  
-
+    int32_t full_vertical;
 
 };
 
 struct NodeTop {
-    uint32_t eval_row;
-    uint32_t eval_col;
+    int32_t eval_row;
+    int32_t eval_col;
     int32_t max_sum;
     ActiveVerticesMap map;
-    uint32_t n_rows;
-    uint32_t n_cols;
+    int32_t n_rows;
+    int32_t n_cols;
 };
 
 
@@ -107,6 +107,91 @@ bool valid_window(Node *source, Node *child) {
 
 }
 
+bool valid_window_less(Node *source, Node *child) {
+
+}
+
+void test_walk_away_contigious_less (int32_t w, Node *node, NodeTop *nodetop) {
+    std::string key_up;
+    std::string key_down;
+    Node *child;
+    int32_t depth = 1;
+    bool done_down, done_up;
+    int32_t kup = 0;
+    int32_t kdown = 0;
+    int32_t k = 1;
+
+    done_down = true;
+    done_up = false; 
+    int32_t new_w_up = w; 
+    int32_t new_w_low = w; 
+    int32_t n_child_cells;
+    int32_t area = 0;
+
+    std::cout << "SEARCH PROCESS 2 " << "\n";
+
+    while ( !done_up || !done_down ) {
+        
+        
+        if ( !done_up && node->row - (kup + 1) >= 0) {
+            kup = kup + 1;
+            key_up = akey(node->row - kup, node->col);
+            std::cout <<  "  UP STEP : "  << " " <<  key_down <<  " " << node->row - (kup )  << "\n";
+            
+            if ( nodetop->map.count(key_up) ) {
+                
+                child = nodetop->map[key_up];
+                
+                n_child_cells = *child->contigious_h - child->h + 1;
+                
+                if (n_child_cells < w && n_child_cells != 1) {
+                    w = n_child_cells; 
+                    depth++;
+                    std::cout << " N CHILD CELLS " <<   n_child_cells <<  " " << " UP DEPTH " << depth <<  "\n";
+                } else {
+                    done_up = true; 
+                }
+            } 
+
+        } else {
+            done_up = true; 
+        }
+
+        if ( !done_up && node->row + (kdown + 1) >= 0) {
+            kdown = kdown + 1;
+            key_down = akey(node->row + kdown, node->col);
+            std::cout <<  " DOWN STEP: "  << " " <<  key_down <<  " " << node->row + (kdown )  << "\n";
+        
+            if ( nodetop->map.count(key_down) ) {
+                
+                child = nodetop->map[key_down];
+                
+                n_child_cells = *child->contigious_h - child->h + 1;
+                
+                if (n_child_cells < w && n_child_cells != 1) {
+                    w = n_child_cells;
+                    depth++;
+                    std::cout << " N CHILD CELLS " <<   n_child_cells <<  " " << " DOWN DEPTH " << depth <<  "\n";
+                } else {
+                    done_down = true; 
+                }
+            } 
+
+        } else {
+            done_down = true;
+        }
+
+    }
+
+    area = depth * w ;
+    std::cout << "HELLO WORLD" << "\t\t\t\t\t\t\t\t\t\t\t\t" << area << "\n";
+     if (nodetop->max_sum < area ) {
+        nodetop->max_sum = area;
+    }
+
+
+}
+
 void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
 
     int32_t k = 1;
@@ -116,6 +201,7 @@ void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
     bool done_up = false;
     bool done_down = false;
     Node *child;
+    int32_t area;
 
     while ( !done_up || !done_down ) {
         
@@ -131,7 +217,8 @@ void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
             // if ( *child->contigious_h >= w) {
             if (  valid_window(node, child) ) {
 
-                n_hits++; std::cout << "\n (1 up))\n ";
+                n_hits++; 
+                // std::cout << "\n (1 up))\n ";
 
             } else {
 
@@ -147,10 +234,9 @@ void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
             
             child = nodetop->map[key_down];
 
-            // if ( *nodetop->map[key_down]->contigious_h >= w) {
             if (  valid_window(node, child) ) {
 
-                n_hits++; std::cout << "\n (1 down) \n";
+                n_hits++; 
 
             } else {
 
@@ -166,15 +252,23 @@ void  test_walk_away_contigious(int32_t w, Node *node, NodeTop *nodetop) {
 
         k++;
     }
-
-        int32_t area = n_hits * w ;
-
+    
+    if (n_hits != 1) {
+        // no_change
+        area = n_hits * w ;
+        
         std::cout << n_hits << " <- " << "\n\n\n";
         std::cout << area << " <- " << "\n\n\n";
         
         if (nodetop->max_sum < area ) {
             nodetop->max_sum = area;
         }
+
+    } else  {
+        
+        test_walk_away_contigious_less(w, node, nodetop);
+
+    }
         
 }
 
@@ -187,6 +281,14 @@ void test_vh(NodeTop *nodetop, Node *node) {
 
     if (node->v > nodetop->max_sum)
         nodetop->max_sum = node->v;
+
+    if (node->full_vertical) {
+        int32_t n = nodetop->n_rows * node->full_vertical;
+        if (n > nodetop->max_sum) {
+            nodetop->max_sum = n;
+        }
+
+    }
 
 
 
@@ -215,10 +317,12 @@ void test_vh(NodeTop *nodetop, Node *node) {
 
     }
 
+
+
 }
 
 
-void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix & matrix) {
+void evaluate(NodeTop * nodetop, int32_t n_rows, int32_t n_cols, const Matrix & matrix) {
     
     bool valid; 
     Node *node;
@@ -226,9 +330,9 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
 
     std::cout << n_rows << " \t" << n_cols << "\n";
 
-    for (uint32_t r = nodetop->eval_row; r < n_rows; r++) {
+    for (int32_t r = nodetop->eval_row; r < n_rows; r++) {
 
-        for (uint32_t c = nodetop->eval_col; c < n_cols; c++) {
+        for (int32_t c = nodetop->eval_col; c < n_cols; c++) {
             
             valid = matrix[r][c] == '1';
             
@@ -239,7 +343,7 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
                 std::string key = akey(r,c ); 
 
                 // create node 
-                node = new Node{r, c, 0 /* id */, 1 /* v */, 1 /* h */,  new int32_t{1} , new int32_t{1}, nullptr, new int32_t{1} };
+                node = new Node{r, c, 0 /* id */, 1 /* v */, 1 /* h */,  new int32_t{1} , new int32_t{1}, nullptr, new int32_t{1} , 0 };
 
                 // std::cout << key << " --\t" << r << ", " << c << "\n"; 
                 nodetop->map[  key  ] = node;  // valid cells are added to map 
@@ -279,6 +383,25 @@ void evaluate(NodeTop * nodetop, uint32_t n_rows, uint32_t n_cols, const Matrix 
                         *up_node->top_width_row =up_node->row;
                     }
                     node->top_width_row = up_node->top_width_row;
+
+                    if (node->v == nodetop->n_rows) {
+                        
+                        node->full_vertical = 1;
+                        std::string left_key = akey(r, c-1);
+                        if (nodetop->map.count(left_key)) {
+                            Node * left_node = nodetop->map[left_key];
+                            node->full_vertical = left_node->full_vertical + 1;
+                            std::cout << "KEY: \t\t\t\t\t\t\t\t" << key << "\t" << node->full_vertical << "\n";
+                        }
+                        
+                        // if (node->full_vertical > 1)
+                        //     std::cout << " \t\t\t\t\tFULL VERT ADJACENT:\t" << node->full_vertical << "\n";
+                    }
+
+                    // if (node->v == n_rows) {
+                    //     std::cout << r << ", " << c << "\n\n";
+                    //     assert(0);
+                    // }
                 }
             
              
@@ -304,8 +427,8 @@ public:
 
     int maximalRectangle(Matrix& matrix) {
 
-        unsigned rows = matrix.size();
-        unsigned cols = matrix[0].size();
+        int32_t rows = matrix.size();
+        int32_t cols = matrix[0].size();
         int max_sum_out = 0;
 
         ActiveVerticesQueue q; 
@@ -404,7 +527,15 @@ int main(int param_count, char *args[]) {
             case (13):
                 matrix = matrix_test_13;
                 break; 
+
+            case (14):
+                matrix = matrix_test_14;
+                break; 
                 
+            case (15):
+                matrix = matrix_test_15;
+                break; 
+
             default: 
                 break;
         
