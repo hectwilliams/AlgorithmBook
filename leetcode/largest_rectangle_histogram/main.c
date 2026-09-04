@@ -16,7 +16,7 @@ int main(int param_count, char *args[]) {
     long test_id = strtol(args[1], &endptr, 10);
     int code1 = test_conv_str(test_id);
     int code2 = test_digit_found( args[1], endptr);
-    int heights[] = {2,1,5,6,2,3};
+    int heights[] = {2,1,5,6,6,2,3};
 
     struct timespec start_struct, end_struct;
 

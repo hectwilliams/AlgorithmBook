@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <time.h>
+#include <assert.h> // Required header
 
 #define NODE_LIST_SIZE 100
 // 
