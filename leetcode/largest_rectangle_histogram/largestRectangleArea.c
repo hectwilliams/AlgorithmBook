@@ -34,12 +34,14 @@ typedef struct TNetwork {
     int right_count;
     int left_count;
     int *shared_counter;
+    int *shared_min_h;
 
 } TNetwork;
 
 typedef struct Data_t {
     int min_bin;
     int max_area;
+    int blocked;
 }Data_t;
 
 
@@ -63,39 +65,51 @@ void calculate_rectangle (TNetwork *node, Data_t *data, int id) {
     if (node->value == 0) 
         return;
     
-    if  (node->value > data->max_area) {
-        data->max_area = node->value;
-    }
-
+    //test bin 
     calculate_rectangle_eval(node->value, data); 
 
-    // find min bin 
+    // // find min bin 
     if (node->value < data->min_bin) {
         data->min_bin = node->value; 
+        printf("MIN BIN ( %d ) \t ID BIN ( %d )  \t VALUE ( %d )\t COUNTER ( %d ) \n",data->min_bin,  id, node->value, *node->shared_counter );
     }
+
+    // lowest bin area 
+    area = *node->shared_min_h * *node->shared_counter;
+    calculate_rectangle_eval(area, data); 
+
+    printf("ENTER MIN BIN ( %d ) \t  MAX AREA ( %d ) \n",data->min_bin , data->max_area );
 
     switch(id) {
 
     case 0:
-        // root node (repeating adjacent bins)
-        area = node->root_count *node->value;
-        // if (area > data->max_area) {
-        //     data->max_area = area;
-        // }
+        printf("\ncase 0\n");
+
+        // area = *node->shared_counter * node->value;
+        // calculate_rectangle_eval(area, data);
+        
+        area = node->root_count * node->value;
+        printf(" SHARED COUNTER (%d) \t ROOT COUNT ( %d )\t VALUE (%d) \t AREA (%d) \n ", *node->shared_counter , node->root_count , node->value , area);
         calculate_rectangle_eval(area, data);
+
         break;
 
     case 1:
+        printf("\ncase 1\n");
 
         // left node  (decreasing ladder)
 
-        area = *node->shared_counter * node->value;
+        // area = *node->shared_counter * node->value;
         // if (area > data->max_area) {
             // data->max_area = area;
         // }
         calculate_rectangle_eval(area, data);
 
+        printf(" SHARED COUNTER ( %d )\t VALUE (%d) \t (%d) \n ", *node->shared_counter , node->value , area);
         area = node->left_count * node->value;
+        
+        printf(" LEFT COUNTER ( %d )\t VALUE (%d) \t (%d) \n ", node->left_count , node->value , area);
+
         // if (area > data->max_area) {
             // data->max_area = area;
         // }
@@ -103,6 +117,8 @@ void calculate_rectangle (TNetwork *node, Data_t *data, int id) {
         break;
 
     case 2:
+        printf("\ncase 2\n");
+
         // right node  ( increasing ladder)
         area = node->right_count * node->value;
         //   if (area > data->max_area) {
@@ -111,10 +127,23 @@ void calculate_rectangle (TNetwork *node, Data_t *data, int id) {
         calculate_rectangle_eval(area, data);
         break;
 
+    case 3:
+        printf("\ncase 3\n");
+
+        // right node  ( increasing ladder)
+        area = data->min_bin * *node->shared_counter;
+        calculate_rectangle_eval(area, data);
+        break;
+
+        
     default:
         ;
 
     }
+
+    printf("MIN BIN ( %d ) \t \n",data->min_bin );
+    printf("MAX AREA ( %d ) \t \n",data->max_area );
+
 }
 
 void reset_network(TNetwork *network ) {
@@ -127,17 +156,16 @@ void reset_network(TNetwork *network ) {
     network->depth = 0;
     network->right_count = 0;
     network->left_count = 0;
-
-   
     // network->shared_counter = malloc(sizeof(int));
-    *network->shared_counter = 0; 
+    // *network->shared_counter = 0; c
 
 }
 
 void reset_data (Data_t *node) {
-    printf("RESET\n");
+    printf(" RESET DATA \n");
     node->min_bin = 10000000;
     node->max_area = 0;
+    node->blocked = 1; 
     
 }
 
@@ -150,8 +178,11 @@ Record_t * get_tail_record(Record_t *node) {
 
 void init_shared(TNetwork *network) {
 
-  network->shared_counter =  malloc(sizeof(int));
-
+  network->shared_counter = (int*)  malloc(sizeof(int));
+  *network->shared_counter  = 0 ;
+  network->shared_min_h = (int*)  malloc(sizeof(int));
+  *network->shared_min_h = -1;
+  
 }
 
 void delete_network(TNetwork **network_addr) {
@@ -265,7 +296,7 @@ void print_network(TNetwork *network) {
 
     ll->network = node; 
     
-            printf("print network\n");
+    printf("print network\n");
 
     while (llwalk) {
         
@@ -299,7 +330,6 @@ void print_network(TNetwork *network) {
 
     printf("------- print network end-------\n");
 
-
 }
 
 void insert(int value, TNetwork *network, Data_t *data) {
@@ -307,137 +337,154 @@ void insert(int value, TNetwork *network, Data_t *data) {
     TNetwork * node;
     TNetwork * prev = network;
 
+    printf( "REGISTERED:(%d)\n\n" , value);
+
     if (value == 0) {
             
-        if(*network->shared_counter ) {
-            // free(network->shared_counter);
-        }
-   
-        reset_network(network);
+        if(*network->shared_counter ) {} // free(network->shared_counter);
+        
+        return;
     }
 
-    else {
-        
-        node = network; 
+    data->blocked = 0;
+    
+    node = network; 
 
-        while (node) {
+    if(*network->shared_min_h  == -1    ) {
+        *network->shared_min_h = value;
+    } else if (*network->shared_min_h  > value) {
+        *network->shared_min_h = value;
+    }
+
+    while (node) {
+        
+        if (node->value  == 0) {
+            // previous deleted network or first sample height; root node
             
-            if (node->value  == 0) {
-                // previous deleted network or first sample height; root node
-                
-                node->value = value; 
-                node->prev = NULL;
-                node->left = NULL;
-                node->right = NULL;
-                node->left_count = 1;
-                node->right_count = 1;
-                node->depth = 0;
-                node->is_root = 1;
-                *node->shared_counter = 1;
-                node->root_count = 1;
+            node->value = value; 
+            node->prev = NULL;
+            node->left = NULL;
+            node->right = NULL;
+            node->left_count = 1;
+            node->right_count = 1;
+            node->depth = 0;
+            node->is_root = 1;
+            *node->shared_counter = *node->shared_counter + 1;
+            node->root_count = 1;
+            calculate_rectangle(node, data, 0);
+            node = NULL;  // stop 
+        }
+
+        else if (node->value == value) {
+
+            if (node->prev == NULL) {
+
+                // consecutive root hit 
+
+                node->root_count++;
+
                 calculate_rectangle(node, data, 0);
-                node = NULL;  // stop 
+
+                *node->shared_counter = *node->shared_counter + 1;
             }
 
-            else if (node->value == value) {
-
-                if (node->prev == NULL) {
-
-                    // consecutive root hit 
-
-                    node->root_count++;
-
-                    calculate_rectangle(node, data, 0);
-
-                }
-
-                else if (node->prev) {
-                    
-                    // consecutive  right side leaf
-
-                    if (node->prev->right == node) {
-                        node->right_count+= 1;
-                        calculate_rectangle(node, data, 2);
-                    } 
-                    
-                    // consecutive left side leaf 
-
-                    if (node->prev->left == node) {
-                        node->left_count += 1;
-                        calculate_rectangle(node, data, 1);
-                        
-                    }
-                    
-                }
-
-                node = NULL;  // stop 
-
-            } 
-            
-            else if (value < node->value ) {
+            else if (node->prev) {
                 
-                // left child traversal ( less than  )
+                // consecutive  right side leaf
 
-                prev = node; 
+                if (node->prev->right == node) {
+                    node->right_count+= 1;
+                    *node->shared_counter = *node->shared_counter + 1;
 
-                if (node->left) {
-                    calculate_rectangle(node, data, 1);
-                    node = node->left;
-                } else {
-                    node->left = malloc( sizeof( TNetwork) );
-                    node = node->left; 
-                    node->value = value;
-                    node->depth = prev->depth + 1;
-                    node->left_count = 1; 
-                    node->prev = prev;
-                    node->shared_counter = prev->shared_counter;
-                    *node->shared_counter =  *node->shared_counter + 1; 
-                    node->left =  NULL;
-                    node->right = NULL;
-                    calculate_rectangle(node, data, 1);
-                    node = NULL;  // stop 
-                    // printf(" add value %d ON NODE %d\n ", value, prev->value);
-                }
-            } 
-            
-            else { 
-
-                // right child traversal ( greather than  or equal )
-
-                prev = node; 
-
-                node->right_count += 1;
-
-                calculate_rectangle(node, data, 2);
-
-                if (node->right) {
-
-                    node = node->right;
-
-                } else {
-                    
-                    node->right = malloc(sizeof(TNetwork));
-                    node = node->right;
-                    node->value = value;
-                    node->depth = prev->depth + 1;
-                    node->left_count = 1; 
-                    node->right_count = 1;
-                    node->prev = prev;
-                    node->shared_counter = prev->shared_counter;
-                    *node->shared_counter =  *node->shared_counter + 1; 
-                    node->left =  NULL;
-                    node->right = NULL;
-                    // printf(" RIGHT SIDE count %d value %d \n" , node->right_count, node->value);
                     calculate_rectangle(node, data, 2);
-                    node = NULL; 
-                    // printf(" RIGHT SIDE value %d ; RIGHT DEPTH %d :  COUNTER %d \n ", value, prev->right_count,  *node->shared_counter );
-                }
+                } 
+                
+                // consecutive left side leaf 
 
+                if (node->prev->left == node) {
+                    node->left_count += 1;
+                    *node->shared_counter = *node->shared_counter + 1;
+
+                    calculate_rectangle(node, data, 1);
+                    
+                }
+                
+            }
+
+            node = NULL;  // stop 
+
+        } 
+        
+        else if (value < node->value ) {
+            
+            // left child traversal ( less than  )
+
+            prev = node; 
+
+            if (node->left) {
+                printf("STEP LEFT\n");
+                // calculate_rectangle(node, data, 1);
+                node = node->left;
+            } else {
+                node->left = malloc( sizeof( TNetwork) );
+                node = node->left; 
+                node->value = value;
+                node->depth = prev->depth + 1;
+                node->left_count = 1; 
+                node->prev = prev;
+                node->shared_counter = prev->shared_counter;
+                *node->shared_counter =  *node->shared_counter + 1; 
+                node->shared_min_h = prev->shared_min_h;
+                node->left =  NULL;
+                node->right = NULL;
+                calculate_rectangle(node, data, 1);
+                node = NULL;  // stop 
+                // printf(" add value %d ON NODE %d\n ", value, prev->value);
+            }
+        } 
+        
+        else { 
+
+            // right child traversal ( greather than  or equal )
+
+            printf("STEP RIGHT\n");
+
+            prev = node; 
+
+            node->right_count += 1;
+
+            calculate_rectangle(node, data, 2);
+
+            if (node->right) {
+
+                node = node->right;
+
+            } else {
+                
+                node->right = malloc(sizeof(TNetwork));
+                node = node->right;
+                node->value = value;
+                node->depth = prev->depth + 1;
+                node->left_count = 1; 
+                node->right_count = 1;
+                node->prev = prev;
+                node->shared_counter = prev->shared_counter;
+                *node->shared_counter =  *node->shared_counter + 1; 
+                node->shared_min_h = prev->shared_min_h;
+                node->left =  NULL;
+                node->right = NULL;
+                // printf(" RIGHT SIDE count %d value %d \n" , node->right_count, node->value);
+                calculate_rectangle(node, data, 2);
+                node = NULL; 
+                // printf(" RIGHT SIDE value %d ; RIGHT DEPTH %d :  COUNTER %d \n ", value, prev->right_count,  *node->shared_counter );
             }
 
         }
+
     
     }
+
+    // printf("counter ", *node->shared_counter);
 
 }
 
@@ -457,45 +504,83 @@ int largestRectangleArea(int* heights, int heightsSize) {
     value = 0;
     prev_value = 0;
 
-    int decrease  = 1;
+    int decrease  = 0;
     int increase  = 0;
 
-    for (int i = 0; i  < heightsSize; i++) {
+    int max_area = 0;
 
+    int deleted = 0;
+    
+    for (int i = 0; i  < heightsSize; i++) {
+        deleted = 0;
         value = heights[i];
+        
+        printf("\nSUBMITTED SAMPLE: \t%d\n", value);
 
         if (value == 0) {
+            
+            printf("\n \t\t\t\t\t\t\t ALERT: ZERO HISTOGRAM : \t%d\n", value);
+
             increase = 0;
-            decrease = 1;
+            decrease = 1;        
+            reset_network(network);
             reset_data(&data);
+            *network->shared_counter = 0;
+            *network->shared_min_h = -1;
+
+            printf("(ZERO SYSTEM UPDATE COMPLETE : %d)\n\n\n\n"  );
 
         }
         
         if (prev_value < value) {
+
             // printf( "DELETE {PST} %p\n\n" , network->value);
-            if (decrease) {
-                
+
+            if (decrease && !data.blocked) {
                 delete_network(&network);
+                deleted  = 1;
 
                 // reset_data(&data);
 
                 increase = 0;
                 decrease = 0;
+
             }
+
             insert(value, network, &data);
+
         }
+
         else if (prev_value > value) {
+
             decrease = 1;
             insert(value, network, &data);
+
         } else {
+
             insert(value, network, &data);
+            
         }
         
         prev_value = value; 
+
+        if (max_area < data.max_area) {
+            max_area = data.max_area;
+        }
+
     }
+    
+    // // if (!data.blocked && !deleted) {
+
+        // int lowest_area = data.min_bin * *network->shared_counter;
+        
+        // printf("(%d  %d)\n", data.min_bin, *network->shared_counter);
+
+        // if ( lowest_area  > max_area ) {
+        //     max_area = lowest_area;
+        // }
+    // // }
 
 
-    //delete network 
-
-    return data.max_area; 
+    return max_area ;
 }
