@@ -27,22 +27,41 @@ typedef struct Node_t {
      int count;
      int value; 
      int locked;
+     int *min; 
     struct Node_t *next;
+    struct Node_t *prev;
+    struct Node_t *prev_h;
+
 } Node_t;
 
 
 
 
 void free_list(Node_t *node) {
+
     Node_t *next = NULL; 
 
-    while (node) {
+    if (node == NULL) {
+        return; 
+
+    } else {
+
         
-        next = node->next; 
-
-        free(node); 
-
-        node = next; 
+        if (node->min) {
+            free(node->min);            
+        }
+        
+        while (node) {
+            
+            node->min = NULL;
+            
+            next = node->next; 
+            
+            free(node); 
+            
+            node = next; 
+        }
+        
     }
 
 }
@@ -117,6 +136,8 @@ void print_list (Node_t *node) {
         printf(" (%d, %d,   locked:  %d  )  | ", node->value, node->count, node->locked);
         node = node->next; 
     }
+
+    printf("\n\n\n");
 }
 
 void lock_nodes (Node_t *node) {
@@ -154,37 +175,111 @@ Node_t * get_node(Node_t *node, int value, int position) {
 }
 void handle_neg_edge(Node_t *node, int curr, int prev) {
     
+    if (prev > curr) {
+
+        while (node) {
+            node->locked = 1; 
+            node = node->next; 
+        }
+    
+    }
 }
 
-Node_t * insert_node(Node_t **head, int position,  int current_value, int previous_value, Node_t *prev_insert) {
+
+void set_min(Node_t *source, Node_t *dest /* seeks input from source */) {
+
+    if (!source || !dest)
+        return;
+
+    dest->min = source->min ; // add to share network
+    if (dest->value < *source->min) {
+        *source->min = dest->value; // shared update
+    }
+}
+
+int look_back(Node_t *node, int baseline) {
+    int counter = 0;
+    while (node) {
+        printf("[%d]\n", node->value);
+        if (node->value >= baseline) {
+            counter++;
+        } else {
+            break; 
+        }
+        node = node->prev_h;
+    }
+    return counter; 
+}
+
+Node_t * insert_node(Node_t **head, int position,  int current_value, int previous_value, Node_t *prev_insert, int *max_out_addr) {
     Node_t *node = *head; 
     Node_t *prev = NULL; 
     int update_list = 0;
     
+
     // printf("previous %d", previous_value);
     printf("\n\n\n CURRENT  %d    PREVIOUS %d  PREVIOUS COUNT %d \n\n", current_value, previous_value, (prev_insert != NULL) ?  prev_insert->count : -1);
+
 
     while (node) {  
         
 
         if (current_value > node->value) {
-            node->count++;
+            if (!node->locked)
+                node->count++;
+
+            gt_rect(node, max_out_addr);
+
         }
 
         else if (current_value == node->value) {
 
+            // move to last copy 
+
+            
             if (previous_value == current_value) {
-                node->count++;
+                
+
+                while (node->next) {
+                    if(node->next->value != current_value)
+                        break;
+                    // prev_insert = node; 
+                    node = node->next;
+                }
+
+
+                Node_t *next_node = node->next;
+                Node_t *inner   = create_node(position, current_value);
+                node->next = inner;
+                inner->next = next_node;
+                inner->prev_h = prev_insert;
+                inner->count =   look_back(inner, inner->value); //node->count + 1;
+                
+                gt_rect(inner, max_out_addr);
+                
+                set_min( node, inner );
+
+                return inner; 
             }
 
             else if (node->locked) {
+                // unlock node 
                 node->locked = 0;
                 node->count = 1; 
+            
+            } else if (!node->locked) {
+                // use ajacent height node stats 
+                if ( node->value >= *node->min) {
+                    node->count++;
+
+                } else {
+                    node->count =  1;
+                }
+
             }
 
-            else if (!node->locked) {
-                node->count++; 
-            }
+            gt_rect(node, max_out_addr);
+
 
             update_list = 1;
 
@@ -197,25 +292,60 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
         
             update_list = 1; 
 
-            int position_prev = position - 1;
+            // int position_prev = position - 1;
 
-            Node_t *prev_height_node = get_node(*head, previous_value, position_prev);
-
+            // Node_t *prev_height_node = get_node(*head, previous_value, position_prev);
 
             if ( (*head) == node ) {
 
                 // new head 
-
                 Node_t *new_node = create_node(position, current_value);
                 new_node->count = node->count + 1;  // spread increases , like THE THINGS stretching 
                 new_node->next = *head; 
                 *head = new_node;
-                // new_node->count++;
-                new_node->count =  prev_insert->count + 1;
+                (*head)->prev_h = prev_insert;
 
-                // if ( (*head)->count > new_node->count ) {// } 
+             
+                // (*head)->next->prev_h = prev_insert;
 
-                handle_neg_edge(*head, current_value, previous_value);
+                if (prev_insert) {
+
+                    //  Mutiple elements , new min depression in histogram 
+
+                    if ( new_node->value >= *prev_insert->min) {
+                        // node->count++;
+                        new_node->count =  prev_insert->count + 1;
+                        new_node->count = look_back(new_node, new_node->value);
+                        // printf("new node \t %d", new_node->value);
+                        // assert(0);
+
+
+                    } else {
+                        new_node->count = look_back(new_node, new_node->value);
+                    }
+
+
+
+                } else {
+                    
+                    // single element prepended 
+
+                    new_node->count = node->count + 1;
+
+                    // if (new_node->value >= node->value) {
+                    // } else {
+                    //     new_node->count = node->count + 1;
+                    // }
+
+                }
+
+
+                handle_neg_edge((*head)->next, current_value, previous_value);
+
+                set_min((*head)->next , (*head));
+
+                gt_rect(new_node, max_out_addr);
+
                 return new_node;
                 break;
 
@@ -227,16 +357,28 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                 Node_t *new_node = create_node(position, current_value);
                 prev->next = new_node;
                 prev->next->next = node; 
-                new_node->count++;
-                new_node->count = node->count + 1;
-
-                // new_node->count++;
-                new_node->count =  prev_insert->count + 1;
                 
-                handle_neg_edge(*head, current_value, previous_value);
+                // head->prev_h = NULL;
 
+                new_node->prev_h = prev_insert;
+             
+
+                if ( node->value  <= prev_insert->value )  {
+
+                    // new_node->count = prev_insert->count + 1;
+                    new_node->count = look_back(new_node, new_node->value);
+                    // new_node->count = node->count + 1;
+                } else {
+                    new_node->count = 1; 
+                    
+                }
+                // new_node->count++;
+                // new_node->count =  prev_insert->count + 1;
+                
+                handle_neg_edge( prev->next->next, current_value, previous_value);
+                set_min( prev->next->next, new_node);
+                gt_rect(new_node, max_out_addr);
                 return new_node;
-
                 break;
             }
         }
@@ -245,182 +387,86 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
         node = node->next; 
     }
     
+ 
     // if (update_list == 0) {
         // new tail
     Node_t *new_node = create_node(position, current_value);
     prev->next = new_node;
     new_node->count++;
+    
+    if (!prev_insert) {
+        new_node->prev_h = prev;
+    } else {
+
+        new_node->prev_h = prev_insert;
+    }
+
+    set_min(prev, new_node);
+    
+    gt_rect(new_node, max_out_addr);
+
     return new_node;
 
-    // }
-
-    // print_list(*head);
-
-    // return NULL;
-
 }
+
 
 int largestRectangleArea(int* heights, int heightsSize) {
 
     Node_t *head = NULL;    
     Node_t *node = NULL;    
     Node_t *prev = NULL;  
-     Node_t *prev_return = NULL;  
-
+    Node_t *prev_return = NULL;  
 
     int value = 0; 
     int found = 0; 
     int max_out = 0;
     int prev_value; 
     int *prev_value_ptr; 
+    int mallocs = 0;
 
     for (int i = 0; i  < heightsSize; i++) {
 
         value = heights[i];
 
-        // printf("\n\n\n NEW VALUE  %d   %p\n\n", value, head);
-
-        // gt_rect_h(value, &max_out); // test immediate height 
+        gt_rect_h(value, &max_out); // test immediate height 
 
         prev = NULL;
         node = head; 
         found = 0;
 
         if (value == 0) {
-            
+            print_list(head);
             // zero height
-
             free_list(node);
             head = NULL;
             node = NULL; 
-
+            prev_return = NULL;
+            prev = NULL;
             printf("\n\n\n BLACK HOLE REACHED \n\n");
         }
-
+        
         else if (head == NULL) {
             head = create_node(i, value);
             head->count = 1;
+            head->min = malloc(sizeof(int));
+            *head->min  = value;
             node = head; 
+            node->prev_h = NULL;
             prev = NULL; 
-
+            prev_return = node;
+            
         } else {
-
+            
             prev_value = heights[i-1];
+
+            prev_return = insert_node(&head, i, value, prev_value, prev_return, &max_out);
             
-            prev_return = insert_node(&head, i, value, prev_value, prev_return);
-            
+
             print_list(head);
-
-
-            // while (node) {
-                
-            //     if (value == node->value) {
-                    
-            //         if (i == node->position - 1) {
-
-            //             // adjacent 
-            //             node->count++;
-
-            //         }
-
-            //         else {
-
-            //             if (node->locked) {
-            //                 node->locked = 0;
-            //             }
-
-            //             node->count = 1;
-
-            //         }
-
-            //         // // immediate 
-            //         // if (node == head) {
-
-            //         // }
-
-            //         // // ajacent clone
-            //         // else if (prev) {
-
-            //         // } 
-
-            //         // // displaced clone 
-            //         // else {
-
-            //         // }
-                    
-            //         // if (node->locked) {
-            //         //     node->locked = 0;
-            //         //     node->count = 1;
-            //         // }
-
-            //         gt_rect(node, &max_out);
-
-            //         found = -1;
-
-            //     } else if (value < node->value) {
-
-            //         Node_t *new_node = create_node(i, value);
-
-            //         if (prev == NULL) {
-
-            //             // insert header 
-            //             new_node->count = head->count + 1;  // spread increases , like THE THINGS stretching 
-            //             new_node->next = head; 
-            //             head = new_node;
-            //             gt_rect(head, &max_out);
-            //             lock_nodes(head->next);
-            //             found = -1;
-
-
-            //         } else {
-                        
-            //             // insert front of node 
-
-            //             prev->next = new_node;
-            //             prev->next->next = node; 
-            //             if (new_node->value == prev->value)
-            //                 new_node->count = prev->count - 1 ;
-            //             else 
-            //                 new_node->count = 1;
-            //             // locked node and after 
-            //             lock_nodes(node);
-            //             gt_rect(new_node, &max_out);
-
-            //         }
-
-            //         found = 1;  
-            //         break;
-
-            //     } else {
-
-            //         // // width increase 
-
-            //         if (!node->locked) {
-            //             node->count++;
-            //             gt_rect(node, &max_out);
-            //         }
-
-            //     }
-
-            //     prev = node; 
-            //     node = node->next; 
-
-            // }
-
-            // if (found == 0) {
-                
-            //     prev->next = create_node(i, value);
-            //     prev->next->count += 1;
-            //     gt_rect(prev->next, &max_out);
-
-            // }
-            
         }
 
         
     }
-    print_list(head);
-        
     // increment_each_node(head, value, i);
     // printf("\n");
     return max_out;

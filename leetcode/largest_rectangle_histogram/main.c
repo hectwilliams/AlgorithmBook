@@ -56,12 +56,53 @@ int main(int param_count, char *args[]) {
             len = &test_vector_6_len;
             break;
 
+        case 7:
+            heights = test_vector_7;
+            len = &test_vector_7_len;
+            break;
+
+        case 8: 
+            heights = test_vector_8;
+            len = &test_vector_8_len;
+            break;
+
+        case 9: 
+            heights = test_vector_9;
+            len = &test_vector_9_len;
+            break;
+
+        case 10: 
+            heights = test_vector_10;
+            len = &test_vector_10_len;
+            break;
+
+
+        case 11: 
+            heights = test_vector_11;
+            len = &test_vector_11_len;
+            break;
+
+
+        case 12: 
+            heights = test_vector_12;
+            len = &test_vector_12_len;
+            break;
+
+
+        case 13: 
+            heights = test_vector_13;
+            len = &test_vector_13_len;
+            break;
+
+        case 14: 
+            heights = test_vector_14;
+            len = &test_vector_14_len;
+            break;
+
         default:
             break;
         
     }
-    
-    
     
     struct timespec start_struct, end_struct;
 

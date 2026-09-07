@@ -29,6 +29,35 @@ static const int test_vector_5_len = sizeof(test_vector_5)/ sizeof(int);
 static const int test_vector_6[] = {4,2,0,3,2,4,3,4};
 static const int test_vector_6_len = sizeof(test_vector_6)/ sizeof(int);
 
+static const int test_vector_7[] = {3,6,5,7,4,8,1,0};
+static const int test_vector_7_len = sizeof(test_vector_7)/ sizeof(int);
+
+static const int test_vector_8[] = {5,5,1,7,1,1,5,2,7,6};
+static const int test_vector_8_len = sizeof(test_vector_8)/ sizeof(int);
+
+static const int test_vector_9[] = {2,1,2};
+static const int test_vector_9_len = sizeof(test_vector_9)/ sizeof(int);
+
+static const int test_vector_10[] = {0};
+static const int test_vector_10_len = sizeof(test_vector_10)/ sizeof(int);
+
+
+static const int test_vector_11[] = {4,2,3};
+static const int test_vector_11_len = sizeof(test_vector_11)/ sizeof(int);
+
+static const int test_vector_12[] = {3,5,5,2,5,5,6,6,4,4,1,1,2,5,5,6,6,4,1,3};
+static const int test_vector_12_len = sizeof(test_vector_12)/ sizeof(int);
+
+
+static const int test_vector_13[] = {999, 999, 999, 999};
+static const int test_vector_13_len = sizeof(test_vector_13)/ sizeof(int);
+
+
+static const int test_vector_14[] = {1, 1};
+static const int test_vector_14_len = sizeof(test_vector_14)/ sizeof(int);
+
+
+
 
 
 
