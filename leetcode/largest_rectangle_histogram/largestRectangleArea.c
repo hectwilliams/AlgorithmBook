@@ -288,7 +288,26 @@ int look_back(Node_t *node, int baseline) {
     return counter; 
 }
 
-Node_t * insert_node(Node_t **head, int position,  int current_value, int previous_value, Node_t *prev_insert, int *max_out_addr) {
+int look_back_v2(Node_t *node, int *heights) { 
+    int counter = 0;
+    int pos = node->position;
+
+    while (heights[pos] >= node->value && pos >=0) {
+
+        counter++;
+        pos--;
+
+        if (pos < 0)
+            break;
+
+    }
+
+    return counter; 
+
+}
+
+
+Node_t * insert_node(Node_t **head, int position,  int current_value, int previous_value, Node_t *prev_insert, int *max_out_addr, int *heights ) {
     Node_t *node = *head; 
     Node_t *prev = NULL; 
     int update_list = 0;
@@ -327,7 +346,7 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                 node->next = inner;
                 inner->next = next_node;
                 inner->prev_h = prev_insert;
-                inner->count =   look_back(inner, inner->value); //node->count + 1;
+                inner->count =   look_back_v2(inner, heights); //look_back(inner, inner->value); //node->count + 1;
                 
                 gt_rect(inner, max_out_addr);
                 
@@ -458,31 +477,51 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
 
                     if ( new_node->value >= *prev_insert->min) {
                         // node->count++;
-                        new_node->count =  prev_insert->count + 1;
-                        new_node->count = look_back(new_node, new_node->value);
+                        // new_node->count =  prev_insert->count + 1;
+                        new_node->count = look_back_v2(new_node, heights); // look_back(new_node, new_node->value);
                         // printf("new node \t %d", new_node->value);
                         // assert(0);
                     } else {
 
-                        new_node->count = look_back(new_node, new_node->value);
-
-                   
+                        new_node->count = look_back_v2(new_node, heights); //look_back(new_node, new_node->value);
 
                     }
+
+                    
+                    int t = look_back_v2(new_node, heights);
+                    t = new_node->count;
+                    // print_list(*head);
+                    
+                    // assert(0);
+                    // // look_back(new_node, new_node->value);
+                    // if (position == 12) {}
+                    
 
                 } else {
                     
                     // single element prepended 
 
                     new_node->count = node->count + 1;
+                    
+                    // if (position == 12) {
+                        
+                    //     new_node->count = look_back_v2(new_node, heights); // 
+
+                    //     assert(0);
+
+                    // }
+
+                    // new_node->count = look_back(new_node, new_node->value);
 
                     // if (new_node->value >= node->value) {
                     // } else {
                     //     new_node->count = node->count + 1;
                     // }
 
+
                 }
 
+                
                 
                 
                 handle_neg_edge((*head)->next, current_value, previous_value);
@@ -517,23 +556,30 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
 
             
 
-                if ( node->value  <= prev_insert->value )  {
+                // if ( node->value  <= prev_insert->value )  {
                 
                     
-                    // new_node->count = prev_insert->count + 1;
-                    new_node->count = look_back(new_node, new_node->value);
-                    // new_node->count = node->count + 1;
-                    // if (position == 12)  {
-                    //     print_list(*head);
-                    //     assert(0);
-                    // }
+                //     // new_node->count = prev_insert->count + 1;
+                //     new_node->count = look_back(new_node, new_node->value);
+                //     // new_node->count = node->count + 1;
+                //     // if (position == 12)  {
+                //     //     print_list(*head);
+                //     //     assert(0);
+                //     // }
 
-                } else {
-                    new_node->count = 1; 
+                // } else {
+                //     new_node->count = 1; 
                     
-                }
+                // }
+                
+                // if ()
+                new_node->count =  look_back_v2(new_node, heights); //look_back(new_node, new_node->value);
+                
+              
 
-                new_node->count = look_back(new_node, new_node->value);
+                // if (position == 12) {
+                //     assert(0);
+                // }
 
                 // new_node->count++;
                 // new_node->count =  prev_insert->count + 1;
@@ -562,7 +608,9 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
         // new tail
     Node_t *new_node = create_node(position, current_value);
     prev->next = new_node;
-    new_node->count++;
+    // new_node->count++;
+
+    new_node->count = look_back_v2(new_node, heights);
     
     if (!prev_insert) {
         new_node->prev_h = prev;
@@ -635,7 +683,7 @@ int largestRectangleArea(int* heights, int heightsSize) {
             
             prev_value = heights[i-1];
 
-            prev_return = insert_node(&head, i, value, prev_value, prev_return, &max_out);
+            prev_return = insert_node(&head, i, value, prev_value, prev_return, &max_out, heights);
             
 
             print_list(head);
