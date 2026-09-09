@@ -22,12 +22,15 @@ int test_digit_found(char *s, char *endptr) {
 }
 
 
+
+
 typedef struct Node_t {
      int position;
      int count;
      int value; 
      int locked;
      int *min; 
+     int repeat;
     struct Node_t *next;
     struct Node_t *prev;
     struct Node_t *prev_h;
@@ -73,6 +76,7 @@ Node_t* create_node(int position, int value) {
     node->value = value;
     node->locked = 0;
     node->next = NULL; 
+    node->repeat = 0;
     return node; 
 }
 
@@ -86,54 +90,15 @@ void increment_each_node(Node_t *node, int value, int pos) {
         
         node->count++;
 
-        // if (value >= node->value) {
-
-        //     if (!node->locked) {
-
-
-        //     } else {
-
-        //     }
-
-        // }
-
-        //  if (value < node->value ) {
-            
-        //     if (!node->locked ) {
-
-        //         node->locked = 1;
-                
-        //         node->count--;
-
-        //     }
-
-        //  }
-
-        //  if (node->locked && pos > node->position ) {
-        //         node->count--;
-        //  }
-        
-        // if (value <= node->value && node->locked && pos >= node->position) {
-        //     node->count++;
-        // }
-
-        
         node = node->next;
 
-
-        // if (value < node->value && pos > node->position) {
-
-        // } else if (!node->locked){
-        // }
-        // // if (value >= node->value) {
-            // }
     }
 }
 
 void print_list (Node_t *node) {
 
     while (node) {
-        printf(" (%d, %d,   locked:  %d  )  | ", node->value, node->count, node->locked);
+        printf(" (%d, %d,   locked:  %d , repeat: %d)  | ", node->value, node->count, node->locked, node->repeat);
         node = node->next; 
     }
 
@@ -154,6 +119,118 @@ void gt_rect(Node_t *node,  int  *  const mox_out_addr /* address is fixed */){
 
     if ( area > *mox_out_addr ) {
         *mox_out_addr = area; 
+    }
+
+}
+
+void print_list_reverse(Node_t *node) {
+    while (node) {
+        printf("[-%d-]\n", node->value);
+        node = node->prev_h;
+    }
+    printf("\n");
+}
+void hide_prev_value( Node_t *node, int target) {
+    Node_t *head = node ;
+
+    Node_t *a = NULL ;
+    Node_t *prev_a = node ;
+    Node_t *b = NULL ; 
+    Node_t *source_back_link = node ;
+    Node_t *dest_back_link = node ;
+
+    int index = 0;
+    int link_to_null = 0;
+    
+    printf("ENTERED   [%d] \n", node->value, node->position);
+
+    while (node) {
+        printf("search  [%d] \n", node->value, node->position);
+
+        if (node->value == target) { 
+    
+            if (a == NULL) {
+                a = node;
+                b = a;
+            } 
+                
+            printf("s found [%d]  [%d]  \n", node->value, node->position);
+
+            b = node; 
+
+        }
+
+        if (!a) {
+            prev_a = node; 
+            source_back_link = node; 
+        }
+        node = node->prev_h; 
+        index++;
+
+    }
+    
+    printf(" a ENTRY VALUE    [%d]  POSITION  [%d]\n", head->value, head->position);
+    // printf(" a   [%d]  [%d] \n", a->value, a->position);
+
+   
+
+  
+    if (a) {
+
+        printf("  START_LINK SOURCE   [%d]  [%d] \n", source_back_link->value, source_back_link->position);
+
+        if (b->prev_h) {
+
+            dest_back_link =  b->prev_h; 
+
+            printf("END    [%d]  [%d] \n", dest_back_link->value, a->value);
+
+        } else {
+
+            printf("LINK TO NODE [%d]  \n", b->prev_h);
+            
+        }
+    
+
+
+
+         if (a == b) {
+            
+            // single occurence of value exists in list 
+            
+              if (a->prev_h == NULL) {
+                    // effective header 
+                    // // source_back_link->prev_h = NULL;
+                    // printf("  EFFECT ROOT  \n");
+                    // printf(" a ENTRY VALUE    [%d] \n", head->value, index);
+                    // printf(" a NODE VALUE    [%d] \n", a->value, index);
+                    // printf(" a NODE VALUE    [%d]  POSITITON  [%d] \n", a->value, a->position);
+                    // printf(" a NODE VALUE    [%d]  POSITITON  [%d] \n", prev_a->value, prev_a->position);
+                    prev_a->prev_h = NULL;
+                    // print_list_reverse(head);
+
+                } else {
+                    // effective non-header 
+                    source_back_link->prev_h = source_back_link->prev_h->prev_h;
+                    // print_list_reverse(head);
+                }
+        
+        } else {
+
+            if (b->prev_h) {
+                
+                source_back_link->prev_h =  dest_back_link; 
+
+            } else {
+                
+                printf(" a ENTRY VALUE    [%d] \n", head->value, index);
+
+                source_back_link->prev_h = NULL ;
+
+            }
+            
+        }
+        
     }
 
 }
@@ -216,13 +293,10 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
     Node_t *prev = NULL; 
     int update_list = 0;
     
-
     // printf("previous %d", previous_value);
     printf("\n\n\n CURRENT  %d    PREVIOUS %d  PREVIOUS COUNT %d \n\n", current_value, previous_value, (prev_insert != NULL) ?  prev_insert->count : -1);
 
-
     while (node) {  
-        
 
         if (current_value > node->value) {
             if (!node->locked)
@@ -235,21 +309,21 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
         else if (current_value == node->value) {
 
             // move to last copy 
-
             
             if (previous_value == current_value) {
-                
 
                 while (node->next) {
+
                     if(node->next->value != current_value)
                         break;
-                    // prev_insert = node; 
-                    node = node->next;
-                }
 
+                    node = node->next;
+
+                }
 
                 Node_t *next_node = node->next;
                 Node_t *inner   = create_node(position, current_value);
+                inner->repeat++;
                 node->next = inner;
                 inner->next = next_node;
                 inner->prev_h = prev_insert;
@@ -263,26 +337,94 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
             }
 
             else if (node->locked) {
+
                 // unlock node 
                 node->locked = 0;
                 node->count = 1; 
+
+                // node->prev_h->prev_h = NULL;
+                //        if (position == 4) {
+                    //     assert(0);
+                    
+                    // }
+                    // if (prev_insert ) {
+                        //     prev_insert->next = node; 
+                        // }
+                        if (position == 8) {
+                            
+                            print_list_reverse(prev_insert);
+                            
+                            print_list_reverse(node);
+                            
+                            printf(" a NEW VALUE  ==> [%d] \n", node->value);
+                                                        printf(" a NEW PREV VALUE  ==> [%d] \n", node->prev_h->value);
+
+                            printf(" a PREV VALUE  ==> [%d] \n", prev_insert->value);
+                            
+                            hide_prev_value(prev_insert, current_value);
+
+                            
+                            
+                        }
+                        print_list_reverse(prev_insert);
+
+                        hide_prev_value(prev_insert, current_value);
+                        
+                        node->prev_h = prev_insert;
+                        
+                        print_list_reverse(node);
+
+                         gt_rect(node, max_out_addr);
+                
+                        set_min( node, node->prev_h );
+
+
+
+                        // print_list_reverse(prev_insert);
+                    
+                        // printf("AFTER [%d]\n", node->value); // entry  - 1 
+                        // printf("ADTER [%d]\n", node->prev_h->value); // entry  - 1 
+
+                        // assert(0);
+                        // print_list_reverse(prev_insert);
+                        // print_list_reverse(prev_insert);
+                        
+                        // printf("[%d]\n", prev_insert->value); // 6
+                        // printf("[%d]\n", node->value); // 2  
+                        // print_list(*head);
+                    // printf("[%d]\n", prev_insert->value); // entry  - 1 
+                    // printf("[%d]\n", prev_insert->prev_h->value); // entry  - 2
+                    // printf("[%d]\n", prev_insert->prev_h->prev_h->value); // entry  - 3
+                    // printf("[%d]\n", prev_insert->prev_h->prev_h->prev_h->value); // entry  - 3
+                    
+                    // }
+
+                    
+                    printf("\n\n\n\n");
+                    // hide_prev_value(node, current_value);
+                    
+                    
+                    //  node->count = look_back(node, current_value);
+
+                
+                    
+                
+
             
             } else if (!node->locked) {
                 // use ajacent height node stats 
+
                 if ( node->value >= *node->min) {
                     node->count++;
-
                 } else {
                     node->count =  1;
                 }
+                handle_neg_edge(node->next, current_value, previous_value);
 
             }
 
             gt_rect(node, max_out_addr);
-
-
             update_list = 1;
-
             return node; 
             break;
 
@@ -300,11 +442,13 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
 
                 // new head 
                 Node_t *new_node = create_node(position, current_value);
+                new_node->repeat++;
+
                 new_node->count = node->count + 1;  // spread increases , like THE THINGS stretching 
                 new_node->next = *head; 
                 *head = new_node;
                 (*head)->prev_h = prev_insert;
-
+                // (*head)->prev_h = NULL;
              
                 // (*head)->next->prev_h = prev_insert;
 
@@ -318,13 +462,13 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                         new_node->count = look_back(new_node, new_node->value);
                         // printf("new node \t %d", new_node->value);
                         // assert(0);
-
-
                     } else {
+
                         new_node->count = look_back(new_node, new_node->value);
+
+                   
+
                     }
-
-
 
                 } else {
                     
@@ -339,13 +483,21 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
 
                 }
 
-
+                
+                
                 handle_neg_edge((*head)->next, current_value, previous_value);
 
                 set_min((*head)->next , (*head));
-
+                
                 gt_rect(new_node, max_out_addr);
+                
+                    //  if (position == 3 ) {
+                    //         print_list(*head);
+                    //         assert(0);
+                    //     }
 
+                
+             
                 return new_node;
                 break;
 
@@ -357,30 +509,48 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                 Node_t *new_node = create_node(position, current_value);
                 prev->next = new_node;
                 prev->next->next = node; 
+                new_node->repeat++;
                 
                 // head->prev_h = NULL;
 
                 new_node->prev_h = prev_insert;
-             
+
+            
 
                 if ( node->value  <= prev_insert->value )  {
-
+                
+                    
                     // new_node->count = prev_insert->count + 1;
                     new_node->count = look_back(new_node, new_node->value);
                     // new_node->count = node->count + 1;
+                    // if (position == 12)  {
+                    //     print_list(*head);
+                    //     assert(0);
+                    // }
+
                 } else {
                     new_node->count = 1; 
                     
                 }
+
+                new_node->count = look_back(new_node, new_node->value);
+
                 // new_node->count++;
                 // new_node->count =  prev_insert->count + 1;
                 
                 handle_neg_edge( prev->next->next, current_value, previous_value);
+
                 set_min( prev->next->next, new_node);
+
                 gt_rect(new_node, max_out_addr);
+
+
                 return new_node;
+
                 break;
+
             }
+
         }
 
         prev = node; 
@@ -400,6 +570,10 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
 
         new_node->prev_h = prev_insert;
     }
+
+    //    if (position == 3 ) {
+    //             assert(0);
+    //         }
 
     set_min(prev, new_node);
     
@@ -452,6 +626,8 @@ int largestRectangleArea(int* heights, int heightsSize) {
             *head->min  = value;
             node = head; 
             node->prev_h = NULL;
+            node->repeat = 0;
+
             prev = NULL; 
             prev_return = node;
             
@@ -472,3 +648,6 @@ int largestRectangleArea(int* heights, int heightsSize) {
     return max_out;
    
 }
+
+
+
