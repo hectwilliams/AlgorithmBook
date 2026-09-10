@@ -369,7 +369,7 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                     // if (prev_insert ) {
                         //     prev_insert->next = node; 
                         // }
-                        if (position == 8) {
+                        // if (position == 8) {
                             
                             print_list_reverse(prev_insert);
                             
@@ -384,12 +384,16 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
 
                             
                             
-                        }
+                        // }
                         print_list_reverse(prev_insert);
 
                         hide_prev_value(prev_insert, current_value);
                         
                         node->prev_h = prev_insert;
+                        
+                        node->position = position;
+
+                        node->count = look_back_v2(node, heights);
                         
                         print_list_reverse(node);
 
