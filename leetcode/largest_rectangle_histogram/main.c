@@ -114,6 +114,11 @@ int main(int param_count, char *args[]) {
             len = &test_vector_17_len;
             break;
 
+        case 18: 
+            heights = test_vector_17;
+            len = &test_vector_17_len;
+            
+            break;
         default:
             break;
         
