@@ -696,6 +696,3 @@ int largestRectangleArea(int* heights, int heightsSize) {
     return max_out;
    
 }
-
-
-
