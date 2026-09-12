@@ -73,6 +73,10 @@ static const int test_vector_19[] =  {1,9,3,7,3,2,1,3,6,5,9,1,2,7,6,5,9,4};
 static const int test_vector_19_len = sizeof(test_vector_19)/ sizeof(int);
 
 
+static const int test_vector_20[] = {7,2,1,7,3,4,7,9,5,4,7,5,4,6,7,1,5,8,4} ;
+static const int test_vector_20_len = sizeof(test_vector_20)/ sizeof(int);
+
+
 int largestRectangleArea(int* heights, int heightsSize);
 int test_conv_str(long value);
 int test_digit_found(char *s, char *endptr);

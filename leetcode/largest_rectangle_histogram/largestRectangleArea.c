@@ -22,8 +22,6 @@ int test_digit_found(char *s, char *endptr) {
 }
 
 
-
-
 typedef struct Node_t {
      int position;
      int count;
@@ -36,8 +34,6 @@ typedef struct Node_t {
     struct Node_t *prev_h;
 
 } Node_t;
-
-
 
 
 void free_list(Node_t *node) {
@@ -255,7 +251,10 @@ void handle_neg_edge(Node_t *node, int curr, int prev) {
     if (prev > curr) {
 
         while (node) {
-            node->locked = 1; 
+            
+            if (node->value > curr) {
+                node->locked = 1; 
+            }
             node = node->next; 
         }
     
@@ -451,14 +450,21 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
             } else if (!node->locked) {
                 // use ajacent height node stats 
 
-                if ( node->value >= *node->min) {
-                    node->count++;
-                } else {
-                    node->count =  1;
-                }
+              
+                // if ( node->value >= *node->min) {
+                //     node->count++;
+                // } else {
+                //     node->count =  1;
+                // }
+                
+                node->position = position; // update position latest 
                 node->count = look_back_v2(node, heights);
 
-                handle_neg_edge(node->next, current_value, previous_value);
+                // if (position == 12) {
+                //     print_list(node);
+                //     assert(0);
+                // }
+                // handle_neg_edge(node->next, current_value, previous_value);
 
             }
 

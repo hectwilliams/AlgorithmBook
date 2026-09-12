@@ -118,11 +118,15 @@ int main(int param_count, char *args[]) {
             heights = test_vector_18;
             len = &test_vector_18_len;
             break;
-        
 
         case 19: 
             heights = test_vector_19;
             len = &test_vector_19_len;
+            break;
+
+         case 20: 
+            heights = test_vector_20;
+            len = &test_vector_20_len;
             break;
 
         default:
