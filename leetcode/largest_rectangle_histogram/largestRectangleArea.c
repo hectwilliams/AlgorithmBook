@@ -98,7 +98,7 @@ void increment_each_node(Node_t *node, int value, int pos) {
 void print_list (Node_t *node) {
 
     while (node) {
-        printf(" (%d, %d,   locked:  %d , repeat: %d)  | ", node->value, node->count, node->locked, node->repeat);
+        printf(" (%d, %d,   locked:  %d , repeat: %d,  min: %d )  | ", node->value, node->count, node->locked, node->repeat, *node->min);
         node = node->next; 
     }
 
@@ -263,7 +263,7 @@ void handle_neg_edge(Node_t *node, int curr, int prev) {
 }
 
 
-void set_min(Node_t *source, Node_t *dest /* seeks input from source */) {
+void set_min(Node_t *source /* active node in linked list */ , Node_t *dest /* seeks input from source */) {
 
     if (!source || !dest)
         return;
@@ -318,8 +318,12 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
     while (node) {  
 
         if (current_value > node->value) {
-            if (!node->locked)
+            if (!node->locked) {
+                
                 node->count++;
+
+                // node->count = look_back_v2(node, heights);
+            }
 
             gt_rect(node, max_out_addr);
 
@@ -327,9 +331,17 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
 
         else if (current_value == node->value) {
 
-            // move to last copy 
             
-            if (previous_value == current_value) {
+            if (*node->min == current_value) {
+                // size of lowest rectangle increases 
+                node->count++;
+                gt_rect(node, max_out_addr);
+                
+            }
+            
+            else if (previous_value == current_value) {
+                
+                // move to last copy 
 
                 while (node->next) {
 
@@ -347,7 +359,7 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                 inner->next = next_node;
                 inner->prev_h = prev_insert;
                 inner->count =   look_back_v2(inner, heights); //look_back(inner, inner->value); //node->count + 1;
-                
+
                 gt_rect(inner, max_out_addr);
                 
                 set_min( node, inner );
@@ -371,16 +383,16 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                         // }
                         // if (position == 8) {
                             
-                            print_list_reverse(prev_insert);
+                            // print_list_reverse(prev_insert);
                             
-                            print_list_reverse(node);
+                            // print_list_reverse(node);
                             
-                            printf(" a NEW VALUE  ==> [%d] \n", node->value);
-                                                        printf(" a NEW PREV VALUE  ==> [%d] \n", node->prev_h->value);
+                            // printf(" a NEW VALUE  ==> [%d] \n", node->value);
+                            //                             printf(" a NEW PREV VALUE  ==> [%d] \n", node->prev_h->value);
 
-                            printf(" a PREV VALUE  ==> [%d] \n", prev_insert->value);
+                            // printf(" a PREV VALUE  ==> [%d] \n", prev_insert->value);
                             
-                            hide_prev_value(prev_insert, current_value);
+                            // hide_prev_value(prev_insert, current_value);
 
                             
                             
@@ -401,6 +413,8 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                 
                         set_min( node, node->prev_h );
 
+                        if (previous_value != 0)
+                            handle_neg_edge(node->next, current_value, previous_value);
 
 
                         // print_list_reverse(prev_insert);
@@ -442,12 +456,17 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                 } else {
                     node->count =  1;
                 }
+                node->count = look_back_v2(node, heights);
+
                 handle_neg_edge(node->next, current_value, previous_value);
 
             }
 
             gt_rect(node, max_out_addr);
             update_list = 1;
+
+            handle_neg_edge(node->next, current_value, previous_value);
+
             return node; 
             break;
 
@@ -506,7 +525,7 @@ Node_t * insert_node(Node_t **head, int position,  int current_value, int previo
                     // single element prepended 
 
                     new_node->count = node->count + 1;
-                    
+
                     // if (position == 12) {
                         
                     //     new_node->count = look_back_v2(new_node, heights); // 
