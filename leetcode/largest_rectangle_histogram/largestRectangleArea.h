@@ -65,8 +65,17 @@ static const int test_vector_16_len = sizeof(test_vector_16)/ sizeof(int);
 static const int test_vector_17[] =  {1,1,6,4,5,1,4,5,1,9,6,5,6,2,7,0,7,7};
 static const int test_vector_17_len = sizeof(test_vector_17)/ sizeof(int);
 
-static const int test_vector_18[] =  {11,11,13,5,3,11,14,8,18,9,6,5,19,17,8,7,8,3,0,18};
+static const int test_vector_18[] =  {0,1,0,2,1,0,1,3,2,1,2,1};
 static const int test_vector_18_len = sizeof(test_vector_18)/ sizeof(int);
+
+
+static const int test_vector_19[] =  {1,9,3,7,3,2,1,3,6,5,9,1,2,7,6,5,9,4};
+static const int test_vector_19_len = sizeof(test_vector_19)/ sizeof(int);
+
+
+static const int test_vector_20[] = {7,2,1,7,3,4,7,9,5,4,7,5,4,6,7,1,5,8,4} ;
+static const int test_vector_20_len = sizeof(test_vector_20)/ sizeof(int);
+
 
 int largestRectangleArea(int* heights, int heightsSize);
 int test_conv_str(long value);
